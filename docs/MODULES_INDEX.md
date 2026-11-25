@@ -482,6 +482,7 @@
 - `tools/dialog_gallery.py` — Галерея окон «Азимута»: снимки всех диалогов, окон сообщений и меню в светлой и тёмной теме.
 - `tools/fit_sto.py` — Fit Slater-type radial functions with K Gaussians; writes modules/spectrum/analysis/sto_fits.py.
 - `tools/make_crystal_tables.py` — Make the crystal data tables of Compass from spglib and xraydb.
+- `tools/manual_pdf.py` — The user manual as one PDF: docs/manual/<lang>.md → docs/manual/Azimuth-manual-<lang>.pdf.
 - `tools/mixin_to_tool.py` — Turn a mixin of the window into a tool with a declared port (the second version — what was done by hand in 0.108.24 is done here; the roadmap of 2026-11-09, stage 5).
 - `tools/modules_index.py` — The index of the modules of the program: docs/MODULES_INDEX.md — every module with the first line of its docstring (the audit: docs/MODULES.md named about a third of the 184 modules).
 - `tools/publish_site.py` — Publish the site to both places at once: the main site (www.azimuth-chem.com, Cloudflare Pages) and the mirror for Russia (ru.azimuth-chem.com, Yandex Object Storage — the providers of Russia slow down Cloudflare).

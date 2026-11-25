@@ -125,8 +125,8 @@ class ServerDialog(QDialog):
         self.password = QLineEdit()
         self.password.setEchoMode(QLineEdit.EchoMode.Password)
         self.password.setPlaceholderText(tr('спросить при подключении'))
-        # macOS: the Keychain; Windows: the Credential Manager (the owner, 2026-11-25); the text is short — with Inter
-        # «… в Связке ключей macOS» made the window 503 px (2026-11-25)
+        # macOS: the Keychain; Windows: the Credential Manager. The text is short: a longer one widens the login
+        # window past 500 px
         windows = os.name == 'nt'
         self.remember = QCheckBox(tr('Запомнить в Windows') if windows else tr('Запомнить в Связке ключей'))
         if windows:

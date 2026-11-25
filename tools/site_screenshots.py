@@ -21,6 +21,10 @@
     names is also written there as WEBP (Pillow: 1600 × 1000, quality 80) — no step by hand.
     A window of its own (the surface of Hirshfeld, the powder pattern) is pictured alone, at the size of
     the main window, so that all the pictures of a panel have one shape (build_atlas_site.SHOT_SIZE).
+    --manual: the pictures of the user manual (MANUAL_SHOTS, unless --only names others) — the light theme only,
+    docs/manual/img/NAME.jpg (1800 px wide, quality 88: a book of thirty pictures stays a few megabytes);
+    tools/manual_pdf.py puts them into the PDF. Not in it: the surface of Hirshfeld and its fingerprint — without a
+    screen the surface is not drawn.
 """
 
 import argparse
@@ -36,6 +40,10 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 
+MANUAL_SHOTS = ('home', 'compass', 'compass-optimization', 'compass-scan', 'sextant', 'spectrum-optimization',
+                'spectrum-vibrations', 'spectrum-uv', 'crystal', 'crystal-contacts', 'crystal-powder', 'sextant-crystal')
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.split('\n')[0])
     parser.add_argument('--out', default=str(ROOT / 'site-shots'))
@@ -44,7 +52,12 @@ def main(argv=None):
     parser.add_argument('--size', default='1440x900')
     parser.add_argument('--site', action='store_true', help='also write the pictures named in site/index.html as WEBP')
     parser.add_argument('--lang', choices=['ru', 'en', 'zh'], default='ru', help='the language of the program (ru by default)')
+    parser.add_argument('--manual', action='store_true', help='the pictures of the user manual (docs/manual/img, JPEG)')
     args = parser.parse_args(argv)
+    if args.manual:
+        args.theme = 'light'
+        args.out = str(ROOT / 'site-shots' / 'manual')
+        args.only = args.only or list(MANUAL_SHOTS)
     suffix = '' if args.lang == 'ru' else '-' + args.lang  # NAME-THEME in Russian, NAME-LANG-THEME in the others
     width, height = (int(x) for x in args.size.lower().split('x'))
     os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
@@ -287,6 +300,18 @@ def main(argv=None):
         with Image.open(path) as image:
             image.convert('RGB').resize((1600, 1000), Image.LANCZOS).save(target, 'WEBP', quality=80, method=6)
         return target
+    def to_manual(path, name):
+        from PIL import Image
+
+        folder = ROOT / 'docs' / 'manual' / 'img'
+        folder.mkdir(parents=True, exist_ok=True)
+        target = folder / f'{name}.jpg'
+        with Image.open(path) as image:
+            image = image.convert('RGB')
+            if image.width > 1800:
+                image = image.resize((1800, round(image.height * 1800 / image.width)), Image.LANCZOS)
+            image.save(target, 'JPEG', quality=88, optimize=True, progressive=True)
+        return target
     failed = 0
     for name, prepare in SHOTS:
         if args.only and name not in args.only:
@@ -303,6 +328,8 @@ def main(argv=None):
                 path = out / f'{name}{suffix}-{theme}.png'
                 picture.save(str(path))
                 print(f'{name}{suffix}-{theme}: {picture.width()}x{picture.height()} → {path}  (section {hub.current})', flush=True)
+                if args.manual:
+                    print('   → ' + str(to_manual(path, name)), flush=True)
                 if args.site and name in on_site:
                     print('   → ' + str(to_site(path, name, theme)), flush=True)
             if target is not hub:

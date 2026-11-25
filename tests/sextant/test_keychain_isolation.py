@@ -1,4 +1,4 @@
-"""The tests never touch the real Keychain (2026-11-25): the fixture of conftest puts a dict in its place."""
+"""The tests never touch the store of passwords of the computer: the fixture of conftest puts a dict in its place."""
 from modules.sextant import keychain
 
 
@@ -46,7 +46,7 @@ class _FakeAdvapi:
 
 
 def test_on_windows_the_password_goes_to_the_credential_manager(monkeypatch):
-    # the owner, 2026-11-25: with the box ticked a saved profile keeps its password on Windows too
+    # with the box ticked a saved profile keeps its password on Windows too
     fake = _FakeAdvapi()
     monkeypatch.setattr(keychain, 'STORE', None)
     monkeypatch.setattr(keychain, '_lib', lambda: fake)

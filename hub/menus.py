@@ -77,11 +77,10 @@ class HubMenus:
 
         def help_menu():
             # «Справка» in every section: «О программе», the manual, the journal and the folder of the logs
-            from hub.about import ChangelogDialog, ManualDialog
+            from hub.about import ChangelogDialog, open_manual
 
             def manual():
-                self.manual_dialog = ManualDialog(self, self.language)
-                self.manual_dialog.open()
+                self.manual_dialog = open_manual(self, self.language)
 
             def journal():
                 self.journal_dialog = ChangelogDialog(self, self.language)

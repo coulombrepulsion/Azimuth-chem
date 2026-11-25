@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.222.48 — 25 November 2026
+
+- ### 0.222.48 — The manual as a book
+
+The manual is now a real book: one PDF with contents, chapters, pictures of the windows and tables — from installation to the analysis of the electron density. «Help → Manual» opens it; it can be printed or handed out to students. (Russian for now.)
+
 ## 0.222.47 — 25 November 2026
 
 - ### 0.222.47 — The password on Windows

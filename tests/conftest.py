@@ -122,7 +122,7 @@ def no_modal_windows(monkeypatch):
 @pytest.fixture(autouse=True)
 def no_real_keychain(monkeypatch):
     """No test reads or writes the Keychain of the computer: a dict stands for it, and the passwords of the session
-    start empty (2026-11-25: the window of a test showed the saved password of a real profile)."""
+    start empty: a test window must never show a password kept on the computer."""
     try:
         from modules.sextant import keychain
     except ImportError:

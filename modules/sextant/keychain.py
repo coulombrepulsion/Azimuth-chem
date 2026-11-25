@@ -4,8 +4,7 @@ HEADER
     The password of the server is never written into the settings or a profile file. It is kept for the session in
     memory, and — when the user ticks «Запомнить в Связке ключей» — in the login Keychain of macOS, where macOS
     protects it (the system may ask for permission the first time); on Windows — when the user ticks «Запомнить в
-    Windows» — in the Credential Manager, which encrypts it with the key of the user's Windows account (DPAPI; the
-    owner, 2026-11-25: «когда сохраняешь профиль сервера — должен же сохраняться пароль, если поставить галочку?»).
+    Windows» — in the Credential Manager, which encrypts it with the key of the user's Windows account (DPAPI).
     On other systems only the memory of the session.
     Wilkinson convention, sections 1-8.
 
@@ -18,9 +17,8 @@ HEADER
 §4 SPECIFICATION
     available() -> bool; get(service, account) -> str | None; put(service, account, password) -> bool;
     delete(service, account) -> bool; service_for(profile) -> str. SESSION: {service: password} of this run.
-    STORE: None, or a dict {service: password} that stands for the Keychain (the tests set it for every test, so a run
-    never reads or writes the real Keychain of the computer — 2026-11-25: a test window showed the saved password of a
-    real server profile).
+    STORE: None, or a dict {service: password} that stands for the store of the system: the tests set it for every
+    test, so that a run never reads or writes the passwords kept on the computer.
 §8' ROBUSTNESS
     Any failure of the framework returns None / False — the password is then asked again, nothing breaks.
 """

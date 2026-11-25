@@ -337,6 +337,25 @@ def split_manual(markdown):
     return sections
 
 
+def manual_pdf(language):
+    """The book of the manual in the language (docs/manual/Azimuth-manual-<language>.pdf, made by tools/manual_pdf.py)
+    or None when there is none yet."""
+    path = MANUAL / f'Azimuth-manual-{language}.pdf'
+    return path if path.is_file() else None
+
+
+def open_manual(parent, language):
+    """«Руководство»: the PDF in the reader of the system when the language has one (a book with its contents,
+    pictures and bookmarks); else — and when the system opens nothing — the dialog with the Markdown, returned so that
+    the caller keeps it alive."""
+    path = manual_pdf(language)
+    if path is not None and QDesktopServices.openUrl(QUrl.fromLocalFile(str(path))):
+        return None
+    dialog = ManualDialog(parent, language)
+    dialog.open()
+    return dialog
+
+
 class ManualDialog(QDialog):
     """The manual (docs/manual/<language>.md): what each section can do and how to do it, one tab per
     section of the program."""
@@ -349,6 +368,8 @@ class ManualDialog(QDialog):
         self.tabs = QTabWidget()
         self.pages = []
         for title, body in split_manual(read_localized(MANUAL, language)):
+            # the pictures of the book are screenshots 1800 px wide: the dialog shows the text only
+            body = re.sub(r'^!\[[^\]]*\]\([^)]*\)\s*$', '', body, flags=re.MULTILINE)
             page = QTextBrowser()
             page.setOpenExternalLinks(True)
             page.setMarkdown(body)
@@ -567,8 +588,7 @@ class AboutDialog(QDialog):
         )
 
     def show_manual(self):
-        self.manual = ManualDialog(self, self.language)
-        self.manual.open()
+        self.manual = open_manual(self, self.language)
 
     def show_changelog(self):
         self.changelog = ChangelogDialog(self, self.language)

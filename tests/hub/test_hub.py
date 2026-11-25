@@ -343,7 +343,7 @@ def test_section_header_for_studio_sections(hub):
     hub.set_language('ru')
 
 
-def test_changelog_window_from_about(hub, app):
+def test_changelog_window_from_about(hub, app, monkeypatch):
     hub.show_about()
     assert wait_for(app, lambda: getattr(hub, 'about_dialog', None) is not None, 10)
     hub.about_dialog.changelog_link.click()
@@ -368,15 +368,26 @@ def test_changelog_window_from_about(hub, app):
     compass = log.tabs.widget(2).toPlainText()
     assert 'VTK' in compass and modules.compass.__version__ in compass
     log.close()
+    # «Руководство»: the book (PDF) in the reader of the system; the dialog when the system opens nothing
+    from PySide6.QtGui import QDesktopServices
+
+    from hub import about
+
+    opened = []
+    monkeypatch.setattr(QDesktopServices, 'openUrl', staticmethod(lambda url: opened.append(url.toLocalFile()) or True))
+    hub.about_dialog.manual_link.click()
+    assert opened == [str(about.MANUAL / 'Azimuth-manual-ru.pdf')] and hub.about_dialog.manual is None
+    monkeypatch.setattr(QDesktopServices, 'openUrl', staticmethod(lambda url: False))
     hub.about_dialog.manual_link.click()
     manual = hub.about_dialog.manual.body.toPlainText()
     assert 'Компас' in manual and 'Спектр' in manual and 'Секстант' in manual and 'Атлас' in manual
-    # one tab per section of the program, each with its "how to" steps
+    # one tab per chapter of the book, the pictures left out
     tabs = hub.about_dialog.manual.tabs
-    assert [tabs.tabText(i) for i in range(tabs.count())] == [
-        'Общее', 'Атлас', 'Компас · Молекула', 'Компас · Кристалл', 'Секстант', 'Спектр', 'Управление из языковой модели',
-        'Внешние программы и ссылки', 'Если что-то не так']
-    assert 'Как подготовить и запустить расчёт' in hub.about_dialog.manual.pages[4].toPlainText()
+    titles = [tabs.tabText(i) for i in range(tabs.count())]
+    assert titles[:9] == ['Введение', 'Установка и первый запуск', 'Быстрый старт: от теории до результата',
+                          'Интерфейс и настройки', 'Атлас', 'Компас · Молекула', 'Компас · Кристалл', 'Секстант', 'Спектр']
+    assert 'Подготовка расчёта' in hub.about_dialog.manual.pages[7].toPlainText()
+    assert all('img/' not in page.toMarkdown() for page in hub.about_dialog.manual.pages)
     hub.about_dialog.manual.close()
     hub.about_dialog.close()
 
