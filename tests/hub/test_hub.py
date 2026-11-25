@@ -371,12 +371,14 @@ def test_changelog_window_from_about(hub, app, monkeypatch):
     # «Руководство»: the book (PDF) in the reader of the system; the dialog when the system opens nothing
     from PySide6.QtGui import QDesktopServices
 
+    from pathlib import Path
+
     from hub import about
 
     opened = []
     monkeypatch.setattr(QDesktopServices, 'openUrl', staticmethod(lambda url: opened.append(url.toLocalFile()) or True))
     hub.about_dialog.manual_link.click()
-    assert opened == [str(about.MANUAL / 'Azimuth-manual-ru.pdf')] and hub.about_dialog.manual is None
+    assert [Path(p) for p in opened] == [about.MANUAL / 'Azimuth-manual-ru.pdf'] and hub.about_dialog.manual is None
     monkeypatch.setattr(QDesktopServices, 'openUrl', staticmethod(lambda url: False))
     hub.about_dialog.manual_link.click()
     manual = hub.about_dialog.manual.body.toPlainText()

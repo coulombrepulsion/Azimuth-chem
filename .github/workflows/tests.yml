@@ -23,6 +23,9 @@ jobs:
       # Windows; Linux and macOS the same); VTK is checked on the owner's Mac
       AZIMUTH_NO_VTK: '1'
       PYTHONIOENCODING: utf-8
+      # the fake programs of the tests (Python scripts) read their data files with the encoding of the system: UTF-8
+      # mode, as on the computers of the owner — cp1252 of a machine of GitHub failed them on the bytes of xtb's output
+      PYTHONUTF8: '1'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

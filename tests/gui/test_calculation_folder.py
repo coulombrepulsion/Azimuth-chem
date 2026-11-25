@@ -29,8 +29,10 @@ def test_the_button_opens_the_folder_of_the_calculation(window, app, tmp_path, m
     assert drawer.steps and tool.calculation_folder() == output.parent
     assert drawer.open_button.isEnabled()
     drawer.open_button.click()
-    assert opened and (opened[-1] == ['open', '-R', str(output)] if sys.platform == 'darwin'
-                       else str(output.parent) in ' '.join(map(str, opened[-1])))  # [explorer, /select, path] on Windows
+    shown = opened[-1] if opened else ''
+    shown = shown if isinstance(shown, str) else ' '.join(map(str, shown))  # [explorer, /select, path] on Windows,
+    assert opened and (opened[-1] == ['open', '-R', str(output)] if sys.platform == 'darwin'  # the folder on Linux
+                       else str(output.parent) in shown)
     # steps made in the program (a path between structures): no folder — the button is off, a press says why
     from types import SimpleNamespace
 

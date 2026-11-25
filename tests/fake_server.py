@@ -72,8 +72,20 @@ if 'az-submit' in command and os.path.exists(drop):
     if gone:
         open(os.path.join(root, 'offline'), 'w').close()
     sys.stderr.write('ssh: connect to host 192.0.2.103 port 22: Connection timed out\n'); sys.exit(255)
+# the machine of the «server» is the same everywhere: its processors, memory and load are files of the fake root,
+# not those of the computer of the tests (two busy cores of a machine of GitHub left the tests no core to take)
+command = command.replace('/proc/loadavg', os.path.join(root, 'proc', 'loadavg'))
+command = command.replace('/proc/meminfo', os.path.join(root, 'proc', 'meminfo'))
 sys.exit(subprocess.run(['bash', '-c', command], cwd=home, env=env).returncode)
 '''
+
+# the processors of the fake server: 8 cores of one socket, one thread each (lscpu of a Linux server); sysctl answers
+# nothing, so that the probe never takes the values of a Mac that runs the tests
+NPROC = 'print(8)\n'
+LSCPU = 'print("CPU(s):              8\\nThread(s) per core:  1\\nCore(s) per socket:  8\\nSocket(s):           1")\n'
+SYSCTL = 'import sys\nsys.exit(1)\n'
+MEMINFO = 'MemTotal:       32768000 kB\nMemAvailable:   30720000 kB\n'
+LOADAVG = '0.00 0.00 0.00 1/100 1000\n'
 
 SCP = r'''
 import atexit as _atexit, os as _os, sys as _sys, time as _time
@@ -308,6 +320,11 @@ def make(root, slurm=True):
             executable(bin_dir / name, f'#!{PY}\n' + code)  # one checked copy for all the tests (fake_programs)
     if os.name != 'nt':
         executable(bin_dir / 'find', f'#!{PY}\n' + FIND)
+        for name, code in (('nproc', NPROC), ('lscpu', LSCPU), ('sysctl', SYSCTL)):
+            executable(bin_dir / name, f'#!{PY}\n' + code)
+    (root / 'proc').mkdir(exist_ok=True)
+    (root / 'proc' / 'meminfo').write_text(MEMINFO)
+    (root / 'proc' / 'loadavg').write_text(LOADAVG)
     # the commands reach the server as «bash -lc …» (a login shell: the modules of a cluster); here the
     # server is the computer of the tests, and a login bash of macOS reads /etc/profile — its path_helper took about a
     # second on every call (a test of 0.1 s on Linux lasted 4–9 s on the Mac). The bash of the fake server is the

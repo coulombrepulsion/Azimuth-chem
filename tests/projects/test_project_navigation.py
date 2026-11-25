@@ -667,12 +667,15 @@ def test_the_folder_of_a_saved_project_is_shown(window, tmp_path, monkeypatch):
     window.open_project_molecule(first, stay=True)
     shown, notes = [], []
     monkeypatch.setattr(subprocess, 'Popen', lambda command, *a, **k: shown.append(command))
+    from PySide6.QtGui import QDesktopServices  # Linux: the folder through the desktop, not a program of the system
+
+    monkeypatch.setattr(QDesktopServices, 'openUrl', staticmethod(lambda url: shown.append([url.toLocalFile()]) or True))
     monkeypatch.setattr(window, 'notify', lambda text, *a: notes.append(text))
     # Act
     found = window.file_tool.reveal_file()
     # Assert
     assert window.research_document_path() == path and window.file_tool.tab_file() == path
-    assert found == path and shown and str(path) in ' '.join(map(str, shown[0])) and not notes
+    assert found == path and shown and str(path.parent) in ' '.join(map(str, shown[0])) and not notes
 
 
 def test_a_new_molecule_is_a_row_of_the_project(window, tmp_path):

@@ -4,3 +4,5 @@
 # 0.194.0: shell scripts keep LF on every checkout (bash reads «\r» as a part of a word)
 *.sh text eol=lf
 *.command text eol=lf
+# the files of assets/ are checked by their hashes (assets-manifest.json): taken byte for byte on every system
+assets/** -text
