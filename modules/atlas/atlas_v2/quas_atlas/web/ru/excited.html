@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="formaldehyde,benzene,butadiene">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Возбуждённые состояния и спектры</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/exc.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-exc-g.webp"><!--pose:end-->
+<h1>Возбуждённые состояния и спектры</h1>
+<p class="lead">При поглощении света электрон переходит на более высокую орбиталь быстрее, чем успевают сдвинуться ядра. Поэтому переход вертикальный, а полоса в спектре — не одна линия, а набор колебательных переходов. Здесь видно, откуда берутся форма полосы и стоксов сдвиг, чем синглет отличается от триплета и как превратить энергии и силы осцилляторов из расчёта в спектр.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Электронный переход происходит быстрее движения ядер: он вертикальный (принцип Франка–Кондона), а интенсивности колебательных линий задаёт перекрывание колебательных функций.</li><li>Смещение равновесной геометрии в возбуждённом состоянии (фактор Хуанга–Риса S) определяет форму полосы и стоксов сдвиг 2Sħω.</li><li>Расчёт даёт вертикальные энергии и силы осцилляторов; сравнивать их надо с максимумом полосы, а не с 0–0 переходом.</li><li>Синглет и триплет одной конфигурации расщеплены на 2K; переходы между ними запрещены по спину.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> смещённые гармонические осцилляторы</summary><dl><dt>Что вычисляется</dt><dd>Форма вибронной полосы поглощения и испускания, стоксов сдвиг, синглет-триплетное расщепление; спектр по энергиям и силам осцилляторов из расчёта.</dd><dt>Какие приближения приняты</dt><dd>Одна колебательная мода с одинаковой частотой в обоих состояниях; только смещение равновесия; поглощение с уровня v = 0 (низкая температура); гауссово уширение одинаковой ширины.</dd><dt>Какой вывод можно сделать</dt><dd>Почему полосы широкие, откуда прогрессии и стоксов сдвиг, как сравнивать расчёт с экспериментом — да; точная форма реального спектра — нет.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Принцип Франка–Кондона</h2>
+  <div class="crow"><span class="l">Смещение равновесия, фактор Хуанга–Риса S</span><input type="range" id="S" min="0" max="5" step="0.05" value="1.5" aria-label="Фактор Хуанга–Риса"><span class="val" id="Sv"></span></div>
+  <div class="crow"><span class="l">Частота колебания ħω, см⁻¹</span><input type="range" id="w" min="300" max="3000" step="10" value="1400" aria-label="Частота колебания"><span class="val" id="wv"></span></div>
+  <div class="crow"><span class="l">Энергия 0–0 перехода E₀₀, эВ</span><input type="range" id="E00" min="1.5" max="5.5" step="0.01" value="3" aria-label="Энергия 0–0 перехода"><span class="val" id="E00v"></span></div>
+  <div class="crow"><span class="l">Ширина линий (FWHM), см⁻¹</span><input type="range" id="fw" min="50" max="3000" step="10" value="700" aria-label="Ширина линий"><span class="val" id="fwv"></span></div>
+  <div class="two">
+    <svg id="pot" viewBox="0 0 460 360" role="img" aria-label="Потенциальные кривые основного и возбуждённого состояний"></svg>
+    <svg id="spec" viewBox="0 0 560 360" role="img" aria-label="Спектры поглощения и испускания"></svg>
+  </div>
+  <div class="legend" id="leg"></div>
+  <div class="cards" id="cards"></div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Синглет и триплет</h2>
+  <p class="hint">Возбуждённая конфигурация с двумя неспаренными электронами даёт синглет и триплет. При одинаковых орбиталях их энергии различаются на 2K, где K — обменный интеграл двух орбиталей (страница «Принцип Паули»). Переход S₀ → T₁ запрещён по спину, поэтому триплет заселяется в основном через интеркомбинационную конверсию из S₁, а его испускание — фосфоресценция — медленное.</p>
+  <div class="crow"><span class="l">Обменный интеграл K, эВ</span><input type="range" id="K" min="0" max="1.5" step="0.01" value="0.4" aria-label="Обменный интеграл"><span class="val" id="Kv"></span></div>
+  <svg id="jab" viewBox="0 0 960 300" role="img" aria-label="Диаграмма Яблонского"></svg>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Спектр из выходного файла</h2>
+  <p class="hint">Программы (TDDFT, CIS, ADC, EOM-CC) печатают вертикальные энергии возбуждения и силы осцилляторов f. Вставьте их парами «энергия f» — по строке на переход; энергия в эВ или в нм. Каждой линии придаётся гауссова форма заданной ширины. В поле — условный пример.</p>
+  <div class="cin">
+    <label class="wide">Переходы: энергия и сила осциллятора<textarea id="cIn">4.20 0.020
+5.10 0.450
+5.60 0.080
+6.30 0.900</textarea></label>
+    <label>Единицы энергии<select id="cU"><option value="eV">эВ</option><option value="nm">нм</option></select></label>
+    <label>Ширина (FWHM), эВ<input id="cW" inputmode="decimal" value="0.30"></label>
+    <label>Ось спектра<select id="cX"><option value="nm">длина волны, нм</option><option value="eV">энергия, эВ</option></select></label>
+  </div>
+  <div class="row"><button type="button" class="btn primary" id="bCalc">Построить спектр</button></div>
+  <svg id="spec2" viewBox="0 0 960 320" role="img" aria-label="Спектр по данным расчёта"></svg>
+  <p class="status" id="cMsg" role="status"></p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Возбуждение меняет заселённость граничных орбиталей. Как это меняет ход перициклических реакций?</span><a class="nqA" href="wh.html" data-goto="wh">π-орбитали и реакции →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Поставьте S = 0. Как выглядят спектры поглощения и испускания и почему?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Одна линия 0–0, общая для поглощения и испускания</button><button type="button" class="opt">Широкая полоса без структуры</button><button type="button" class="opt">Два пика на разных краях</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Остаётся одна линия 0–0, общая для поглощения и испускания, стоксова сдвига нет. При S = 0 равновесная геометрия возбуждённого состояния совпадает с основной, колебательные функции v = 0 одинаковы, и перекрывание с остальными уровнями равно нулю.</div></div>
+<div class="tq"><p class="qt"><span>S = 2,5: какой колебательный переход 0 → v самый интенсивный в поглощении?</span></p>
+<p class="olab">v самого интенсивного перехода</p><div class="opts" role="group"><button type="button" class="opt">1</button><button type="button" class="opt">3</button><button type="button" class="opt" data-ok="1">2</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>v = 2: множители Франка–Кондона подчиняются распределению Пуассона e<sup>−S</sup>S<sup>v</sup>/v!, у которого при S = 2,5 максимум при v = 2 (0,257), а v = 3 даёт 0,214. Поэтому максимум полосы лежит выше 0–0 перехода.</div></div>
+<div class="tq"><p class="qt"><span>S = 1, ħω = 1500 см⁻¹: чему равен стоксов сдвиг между максимумами поглощения и испускания?</span></p>
+<p class="olab">Стоксов сдвиг, см⁻¹</p><div class="opts" role="group"><button type="button" class="opt">750</button><button type="button" class="opt">0</button><button type="button" class="opt">1500</button><button type="button" class="opt" data-ok="1">3000</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>2Sħω = 3000 см⁻¹ (0,37 эВ). Поглощение идёт вертикально в верхнюю часть возбуждённой кривой, испускание — после колебательной релаксации, вертикально в верхнюю часть основной; оба раза теряется Sħω.</div></div>
+<div class="tq"><p class="qt"><span>Почему спектр флуоресценции похож на зеркальное отражение спектра поглощения?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Испускание идёт с v = 0, а частоты одинаковы</button><button type="button" class="opt">Так требует закон сохранения энергии</button><button type="button" class="opt">Это совпадение</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Испускание идёт с уровня v = 0 возбуждённого состояния, поглощение — с v = 0 основного; при одинаковых частотах множители Франка–Кондона одинаковы, и прогрессии отражаются относительно 0–0 перехода. Нарушение зеркальности — признак разных частот или изменения формы потенциала.</div></div>
+<div class="tq"><p class="qt"><span>S₁ на 3,0 эВ, обменный интеграл K = 0,5 эВ. Где лежит T₁ и на какой длине волны будет фосфоресценция?</span></p>
+<p class="olab">Длина волны фосфоресценции, нм</p><div class="opts" role="group"><button type="button" class="opt">310</button><button type="button" class="opt">827</button><button type="button" class="opt" data-ok="1">620</button><button type="button" class="opt">413</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>T₁ = 3,0 − 2·0,5 = 2,0 эВ, фосфоресценция около 620 нм — заметно краснее флуоресценции (413 нм). Оценка 2K относится к одной конфигурации при одинаковых орбиталях.</div></div>
+<div class="tq"><p class="qt"><span>Раздел «Спектр из выходного файла»: в условном примере самый низкий переход — 4,20 эВ (295 нм). Виден ли он как максимум огибающей?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Нет: f мала, переход даёт лишь плечо</button><button type="button" class="opt">Да, это главный максимум</button><button type="button" class="opt">Он вообще не отображается</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Нет: его сила осциллятора 0,02 — в 20 с лишним раз меньше, чем у перехода 5,10 эВ, и он даёт лишь плечо. Длинноволновую полосу определяет не самый низкий по энергии переход, а самые интенсивные; запрещённые переходы в спектре почти не видны.</div></div>
+</div></details></section>
+<script src="js/excited.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="exc";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/excited.js"></script>
+
+</body>
+</html>

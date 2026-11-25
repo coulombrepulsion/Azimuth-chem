@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>原子光谱项</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/terms.css">
+
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-terms-g.webp"><!--pose:end-->
+<h1>原子光谱项</h1>
+<p class="lead">同一个电子组态，例如 2p²，对应若干能量不同的状态——光谱项 <sup>2S+1</sup>L。它们由微观状态求得：在遵守泡利原理的前提下，列出电子在自旋轨道上的所有排布方式，并按 M<sub>L</sub> 和 M<sub>S</sub> 分组。基态光谱项由洪特规则给出。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>一个组态对应若干能量不同的谱项 <sup>2S+1</sup>L。</li><li>谱项通过微观状态表求出：每个谱项占 (2L + 1)(2S + 1) 个状态。</li><li>对等价电子，Pauli 原理禁止部分谱项。</li><li>基谱项由 Hund 规则给出：S 最大，其次 L 最大，再按壳层填充情况确定 J。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>LS 耦合与洪特规则</summary><dl><dt>计算的是什么</dt><dd>组态的微观状态、光谱项的分解、基态光谱项。</dd><dt>采用了哪些近似</dt><dd>Russell–Saunders 方案（LS 耦合）；不计算自旋–轨道分裂为 J 能级。 对于有多个开壳层的组态（如 3d²4p），确定基谱项的洪特规则并不可靠。</dd><dt>能得出什么结论</dt><dd>在 LS 方案中光谱项的集合是精确的；洪特规则预测基态光谱项，但不预测激发态的顺序。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. 组态的微观状态与光谱项</h2>
+  <div class="crow"><span class="l">组态</span><span class="row" id="cfgG" role="group" aria-label="组态"></span></div>
+  <div class="crow"><span class="l">自定义组态</span><input class="formula" id="cfgIn" value="p2" spellcheck="false" autocomplete="off" aria-label="自定义组态"><button class="btn" id="cfgGo" type="button">构建</button><span class="hint">例如：d3、p4、s1 p1、2p1 3p1</span></div>
+  <div class="err" id="cfgErr"></div>
+  <div class="work">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="ptitle" id="tabT"></div>
+      <div class="tablewrap" id="mlmsTab"></div>
+      <div class="row"><button class="btn primary" id="bStep" type="button">标出下一个光谱项</button><button class="btn" id="bAll" type="button">一次给出全部光谱项</button><button class="btn" id="bReset" type="button">从头开始</button></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="kv" id="nMicro"></div>
+      <div class="tl" id="termList"></div>
+      <div class="status" id="st1"></div>
+    </div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. 由洪特规则求基态光谱项</h2>
+  <p class="small">1) 多重度最大：电子以平行自旋占据不同的轨道。2) 在此前提下 L 最大：从最大的 m<sub>l</sub> 开始填充。3) 若亚层不到半满，J = |L − S|；若超过半满，J = L + S。</p>
+  <div class="pt" id="ptab" role="group" aria-label="元素"></div>
+  <div class="work">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="kv" id="elCfg"></div>
+      <div class="boxes" id="boxes"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="status" id="st2"></div>
+      <div class="row"><button class="btn" id="bToCfg" type="button">该组态的全部光谱项</button></div>
+    </div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">构成行列式的轨道本身从何而来？</span><a class="nqA" href="scf.html" data-goto="scf">SCF 迭代 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面探索练习与训练器。在页面上完成操作并作答——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>p² 组态有多少个微观状态？</span></p>
+<p class="olab">微观状态数</p><div class="opts" role="group"><button type="button" class="opt">36</button><button type="button" class="opt" data-ok="1">15</button><button type="button" class="opt">30</button><button type="button" class="opt">6</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden><span class=fr><span>6!</span><span>2! · 4!</span></span> = 15：两个电子不重复地分配到六个自旋轨道上（泡利原理）。</div></div>
+<div class="tq"><p class="qt"><span>p² 组态给出哪些光谱项？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">¹D, ³P, ¹S</button><button type="button" class="opt">¹S, ¹P, ¹D, ³S, ³P, ³D</button><button type="button" class="opt">³P 和 ¹D</button><button type="button" class="opt">²P</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>¹D、³P 和 ¹S：5 + 9 + 1 = 15 个微观状态。对于等价电子，¹P、³D 和 ³S 被泡利原理禁止（与第 1 部分中的 2p¹3p¹ 比较）。</div></div>
+<div class="tq"><p class="qt"><span>碳原子基态光谱项中 J 等于多少？</span></p>
+<p class="olab">J</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">0</button><button type="button" class="opt">2</button><button type="button" class="opt">1</button><button type="button" class="opt">1/2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>J = 0：光谱项 ³P₀。2p² 亚层不到半满，因此 J = |L − S| = |1 − 1| = 0。</div></div>
+<div class="tq"><p class="qt"><span>d² 组态有多少个微观状态？</span></p>
+<p class="olab">微观状态数</p><div class="opts" role="group"><button type="button" class="opt">100</button><button type="button" class="opt">10</button><button type="button" class="opt">90</button><button type="button" class="opt" data-ok="1">45</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden><span class=fr><span>10!</span><span>2! · 8!</span></span> = 45。它们分解为光谱项 ¹G、³F、¹D、³P、¹S；基态为 ³F（如 Ti²⁺ 和 V³⁺）。</div></div>
+<div class="tq"><p class="qt"><span>铁原子基态光谱项中 J 等于多少？</span></p>
+<p class="olab">J</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">4</button><button type="button" class="opt">0</button><button type="button" class="opt">6</button><button type="button" class="opt">2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>J = 4：光谱项 ⁵D₄。3d⁶：五个电子自旋向上、一个向下，S = 2，L = 2；亚层超过半满，因此 J = L + S = 4。</div></div>
+<div class="tq"><p class="qt"><span>为什么氧的基态光谱项是 ³P₂，而碳是 ³P₀？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">O 的 2p 亚层超过半满</button><button type="button" class="opt">O 的核电荷更大</button><button type="button" class="opt">O 和 C 的 L 不同</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>O 的 2p⁴ 亚层超过半满，按洪特第三规则 J = L + S = 2。C（2p²）不到半满，J = |L − S| = 0。p² 和 p⁴ 的光谱项相同，只是 J 能级的顺序不同。</div></div>
+<!--self:start--><div class="selfBox"><h3 id="h3s">自我检测</h3>
+  <p class="small">确定原子的基态光谱项：多重度 2S + 1、量子数 L和 J。</p>
+  <div class="row"><b id="qEl" style="font-family:var(--f-display);font-size:19px"></b><button class="btn" id="qNew" type="button">换一个原子</button></div>
+  <div class="quiz">
+    <label><span>2S + 1</span><input id="q0" inputmode="numeric" autocomplete="off"></label>
+    <label><span>L</span><input id="q1" autocomplete="off" spellcheck="false"></label>
+    <label><span>J</span><input id="q2" autocomplete="off" spellcheck="false"></label>
+  </div>
+  <div class="row"><button class="btn primary" id="qChk" type="button">检查</button><button class="btn" id="qShow" type="button">显示解答</button></div>
+  <div class="status" id="qRes">输入答案并点击“检查”。</div>
+</div><!--self:end--></div></details></section>
+<script src="js/terms.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="terms";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/terms.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,22 @@
+ Atomic delta-g indices of fragment  1 and percentage contributions
+ Atom    3 :    0.119766  (  66.85 % )
+ Atom    1 :    0.047718  (  26.63 % )
+ Atom    2 :    0.011684  (   6.52 % )
+
+ Atomic delta-g indices of fragment  2 and percentage contributions
+ Atom    4 :    0.117844  (  65.77 % )
+ Atom    6 :    0.030662  (  17.11 % )
+ Atom    5 :    0.030662  (  17.11 % )
+
+ Atomic pair delta-g indices and percentage contributions (zero terms are not shown)
+    3    4 :    0.079633  (  44.45 % )
+    1    4 :    0.030952  (  17.28 % )
+    3    6 :    0.020066  (  11.20 % )
+    3    5 :    0.020066  (  11.20 % )
+    1    6 :    0.008383  (   4.68 % )
+    1    5 :    0.008383  (   4.68 % )
+    2    4 :    0.007259  (   4.05 % )
+    2    6 :    0.002212  (   1.23 % )
+    2    5 :    0.002212  (   1.23 % )
+
+ Sum of all atomic pair delta-g indices:    0.179168

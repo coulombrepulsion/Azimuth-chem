@@ -1,0 +1,17 @@
+# ethanol: optimization, then NMR shieldings and all spin-spin couplings of H and C; PBE0/pcJ-1 (0.106 reference)
+! PBE0 pcJ-1 TightSCF Opt
+* xyz 0 1
+C    1.1879   -0.3829    0.0000
+C    0.0000    0.5526    0.0000
+O   -1.1867   -0.2472    0.0000
+H   -1.9237    0.3668    0.0000
+H    0.0471    1.1950    0.8823
+H    0.0471    1.1950   -0.8823
+H    2.1138    0.1906    0.0000
+H    1.1554   -1.0177    0.8809
+H    1.1554   -1.0177   -0.8809
+*
+%eprnmr
+  Nuclei = all H { shift, ssall }
+  Nuclei = all C { shift, ssall }
+end

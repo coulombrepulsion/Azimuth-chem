@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>能带结构与态密度</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>能带结构与态密度</h1>
+<p class="lead">所有 k 点的能级构成能带。由能带和态密度（DOS）可以看出是金属还是绝缘体、带隙多大、由哪些原子的轨道构成（PDOS）。这正是根据 Quantum ESPRESSO 计算所画的图。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>能带结构是沿布里渊区特殊点（Γ、X、M、K…）路径的 E(k)；态密度 g(E) 表示单位能量区间内的状态数。</li><li>费米能级在能带内——金属；在带隙中——绝缘体或半导体。带隙从价带顶到导带底。</li><li>PDOS 按原子和轨道分解 DOS：导带通常位于轨道能量较高的原子上。</li><li>石墨烯：能带在 K 点相接（狄拉克锥）；格点上原子不同（h-BN）时打开带隙。</li><li>近自由电子：弱势在布里渊区边界打开 2|V| 的带隙；平面波基组随平面波数增加而收敛。</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">双原子链：能带、DOS 与 PDOS</h2>
+  <div class="crow"><span class="l">两原子能量差 Δ（|β|）</span><input type="range" id="dl" min="0" max="4" step="0.05" value="1" aria-label="Δ"><span class="val" id="dlv"></span></div>
+  <div class="crow"><span class="l">晶胞内跃迁 β₁（|β|）</span><input type="range" id="b1" min="-2" max="-0.2" step="0.05" value="-1" aria-label="β1"><span class="val" id="b1v"></span></div>
+  <div class="crow"><span class="l">晶胞间跃迁 β₂（|β|）</span><input type="range" id="b2" min="-2" max="-0.2" step="0.05" value="-1" aria-label="β2"><span class="val" id="b2v"></span></div>
+  <div class="crow"><span class="l">每个晶胞的电子数</span><input type="range" id="ne" min="0" max="4" step="0.05" value="2" aria-label="电子数"><span class="val" id="nev"></span></div>
+  <div class="two" style="grid-template-columns:minmax(0,2.07fr) minmax(0,1fr)"><svg id="achart" class="ch" viewBox="0 0 620 300" role="img" aria-label="原子链的能带"></svg><svg id="adchart" class="ch" viewBox="0 0 300 300" role="img" aria-label="态密度"></svg></div>
+  <div class="legend" id="aleg"></div>
+  <div class="cards" id="acards"></div>
+  <p class="status" id="aNote"></p>
+  <p class="hint">E<sub>±</sub>(k) = ±√(Δ²/4 + β₁² + β₂² + 2β₁β₂ cos ka)；布里渊区边界处带隙为 2√(Δ²/4 + (β₁ − β₂)²)。虚线为费米能级。β₁ 与 β₂ 不等即长短键交替（如聚乙炔）。</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">石墨烯与 h-BN：狄拉克锥</h2>
+  <div class="crow"><span class="l">两原子能量差 Δ（eV）</span><input type="range" id="gd" min="0" max="6" step="0.1" value="0" aria-label="Δ"><span class="val" id="gdv"></span></div>
+  <div class="two" style="grid-template-columns:minmax(0,2.07fr) minmax(0,1fr)"><svg id="gchart" class="ch" viewBox="0 0 620 300" role="img" aria-label="石墨烯的能带"></svg><svg id="gdchart" class="ch" viewBox="0 0 300 300" role="img" aria-label="态密度"></svg></div>
+  <div class="cards" id="gcards"></div>
+  <p class="status" id="gNote"></p>
+  <p class="hint">每个原子一个 pz 轨道、相邻原子间跃迁 β = −2.8 eV 的模型（Castro Neto 等，2009）。Γ–M–K–Γ 路径与石墨烯能带结构计算中所画的路径相同。</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">近自由电子与平面波</h2>
+  <div class="crow"><span class="l">势 V</span><input type="range" id="vv" min="0" max="3" step="0.05" value="0.3" aria-label="V"><span class="val" id="vvv"></span></div>
+  <div class="crow"><span class="l">平面波数 2M + 1，M</span><input type="range" id="mm" min="0" max="6" step="1" value="3" aria-label="M"><span class="val" id="mmv"></span></div>
+  <svg id="nchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="近自由电子的能带"></svg>
+  <div class="cards" id="ncards"></div>
+  <p class="status" id="nNote"></p>
+  <p class="hint">虚线为自由电子 E = (k + G)²，实线为势 2V cos(2πx/a) 中的能带；能量单位为 ħ²/(2ma²)。</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">能带上可以看到带隙——但用 LDA 或 PBE 的 DFT 给出的带隙通常比实验小。为什么？</span><a class="nqA" href="dft.html" data-goto="dft">密度泛函理论 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Δ = 0，β₁ = β₂，每个晶胞两个电子（每个原子一个）。是金属还是绝缘体？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">金属：能带在布里渊区边界相接</button><button type="button" class="opt">绝缘体：下能带全满</button><button type="button" class="opt">带隙为 |β| 的半导体</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>金属：带隙 2√(Δ²/4 + (β₁ − β₂)²) = 0，下能带全满，但上能带从同一能量开始。β₁ 与 β₂ 不等就会打开带隙——聚乙炔正是这样变成半导体的（派尔斯相变）。</div></div>
+<div class="tq"><p class="qt"><span>Δ = 1，β₁ = β₂ = −1。带隙有多宽？</span></p>
+<p class="olab">带隙，|β|</p><div class="opts" role="group"><button type="button" class="opt">0</button><button type="button" class="opt">0.5</button><button type="button" class="opt" data-ok="1">1</button><button type="button" class="opt">2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>1：在布里渊区边界 cos ka = −1，E<sub>±</sub> = ±Δ/2——带隙等于 Δ。</div></div>
+<div class="tq"><p class="qt"><span>石墨烯：β = −2.8 eV 时上能带在 Γ 点的能量是多少？</span></p>
+<p class="olab">E，eV</p><div class="opts" role="group"><button type="button" class="opt">2.8</button><button type="button" class="opt">5.6</button><button type="button" class="opt" data-ok="1">8.4</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>8.4 eV = 3|β|：在 Γ 点三个近邻同相叠加。在 M 点能量为 ±|β| = 2.8 eV，在 K 点为零（狄拉克锥）。</div></div>
+<div class="tq"><p class="qt"><span>近自由电子，V = 0.3。布里渊区边界处第一与第二能带之间的带隙是多少？</span></p>
+<p class="olab">带隙</p><div class="opts" role="group"><button type="button" class="opt">0.3</button><button type="button" class="opt" data-ok="1">0.6</button><button type="button" class="opt">0.09</button><button type="button" class="opt">1.2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>0.6 ≈ 2|V|：在布里渊区边界两个波 e<sup>±iπx/a</sup> 能量相同，势将它们混合并分开 2|V|。只有一个平面波（M = 0）时没有带隙。</div></div>
+</div></details></section>
+<script src="js/bands.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="bands";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/bands.js"></script>
+
+</body>
+</html>

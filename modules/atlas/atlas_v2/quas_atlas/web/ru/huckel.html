@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="ethene,butadiene,benzene,naphthalene,pyridine,pyrrole,furan">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Метод Хюккеля</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/huckel.css">
+<link rel="stylesheet" href="../assets/css/addon.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-huckel-g.webp"><!--pose:end-->
+<h1>Метод Хюккеля</h1>
+<p class="lead">π-электронные системы плоских сопряжённых молекул: каждый атом даёт одну p-орбиталь, кулоновский интеграл α, резонансный β (β &lt; 0) между соседями, перекрыванием пренебрегаем. Выберите молекулу или соберите свою; щелчок по атому меняет его тип (C → N → O), щелчок по уровню — показывает орбиталь.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>В методе Хюккеля π-система задаётся только связностью атомов: α на атомах, β между соседями.</li><li>Коэффициенты МО дают заряды, порядки связей, энергию делокализации и индексы реакционной способности.</li><li>Правило 4n + 2 следует из заполнения уровней на круге Фроста.</li><li>Заряды (зарядовый контроль) и граничные орбитали (орбитальный контроль) могут указывать на разные реакционные центры.</li><li>Электроотрицательность χ = (I + A)/2 и жёсткость η = (I − A)/2 — производные энергии по числу электронов; функции Фукуи f⁺ и f⁻ показывают, где молекула примет или отдаст электрон, — в методе Хюккеля это плотности НСМО и ВЗМО.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> метод Хюккеля</summary><dl><dt>Что вычисляется</dt><dd>π-орбитали, заряды и порядки связей сопряжённых молекул.</dd><dt>Какие приближения приняты</dt><dd>Только π-электроны; параметры α и β; перекрывание соседних орбиталей не учитывается.</dd><dt>Какой вывод можно сделать</dt><dd>Узловая структура и тенденции — да; энергии — только в единицах β.</dd></dl></details><!--lim:end-->
+<section class="controls" aria-label="Выбор молекулы">
+  <div class="crow"><span class="l">Цепи</span><span class="grp" data-g="chain"></span></div>
+  <div class="crow"><span class="l">Циклы</span><span class="grp" data-g="ring"></span></div>
+  <div class="crow"><span class="l">Конденсированные и разветвлённые</span><span class="grp" data-g="fused"></span></div>
+  <div class="crow"><span class="l">С гетероатомами</span><span class="grp" data-g="het"></span></div>
+  <div class="crow"><span class="l">Своя молекула</span><span class="grp"><button class="chip" type="button" id="bChain">цепь</button><button class="chip" type="button" id="bRing">цикл</button><input type="range" id="nAt" min="2" max="10" step="1" aria-label="Число атомов"><span class="val" id="nAtV"></span></span></div>
+  <div class="crow"><span class="l">Заряд частицы</span><span class="grp" id="chg" role="group" aria-label="Заряд"></span><span class="hint" id="neTxt"></span></div>
+</section>
+<div class="work" style="grid-template-columns:minmax(0,1.05fr) minmax(0,0.95fr)">
+  <div class="panel">
+    <div class="sel-row" role="tablist" aria-label="Что показать на молекуле"><button class="chip" type="button" data-v="mo">Орбиталь</button><button class="chip" type="button" data-v="diag">Молекулярная диаграмма</button><button class="chip" type="button" data-v="react">Реакционная способность</button></div>
+    <svg id="mol" viewBox="0 0 480 340" role="img" aria-label="Молекула"></svg>
+    <div class="legend" id="molLeg"></div>
+    <div class="status" id="molTxt"></div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">Уровни π-МО: E = α + xβ; ниже — связывающие, выше — разрыхляющие</div>
+    <svg id="lev" viewBox="0 0 440 440" role="img" aria-label="Диаграмма уровней энергии" style="touch-action:manipulation"></svg>
+    <div class="sel-row"><button class="btn" type="button" id="moPrev" aria-label="Предыдущая МО">◀</button><span class="val" id="moName" style="min-width:12ch;text-align:center"></span><button class="btn" type="button" id="moNext" aria-label="Следующая МО">▶</button><button class="chip" type="button" id="toH">ВЗМО</button><button class="chip" type="button" id="toL">НСМО</button></div>
+    <div class="kvt" id="sum"></div>
+  </div>
+</div>
+<section class="panel" aria-labelledby="hT">
+  <h2 id="hT">Числа</h2>
+  <div class="tabs" role="tablist"><button class="tab" role="tab" type="button" data-t="coef">Коэффициенты МО</button><button class="tab" role="tab" type="button" data-t="det">Вековой определитель</button><button class="tab" role="tab" type="button" data-t="atoms">Атомы и связи</button></div>
+  <div id="tpane" style="display:flex;flex-direction:column;gap:10px"></div>
+</section>
+<section class="panel" aria-labelledby="hP">
+  <h2 id="hP">Параметры гетероатомов</h2>
+  <p class="small">α<sub>X</sub> = α + hβ, β<sub>CX</sub> = kβ (значения Стрейтвизера). Гетероатом с h &gt; 0 электроотрицательнее углерода: его уровень ниже, электронная плотность на нём выше. Атом, дающий в систему неподелённую пару (пиррольный N, фурановый O), вносит 2 π-электрона.</p>
+  <div class="tablewrap" id="parTab"></div>
+</section>
+<section class="panel addon" aria-labelledby="hReact">
+  <h2 id="hReact">Глобальные индексы и функции Фукуи</h2>
+  <p class="hint">Энергию как функцию числа электронов E(N) приближают параболой через E(N − 1), E(N), E(N + 1), то есть через потенциал ионизации I и сродство к электрону A. Её наклон — химический потенциал μ = −χ, кривизна — жёсткость η.</p>
+  <div class="tablewrap"><table class="tbl" id="gTab"></table></div>
+  <div class="cin"><label>Своя молекула: I, эВ (здесь этилен)<input id="gI" inputmode="decimal" value="10.51"></label><label>A, эВ (у этилена анион не связан)<input id="gA" inputmode="decimal" value="-1.76"></label></div>
+  <p class="status note" id="gNote"></p>
+  <h3>Функции Фукуи в методе Хюккеля</h3>
+  <div class="crow"><span class="l">Молекула</span><span class="grp" id="fG" role="group" aria-label="Молекула"></span></div>
+  <div class="tablewrap"><table class="tbl" id="fTab"></table></div>
+  <p class="hint" id="fNote"></p>
+</section>
+<section class="panel addon" aria-labelledby="hSemi">
+  <h2 id="hSemi">От Хюккеля к xtb: полуэмпирические методы</h2>
+  <p class="hint">Метод Хюккеля — первый шаг лестницы приближённых методов. Расширенный Хюккель берёт все валентные орбитали и перекрывание; CNDO, INDO и NDDO (MNDO, AM1, PM3, PM7) вводят двухэлектронные интегралы, но пренебрегают дифференциальным перекрыванием разных атомов; GFN2-xTB — сильная связь с зарядами, мультиполями и дисперсией D4 для всей таблицы до Rn. Сколько интегралов остаётся на каждом уровне:</p>
+  <div class="crow"><span class="l">Пример</span><span class="grp" id="sG" role="group" aria-label="Пример"></span></div>
+  <div class="cin"><label>Тяжёлых атомов (C–F)<input id="sn" inputmode="numeric" value="6"></label><label>Атомов H<input id="sm" inputmode="numeric" value="6"></label></div>
+  <div class="tablewrap"><table class="tbl" id="sTab"></table></div>
+  <p class="status note" id="sNote"></p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Как знаки коэффициентов π-орбиталей решают, пойдёт ли реакция?</span><a class="nqA" href="wh.html" data-goto="wh">π-орбитали и реакции →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Бутадиен: сравните порядки π-связей 1–2 и 2–3. Что это говорит о длинах связей?</span></p>
+<p class="olab">Порядок π-связи 2–3</p><div class="opts" role="group"><button type="button" class="opt">0</button><button type="button" class="opt" data-ok="1">0,447</button><button type="button" class="opt">1</button><button type="button" class="opt">0,894</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>p₁₂ = 0,894, p₂₃ = 0,447: центральная связь частично двойная. Оценка длин 1,356 и 1,437 Å — крайние связи длиннее, чем в этилене, центральная короче одинарной. Энергия делокализации 0,472β.</div></div>
+<div class="tq"><p class="qt"><span>Аллил: переключайте заряд +1, 0, −1. Что меняется в уровнях и что — в зарядах на атомах?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Меняются уровни энергии</button><button type="button" class="opt">Заряд распределяется поровну по трём атомам</button><button type="button" class="opt" data-ok="1">Уровни те же, меняются заряды только на концевых атомах</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Уровни не меняются (α + 1,414β, α, α − 1,414β), меняется только заселённость несвязывающей МО. У неё узел на центральном атоме (коэффициенты ±0,707 на концах), поэтому заряд +0,5 у катиона и −0,5 у аниона сидит только на концевых атомах.</div></div>
+<div class="tq"><p class="qt"><span>Бензол и циклобутадиен: сравните энергии делокализации и заполнение уровней на круге Фроста.</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Обе системы ароматичны</button><button type="button" class="opt" data-ok="1">Бензол: ЭД = 2β; циклобутадиен: ЭД = 0, бирадикал</button><button type="button" class="opt">У циклобутадиена ЭД больше, чем у бензола</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Бензол: 6 = 4n + 2 электронов, все связывающие МО заполнены, ЭД = 2β. Циклобутадиен: 4 = 4n, два электрона на вырожденной паре при α, ЭД = 0 и по Хюккелю — бирадикал (антиароматичность).</div></div>
+<div class="tq"><p class="qt"><span>Циклопентадиенил: какой заряд делает систему ароматической? Сравните катион и анион.</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Катион (+1)</button><button type="button" class="opt" data-ok="1">Анион (−1)</button><button type="button" class="opt">Нейтральный радикал</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Анион: 6 π-электронов, замкнутая оболочка, ЭД = 2,472β — отсюда высокая кислотность циклопентадиена. Катион: 4 электрона, вырожденная пара заполнена наполовину, два неспаренных электрона.</div></div>
+<div class="tq"><p class="qt"><span>Нафталин: куда пойдёт электрофил и куда радикал? Какая связь самая короткая?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Оба — в α-положения</button><button type="button" class="opt">Электрофил — в α, радикал — в β</button><button type="button" class="opt">Оба — в β-положения</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>В α-положения (1, 4, 5, 8): плотность ВЗМО 0,181 против 0,069 в β, свободная валентность 0,453 против 0,404. Самая короткая связь — 1–2 (p = 0,725, ≈ 1,387 Å).</div></div>
+<div class="tq"><p class="qt"><span>Азулен — изомер нафталина. Посмотрите на молекулярную диаграмму: откуда у него дипольный момент?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Пятичленное кольцо заряжено положительно, семичленное — отрицательно</button><button type="button" class="opt" data-ok="1">Пятичленное кольцо заряжено отрицательно, семичленное — положительно</button><button type="button" class="opt">Дипольный момент по Хюккелю равен нулю</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Пятичленное кольцо заряжено отрицательно (−0,173 на C1 и C3), семичленное — положительно (+0,145 на C4 и C8, +0,130 на C6): как сочетание циклопентадиенил-аниона и тропилий-катиона. Электрофил атакует C1/C3, нуклеофил — семичленное кольцо.</div></div>
+<div class="tq"><p class="qt"><span>Акролеин, нуклеофильная атака: сравните критерии «граничные орбитали» и «π-заряды».</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Оба критерия указывают на C1</button><button type="button" class="opt">Оба критерия указывают на C3</button><button type="button" class="opt" data-ok="1">По НСМО — C3 (1,4-присоединение), по зарядам — C1 (1,2-присоединение)</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>По НСМО — атом C3 (c² = 0,431), это 1,4-присоединение, типичное для мягких нуклеофилов. По зарядам — карбонильный C1 (q = +0,333), это 1,2-присоединение жёстких нуклеофилов. Два критерия описывают орбитальный и зарядовый контроль реакции.</div></div>
+<div class="tq"><p class="qt"><span>Выберите бензол и щёлкните по атому 1, сделав его пиридиновым азотом. Как изменились заряды и куда теперь пойдёт нуклеофил?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">В положение 3</button><button type="button" class="opt" data-ok="1">В положения 2 и 4</button><button type="button" class="opt">На атом азота</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>На азоте −0,195, на C2/C6 +0,077, на C4 +0,050, на C3/C5 почти ноль. Нуклеофил — в положения 2 и 4, электрофил (по зарядам) — в 3: так и ведёт себя пиридин.</div></div>
+<div class="tq"><p class="qt"><span>Блок «Глобальные индексы»: какой атом из таблицы самый электроотрицательный по Малликену и какова его жёсткость?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Cl: χ = 8,3, η = 4,7 эВ</button><button type="button" class="opt" data-ok="1">F: χ = 10,4, η = 7,0 эВ</button><button type="button" class="opt">O: χ = 7,5, η = 6,1 эВ</button><button type="button" class="opt">H: χ = 7,2, η = 6,4 эВ</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Фтор: χ = (17,42 + 3,40)/2 = 10,41 эВ, η = (17,42 − 3,40)/2 = 7,01 эВ — и самый электроотрицательный, и один из самых жёстких. Хлор менее электроотрицателен и мягче (η = 4,68 эВ).</div></div>
+<div class="tq"><p class="qt"><span>Функции Фукуи акролеина CH₂=CH–CH=O: на какой атом нападёт нуклеофил по наибольшей f⁺?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">O</button><button type="button" class="opt">Cα</button><button type="button" class="opt" data-ok="1">Cβ (концевой CH₂)</button><button type="button" class="opt">на все одинаково</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>На Cβ: f⁺ = 0,43 против 0,33 у карбонильного углерода. Это сопряжённое присоединение по Михаэлю; мягкие нуклеофилы атакуют Cβ, жёсткие — карбонильный углерод (там зарядовый контроль).</div></div>
+</div></details></section>
+<script src="js/huckel.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="huckel";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/huckel.js"></script>
+
+<script src="js/huckel2.js"></script>
+</body>
+</html>

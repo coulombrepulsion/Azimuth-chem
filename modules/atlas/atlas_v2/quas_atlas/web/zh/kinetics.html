@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>反应速率：过渡态</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/kin.css">
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-kin-g.webp"><!--pose:end-->
+<h1>反应速率：过渡态</h1>
+<p class="lead">过渡态理论把速率常数与活化吉布斯自由能——过渡态与反应物的能量差——联系起来：k = (k<sub>B</sub>T/h)·exp(−ΔG<sup>‡</sup>/RT)。过渡态由计算求得，是只有一个虚频的鞍点。这里可以看到哪些能垒对应几秒、几小时和几年的反应，以及同位素效应和隧穿校正从何而来。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>按过渡态理论，k = (k<sub>B</sub>T/h)·exp(−ΔG<sup>‡</sup>/RT)：速率由过渡态相对于反应物的吉布斯自由能决定。</li><li>298 K 时能垒每增加 5.7 kJ/mol，速率改变 10 倍；约 90–100 kJ/mol 的能垒对应几分钟到几小时。</li><li>活化熵与活化焓同样重要：有序的过渡态会使反应变慢。</li><li>同位素效应和隧穿都来自原子核的量子性质：零点振动和对能垒的穿透。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>过渡态理论</summary><dl><dt>计算的是什么</dt><dd>由 ΔH‡ 和 ΔS‡ 求速率常数和半衰期；由 C–H 键的零点振动求同位素效应；隧穿的维格纳校正。</dd><dt>采用了哪些近似</dt><dd>透射系数为 1 的艾林方程；同位素效应只考虑一个伸缩振动模式；维格纳校正只在 κ 接近 1 时成立。</dd><dt>能得出什么结论</dt><dd>速率的数量级、ΔS‡ 的作用、k 对能垒误差的敏感性——可以；准确的速率常数需要准确的能垒，并考虑隧穿和动力学效应。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">艾林方程</h2>
+  <div class="crow"><span class="l">活化焓 ΔH<sup>‡</sup></span><input type="range" id="dH" min="20" max="160" step="0.5" value="90" aria-label="活化焓"><span class="val" id="dHv"></span></div>
+  <div class="crow"><span class="l">活化熵 ΔS<sup>‡</sup></span><input type="range" id="dS" min="-150" max="60" step="1" value="0" aria-label="活化熵"><span class="val" id="dSv"></span></div>
+  <div class="crow"><span class="l">温度 T</span><input type="range" id="T" min="200" max="700" step="1" value="298" aria-label="温度"><span class="val" id="Tv"></span><button type="button" class="chip" id="bT298">298,15 K</button></div>
+  <div class="crow"><span class="l">分子数</span><span class="grp" id="mG" role="group" aria-label="分子数"></span></div>
+  <div class="cards" id="cards"></div>
+  <p class="hint" id="eyNote"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">能垒与反应时间</h2>
+  <svg id="chart" viewBox="0 0 960 300" role="img" aria-label="半衰期随能垒的变化"></svg>
+  <p class="hint">时间轴为对数坐标。298 K 时能垒每增加 5.7 kJ/mol，反应慢 10 倍。</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">动力学同位素效应</h2>
+  <p class="hint">如果 C–H 键在过渡态中断裂，它的伸缩振动就不再是振动——其零点能随之消失。C–D 的零点能较小，因此氘的能垒较高。最简单的估计为 k<sub>H</sub>/k<sub>D</sub> = exp[hc(ν<sub>H</sub> − ν<sub>D</sub>)/(2k<sub>B</sub>T)]。</p>
+  <div class="crow"><span class="l">C–H 频率，cm⁻¹</span><input type="range" id="nu" min="2700" max="3200" step="10" value="2900" aria-label="C–H 频率"><span class="val" id="nuv"></span></div>
+  <p class="status" id="kie"></p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">隧穿：维格纳校正</h2>
+  <p class="hint">轻粒子（H 原子、质子）可以穿过能垒。最简单的校正利用过渡态的虚频：κ = 1 + (1/24)(hcν<sup>‡</sup>/k<sub>B</sub>T)²。它只在 κ 接近 1 时成立。</p>
+  <div class="crow"><span class="l">虚频 ν<sup>‡</sup>，cm⁻¹</span><input type="range" id="im" min="100" max="2500" step="10" value="1500" aria-label="虚频"><span class="val" id="imv"></span></div>
+  <p class="status" id="tun"></p>
+</section>
+<section class="panel" aria-labelledby="h5s">
+  <h2 id="h5s">自定义反应：来自输出文件的能量</h2>
+  <p class="hint">输入反应物和过渡态的总吉布斯自由能（电子能量加 G 校正），单位为哈特里——程序在频率计算后会输出它们。对双分子反应，反应物的能量相加。</p>
+  <div class="cin">
+    <label><span>反应物的 G（总和），E<sub>h</sub></span><input id="cGr" inputmode="decimal" value="-154.520000"></label>
+    <label><span>过渡态的 G，E<sub>h</sub></span><input id="cGt" inputmode="decimal" value="-154.485000"></label>
+    <label><span>温度，K</span><input id="cT" inputmode="decimal" value="298.15"></label>
+    <label><span>虚频，cm⁻¹（可选）</span><input id="cIm" inputmode="decimal" value=""></label>
+    <label><span>分子数</span><select id="cN"><option value="1">1 — 单分子</option><option value="2">2 — 双分子</option></select></label>
+    <label><span>能量的标准态</span><select id="cSS"><option value="gas">气体，1 bar（与输出文件相同）</option><option value="sol">1 mol/L</option></select></label>
+  </div>
+  <div class="row"><button type="button" class="btn primary" id="bCalc">计算</button></div>
+  <p class="status" id="cMsg" role="status"></p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">过渡态是势能面上的鞍点。程序如何找到驻点，并区分极小点和鞍点？</span><a class="nqA" href="optimization.html" data-goto="opt">几何优化 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>298 K 下的单分子反应，ΔS‡ = 0。调节 ΔH‡，使半衰期约为一小时。能垒是多少？</span></p>
+<p class="olab">ΔH‡，kJ/mol</p><div class="opts" role="group"><button type="button" class="opt">80</button><button type="button" class="opt">110</button><button type="button" class="opt">60</button><button type="button" class="opt" data-ok="1">94</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>约 94 kJ/mol（22.5 kcal/mol）。有用的参考：室温下 80 kJ/mol 的能垒对应几秒，95 约一小时，110 为几周。</div></div>
+<div class="tq"><p class="qt"><span>计算的能垒误差为 4 kJ/mol。298 K 时速率常数会错多少倍？</span></p>
+<p class="olab">k 错的倍数</p><div class="opts" role="group"><button type="button" class="opt">4</button><button type="button" class="opt" data-ok="1">5.0</button><button type="button" class="opt">50</button><button type="button" class="opt">1.6</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>5.0 倍：exp(4000/RT)。变化 10 倍对应 5.7 kJ/mol。因此，即使是精确的方法，也只能把绝对速率预测到数量级；而相对速率（类似反应之间）由于误差相互抵消，会准确得多。</div></div>
+<div class="tq"><p class="qt"><span>比较 ΔS‡ = 0 和 ΔS‡ = −50 J/(mol·K)，ΔH‡ 相同。第二个反应慢多少倍？</span></p>
+<p class="olab">慢多少倍</p><div class="opts" role="group"><button type="button" class="opt">50</button><button type="button" class="opt" data-ok="1">410</button><button type="button" class="opt">1.0</button><button type="button" class="opt">6</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>慢 exp(50/8.314) ≈ 410 倍——相当于 298 K 时能垒提高 15 kJ/mol。负的活化熵是双分子和环状过渡态的典型特征（例如狄尔斯–阿尔德反应）。</div></div>
+<div class="tq"><p class="qt"><span>频率为 2900 cm⁻¹ 的 C–H 键的同位素效应：298 K 时是多少？为什么升温时它会减小？</span></p>
+<p class="olab">298 K 时的 k<sub>H</sub>/k<sub>D</sub></p><div class="opts" role="group"><button type="button" class="opt">3.0</button><button type="button" class="opt">1.0</button><button type="button" class="opt" data-ok="1">6.4</button><button type="button" class="opt">1.4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>298 K 时 k<sub>H</sub>/k<sub>D</sub> ≈ 6.4，500 K 时 ≈ 3.0。该效应等于 exp(ΔZPE/RT)：零点能之差不变，而 RT 增大，所以比值趋于 1。</div></div>
+<div class="tq"><p class="qt"><span>298 K 时虚频为 1500i cm⁻¹：维格纳校正是多少？它可信吗？</span></p>
+<p class="olab">κ</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">3.2</button><button type="button" class="opt">1.0</button><button type="button" class="opt">13</button><button type="button" class="opt">1.2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>κ ≈ 3.2。维格纳公式只是展开式的第一项，只有在 κ 接近 1 时才成立；κ > 2 时应使用埃卡特模型或半经典方法计算隧穿。大的虚频（窄能垒）是 H 原子转移的标志，此时隧穿很重要。</div></div>
+<div class="tq"><p class="qt"><span>“自定义反应”部分：对溶液中的双分子反应，能量取自 1 bar 下的气相计算。为什么 ΔG‡ 需要换算到 1 mol/L？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">以 L/(mol·s) 为单位的 k 对应 1 mol/L，而能量对应 1 bar 的气体</button><button type="button" class="opt">溶液中电子能量会改变</button><button type="button" class="opt">只有单分子反应才需要换算</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>以 L/(mol·s) 为单位的速率常数对应 1 mol/L 的标准态，而输出文件中的能量对应 1 bar 的气体。每个参与物换算到 1 mol/L 时，298 K 下其 G 增加 RT ln 24.8 = 7.96 kJ/mol；双分子反应的反应物多一个分子，因此 ΔG‡ 减小 7.96 kJ/mol，k 增大约 25 倍。</div></div>
+</div></details></section>
+<script src="js/kinetics.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="kin";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/kinetics.js"></script>
+
+</body>
+</html>

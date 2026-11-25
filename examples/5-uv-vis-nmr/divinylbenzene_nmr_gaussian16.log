@@ -1,0 +1,146 @@
+ Entering Gaussian System, Link 0=g16
+ ...  [lines omitted from the excerpt]
+ Gaussian 16:  ES64L-G16RevC.01  3-Jul-2019
+ ...  [lines omitted from the excerpt]
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          6           0       -1.415253    0.230222    0.000000
+      2          6           0        1.415253   -0.230222    0.000000
+      3          6           0       -0.495133    1.314461    0.000000
+      4          6           0        0.495133   -1.314461    0.000000
+      5          6           0        0.889409    1.090949    0.000000
+      6          6           0       -0.889409   -1.090949    0.000000
+      7          1           0       -0.879551    2.343734    0.000000
+      8          1           0        0.879551   -2.343734    0.000000
+      9          1           0        1.577904    1.945006    0.000000
+     10          1           0       -1.577904   -1.945006    0.000000
+     11          6           0        2.884584   -0.521089    0.000000
+     12          6           0       -2.884584    0.521089    0.000000
+     13          1           0        3.140336   -1.591961    0.000000
+     14          1           0       -3.140336    1.591961    0.000000
+     15          6           0        3.880043    0.382254    0.000000
+     16          6           0       -3.880043   -0.382254    0.000000
+     17          1           0        3.694677    1.462439    0.000000
+     18          1           0       -3.694677   -1.462439    0.000000
+     19          1           0        4.931645    0.071105    0.000000
+     20          1           0       -4.931645   -0.071105    0.000000
+ ---------------------------------------------------------------------
+ ...  [lines omitted from the excerpt]
+                         Standard orientation:                         
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          6           0        1.229793    0.737261    0.000000
+      2          6           0       -1.229793   -0.737261    0.000000
+      3          6           0       -0.026053    1.404381    0.000000
+      4          6           0        0.026053   -1.404381    0.000000
+      5          6           0       -1.229793    0.684711   -0.000000
+      6          6           0        1.229793   -0.684711   -0.000000
+      7          1           0       -0.049510    2.502848    0.000000
+      8          1           0        0.049510   -2.502848    0.000000
+      9          1           0       -2.185311    1.223620   -0.000000
+     10          1           0        2.185311   -1.223620   -0.000000
+     11          6           0       -2.487403   -1.550867   -0.000000
+     12          6           0        2.487403    1.550867   -0.000000
+     13          1           0       -2.329017   -2.640403   -0.000000
+     14          1           0        2.329017    2.640403   -0.000000
+     15          6           0       -3.746350   -1.079681   -0.000000
+     16          6           0        3.746350    1.079681   -0.000000
+     17          1           0       -3.973576   -0.007519   -0.000000
+     18          1           0        3.973576    0.007519   -0.000000
+     19          1           0       -4.608344   -1.757654   -0.000000
+     20          1           0        4.608344    1.757654   -0.000000
+ ---------------------------------------------------------------------
+ ...  [lines omitted from the excerpt]
+ SCF Done:  E(RB3LYP) =  -382.308241783     A.U. after   12 cycles
+ ...  [lines omitted from the excerpt]
+ SCF GIAO Magnetic shielding tensor (ppm):
+      1  C    Isotropic =   114.0880   Anisotropy =   147.6438
+ ...  [lines omitted from the excerpt]
+      2  C    Isotropic =   114.0880   Anisotropy =   147.6438
+ ...  [lines omitted from the excerpt]
+      3  C    Isotropic =   117.7630   Anisotropy =   132.5552
+ ...  [lines omitted from the excerpt]
+      4  C    Isotropic =   117.7630   Anisotropy =   132.5552
+ ...  [lines omitted from the excerpt]
+      5  C    Isotropic =   121.2431   Anisotropy =   142.4693
+ ...  [lines omitted from the excerpt]
+      6  C    Isotropic =   121.2431   Anisotropy =   142.4693
+ ...  [lines omitted from the excerpt]
+      7  H    Isotropic =    25.5651   Anisotropy =     4.9817
+ ...  [lines omitted from the excerpt]
+      8  H    Isotropic =    25.5651   Anisotropy =     4.9817
+ ...  [lines omitted from the excerpt]
+      9  H    Isotropic =    25.1479   Anisotropy =     5.7792
+ ...  [lines omitted from the excerpt]
+     10  H    Isotropic =    25.1479   Anisotropy =     5.7792
+ ...  [lines omitted from the excerpt]
+     11  C    Isotropic =   116.0797   Anisotropy =   117.5887
+ ...  [lines omitted from the excerpt]
+     12  C    Isotropic =   116.0797   Anisotropy =   117.5887
+ ...  [lines omitted from the excerpt]
+     13  H    Isotropic =    26.0628   Anisotropy =     5.5291
+ ...  [lines omitted from the excerpt]
+     14  H    Isotropic =    26.0628   Anisotropy =     5.5291
+ ...  [lines omitted from the excerpt]
+     15  C    Isotropic =   128.4236   Anisotropy =   126.1679
+ ...  [lines omitted from the excerpt]
+     16  C    Isotropic =   128.4236   Anisotropy =   126.1679
+ ...  [lines omitted from the excerpt]
+     17  H    Isotropic =    26.7857   Anisotropy =     6.5426
+ ...  [lines omitted from the excerpt]
+     18  H    Isotropic =    26.7857   Anisotropy =     6.5426
+ ...  [lines omitted from the excerpt]
+     19  H    Isotropic =    27.0980   Anisotropy =     5.2212
+ ...  [lines omitted from the excerpt]
+     20  H    Isotropic =    27.0980   Anisotropy =     5.2212
+ ...  [lines omitted from the excerpt]
+ Mulliken charges:
+               1
+     1  C   -0.004389
+     2  C   -0.004389
+     3  C   -0.076729
+     4  C   -0.076729
+     5  C   -0.077118
+     6  C   -0.077118
+     7  H    0.077993
+     8  H    0.077993
+     9  H    0.079321
+    10  H    0.079321
+    11  C   -0.076374
+    12  C   -0.076374
+    13  H    0.076692
+    14  H    0.076692
+    15  C   -0.154811
+    16  C   -0.154811
+    17  H    0.076114
+    18  H    0.076114
+    19  H    0.079300
+    20  H    0.079300
+ Sum of Mulliken charges =  -0.00000
+ ...  [lines omitted from the excerpt]
+ Dipole moment (field-independent basis, Debye):
+    X=             -0.0000    Y=             -0.0000    Z=             -0.0000  Tot=              0.0000
+ ...  [lines omitted from the excerpt]
+ 1\1\GINC-COMPUTE060\SP\RB3LYP\STO-3G\C10H10\OSL\19-Nov-2025\0\\#p NMR=
+ (SpinSpin) B3LYP/sto-3g Symmetry=(Tight) Integral=(Ultrafine)\\dvb_nmr
+ \\0,1\C,0,-1.4152533224,0.2302217854,0.\C,0,1.4152533224,-0.2302217854
+ ,0.\C,0,-0.4951331558,1.3144608674,0.\C,0,0.4951331558,-1.3144608674,0
+ .\C,0,0.8894090436,1.0909493743,0.\C,0,-0.8894090436,-1.0909493743,0.\
+ H,0,-0.8795511985,2.3437343748,0.\H,0,0.8795511985,-2.3437343748,0.\H,
+ 0,1.5779041557,1.9450061275,0.\H,0,-1.5779041557,-1.9450061275,0.\C,0,
+ 2.8845844962,-0.5210893778,0.\C,0,-2.8845844962,0.5210893778,0.\H,0,3.
+ 140335681,-1.5919605685,0.\H,0,-3.140335681,1.5919605685,0.\C,0,3.8800
+ 428103,0.3822535424,0.\C,0,-3.8800428103,-0.3822535424,0.\H,0,3.694676
+ 5858,1.462438957,0.\H,0,-3.6946765858,-1.462438957,0.\H,0,4.9316453546
+ ,0.0711049543,0.\H,0,-4.9316453546,-0.0711049543,0.\\Version=ES64L-G16
+ RevC.01\State=1-AG\HF=-382.3082418\RMSD=4.746e-09\Dipole=0.,0.,0.\Quad
+ rupole=1.8363329,2.2015961,-4.037929,-0.0677264,0.,0.\PG=C02H [SGH(C10
+ H10)]\\@
+ ...  [lines omitted from the excerpt]
+ Normal termination of Gaussian 16 at Wed Nov 19 14:08:52 2025.
+ ...  [lines omitted from the excerpt]

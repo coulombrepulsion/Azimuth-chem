@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="benzene,methane">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Intermolecular interactions</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/disp.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-disp-g.webp"><!--pose:end-->
+<h1>Intermolecular interactions: hydrogen bond and dispersion</h1>
+<p class="lead">Two helium atoms attract each other although they have neither a charge nor a dipole moment, and their electron shells are closed. This is the dispersion interaction: instantaneous fluctuations of the electron density of one atom induce correlated fluctuations in the other. The Hartree–Fock method cannot describe this correlation, since each electron in it moves in a mean field. Dispersion therefore lies entirely in the correlation energy. This page compares two systems: the helium dimer, held together by dispersion alone, and the water dimer, where the electrostatics of the hydrogen bond plays the main role. All curves are computed with the same HF and MP2 program in a Gaussian basis as on the Bader theory page.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>The interaction energy is a small difference of large energies: ΔE = E(AB) − E(A) − E(B).</li><li>Dispersion is a correlation effect: HF has none, and He₂ is unbound in HF; at long range it decays as −C₆/R⁶.</li><li>The main part of the hydrogen-bond energy (electrostatics, polarisation, charge transfer) is described already by HF, but the share of correlation depends on the basis: in this calculation it is about 2 kJ/mol, in the complete-basis limit about a quarter of the binding energy.</li><li>Basis set superposition error creates spurious attraction; the counterpoise correction removes it, otherwise one can get the right answer for the wrong reason.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> HF and MP2 in small basis sets</summary><dl><dt>What is computed</dt><dd>Interaction curves of He₂ and (H₂O)₂, the counterpoise correction, the R<sup>−6</sup> law.</dd><dt>Which approximations are made</dt><dd>MP2 instead of an exact method; the aug-cc-pVDZ and 6-31G* basis sets; rigid monomers; the energies are computed in advance. The 6-31G* basis here has Cartesian d functions, as in the calculations of the Atlas (the “Basis set superposition error” page uses spherical ones). The water-dimer reference 21.0 kJ/mol (5.02 kcal/mol) is a different estimate from the −4.86 kcal/mol on that page.</dd><dt>What can be concluded</dt><dd>Qualitatively: dispersion is a correlation effect, and BSSE distorts the result. Quantitatively the answer depends on the basis.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Interaction energy: HF and MP2</h2>
+  <div class="formula2">ΔE(R) = E(AB) − E(A) − E(B)</div>
+  <p class="small">The interaction energy is a small difference of large numbers: the total energy of the water dimer is about −152 E<sub>h</sub>, while ΔE is about −0.008 E<sub>h</sub>. So even small systematic errors matter here. The best known is the basis set superposition error (BSSE): in the dimer each monomer “borrows” the basis functions of its neighbour, lowers its own energy and creates spurious attraction. The counterpoise correction (Boys and Bernardi) computes E(A) and E(B) in the full dimer basis: only the partner functions remain at its position, without nuclei or electrons (“ghost atoms”).</p>
+  <div class="crow"><span class="l">System</span><span class="grp" id="sysG" role="group" aria-label="System"></span></div>
+  <div class="crow"><span class="l">Method</span><span class="grp" id="metG" role="group" aria-label="Method"></span></div>
+  <div class="crow"><span class="l">Counterpoise correction</span><span class="grp" id="cpG" role="group" aria-label="Counterpoise correction"></span></div>
+  <div class="crow"><span class="l">Distance R</span><input type="range" id="R" min="0" max="1" step="1" style="width:260px" aria-label="Distance between the monomers"><span class="val" id="RV"></span></div>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle" id="ttl1"></div>
+      <svg id="cSvg" viewBox="0 0 540 330" role="img" aria-label="Interaction energy as a function of distance"></svg>
+      <div class="legend" id="lg1"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <svg id="mSvg" viewBox="0 0 520 170" role="img" aria-label="Dimer geometry"></svg>
+      <div class="tablewrap" id="tab1"></div>
+    </div>
+  </div>
+  <div class="status" id="st1"></div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. Dispersion decays as R<sup>−6</sup></h2>
+  <p class="small">At long range the dispersion energy of He₂ tends to −C₆/R⁶ (the London asymptote; for helium C₆ = 1.46 a.u.). On log–log axes a power law becomes a straight line with slope −6. Shown here is the counterpoise-corrected MP2 correlation contribution: ΔE(MP2) − ΔE(HF). It hardly depends on density overlap and so shows dispersion most cleanly.</p>
+  <div class="two">
+    <svg id="lSvg" viewBox="0 0 540 320" role="img" aria-label="Correlation contribution on log–log axes"></svg>
+    <div class="status" id="st2"></div>
+  </div>
+  <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>MP2 − HF, counterpoise-corrected</span><span><i class="sw" style="border-color:var(--ok);border-top-style:dashed"></i>−C₆/R⁶, C₆ = 1.46 (exact value)</span></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">Can correlation be included more cheaply, through a density functional?</span><a class="nqA" href="dft.html" data-goto="dft">Density functional →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>He₂, counterpoise-corrected HF: is there a minimum on the curve? Why?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">No: dispersion is a correlation effect, and HF has none</button><button type="button" class="opt">Yes, but shallow</button><button type="button" class="opt">Yes, and deeper than in MP2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>No: the curve is repulsive at all R. Dispersion is the correlated motion of electrons on different atoms, that is, correlation; in HF each electron moves in a mean field, and there is no such correlation. The small dip of uncorrected HF (about −0.3 cm⁻¹) is an artifact of the superposition error.</div></div>
+<div class="tq"><p class="qt"><span>He₂: what fraction of the exact well depth (7.65 cm⁻¹) does counterpoise-corrected MP2 give?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">About a third</button><button type="button" class="opt">Almost all of it</button><button type="button" class="opt">More than 100%</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>About a third: −2.78 cm⁻¹ at 6.2 bohr. The aug-cc-pVDZ basis is too small for dispersion — diffuse functions with high angular momenta are needed, and MP2 itself describes dispersion only approximately.</div></div>
+<div class="tq"><p class="qt"><span>Turn off the counterpoise correction: MP2 gives an almost exact He₂ well depth. Is this a good result?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">No: it is an accidental cancellation of errors</button><button type="button" class="opt">Yes: the counterpoise correction is not needed</button><button type="button" class="opt">Yes, because the basis contains diffuse functions</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>No. The agreement is accidental: the superposition error (about 5 cm⁻¹ at the minimum) compensates for the basis deficiency. In a larger basis the BSSE shrinks and the “good” result disappears — this is the right answer for the wrong reason.</div></div>
+<div class="tq"><p class="qt"><span>Section 2: how does the dispersion energy decay with distance, and why?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">As R⁻⁶ — interaction of an instantaneous and an induced dipole</button><button type="button" class="opt">As R⁻¹, like the Coulomb interaction</button><button type="button" class="opt">Exponentially, like the overlap</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>As R⁻⁶: on log–log axes the slope is ≈ −6. An instantaneous dipole on one atom induces a dipole on the other, and the energy of a dipole interacting with an induced dipole is proportional to R⁻⁶ (the London formula).</div></div>
+<div class="tq"><p class="qt"><span>(H₂O)₂, 6-31G* basis: what part of the binding energy of the dimer does this calculation already get at the HF level?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">In this basis almost all of it: electrostatics, polarisation and charge transfer are described by the mean field</button><button type="button" class="opt">Almost none: the hydrogen bond is a correlation effect</button><button type="button" class="opt">Exactly half</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>In this calculation almost all of it: corrected HF gives about −19.9 kJ/mol, MP2 about −21.8. Electrostatics, polarisation and charge transfer are described by the mean field, and correlation adds about 2 kJ/mol here. But this is a result of the small basis: HF in the complete-basis limit gives about −15 kJ/mol against an exact energy of about −21, so roughly a quarter of the binding energy comes from correlation. The “2 kJ/mol” must not be generalised to hydrogen bonds as such.</div></div>
+<div class="tq"><p class="qt"><span>(H₂O)₂: why is the superposition error larger in MP2 than in HF?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Correlation depends more strongly on basis completeness</button><button type="button" class="opt">MP2 has more electrons</button><button type="button" class="opt">BSSE does not depend on the method</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The correlation energy converges with the basis much more slowly than the HF energy, so a monomer gains more from the neighbour functions. In the 6-31G* basis the BSSE is about 8 kJ/mol for MP2 and about 4 for HF.</div></div>
+</div></details></section>
+<script src="js/dispersion.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="disp";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/dispersion.js"></script>
+
+</body>
+</html>

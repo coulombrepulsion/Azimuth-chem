@@ -1,0 +1,7 @@
+PM7 FORCE THERMO=(298,398,100) AUX
+water, PM7 frequencies and thermochemistry at the PM7 minimum
+Azimuth reference input (0.91), geometry: h2o_pm7_opt.out
+O    0.000000000 1  -0.000000000 1   0.115350796 1
+H    0.000000000 1   0.759811803 1  -0.463714605 1
+H    0.000000000 1  -0.759811803 1  -0.463714605 1
+

@@ -1,0 +1,10 @@
+# water: B3LYP/6-31G(d), tight optimization, numerical frequencies and Raman activities (0.90 reference)
+! B3LYP 6-31G(d) TightSCF TightOpt NumFreq
+%elprop
+  Polar 1
+end
+* xyz 0 1
+O   0.000000   0.000000   0.117300
+H   0.000000   0.757200  -0.469200
+H   0.000000  -0.757200  -0.469200
+*

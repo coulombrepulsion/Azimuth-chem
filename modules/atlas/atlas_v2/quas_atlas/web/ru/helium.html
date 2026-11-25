@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Атом гелия и корреляция</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/he.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-he-g.webp"><!--pose:end-->
+<h1>Атом гелия и электронная корреляция</h1>
+<p class="lead">Два электрона и ядро — простейшая система, где важна корреляция. Точная энергия He известна (−2,903724 ат. ед.), поэтому видно, сколько даёт каждое приближение. Корреляционная энергия по определению — разность точной энергии и предела Хартри–Фока: E<sub>корр</sub> = E<sub>точн</sub> − E<sub>ХФ</sub>.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Межэлектронное отталкивание делает задачу атома гелия неразрешимой точно; простейшее приближение — эффективный заряд (экранирование).</li><li>Хартри–Фок учитывает отталкивание только в среднем; оставшаяся ошибка энергии — энергия корреляции.</li><li>Корреляция — согласованное избегание электронов (кулоновская дыра); её описывают функции, явно зависящие от r₁₂.</li><li>Иногда корреляция качественно важна: без неё ион H⁻ оказывается неустойчивым.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> вариационные функции; точная энергия известна</summary><dl><dt>Что вычисляется</dt><dd>Энергия He и He-подобных ионов для функций от одного параметра до функций Хиллерааса; кулоновская дыра.</dd><dt>Какие приближения приняты</dt><dd>Нерелятивистский гамильтониан, бесконечно тяжёлое ядро; конечное число членов функции.</dd><dt>Какой вывод можно сделать</dt><dd>Вариационные энергии, посчитанные с полным гамильтонианом, — верхние границы точной; строка без отталкивания электронов решает другую задачу и под это правило не попадает. Функция Хиллерааса из 6 членов отличается от точной меньше чем на 0,001 E<sub>h</sub>.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Лестница приближений</h2>
+  <div class="crow"><span class="l">Система</span><span class="grp" id="zG" role="group" aria-label="Двухэлектронная система"></span></div>
+  <div class="two"><svg id="ladder" viewBox="0 0 540 396" role="img" aria-label="Энергии разных приближений"></svg><div style="display:flex;flex-direction:column;gap:8px"><div class="tablewrap" id="lTab"></div><div class="status" id="t1"></div></div></div>
+  <p class="hint">Хиллераас (1929): пробная функция e<sup>−ζ(r₁+r₂)</sup>·(1 + c₁r₁₂ + …) явно зависит от расстояния между электронами r₁₂. Коэффициенты находит линейный вариационный метод, ζ оптимизируется. Значения ХФ и точные — табличные.</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. Эффективный заряд: экранирование</h2>
+  <p class="small">Простейшая пробная функция — произведение двух 1s-орбиталей с зарядом ζ вместо Z: ψ = <span class=fr><span>ζ³</span><span>π</span></span> e<sup>−ζ(r₁+r₂)</sup>. Тогда T = ζ², V<sub>яд</sub> = −2Zζ, V<sub>ээ</sub> = <span class=fr><span>5ζ</span><span>8</span></span>. Каждый электрон частично заслоняет ядро от другого.</p>
+  <div class="crow"><span class="l">ζ</span><input type="range" id="zeta" min="0.3" max="4.5" step="0.005" style="width:280px" aria-label="Эффективный заряд"><span class="val" id="zv"></span><button class="btn primary" type="button" id="zMin">К минимуму</button></div>
+  <div class="two"><svg id="zChart" viewBox="0 0 540 300" role="img" aria-label="Энергия от эффективного заряда"></svg><div style="display:flex;flex-direction:column;gap:8px"><div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>E(ζ)</span><span><i class="sw" style="border-color:var(--warn);border-top-style:dashed"></i>T</span><span><i class="sw" style="border-color:var(--ok);border-top-style:dashed"></i>V<sub>яд</sub></span><span><i class="sw" style="border-color:var(--virt);border-top-style:dashed"></i>V<sub>ээ</sub></span></div><div class="kvt" id="zKv"></div><div class="status" id="t2"></div></div></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">3. Кулоновская дыра</h2>
+  <p class="small">Закрепим электрон 1 на расстоянии r₁ от ядра (на оси z) и посмотрим, где находится электрон 2. В функции-произведении (без корреляции) электрон 2 «не знает» о первом — его распределение одно и то же при любом положении электрона 1. В функции Хиллерааса электрон 2 отодвигается от электрона 1: вокруг него образуется кулоновская дыра.</p>
+  <div class="crow"><span class="l">Положение электрона 1, r₁</span><input type="range" id="r1" min="0.2" max="2" step="0.01" style="width:260px" aria-label="Положение первого электрона"><span class="val" id="r1v"></span></div>
+  <div class="two"><svg id="hole" viewBox="0 0 540 300" role="img" aria-label="Плотность второго электрона вдоль оси"></svg><div style="display:flex;flex-direction:column;gap:8px"><div class="legend"><span><i class="sw" style="border-color:var(--muted);border-top-style:dashed"></i>без корреляции (Хартри–Фок)</span><span><i class="sw" style="border-color:var(--accent)"></i>Хиллераас, 6 членов</span><span><i class="box" style="background:var(--rho)"></i>разность: дыра и «выпуклость»</span></div><div class="kvt" id="hKv"></div><div class="status" id="t3"></div></div></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Как устроены методы, которые восстанавливают корреляцию, и почему обрезанное КВ плохо работает для больших систем?</span><a class="nqA" href="ci-cc.html" data-goto="cicc">Конфигурационное взаимодействие и связанные кластеры →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Раздел 2: найдите оптимальный эффективный заряд для He. Что он означает?</span></p>
+<p class="olab">Оптимальное ζ</p><div class="opts" role="group"><button type="button" class="opt">1,375</button><button type="button" class="opt" data-ok="1">1,6875</button><button type="button" class="opt">2</button><button type="button" class="opt">1</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>ζ = Z − <span class=fr><span>5</span><span>16</span></span> = 1,6875, E = −2,8477. Каждый электрон заслоняет ядро от другого на <span class=fr><span>5</span><span>16</span></span> заряда; в минимуме <span class=fr><span>V</span><span>T</span></span> = −2.</div></div>
+<div class="tq"><p class="qt"><span>Почему энергия «без отталкивания» (−4) ниже точной (−2,9037), хотя вариационный принцип запрещает быть ниже?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Нарушен вариационный принцип</button><button type="button" class="opt" data-ok="1">Отброшено отталкивание — решена другая задача</button><button type="button" class="opt">Это ошибка численного интегрирования</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Вариационный принцип относится к полному гамильтониану. Здесь отброшено отталкивание электронов, то есть решена другая задача — оценка не вариационная.</div></div>
+<div class="tq"><p class="qt"><span>Какую часть энергии корреляции He даёт функция Хиллерааса с одним членом r₁₂ и почему?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Около 5 %</button><button type="button" class="opt" data-ok="1">Около 70 %</button><button type="button" class="opt">Все 100 %</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Около 70 % от −0,0420 ат. ед. (≈ −110 кДж/моль), три члена — 97 %. Член r₁₂ прямо описывает, что электроны держатся дальше друг от друга.</div></div>
+<div class="tq"><p class="qt"><span>Выберите H⁻. Какие приближения предсказывают устойчивый ион?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Все приближения</button><button type="button" class="opt">Ни одно</button><button type="button" class="opt" data-ok="1">Только коррелированные (с членом r₁₂)</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Только коррелированные. Эффективный заряд (−0,473) и даже предел ХФ (−0,488) выше −0,5 (H + e⁻): лишний электрон не держится. Уже функция с членом r₁₂ даёт −0,509 < −0,5. Устойчивость H⁻ — чисто корреляционный эффект.</div></div>
+<div class="tq"><p class="qt"><span>Сравните E<sub>корр</sub> для H⁻, He, Li⁺, Be²⁺.</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Растёт как Z²</button><button type="button" class="opt" data-ok="1">Почти постоянна, ≈ −0,04 ат. ед.</button><button type="button" class="opt">Растёт как Z</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>−0,040; −0,042; −0,044; −0,044 ат. ед. Почти постоянна, хотя полная энергия меняется от −0,53 до −13,7: корреляционная энергия пары электронов на одной орбитали ≈ 1 эВ.</div></div>
+<div class="tq"><p class="qt"><span>Кулоновская дыра: как корреляция меняет вероятность найти второй электрон по ту же сторону от ядра?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Увеличивает</button><button type="button" class="opt">Не меняет</button><button type="button" class="opt" data-ok="1">Уменьшает: электроны избегают друг друга</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Уменьшает: при r₁ = 0,6 бор около 45 % вместо 50 %. ⟨r₁₂⟩ растёт с 1,362 до 1,422 бор. Само по себе это ещё не доказывает, что отталкивание меньше: энергия отталкивания равна ⟨1/r₁₂⟩, а не 1/⟨r₁₂⟩. Её надо считать отдельно: ⟨1/r₁₂⟩ уменьшается с 1,0258 до 0,9460 E<sub>h</sub> (точное значение 0,9458). Отсчёт ведётся от функции Хартри–Фока — лучшей функции без корреляции, поэтому разница кривых — собственно кулоновская дыра.</div></div>
+</div></details></section>
+<script src="js/helium.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="he";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/helium.js"></script>
+
+</body>
+</html>

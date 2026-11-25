@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Basis set superposition error</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/bsse.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-bsse-g.webp"><!--pose:end-->
+<h1>Basis set superposition error</h1>
+<p class="lead">In a calculation on a complex, each molecule can “borrow” the basis functions of its neighbour and lower its own energy — functions that are absent when the molecule is computed alone. The difference looks like attraction, but it is an artefact of the incomplete basis: the basis set superposition error (BSSE). Here the binding energy of the water dimer is computed in eleven basis sets (MP2 in ten, CCSD(T) in nine) without a correction and with the Boys–Bernardi counterpoise correction, and compared with an estimate of the complete basis set limit.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>In an incomplete basis each molecule of a complex “borrows” the functions of its neighbour; this gives a spurious attraction — the basis set superposition error.</li><li>The counterpoise correction computes the monomers in the basis of the whole complex, with ghost atoms in place of the partner.</li><li>BSSE is largest in small basis sets and for correlated methods; it decreases quickly as the basis grows.</li><li>The spurious attraction deepens the potential well and shifts the minimum to shorter distances.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> one complex, rigid monomers</summary><dl><dt>What is computed</dt><dd>Binding energy of the water dimer without and with the counterpoise correction: HF in eleven basis sets, MP2 in ten, CCSD(T) in nine; MP2 curves along the O···O distance.</dd><dt>Which approximations are made</dt><dd>The monomers are not relaxed; a single orientation; the complete basis set limit is estimated as HF in aug-cc-pVQZ plus the MP2 correlation extrapolated from aug-cc-pVDZ/aug-cc-pVTZ (the average of corrected and uncorrected values), plus the CCSD(T) − MP2 difference in aug-cc-pVDZ; the uncertainty of the estimate is about 0.2 kcal/mol. The 6-31G* basis here has spherical d functions (5 per atom); other Atlas pages use Cartesian ones (6). The reference −4.86 kcal/mol is for rigid monomers; the “Intermolecular interactions” page quotes another estimate, 21.0 kJ/mol (5.02 kcal/mol).</dd><dt>What can be concluded</dt><dd>How large the BSSE is in different basis sets and what the counterpoise correction gives — yes; the exact binding energy of the water dimer — no: that also needs the monomer deformation energy and a geometry optimization.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Binding energy of the water dimer in different basis sets</h2>
+  <p class="hint">Rigid monomers (r(OH) = 0.9572 Å, ∠HOH = 104.52°), a linear hydrogen bond, R(O···O) = 2.91 Å. Interaction energy ΔE = E(dimer) − E(monomer 1) − E(monomer 2); the oxygen 1s electrons are frozen.</p>
+  <div class="crow"><span class="l">Method</span><span class="grp" id="mG" role="group" aria-label="Method"></span></div>
+  <svg id="bars" viewBox="0 0 960 360" role="img" aria-label="Binding energy without and with the counterpoise correction"></svg>
+  <div class="legend" id="barsL"></div>
+  <div class="tablewrap" id="barsT"></div>
+  <p class="hint" id="barsN"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Interaction curve</h2>
+  <p class="hint">MP2 interaction energy as a function of the O···O distance. The thin line is counterpoise-corrected aug-cc-pVTZ, the curve on this page closest to the complete basis set limit.</p>
+  <div class="crow"><span class="l">Basis</span><span class="grp" id="sG" role="group" aria-label="Basis"></span></div>
+  <svg id="scan" viewBox="0 0 960 330" role="img" aria-label="Interaction energy as a function of distance"></svg>
+  <div class="legend" id="scanL"></div>
+  <p class="hint" id="scanN"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">How the counterpoise correction works</h2>
+  <div class="eq">
+    <div class="eqb"><div class="t">Ghost atoms</div>The monomer energies are computed in the full basis of the dimer: the partner’s basis functions are kept in place, but its nuclei and electrons are removed. Then in ΔE<sub>CP</sub> = E<sub>AB</sub>(AB) − E<sub>A</sub>(AB) − E<sub>B</sub>(AB) all three energies are computed in the same basis, and the “borrowing” of functions cancels.</div>
+    <div class="eqb"><div class="t">BSSE vanishes in a complete basis</div>A monomer has nothing to borrow if its own basis is complete. So the error decreases quickly as the basis grows, and the counterpoise correction is a way to get an answer close to the limit in a smaller basis.</div>
+    <div class="eqb"><div class="t">The correction does not always help</div>In cc-pVDZ and cc-pVTZ the correction “overshoots”: the binding comes out weaker than the limit, and without the correction it is stronger; the average of the two is closer to the limit. In basis sets with diffuse functions the uncorrected value is already close to the limit: the spurious attraction partly compensates the incompleteness of the basis. The reliable route is a large basis with diffuse functions and extrapolation.</div>
+    <div class="eqb"><div class="t">What else to take into account</div>When the geometry is optimized, the monomers in the complex are deformed; the deformation energy is computed separately. BSSE also exists within a single molecule — between its fragments; in small basis sets it distorts, for example, the relative energies of conformers.</div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">Once the basis set error is removed, what is left of the attraction between molecules, and why does Hartree–Fock not see it?</span><a class="nqA" href="dispersion.html" data-goto="disp">Intermolecular interactions →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>MP2, cc-pVDZ: how large is the BSSE in the binding energy of the water dimer?</span></p>
+<p class="olab">BSSE, kcal/mol</p><div class="opts" role="group"><button type="button" class="opt">1.7</button><button type="button" class="opt" data-ok="1">3.5</button><button type="button" class="opt">0.48</button><button type="button" class="opt">7.3</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>About 3.5 kcal/mol: −7.34 without the correction versus −3.85 with it. That is more than half of the binding energy itself.</div></div>
+<div class="tq"><p class="qt"><span>The same quantity in aug-cc-pVTZ?</span></p>
+<p class="olab">BSSE, kcal/mol</p><div class="opts" role="group"><button type="button" class="opt">0.05</button><button type="button" class="opt" data-ok="1">0.48</button><button type="button" class="opt">1.6</button><button type="button" class="opt">3.5</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>About 0.5 kcal/mol (−5.03 versus −4.55): as the basis grows, the monomer needs less and less to “borrow” its neighbour’s functions.</div></div>
+<div class="tq"><p class="qt"><span>Compare the BSSE for HF and MP2 in cc-pVDZ. Which method has the larger one, and why?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">MP2: correlation needs more functions, and borrowed functions lower it more</button><button type="button" class="opt">HF: it has no correlation</button><button type="button" class="opt">They are equal</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>MP2: 3.5 kcal/mol versus 2.1 for HF. The correlation energy needs many functions of high angular momentum, and borrowed functions lower it more than the Hartree–Fock energy.</div></div>
+<div class="tq"><p class="qt"><span>The cc-pVDZ curve: where is the minimum without and with the correction?</span></p>
+<p class="olab">R without correction, Å</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">2.91</button><button type="button" class="opt">3.06</button><button type="button" class="opt">2.70</button><button type="button" class="opt">3.30</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Without the correction — about 2.91 Å and −7.3 kcal/mol; with it — about 3.06 Å and −4.1 kcal/mol. The spurious attraction deepens the well and shifts it to shorter distances.</div></div>
+<div class="tq"><p class="qt"><span>How many calculations are needed for a counterpoise-corrected binding energy, and in which basis is each one done?</span></p>
+<p class="olab">Number of calculations</p><div class="opts" role="group"><button type="button" class="opt">2</button><button type="button" class="opt">5</button><button type="button" class="opt" data-ok="1">3</button><button type="button" class="opt">4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Three, all in the dimer basis: the dimer itself and each monomer with the partner’s ghost atoms. If the monomers in the complex are deformed, the deformation energy is computed separately as well — the monomers in their own and in the equilibrium geometry.</div></div>
+</div></details></section>
+<script src="js/bsse.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="bsse";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/bsse.js"></script>
+
+</body>
+</html>

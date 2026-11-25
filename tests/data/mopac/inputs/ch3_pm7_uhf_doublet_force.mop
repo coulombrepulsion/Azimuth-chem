@@ -1,0 +1,8 @@
+PM7 UHF DOUBLET FORCE AUX
+methyl radical, PM7 UHF frequencies at the PM7 minimum
+Azimuth reference input (0.91), geometry: ch3_pm7_uhf_doublet_opt.out
+C    0.000006257 1   0.000000000 1   0.000000000 1
+H    1.056563097 1  -0.000000000 1  -0.000000000 1
+H   -0.528292349 1   0.914993390 1  -0.000000000 1
+H   -0.528292349 1  -0.914993390 1  -0.000000000 1
+

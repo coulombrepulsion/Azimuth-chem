@@ -1,0 +1,10 @@
+PM7 PRECISE AUX
+water, PM7 optimization, then frequencies (OLDGEO)
+Azimuth reference input (0.91.4): job 1 of 2
+O     0.000000 1    0.000000 1    0.117000 1
+H     0.000000 1    0.757000 1   -0.467000 1
+H     0.000000 1   -0.757000 1   -0.467000 1
+
+PM7 FORCE THERMO OLDGEO AUX
+water, PM7 frequencies at the geometry of job 1
+Azimuth reference input (0.91.4): job 2 of 2

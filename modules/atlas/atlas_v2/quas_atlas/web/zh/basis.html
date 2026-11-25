@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,ammonia">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>基组</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/basis.css">
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-basis-g.webp"><!--pose:end-->
+<h1>基组</h1>
+<p class="lead">分子轨道按以原子为中心的基函数展开。斯莱特型函数 e<sup>−ζr</sup> 在核附近和远离核处的行为都正确，但用它们计算双电子积分很困难。因此实际计算中使用高斯函数 e<sup>−αr²</sup> 及其固定的线性组合——收缩函数。下面以精确解已知的氢原子为例：E = −0.5 原子单位。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>分子轨道按基函数展开；基组越完整，能量越低（变分原理）。</li><li>高斯函数计算快，但难以描述原子核处的尖点和远处尾部，因此把它们组合成收缩函数。</li><li>极化函数让轨道可以改变形状，弥散函数描述阴离子和弱相互作用。</li><li>计算成本随基组大小迅速增长（HF 形式上为 N⁴，固定分子时 CCSD(T) 约为 n<sub>virt</sub>⁴），因此选择基组是精度与时间的折中。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>精确答案已知的 H 原子</summary><dl><dt>计算的是什么</dt><dd>用高斯函数展开的 H 1s 轨道的能量；实际基组中有多少函数。</dd><dt>采用了哪些近似</dt><dd>单电子原子——没有相关，只看得到基组误差。</dd><dt>能得出什么结论</dt><dd>高斯展开收敛得有多快；对于分子，基组误差之外还会有方法误差。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">用高斯函数构造氢的 1s 轨道</h2>
+  <div class="crow"><span class="l">基组</span><span class="grp" id="setG" role="group" aria-label="基组"></span></div>
+  <div class="crow" id="nRow"><span class="l">高斯函数个数 n</span><span class="grp" id="nG" role="group" aria-label="高斯函数个数"></span></div>
+  <div id="sliders" style="display:flex;flex-direction:column;gap:6px"></div>
+  <div class="crow"><span class="l">ψ 图的刻度</span><span class="grp" id="scG" role="group" aria-label="刻度"></span></div>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:6px"><div class="ptitle" id="psiTitle">ψ(r)，原子单位</div><svg id="psi" viewBox="0 0 540 300" role="img" aria-label="径向函数"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--ink)"></i>斯莱特型 1s，精确解</span><span><i class="sw" style="border-color:var(--accent)"></i>高斯函数之和</span><span><i class="sw" style="border-color:var(--rho-l);border-top-style:dashed"></i>单个高斯函数 c<sub>i</sub>g<sub>i</sub></span></div></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><div class="ptitle">径向密度 4πr²ψ²</div><svg id="rad" viewBox="0 0 540 300" role="img" aria-label="径向密度"></svg>
+      <div class="kvt" id="kv"></div></div>
+  </div>
+  <div class="tablewrap" id="primTab"></div>
+  <div class="status" id="t1"></div>
+  <details><summary>比较：STO-nG 与按能量优化的高斯函数</summary><div class="tablewrap" id="cmpTab" style="margin-top:8px"></div><p class="hint" style="margin-top:6px">STO-nG 的选取目标是尽可能逼近斯莱特型函数的形状（最小二乘法），而不是使能量最低。因此在相同的 n 下，它们的能量高于变分优化的基组；但同一个收缩适用于任意 ζ：只需将指数乘以 ζ²。</p></details>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">单个高斯函数：变分原理与维里定理</h2>
+  <p class="small">对于试探函数 g = (<span class=fr><span>2α</span><span>π</span></span>)<sup>3/4</sup>e<sup>−αr²</sup>，动能 T = <span class=fr><span>3α</span><span>2</span></span>，势能 V = −2√<span class=fr><span>2α</span><span>π</span></span>。收缩的函数（α 大）在核吸引上获益，但要付出动能的代价。</p>
+  <div class="crow"><span class="l">指数 α</span><input type="range" id="al" min="-2" max="0.6" step="0.005" style="width:280px" aria-label="指数 α，对数刻度"><span class="val" id="alv"></span><button class="btn primary" type="button" id="alMin">到最小值</button></div>
+  <div class="two"><svg id="ea" viewBox="0 0 540 280" role="img" aria-label="能量随指数 α 的变化"></svg>
+    <div style="display:flex;flex-direction:column;gap:8px"><div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>E = T + V</span><span><i class="sw" style="border-color:var(--warn);border-top-style:dashed"></i>T</span><span><i class="sw" style="border-color:var(--ok);border-top-style:dashed"></i>V</span><span><i class="sw" style="border-color:var(--muted);border-top-style:dotted"></i>精确能量 −0.5</span></div><div class="kvt" id="kv2"></div><div class="status" id="t2"></div></div></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">实际计算中有多少个函数</h2>
+  <p class="small">输入由 H、B、C、N、O、F 原子组成的分子的分子式。对每个基组给出收缩基函数数 N、原始函数数、占据轨道和空轨道数，以及双电子积分 (μν|λσ) 数目的估计 ≈ <span class=fr><span>N⁴</span><span>8</span></span>。</p>
+  <div class="crow"><span class="l">分子</span><input class="formula" id="fm" value="C6H6" aria-label="分子式" spellcheck="false"><span class="grp" id="fmG"></span></div>
+  <div class="err" id="fmErr"></div>
+  <div class="tablewrap" id="bTab"></div>
+  <svg id="bBar" viewBox="0 0 900 300" role="img" aria-label="基函数数目与计算成本"></svg>
+  <div class="status" id="t3"></div>
+  <details><summary>如何解读基组名称</summary><div class="small" style="display:flex;flex-direction:column;gap:6px;margin-top:8px">
+    <p><b>STO-3G</b>——最小基组：原子的每个轨道用一个函数（对 C：1s、2s、2p<sub>x,y,z</sub>），每个函数是三个高斯函数的收缩。</p>
+    <p><b>6-31G</b>——劈裂价基组：内层 1s 是 6 个高斯函数的收缩；每个价轨道用两个函数描述——3 个高斯函数的收缩和一个单独的高斯函数。两个宽度不同的函数使轨道能够“呼吸”：在分子中收缩或扩展。3-21G 和 6-311G 的结构相同（6-311G 每个价轨道用三个函数）。</p>
+    <p><b>*</b> 或 <b>(d)</b>——重原子上的极化 d 函数，<b>**</b> 或 <b>(d,p)</b>——H 上再加 p 函数：使电子云能够偏离原子核，这对键长和键角很重要。<b>+</b>——重原子上的弥散函数（用于阴离子、弱相互作用）。</p>
+    <p><b>cc-pVXZ</b>（邓宁；X = D、T、Q——双、三、四 zeta）的构造使相关能随 X 增大而系统收敛；<b>aug-</b> 为每种类型各加一个弥散函数。记号 (9s4p1d)/[3s2p1d] 表示 9 个 s、4 个 p 和 1 个 d 原始函数收缩为 3 个 s、2 个 p 和 1 个 d 函数。</p>
+    <p>d 函数的约定：6-31G(d) 中为 6 个笛卡尔函数（x²、y²、z²、xy、xz、yz；其中一个组合实际上是 s），6-311G(d,p) 和 cc-pVXZ 中为 5 个球谐函数；f 为 7 个，g 为 9 个。</p></div></details>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">在有限基组中得到的密度本身能看出什么？</span><a class="nqA" href="density.html" data-goto="dens">电子密度 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>STO-3G 对 H 原子的误差约为 13 kJ/mol。由此可得出什么结论？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">与键能相比误差可以忽略</button><button type="button" class="opt" data-ok="1">最小基组只适合定性估计</button><button type="button" class="opt">加入极化函数后误差就会消失</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>这一误差与构象转变和氢键的能量相当，因此最小基组只适合定性估计。极化函数对 H 原子无济于事：误差来自 1s 函数本身的形状，要通过增加 s 型高斯函数来修正。</div></div>
+<div class="tq"><p class="qt"><span>把 ψ 图切换到对数刻度。高斯函数在哪里描述得最差？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">只在中间区域</button><button type="button" class="opt" data-ok="1">在核附近和远距离处</button><button type="button" class="opt">各处都一样</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>在核附近（斯莱特型函数有尖点，而高斯函数在零点的导数为零）以及在远距离处：斯莱特型函数的 ln ψ 是直线 −r，高斯函数的是抛物线 −αr²，衰减过快。尾部对阴离子和弱相互作用很重要——这正是需要弥散函数的原因。</div></div>
+<div class="tq"><p class="qt"><span>为什么按能量优化的三个高斯函数给出 −0.49698，而 STO-3G 只给出 −0.49491？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">STO-3G 中的高斯函数更少</button><button type="button" class="opt" data-ok="1">STO-3G 是按斯莱特型函数的形状拟合的，而不是按能量优化的</button><button type="button" class="opt">这是舍入误差</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>STO-3G 的选取目标是重现斯莱特型函数的形状（最小二乘），而不是使能量最低。但它是通用的：对任意 ζ 只需将指数乘以 ζ²。</div></div>
+<div class="tq"><p class="qt"><span>单个高斯函数：比值 −<span class=fr><span>V</span><span>T</span></span> 随 α 如何变化？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">对任意 α 都有 −<span class=fr><span>V</span><span>T</span></span> = 2</button><button type="button" class="opt" data-ok="1">只有在能量极小处 −<span class=fr><span>V</span><span>T</span></span> = 2</button><button type="button" class="opt">极小处 −<span class=fr><span>V</span><span>T</span></span> = 1</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>只有在能量极小处它才等于 2（维里定理对最优函数成立），其他 α 都不成立。因此 −<span class=fr><span>V</span><span>T</span></span> = 2 是检验函数参数是否已优化的方便方法。</div></div>
+<div class="tq"><p class="qt"><span>苯：cc-pVTZ 下的 HF 计算比 6-31G(d) 贵多少倍？</span></p>
+<p class="olab">倍数</p><div class="opts" role="group"><button type="button" class="opt">7</button><button type="button" class="opt">420</button><button type="button" class="opt">2.6</button><button type="button" class="opt" data-ok="1">45</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>N = 264 对 102；按形式上的 N⁴ 规律为 (<span class=fr><span>264</span><span>102</span></span>)⁴ ≈ 45 倍。对 CCSD(T) 不能这样套用 N⁷：该规律描述的是占据空间和虚空间同时增大。这里占据轨道仍是 21 个，只有虚空间增大（81 → 243），而 (T) 的主导项成本约为 n<sub>occ</sub>³n<sub>virt</sub>⁴：(243/81)⁴ ≈ 80 倍。</div></div>
+<div class="tq"><p class="qt"><span>为什么大型计算采用“直接”模式，在每次迭代中重新计算双电子积分？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">这样 SCF 收敛更快</button><button type="button" class="opt" data-ok="1">积分数约为 <span class=fr><span>N⁴</span><span>8</span></span>，全部存储代价太高</button><button type="button" class="opt">直接模式更精确</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>积分数目按 <span class=fr><span>N⁴</span><span>8</span></span> 增长：咖啡因在 cc-pVTZ（560 个函数）下约有 1.2·10¹⁰ 个积分，约 92 GB。重新计算比存储并从磁盘读取更便宜。</div></div>
+</div></details></section>
+<script src="js/basis.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="basis";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/basis.js"></script>
+
+</body>
+</html>

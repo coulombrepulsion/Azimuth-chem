@@ -1,0 +1,236 @@
+   ...  [lines omitted from the excerpt]
+
+
+                         Program Version 6.0.1  -  RELEASE   -
+
+
+ With contributions from (in alphabetic order):
+[Max-Planck-Institut fuer Kohlenforschung]                               
+  Daniel Aravena         : Magnetic Suceptibility                        
+  Michael Atanasov       : Ab Initio Ligand Field Theory (pilot matlab implementation)
+  Alexander A. Auer      : GIAO ZORA, VPT2 properties, NMR spectrum      
+  Ute Becker             : All parallelization in ORCA, NUMFREQ, NUMCALC 
+  Giovanni Bistoni       : ED, misc. LED, open-shell LED, HFLD           
+  Martin Brehm           : Molecular dynamics                            
+  Dmytro Bykov           : pre 5.0 version of the SCF Hessian            
+  Marcos Casanova-Páez   : Triplet and SCS-CIS(D). UHF-(DLPNO)-IP/EA/STEOM-CCSD. UHF-CVS-IP/STEOM-CCSD   
+  Vijay G. Chilkuri      : MRCI spin determinant printing, contributions to CSF-ICE 
+  Pauline Colinet        : FMM embedding                                 
+  Dipayan Datta          : RHF DLPNO-CCSD density                        
+  Achintya Kumar Dutta   : EOM-CC, STEOM-CC                              
+  Nicolas Foglia         : Exact transition moments, OPA infrastructure, MCD improvements    
+  Dmitry Ganyushin       : Spin-Orbit,Spin-Spin,Magnetic field MRCI      
+  Miquel Garcia-Rates    : C-PCM and meta-GGA Hessian, CCSD/C-PCM, Gaussian charge scheme 
+  Tiago L. C. Gouveia    : GS-ROHF, GS-ROCIS                             
+  Yang Guo               : DLPNO-NEVPT2, F12-NEVPT2, CIM, IAO-localization        
+  Andreas Hansen         : Spin unrestricted coupled pair/coupled cluster methods 
+  Ingolf Harden          : AUTO-CI MPn and infrastructure                
+  Benjamin Helmich-Paris : MC-RPA, TRAH-(SCF,CASSCF), AVAS, COSX integrals, SCF dyn. polar. 
+  Lee Huntington         : MR-EOM, pCC                                   
+  Robert Izsak           : Overlap fitted RIJCOSX, COSX-SCS-MP3, EOM     
+  Riya Kayal             : Wick's Theorem for AUTO-CI, AUTO-CI UHF-CCSDT 
+  Emily Kempfer          : AUTO-CI, RHF CISDT and CCSDT                  
+  Christian Kollmar      : KDIIS, OOCD, Brueckner-CCSD(T), CCSD density, CASPT2, CASPT2-K, improved NEVPT2 
+   ...  [lines omitted from the excerpt]
+
+---------------------------------
+CARTESIAN COORDINATES (ANGSTROEM)
+---------------------------------
+  C     -1.415253    0.230222    0.000000
+  C      1.415253   -0.230222    0.000000
+  C     -0.495133    1.314461    0.000000
+  C      0.495133   -1.314461    0.000000
+  C      0.889409    1.090949    0.000000
+  C     -0.889409   -1.090949    0.000000
+  H     -0.879551    2.343734    0.000000
+  H      0.879551   -2.343734    0.000000
+  H      1.577904    1.945006    0.000000
+  H     -1.577904   -1.945006    0.000000
+  C      2.884584   -0.521089    0.000000
+  C     -2.884584    0.521089    0.000000
+  H      3.140336   -1.591961    0.000000
+  H     -3.140336    1.591961    0.000000
+  C      3.880043    0.382254    0.000000
+  C     -3.880043   -0.382254    0.000000
+  H      3.694677    1.462439    0.000000
+  H     -3.694677   -1.462439    0.000000
+  H      4.931645    0.071105    0.000000
+  H     -4.931645   -0.071105    0.000000
+
+----------------------------
+CARTESIAN COORDINATES (A.U.)
+----------------------------
+  NO LB      ZA    FRAG     MASS         X           Y           Z
+   0 C     6.0000    0    12.011   -2.674441    0.435056    0.000000
+   1 C     6.0000    0    12.011    2.674441   -0.435056    0.000000
+   2 C     6.0000    0    12.011   -0.935666    2.483971    0.000000
+   ...  [lines omitted from the excerpt]
+
+-----------------------
+MULLIKEN ATOMIC CHARGES
+-----------------------
+   0 C :   -0.004313
+   1 C :   -0.004313
+   2 C :   -0.076533
+   3 C :   -0.076533
+   4 C :   -0.076897
+   5 C :   -0.076897
+   6 H :    0.077763
+   7 H :    0.077763
+   8 H :    0.079095
+   9 H :    0.079095
+  10 C :   -0.076149
+  11 C :   -0.076149
+  12 H :    0.076467
+  13 H :    0.076467
+  14 C :   -0.154402
+  15 C :   -0.154402
+  16 H :    0.075902
+  17 H :    0.075902
+  18 H :    0.079067
+  19 H :    0.079067
+Sum of atomic charges:    0.0000000
+
+--------------------------------
+MULLIKEN REDUCED ORBITAL CHARGES
+--------------------------------
+  0 C s       :     3.136792  s :     3.136792
+      pz      :     0.993366  p :     2.867521
+      px      :     0.929481
+   ...  [lines omitted from the excerpt]
+
+----------------------
+LOEWDIN ATOMIC CHARGES
+----------------------
+   0 C :    0.003801
+   1 C :    0.003801
+   2 C :   -0.043796
+   3 C :   -0.043796
+   4 C :   -0.044047
+   5 C :   -0.044047
+   6 H :    0.042052
+   7 H :    0.042052
+   8 H :    0.043587
+   9 H :    0.043587
+  10 C :   -0.038833
+  11 C :   -0.038833
+  12 H :    0.040880
+  13 H :    0.040880
+  14 C :   -0.091401
+  15 C :   -0.091401
+  16 H :    0.042883
+  17 H :    0.042883
+  18 H :    0.044874
+  19 H :    0.044874
+
+-------------------------------
+LOEWDIN REDUCED ORBITAL CHARGES
+-------------------------------
+  0 C s       :     3.032288  s :     3.032288
+      pz      :     0.992460  p :     2.963911
+      px      :     0.975453
+      py      :     0.995997
+   ...  [lines omitted from the excerpt]
+
+                      *****************************
+                      * MAYER POPULATION ANALYSIS *
+                      *****************************
+
+  NA   - Mulliken gross atomic population
+  ZA   - Total nuclear charge
+  QA   - Mulliken gross atomic charge
+  VA   - Mayer's total valence
+  BVA  - Mayer's bonded valence
+  FA   - Mayer's free valence
+
+  ATOM       NA         ZA         QA         VA         BVA        FA
+  0 C      6.0043     6.0000    -0.0043     3.9731     3.9731     0.0000
+  1 C      6.0043     6.0000    -0.0043     3.9731     3.9731     0.0000
+  2 C      6.0765     6.0000    -0.0765     3.9693     3.9693    -0.0000
+  3 C      6.0765     6.0000    -0.0765     3.9693     3.9693    -0.0000
+  4 C      6.0769     6.0000    -0.0769     3.9701     3.9701     0.0000
+  5 C      6.0769     6.0000    -0.0769     3.9701     3.9701     0.0000
+  6 H      0.9222     1.0000     0.0778     0.9940     0.9940     0.0000
+  7 H      0.9222     1.0000     0.0778     0.9940     0.9940    -0.0000
+  8 H      0.9209     1.0000     0.0791     0.9937     0.9937    -0.0000
+  9 H      0.9209     1.0000     0.0791     0.9937     0.9937     0.0000
+ 10 C      6.0761     6.0000    -0.0761     3.9681     3.9681     0.0000
+ 11 C      6.0761     6.0000    -0.0761     3.9681     3.9681     0.0000
+ 12 H      0.9235     1.0000     0.0765     0.9942     0.9942    -0.0000
+ 13 H      0.9235     1.0000     0.0765     0.9942     0.9942     0.0000
+ 14 C      6.1544     6.0000    -0.1544     3.9648     3.9648    -0.0000
+ 15 C      6.1544     6.0000    -0.1544     3.9648     3.9648    -0.0000
+ 16 H      0.9241     1.0000     0.0759     0.9942     0.9942    -0.0000
+ 17 H      0.9241     1.0000     0.0759     0.9942     0.9942    -0.0000
+ 18 H      0.9209     1.0000     0.0791     0.9937     0.9937    -0.0000
+   ...  [lines omitted from the excerpt]
+
+------------------
+CARTESIAN GRADIENT
+------------------
+
+   1   C   :    0.000762832    0.000179580    0.000000133
+   2   C   :   -0.000763062   -0.000179680   -0.000000012
+   3   C   :   -0.001153904    0.000207087    0.000000076
+   4   C   :    0.001154535   -0.000206881   -0.000000068
+   5   C   :   -0.000221844    0.001228533   -0.000000082
+   6   C   :    0.000222025   -0.001228523   -0.000000004
+   7   H   :    0.000185003   -0.000002373    0.000000015
+   8   H   :   -0.000184814    0.000002378   -0.000000010
+   9   H   :    0.000199005   -0.000865012    0.000000015
+  10   H   :   -0.000199427    0.000864674    0.000000037
+  11   C   :   -0.000509194    0.000535072    0.000000020
+  12   C   :    0.000509161   -0.000535076   -0.000000062
+  13   H   :    0.000495711   -0.000146329   -0.000000030
+  14   H   :   -0.000495968    0.000146482   -0.000000025
+  15   C   :   -0.000100325   -0.000302992    0.000000010
+  16   C   :    0.000100295    0.000302781   -0.000000050
+  17   H   :   -0.000357049   -0.000217407   -0.000000012
+  18   H   :    0.000356977    0.000217580    0.000000003
+  19   H   :    0.000246303   -0.000096337    0.000000022
+  20   H   :   -0.000246260    0.000096443    0.000000024
+
+Difference to translation invariance:
+           :    0.0000000000   -0.0000000000   -0.0000000000
+
+Difference to rotation invariance:
+           :    0.0000002207    0.0000000344   -0.0006321534
+
+   ...  [lines omitted from the excerpt]
+
+-------------
+DIPOLE MOMENT
+-------------
+
+Method             : SCF
+Type of density    : Electron Density
+Multiplicity       :   1
+Irrep              :   0
+Energy             :  -382.0551086179353319 Eh
+Relativity type    : 
+Basis              : AO
+                                X                 Y                 Z
+Electronic contribution:      0.000000012      -0.000000005      -0.000000002
+Nuclear contribution   :      0.000000000       0.000000000       0.000000000
+                        -----------------------------------------
+Total Dipole Moment    :      0.000000012      -0.000000005      -0.000000002
+                        -----------------------------------------
+Magnitude (a.u.)       :      0.000000013
+Magnitude (Debye)      :      0.000000033
+
+
+
+--------------------
+Rotational spectrum 
+--------------------
+ 
+Rotational constants in cm-1:             0.153923             0.022856             0.019901 
+Rotational constants in MHz :          4614.497946           685.205544           596.614430 
+
+Dipole components along the rotational axes: 
+x,y,z [a.u.] :    -0.000000    -0.000000    -0.000000 
+   ...  [lines omitted from the excerpt]
+SCF Gradient evaluation          ...        4.859 sec (=   0.081 min)   1.2 %
+Numerical frequency calculation  ...      367.466 sec (=   6.124 min)  94.4 %
+                             ****ORCA TERMINATED NORMALLY****
+TOTAL RUN TIME: 0 days 0 hours 6 minutes 21 seconds 890 msec

@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Термы атомов</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/terms.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-terms-g.webp"><!--pose:end-->
+<h1>Термы атомов</h1>
+<p class="lead">Одной электронной конфигурации, например 2p², отвечает несколько состояний с разной энергией — термы <sup>2S+1</sup>L. Их находят по микросостояниям: перебираем все способы разместить электроны по спин-орбиталям с учётом принципа Паули и группируем их по M<sub>L</sub> и M<sub>S</sub>. Основной терм дают правила Хунда.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Одной конфигурации отвечает несколько термов <sup>2S+1</sup>L с разной энергией.</li><li>Термы находят по таблице микросостояний: каждый терм занимает (2L + 1)(2S + 1) состояний.</li><li>Для эквивалентных электронов принцип Паули запрещает часть термов.</li><li>Основной терм дают правила Хунда: максимальное S, затем максимальное L, затем J по заполненности оболочки.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> LS-связь и правила Хунда</summary><dl><dt>Что вычисляется</dt><dd>Микросостояния конфигурации, разложение на термы, основной терм.</dd><dt>Какие приближения приняты</dt><dd>Схема Рассела–Саундерса (LS-связь); спин-орбитальное расщепление на уровни J не рассчитывается. Для конфигураций с несколькими открытыми оболочками (например, 3d²4p) правила Хунда для основного терма ненадёжны.</dd><dt>Какой вывод можно сделать</dt><dd>Набор термов точен в LS-схеме; правила Хунда предсказывают основной терм, но не порядок возбуждённых.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Микросостояния и термы конфигурации</h2>
+  <div class="crow"><span class="l">Конфигурация</span><span class="row" id="cfgG" role="group" aria-label="Конфигурация"></span></div>
+  <div class="crow"><span class="l">Своя конфигурация</span><input class="formula" id="cfgIn" value="p2" spellcheck="false" autocomplete="off" aria-label="Своя конфигурация"><button class="btn" id="cfgGo" type="button">Построить</button><span class="hint">например: d3, p4, s1 p1, 2p1 3p1</span></div>
+  <div class="err" id="cfgErr"></div>
+  <div class="work">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="ptitle" id="tabT"></div>
+      <div class="tablewrap" id="mlmsTab"></div>
+      <div class="row"><button class="btn primary" id="bStep" type="button">Выделить следующий терм</button><button class="btn" id="bAll" type="button">Все термы сразу</button><button class="btn" id="bReset" type="button">Сначала</button></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="kv" id="nMicro"></div>
+      <div class="tl" id="termList"></div>
+      <div class="status" id="st1"></div>
+    </div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. Основной терм по правилам Хунда</h2>
+  <p class="small">1) Максимальная мультиплетность: электроны занимают разные орбитали с параллельными спинами. 2) При этом максимальное L: заполняем m<sub>l</sub> от наибольшего. 3) J = |L − S|, если оболочка заполнена меньше чем наполовину, и J = L + S, если больше чем наполовину.</p>
+  <div class="pt" id="ptab" role="group" aria-label="Элемент"></div>
+  <div class="work">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="kv" id="elCfg"></div>
+      <div class="boxes" id="boxes"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="status" id="st2"></div>
+      <div class="row"><button class="btn" id="bToCfg" type="button">Все термы этой конфигурации</button></div>
+    </div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Откуда берутся сами орбитали, из которых строят определитель?</span><a class="nqA" href="scf.html" data-goto="scf">Итерации SCF →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания на исследование страницы и тренажёр. Выполните действие на странице и ответьте — ответ проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Сколько микросостояний у конфигурации p²?</span></p>
+<p class="olab">Микросостояний</p><div class="opts" role="group"><button type="button" class="opt">36</button><button type="button" class="opt" data-ok="1">15</button><button type="button" class="opt">30</button><button type="button" class="opt">6</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden><span class=fr><span>6!</span><span>2! · 4!</span></span> = 15: два электрона распределяем по шести спин-орбиталям без повторов (принцип Паули).</div></div>
+<div class="tq"><p class="qt"><span>Какие термы даёт конфигурация p²?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">¹D, ³P, ¹S</button><button type="button" class="opt">¹S, ¹P, ¹D, ³S, ³P, ³D</button><button type="button" class="opt">³P и ¹D</button><button type="button" class="opt">²P</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>¹D, ³P и ¹S: 5 + 9 + 1 = 15 микросостояний. Термов ¹P, ³D и ³S нет — они запрещены принципом Паули для эквивалентных электронов (сравните с 2p¹3p¹ в разделе 1).</div></div>
+<div class="tq"><p class="qt"><span>Чему равно J в основном терме атома углерода?</span></p>
+<p class="olab">J</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">0</button><button type="button" class="opt">2</button><button type="button" class="opt">1</button><button type="button" class="opt">1/2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>J = 0: терм ³P₀. Оболочка 2p² заполнена меньше чем наполовину, поэтому J = |L − S| = |1 − 1| = 0.</div></div>
+<div class="tq"><p class="qt"><span>Сколько микросостояний у конфигурации d²?</span></p>
+<p class="olab">Микросостояний</p><div class="opts" role="group"><button type="button" class="opt">100</button><button type="button" class="opt">10</button><button type="button" class="opt">90</button><button type="button" class="opt" data-ok="1">45</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden><span class=fr><span>10!</span><span>2! · 8!</span></span> = 45. Они распадаются на термы ¹G, ³F, ¹D, ³P, ¹S; основной — ³F (как у Ti²⁺ и V³⁺).</div></div>
+<div class="tq"><p class="qt"><span>Чему равно J в основном терме атома железа?</span></p>
+<p class="olab">J</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">4</button><button type="button" class="opt">0</button><button type="button" class="opt">6</button><button type="button" class="opt">2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>J = 4: терм ⁵D₄. 3d⁶: пять электронов со спином вверх и один вниз, S = 2, L = 2; оболочка заполнена больше чем наполовину, поэтому J = L + S = 4.</div></div>
+<div class="tq"><p class="qt"><span>Почему основной терм кислорода ³P₂, а углерода ³P₀?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">У O оболочка 2p заполнена больше чем наполовину</button><button type="button" class="opt">У O больше заряд ядра</button><button type="button" class="opt">У O и C разные L</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>У O оболочка 2p⁴ заполнена больше чем наполовину, и по третьему правилу Хунда J = L + S = 2. У C (2p²) — меньше чем наполовину, J = |L − S| = 0. Термы у p² и p⁴ одинаковые, различается только порядок уровней J.</div></div>
+<!--self:start--><div class="selfBox"><h3 id="h3s">Проверьте себя</h3>
+  <p class="small">Определите основной терм атома: мультиплетность 2S + 1, квантовое число L и J.</p>
+  <div class="row"><b id="qEl" style="font-family:var(--f-display);font-size:19px"></b><button class="btn" id="qNew" type="button">Другой атом</button></div>
+  <div class="quiz">
+    <label><span>2S + 1</span><input id="q0" inputmode="numeric" autocomplete="off"></label>
+    <label><span>L</span><input id="q1" autocomplete="off" spellcheck="false"></label>
+    <label><span>J</span><input id="q2" autocomplete="off" spellcheck="false"></label>
+  </div>
+  <div class="row"><button class="btn primary" id="qChk" type="button">Проверить</button><button class="btn" id="qShow" type="button">Показать решение</button></div>
+  <div class="status" id="qRes">Введите ответы и нажмите «Проверить».</div>
+</div><!--self:end--></div></details></section>
+<script src="js/terms.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="terms";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/terms.js"></script>
+
+</body>
+</html>

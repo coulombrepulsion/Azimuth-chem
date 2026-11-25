@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Pauli principle and the exchange hole</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/pauli.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-pauli-g.webp"><!--pose:end-->
+<h1>Pauli principle and the exchange hole</h1>
+<p class="lead">Two electrons in a one-dimensional box, each in its own orbital φ<sub>n</sub>(x) = √2·sin(nπx). Left: map of the probability of finding the first electron at x₁ and the second at x₂. Right: where the second electron ends up if the first is fixed at x₁ (move x₁ on the map or with the slider).</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>The electronic wave function is antisymmetric under exchange: Ψ(1, 2) = −Ψ(2, 1).</li><li>Hence the Pauli exclusion principle: two electrons with the same spin cannot occupy one orbital.</li><li>Electrons with the same spin avoid each other even without repulsion — this is the exchange (Fermi) hole.</li><li>Hence the triplet usually lies below the singlet of the same configuration (Hund rule); the difference is set by the exchange integral K.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> two electrons in a one-dimensional box</summary><dl><dt>What is computed</dt><dd>Probability maps for the symmetric and antisymmetric functions, Coulomb and exchange integrals, configuration mixing.</dd><dt>Which approximations are made</dt><dd>One dimension; a softened Coulomb repulsion; a few configurations.</dd><dt>What can be concluded</dt><dd>The exchange hole, the sign of 2K and the Hund rule are qualitatively correct; the numbers belong to the model.</dd></dl></details><!--lim:end-->
+<section class="controls" aria-label="Parameters">
+  <div class="crow"><span class="l">Wave function</span><span id="modes" role="group" aria-label="Wave function"></span></div>
+  <div class="crow" id="msRow"><span class="l">Spin projection M<sub>S</sub></span><span id="ms" role="group" aria-label="Spin projection"></span><span class="hint">the spatial part is the same for all three components</span></div>
+  <div class="crow"><span class="l">Orbital φ<sub>a</sub></span><span id="oa" role="group" aria-label="Orbital a"></span><span class="l" style="min-width:auto;margin-left:14px">Orbital φ<sub>b</sub></span><span id="ob" role="group" aria-label="Orbital b"></span></div>
+  <div class="crow"><span class="l">On the map</span><span id="views" role="group" aria-label="What to show"></span></div>
+</section>
+<div class="det" id="formula"></div>
+<div class="work">
+  <div class="panel">
+    <div class="ptitle" id="mapTitle"></div>
+    <div class="mapwrap"><svg id="map" viewBox="0 0 400 400" role="img" aria-label="Map of the two-electron function"></svg></div>
+    <div class="row" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="btn" id="bFlip" type="button">P₁₂: swap the electrons</button><span class="hint" id="flipMsg" style="font-size:13.5px"></span></div>
+    <label class="hint" for="x1">Position of the first electron x₁ = <b id="x1v" style="font-family:var(--f-mono)"></b></label>
+    <input type="range" id="x1" min="0.01" max="0.99" step="0.005" value="0.3">
+    <div class="legend" id="mapLegend"></div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">Conditional density of the second electron with the first at x₁</div>
+    <svg id="cond" viewBox="0 0 560 300" role="img" aria-label="Conditional density and the hole"></svg>
+    <div class="legend" id="condLegend"></div>
+    <div class="nums" id="nums"></div>
+    <div class="ptitle" style="margin-top:4px">The orbitals themselves</div>
+    <svg id="orbs" viewBox="0 0 560 120" role="img" aria-label="Orbitals"></svg>
+  </div>
+</div>
+<div class="explain" id="explain"></div>
+<section class="panel" aria-labelledby="hE" style="gap:10px">
+  <h2 id="hE">Electron repulsion energy: J and K</h2>
+  <p class="hint" style="font-size:14px">J is the Coulomb integral: the repulsion between the clouds φ<sub>a</sub>² and φ<sub>b</sub>². K is the exchange integral; it has no classical analog and arises from antisymmetry. The repulsion here is one-dimensional and smoothed, so the numbers themselves are arbitrary; what matters is how they relate to each other.</p>
+  <div class="nums" id="jk"></div>
+  <div class="bars" id="bars"></div>
+  <p class="hint" style="font-size:14px" id="hund"></p>
+</section>
+<section class="panel" aria-labelledby="hC" style="gap:12px">
+  <h2 id="hC">Coulomb hole: configuration mixing</h2>
+  <p style="font-size:14.5px">The singlet of two electrons in φ₁ is a single determinant |φ₁φ̄₁|, as in Hartree–Fock. Its electrons have opposite spins, and this function contains no correlation of their instantaneous positions: there is no Coulomb hole. The average Coulomb repulsion is still included — it enters the mean field and shapes the orbitals. Now add a second configuration:</p>
+  <div class="det"><span>Ψ = c₁·φ₁(1)φ₁(2) + c₂·φ₂(1)φ₂(2), &nbsp; c₁ = cos θ, c₂ = sin θ &nbsp; (singlet spin part)</span></div>
+  <div class="crow"><span class="l">Weight of the second configuration θ</span><input type="range" id="th" min="-45" max="45" step="0.5" style="width:260px"><b class="val" id="thv" style="font-family:var(--f-mono)"></b>
+    <button class="btn" id="bMin" type="button">Energy minimum (CI)</button><button class="btn" id="bZero" type="button">Single determinant (θ = 0)</button></div>
+  <div class="crow"><span class="l">Repulsion strength λ</span><input type="range" id="lam" min="0.5" max="8" step="0.1" style="width:260px"><b class="val" id="lamv" style="font-family:var(--f-mono)"></b><span class="hint">larger λ is the same as a wider box: repulsion matters more than kinetic energy</span></div>
+  <div class="work">
+    <div class="panel" style="border:none;padding:0">
+      <div class="ptitle">|Ψ(x₁, x₂)|² (summed over spins)</div>
+      <svg id="ciMap" viewBox="0 0 400 400" role="img" aria-label="Density map for the mixed function"></svg>
+      <div class="hint">The position of the first electron x₁ is the same as above; it can also be moved on this map.</div>
+    </div>
+    <div class="panel" style="border:none;padding:0">
+      <div class="ptitle">Where the second electron (spin ↓) is if the first (↑) is at x₁</div>
+      <svg id="ciCond" viewBox="0 0 560 250" role="img" aria-label="Conditional density and the Coulomb hole"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>c(x₂)</span><span><i class="sw" style="border-color:var(--ref);border-top-style:dashed"></i>density of ↓ electrons without correlation</span><span><i class="box" style="background:var(--hole);border:1px solid var(--neg)"></i>Coulomb hole</span></div>
+      <div class="ptitle" style="margin-top:6px">Energy E(θ), arb. units</div>
+      <svg id="ciE" viewBox="0 0 560 170" role="img" aria-label="Energy as a function of the weight of the second configuration"></svg>
+      <div class="nums" id="ciNums"></div>
+    </div>
+  </div>
+  <div class="explain" id="ciText"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">How can the energy of a Slater determinant be computed without expanding it?</span><a class="nqA" href="slater.html" data-goto="sc">Slater–Condon rules →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Select “Triplet” and set φ<sub>a</sub> = φ<sub>b</sub>. What do you see, and why?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Ψ ≡ 0 — the Pauli exclusion principle</button><button type="button" class="opt">Ψ is largest at x₁ = x₂</button><button type="button" class="opt">The picture is the same as for the singlet</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Ψ ≡ 0: the spatial part of the triplet is antisymmetric and vanishes identically when the orbitals are the same. Two electrons with the same spin in one orbital — forbidden by the Pauli principle.</div></div>
+<div class="tq"><p class="qt"><span>Triplet with M<sub>S</sub> = 0: the electrons have different spins. Is there a dip at x₂ = x₁?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">No: with different spins there is no dip</button><button type="button" class="opt" data-ok="1">Yes: c(x₁) = 0, as for the other triplet components</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Yes, c(x₁) = 0. The dip is determined by the antisymmetric spatial part, which is the same for all three triplet components.</div></div>
+<div class="tq"><p class="qt"><span>For φ₁ and φ₂ compare the repulsion energies of the singlet and the triplet. Why is the triplet lower?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">In the triplet, same-spin electrons avoid each other</button><button type="button" class="opt">The singlet is always lower</button><button type="button" class="opt">They have the same energy</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The triplet is lower by 2K: with equal spins the spatial function is antisymmetric, the electrons avoid each other (exchange hole), and the repulsion is smaller. This is the basis of the Hund rule.</div></div>
+<div class="tq"><p class="qt"><span>Turn on “signed Ψ” and press P₁₂ for the triplet and for the singlet. How do the results differ?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">The singlet Ψ changes sign, the triplet does not</button><button type="button" class="opt">Ψ changes sign for both</button><button type="button" class="opt" data-ok="1">The triplet Ψ changes sign, the singlet does not</button><button type="button" class="opt">Nothing changes for either</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>For the triplet all the colors are reversed: P₁₂Ψ = −Ψ. For the singlet the picture does not change: the spatial part is symmetric, and antisymmetry comes from the spin factor.</div></div>
+<div class="tq"><p class="qt"><span>CI block: press “Energy minimum” at λ = 3 and at λ = 8. How do c₂ and the density dip change?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">|c₂| grows, the dip deepens</button><button type="button" class="opt">|c₂| decreases, the dip disappears</button><button type="button" class="opt">Nothing changes</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>c₂ ≈ −0.27 and a dip of ≈ 68 % at λ = 3; c₂ ≈ −0.52 and a dip of ≈ 99 % at λ = 8. The stronger the repulsion, the greater the weight of the second configuration and the deeper the Coulomb hole.</div></div>
+</div></details></section>
+<script src="js/pauli.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="pauli";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+<script src="js/pauli.js"></script>
+
+</body>
+</html>

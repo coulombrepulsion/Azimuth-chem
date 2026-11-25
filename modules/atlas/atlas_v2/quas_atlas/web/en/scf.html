@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>SCF iterations</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/scf.css">
+<link rel="stylesheet" href="../assets/css/addon.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-scf-g.webp"><!--pose:end-->
+<h1>SCF iterations</h1>
+<p class="lead">A real Hartree–Fock–Roothaan calculation for a diatomic molecule in the STO-3G basis — one 1s function per atom, as in the classic treatment of H₂. Step through the self-consistency cycle and watch how the matrices, orbitals and energy change.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>The Fock operator depends on the orbitals themselves, so the Hartree–Fock–Roothaan equations FC = SCε are solved iteratively to self-consistency.</li><li>Convergence depends on the initial guess; DIIS speeds it up by extrapolating over the iteration history.</li><li>RHF describes bond breaking incorrectly; UHF gives the right limit at the cost of spin contamination.</li><li>Mulliken and Löwdin charges are a conventional partition of the density: they depend on the scheme and the basis.</li><li>By Koopmans’ theorem −ε of an occupied orbital estimates the vertical ionisation energy: orbital relaxation and correlation give corrections of opposite sign that partly cancel; −ε of a virtual one as an electron affinity is unreliable.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> Hartree–Fock in a minimal basis</summary><dl><dt>What is computed</dt><dd>RHF and UHF iterations for H₂ and HeH⁺ in the STO-3G basis, energy curves, populations.</dd><dt>Which approximations are made</dt><dd>The HF method (no correlation); a minimal basis, one 1s function per atom.</dd><dt>What can be concluded</dt><dd>The mechanics of SCF are shown exactly; the converged energy is the solution of the HF equations in this basis, not the exact energy of the molecule.</dd></dl></details><!--lim:end-->
+<section class="controls" aria-label="Calculation parameters">
+  <div class="crow"><span class="l">Molecule</span><span id="mol" role="group" aria-label="Molecule"></span></div>
+  <div class="crow"><span class="l">Distance R</span><input type="range" id="R" min="0.8" max="4" step="0.01"><span class="val" id="Rv"></span></div>
+  <div class="crow"><span class="l">Initial guess P⁽⁰⁾</span><span id="guess" role="group" aria-label="Initial guess"></span></div>
+  <div class="crow"><span class="l">Convergence acceleration</span><span id="acc" role="group" aria-label="Acceleration"></span><span class="hint" id="accHint"></span></div>
+  <div class="crow" id="dampRow"><span class="l">Damping α</span><input type="range" id="damp" min="0" max="0.95" step="0.05"><span class="val" id="dampv"></span><span class="hint">P = (1 − α)·P<sub>new</sub> + α·P<sub>old</sub></span></div>
+</section>
+<div class="work">
+  <div class="panel">
+    <div class="ptitle">Self-consistency cycle</div>
+    <svg id="flow" viewBox="0 0 480 470" role="img" aria-label="SCF cycle diagram"></svg>
+    <div class="row"><button class="btn primary" id="bRun" type="button">▶ Start</button><button class="btn" id="bStep" type="button">Step</button><button class="btn" id="bIter" type="button">Iteration</button><button class="btn" id="bReset" type="button">Restart</button></div>
+    <div class="row" style="gap:8px"><span class="hint">Speed</span><input type="range" id="spd" min="150" max="1500" step="50" style="width:180px" aria-label="Auto-run speed"><span class="val" id="spdv"></span></div>
+    <p class="hint" style="margin:0">“Start” — the cycle goes by itself, step by step; the current step is highlighted in the diagram. “Step” and “Iteration” — manual stepping. Changing parameters restarts the calculation.</p>
+    <div class="status" id="status" aria-live="polite"></div>
+  </div>
+  <div class="panel">
+    <div class="ptitle" id="matTitle">Matrices of the current step (a.u.)</div>
+    <div class="mats" id="mats"></div>
+    <div class="kv" id="kv"></div>
+    <div class="ptitle" style="margin-top:4px">Level diagram: diagonal of F (basis functions) and orbitals ε</div>
+    <svg id="mo" viewBox="0 0 460 200" role="img" aria-label="MO level diagram"></svg>
+    <details><summary>Integrals: S, h, (μν|λσ)</summary><div class="mats" id="ints" style="margin-top:8px"></div></details>
+  </div>
+</div>
+<div class="two">
+  <div class="panel">
+    <div class="ptitle">Orbitals and density along the molecular axis</div>
+    <svg id="orb" viewBox="0 0 540 280" role="img" aria-label="Orbitals on the axis"></svg>
+    <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>φ₁ — occupied (σ)</span><span><i class="sw" style="border-color:var(--virt);border-top-style:dashed"></i>φ₂ — virtual (σ*)</span><span><i class="box" style="background:var(--rho);border:1px solid var(--rho-l)"></i>electron density ρ</span></div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">Convergence</div>
+    <svg id="conv" viewBox="0 0 540 280" role="img" aria-label="Energy and density matrix change over iterations"></svg>
+    <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>E by iteration (left axis)</span><span><i class="sw" style="border-color:var(--warn)"></i>lg ‖ΔP‖ (right axis)</span><span><i class="sw" style="border-color:var(--muted);border-top-style:dashed"></i>threshold δ = 10⁻⁶</span><span><i class="sw" style="border-color:var(--warn);border-top-style:dotted;opacity:.6"></i><span id="ghostLab"></span></span></div>
+  </div>
+</div>
+<section class="panel" aria-labelledby="hT">
+  <h2 id="hT">Iterations</h2>
+  <div class="tablewrap"><table><thead><tr><th>k</th><th>Total E</th><th>E − E<sub>conv</sub></th><th>ε₁</th><th>ε₂</th><th id="thq">charge</th><th>‖ΔP‖</th></tr></thead><tbody id="tab"></tbody></table></div>
+  <p class="hint" id="note"></p>
+  <details open><summary>The same numbers in the output format of a quantum chemistry program</summary>
+    <p class="hint" style="margin:6px 0">A simplified example modeled on the output of the ORCA program: the SCF iteration table, final energy, orbital energies and charges.</p>
+    <pre id="log" style="font-family:var(--f-mono);font-size:12.5px;line-height:1.45;background:var(--soft);border-radius:8px;padding:10px 12px;overflow-x:auto;margin:0"></pre></details>
+</section>
+<section class="panel" aria-labelledby="hS">
+  <h2 id="hS">Potential energy curve: RHF and UHF</h2>
+  <p class="hint" style="font-size:14px" id="scanIntro"></p>
+  <div class="two">
+    <div><svg id="scan" viewBox="0 0 540 300" role="img" aria-label="Energy as a function of distance" style="cursor:pointer"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>RHF</span><span><i class="sw" style="border-color:var(--rho-l)"></i>UHF</span><span><i class="sw" style="border-color:var(--muted);border-top-style:dashed"></i>limit as R → ∞ (separate atoms)</span><span>● — current R; click the plot to change R</span></div></div>
+    <div style="display:flex;flex-direction:column;gap:10px"><svg id="s2" viewBox="0 0 540 170" role="img" aria-label="UHF spin contamination"></svg><div class="kv" id="scanKv"></div><div class="status" id="scanText"></div></div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="hZ">
+  <h2 id="hZ">Variational principle: the basis-function exponent ζ</h2>
+  <p class="hint" style="font-size:14px">The 1s basis function ~ e<sup>−ζr</sup> (here approximated by three STO-3G Gaussians). The larger ζ, the more “compact” the function. By the variational principle, the best function is the one that gives the lowest energy, and that is what we look for.</p>
+  <div class="crow"><span class="l">Vary ζ</span><span id="zwho" role="group" aria-label="Whose exponent"></span></div>
+  <div class="crow"><span class="l">ζ</span><input type="range" id="zeta" min="0.6" max="3.6" step="0.01"><span class="val" id="zetav"></span><button class="btn" id="zStd" type="button">Standard STO-3G</button><button class="btn" id="zMin" type="button">Find minimum</button></div>
+  <div class="two"><svg id="zchart" viewBox="0 0 540 240" role="img" aria-label="Energy as a function of ζ"></svg><div class="status" id="zText"></div></div>
+</section>
+<section class="panel" aria-labelledby="hPop">
+  <h2 id="hPop">Population analysis: Mulliken and Löwdin</h2>
+  <p class="hint" style="font-size:14px">The number of electrons is N = Σ<sub>μν</sub>P<sub>μν</sub>S<sub>νμ</sub> = Tr(PS). The diagonal terms P<sub>μμ</sub> are easily assigned to atoms, while the overlap population 2P<sub>12</sub>S<sub>12</sub> belongs to the bond. <b>Mulliken</b> splits it equally between the atoms: N<sub>A</sub> = (PS)<sub>AA</sub>. <b>Löwdin</b> first symmetrically orthogonalizes the basis (χ′ = S<sup>−1/2</sup>χ), where there is no overlap: N<sub>A</sub> = (S<sup>1/2</sup>PS<sup>1/2</sup>)<sub>AA</sub>. The charge is q<sub>A</sub> = Z<sub>A</sub> − N<sub>A</sub>. The calculation is a converged RHF at the current R and ζ.</p>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:10px"><svg id="popBars" viewBox="0 0 540 210" role="img" aria-label="Partitioning electrons between atoms"></svg><div class="tablewrap" id="popTab"></div></div>
+    <div style="display:flex;flex-direction:column;gap:10px"><svg id="popR" viewBox="0 0 540 260" role="img" aria-label="Charges and bond order as functions of R"></svg><div class="legend" id="popLeg"></div><div class="status" id="popText"></div></div>
+  </div>
+</section>
+<section class="panel addon" aria-labelledby="hKoop">
+  <h2 id="hKoop">Orbital energies and Koopmans’ theorem</h2>
+  <p class="hint">The ionisation energy in three ways in the same STO-3G basis: from the orbital energy (Koopmans), as the difference of the Hartree–Fock energies of the cation and the molecule (ΔSCF), and with the full CI of the neutral molecule. The cation has one electron, so its energy is exact in the basis.</p>
+  <div class="crow"><span class="l">Molecule</span><span class="grp" id="kG" role="group" aria-label="Molecule"></span></div>
+  <div class="crow"><span class="l">Distance R</span><input type="range" id="kR" min="0.8" max="4" step="0.01" value="1.4" aria-label="Distance"><span class="val" id="kRv"></span></div>
+  <div class="tablewrap"><table class="tbl" id="kTab"></table></div>
+  <p class="status note" id="kNote"></p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">The energy has converged: does that mean the answer is right?</span><a class="nqA" href="h2.html" data-goto="h2">H₂ dissociation →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>HeH⁺ with default parameters: how many iterations are needed without DIIS and with DIIS? And at R = 3.5 bohr?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">7 and 6; at R = 3.5 bohr, 7 and 6</button><button type="button" class="opt" data-ok="1">7 and 6; at R = 3.5 bohr, 13 and 7</button><button type="button" class="opt">13 and 7; at R = 3.5 bohr, 7 and 6</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>At R = 1.4632 bohr, 7 and 6; at R = 3.5 bohr, 13 and 7. When the bond is stretched, plain iterations converge more slowly, and DIIS gains more.</div></div>
+<div class="tq"><p class="qt"><span>Step through the HeH⁺ iterations and follow the charge on H. How does it change, and why?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Grows from ≈ +0.53 to ≈ +0.84</button><button type="button" class="opt">Does not change</button><button type="button" class="opt" data-ok="1">Decreases from ≈ +0.84 to ≈ +0.53</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>From +0.84 at the first iteration (F = h: no repulsion, the electrons sit almost entirely on He) to +0.53 after convergence: electron repulsion pushes part of the density toward hydrogen.</div></div>
+<div class="tq"><p class="qt"><span>H₂ with the initial guess “both electrons on H(1)”. Where does the calculation converge?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">To the H⁻H⁺ solution</button><button type="button" class="opt" data-ok="1">To the symmetric solution with zero charges</button><button type="button" class="opt">The calculation does not converge</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>To the symmetric solution with zero atomic charges, in 7 iterations. The calculation restores the molecular symmetry by itself.</div></div>
+<div class="tq"><p class="qt"><span>The E(R) curve of H₂: what does ⟨S²⟩ ≈ 1 for UHF at R = 6 bohr mean?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">It is a pure triplet</button><button type="button" class="opt" data-ok="1">The function is a mixture of singlet and triplet</button><button type="button" class="opt">It is a calculation error</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The UHF function is a mixture of singlet (⟨S²⟩ = 0) and triplet (⟨S²⟩ = 2), i.e. spin contamination. UHF separates from RHF at about 2.2 bohr and describes the dissociation limit correctly at the cost of breaking spin symmetry; at finite R its energy is still above CI (by about 21 kJ/mol at 4 bohr).</div></div>
+<div class="tq"><p class="qt"><span>Variational principle: how does the optimal ζ change when H₂ is compressed from 1.4 to 0.8 bohr?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">It decreases</button><button type="button" class="opt">Does not change</button><button type="button" class="opt" data-ok="1">It grows: the functions contract toward the nuclei</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>It grows: ≈ 1.19 at 1.4 bohr and ≈ 1.37 at 0.8 bohr. On compression the functions “contract” toward the nuclei; in the limit R → 0 one gets a He atom with ζ ≈ 1.69.</div></div>
+<div class="tq"><p class="qt"><span>Population analysis, HeH⁺ at R = 1.4632 bohr: which atom is more positive according to Mulliken, and which according to Löwdin?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Mulliken — H, Löwdin — He</button><button type="button" class="opt">Both schemes — H</button><button type="button" class="opt">Both schemes — He</button><button type="button" class="opt">Mulliken — He, Löwdin — H</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>By Mulliken, H (+0.530 versus +0.470 on He); by Löwdin, He (+0.527 versus +0.473 on H). The schemes disagree even on the sign of the difference: an atomic charge is not an observable but the result of an arbitrary partitioning.</div></div>
+<div class="tq"><p class="qt"><span>Set ζ(H) = 1.6 in the section on the variational principle. What happened to the Mulliken charge of H, and what does it tell you?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Unchanged: the charge is a property of the molecule</button><button type="button" class="opt" data-ok="1">Changed noticeably: Mulliken charges depend on the basis</button><button type="button" class="opt">Changed sign</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>It grew from +0.530 to +0.597 (Löwdin: +0.545), although the molecule is the same: Mulliken charges depend strongly on the basis.</div></div>
+<div class="tq"><p class="qt"><span>H₂: why is the Mayer bond order equal to 1 at any R, even though the overlap population drops to zero?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">RHF always puts both electrons in one bonding MO</button><button type="button" class="opt">The Mayer index is distance-independent by definition</button><button type="button" class="opt">The overlap population does not actually drop</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>RHF always puts both electrons into a single bonding MO, so it describes one two-electron bond even when the atoms are pulled apart. This is the same reason RHF describes the dissociation of H₂ incorrectly.</div></div>
+<div class="tq"><p class="qt"><span>SCF has converged: the energy no longer changes in the tenth decimal place. Can one tell from this how close it is to the exact energy of the molecule?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">It cannot be determined from these data: convergence says nothing about method and basis errors</button><button type="button" class="opt">Yes: to within 10⁻¹⁰ E<sub>h</sub></button><button type="button" class="opt">Yes: to within about 1 kJ/mol</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>It cannot be determined from these data. Convergence means only that the Hartree–Fock equations in this basis have been solved. The method error (no correlation) and the basis error remain: for H₂ at 1.4 bohr in the 6-31G** basis the converged RHF lies 43 mE<sub>h</sub> (about 113 kJ/mol) above the exact energy.</div></div>
+<div class="tq"><p class="qt"><span>“Koopmans’ theorem”: HeH⁺ at R = 1.46 bohr. Which is larger — the Koopmans IP or the ΔSCF one?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">ΔSCF, by the correlation</button><button type="button" class="opt" data-ok="1">Koopmans, by the relaxation (about 1.2 eV)</button><button type="button" class="opt">They are equal by symmetry</button><button type="button" class="opt">ΔSCF, by 1.2 eV</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The Koopmans IP is larger: −ε₁ = 43.5 eV, ΔSCF = 42.3 eV. The cation’s orbital rearranges and lowers its energy — this is relaxation; for H₂ in a minimal basis there is none, the orbital is fixed by symmetry.</div></div>
+</div></details></section>
+<script src="js/scf.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="scf";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/scf.js"></script>
+
+<script src="js/koop.js"></script>
+</body>
+</html>

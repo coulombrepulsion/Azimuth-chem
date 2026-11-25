@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>多组态方法：CASSCF</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/cas.css">
+
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261028-casscf-g.webp"><!--pose:end-->
+<h1>多组态方法：CASSCF</h1>
+<p class="lead">哈特里-福克、MP2 和耦合簇都以单个行列式为出发点。当几个组态同等重要时——键断裂、双自由基、绕双键扭转——这个基础就会失效。CASSCF 方法在一个小的“活性空间”轨道中做完全 CI，同时优化轨道本身。它描述静态相关，动态相关则在其上补充——例如用微扰理论 NEVPT2。所有曲线都用 PySCF 在 cc-pVDZ 基组中计算。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>当几个组态同等重要时（键断裂、双自由基），单行列式方法就会失效——这就是静态相关。</li><li>CASSCF 在轨道的活性空间内求解完全 CI，同时优化轨道。</li><li>自然轨道占据数明显介于 0 和 2 之间，是多组态特征的标志。</li><li>动态相关在 CASSCF 之上补充：NEVPT2、CASPT2、MRCI；活性空间的大小大约限于 18 个轨道。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型边界：</b>双原子和小分子，cc-pVDZ</summary><dl><dt>计算的是什么</dt><dd>H₂ 曲线（RHF、UHF、CASSCF(2,2)、完全 CI），乙烯扭转（RHF、CASSCF(2,2)、NEVPT2），N₂ 曲线（RHF、CCSD、CCSD(T)、CASSCF(6,6)、NEVPT2）；自然轨道占据数；CAS(n,m) 的行列式数目。</dd><dt>采用了哪些近似</dt><dd>cc-pVDZ 基组；乙烯扭转时几何构型刚性；N₂ 以 NEVPT2 代替完全 CI 作为参照；CCSD 在大 R 处可能不收敛。</dd><dt>能得出什么结论</dt><dd>何时单个行列式不够用、如何从占据数看出来——可以；精确的键解离能——不行：需要更大的基组以及 MRCI 或类似方法。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">H₂：静态相关与动态相关</h2>
+  <p class="hint">活性空间 CAS(2,2)——两个电子在 σ<sub>g</sub> 和 σ<sub>u</sub> 两个轨道上。限制性哈特里-福克（RHF）把两个电子放在同一轨道上，键断裂时能量向上偏离。非限制性（UHF）把 α 和 β 电子分到不同原子上，给出正确的能量，但代价是混入了其他自旋态。CASSCF 能正确地断键并保持单重态。</p>
+  <div class="crow"><span class="l">距离 R</span><input type="range" id="R" min="0" max="35" step="1" value="2" aria-label="距离 R"><span class="val" id="Rv"></span></div>
+  <div class="two">
+    <svg id="h2C" viewBox="0 0 560 330" role="img" aria-label="H₂ 的能量：RHF、UHF、CASSCF 与完全 CI"></svg>
+    <div><div class="mbox" id="h2M"></div></div>
+  </div>
+  <p class="hint" id="h2N"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">乙烯：绕双键扭转</h2>
+  <p class="hint">把一个 CH₂ 基团扭转时 π 键断裂：在 90° 时 π 和 π* 轨道简并，基态是具有两个同等组态的双自由基。活性空间 CAS(2,2) 就是这两个 π 和 π* 轨道。</p>
+  <div class="crow"><span class="l">扭转角</span><input type="range" id="ang" min="0" max="9" step="1" value="0" aria-label="旋转角"><span class="val" id="angV"></span></div>
+  <div class="two">
+    <svg id="ethC" viewBox="0 0 560 330" role="img" aria-label="乙烯绕 C=C 键扭转时的能量"></svg>
+    <div><div class="mbox" id="ethM"></div></div>
+  </div>
+  <p class="hint" id="ethN"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">N₂：三个键同时断裂</h2>
+  <p class="hint">三键需要活性空间 CAS(6,6)：σ、π、π 轨道以及反键的 σ*、π*、π*。这里还有 CCSD 和 CCSD(T)——最好的单行列式方法，以及 NEVPT2——用微扰理论加入动态相关修正的 CASSCF。每种方法的能量都以其自身在 1.1 Å（接近平衡）处的能量为零点。</p>
+  <div class="crow"><span class="l">距离 R</span><input type="range" id="Rn" min="0" max="21" step="1" value="2" aria-label="N₂ 的距离 R"><span class="val" id="RnV"></span></div>
+  <div class="two">
+    <svg id="n2C" viewBox="0 0 560 330" role="img" aria-label="不同方法的 N₂ 能量曲线"></svg>
+    <div><div class="mbox" id="n2M"></div></div>
+  </div>
+  <p class="hint" id="n2N"></p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">活性空间的代价</h2>
+  <p class="hint">CASSCF 在活性空间内求解完全 CI，因此行列式数目增长得和完全 CI 一样快——只是这里轨道不多。请选择电子数和轨道数。</p>
+  <div class="crow"><span class="l">活性电子数 n</span><input type="range" id="ne" min="2" max="24" step="2" value="6" aria-label="活性电子数"><span class="val" id="neV"></span></div>
+  <div class="crow"><span class="l">活性轨道数 m</span><input type="range" id="no" min="2" max="24" step="1" value="6" aria-label="活性轨道数"><span class="val" id="noV"></span></div>
+  <div class="kvt" id="casK"></div>
+  <p class="hint" id="casN"></p>
+  <div class="eq">
+    <div class="eqb"><div class="t">如何选择活性轨道</div>活性空间中放入占据数明显偏离 2 和 0 的轨道：断裂键的成键和反键轨道、金属的未成对 d 轨道、π 体系。自然轨道占据数是主要判据：在 0.02 到 1.98 之间的轨道需要放进活性空间。</div>
+    <div class="eqb"><div class="t">静态与动态</div>CASSCF 描述静态相关——几个组态的简并。动态相关——电子在短距离内如何相互回避——它几乎不考虑。动态相关在其上补充：CASPT2、NEVPT2（微扰理论）或 MRCI（基于多个参考组态的 CI）。</div>
+    <div class="eqb"><div class="t">规模极限</div>常规 CASSCF 大约可做到 18 个电子分布在 18 个轨道上：约 2.4·10⁹ 个行列式。再大就需要近似求解器：DMRG、选择性 CI（selected CI）、限制激发数的 RASSCF。</div>
+    <div class="eqb"><div class="t">陷阱</div>结果依赖于活性空间的选择，而且在不同几何构型或不同态之间最优轨道可能“切换”。因此计算曲线时要把轨道逐点传递，多个态则使用态平均（SA-CASSCF）。</div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">为什么两个 He 原子仍然相互吸引，尽管在 HF 中它们不成键？</span><a class="nqA" href="dispersion.html" data-goto="disp">分子间相互作用 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>H₂，R = 2.0 Å：CASSCF(2,2) 中 σu 轨道的占据数是多少？</span></p>
+<p class="olab">σu 占据数</p><div class="opts" role="group"><button type="button" class="opt">1.55</button><button type="button" class="opt" data-ok="1">0.45</button><button type="button" class="opt">0.05</button><button type="button" class="opt">1.00</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>约 0.45：σ<sub>g</sub> 上有 1.55 个电子，σ<sub>u</sub> 上 0.45 个。波函数已明显是双组态的，而此时 RHF 比完全 CI 高 251 kJ/mol。</div></div>
+<div class="tq"><p class="qt"><span>同样 R = 2.0 Å：UHF 波函数的 ⟨S²⟩ 是多少？</span></p>
+<p class="olab">⟨S²⟩</p><div class="opts" role="group"><button type="button" class="opt">2.00</button><button type="button" class="opt">0.75</button><button type="button" class="opt" data-ok="1">0.90</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>约 0.90，而单重态应为 0。UHF 的能量只比完全 CI 高 39 kJ/mol，但其波函数大约是单重态和三重态各占一半的混合，因此其自旋性质和密度都不对。</div></div>
+<div class="tq"><p class="qt"><span>乙烯：CASSCF(2,2) 给出的旋转能垒（90° 处）是多少 kJ/mol？</span></p>
+<p class="olab">能垒，kJ/mol</p><div class="opts" role="group"><button type="button" class="opt">542</button><button type="button" class="opt" data-ok="1">312</button><button type="button" class="opt">160</button><button type="button" class="opt">272</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>约 312 kJ/mol；NEVPT2 为 322，RHF 为 542。顺反异构化的实验活化能约 272 kJ/mol；计算能垒偏高，因为扭转时几何构型没有弛豫。</div></div>
+<div class="tq"><p class="qt"><span>为什么在大 R 处 CCSD(T) 给出的 N₂ 能量比平衡处还低？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">(T) 修正从单个行列式出发；当轨道几乎半占据时它已不再是小量</button><button type="button" class="opt">cc-pVDZ 基组太小</button><button type="button" class="opt">在大 R 处 N₂ 基态的自旋发生变化</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>耦合簇从单个 RHF 行列式出发构造，而 (T) 修正用微扰理论计算。三键断裂时六个轨道几乎半占据，振幅很大，修正不再是小量：它把能量“拉垮”了。问题的征兆可以提前看到——从自然轨道占据数。</div></div>
+<div class="tq"><p class="qt"><span>活性空间一节：CAS(16,16) 中有多少个行列式？以百万为单位作答。</span></p>
+<p class="olab">行列式数，百万</p><div class="opts" role="group"><button type="button" class="opt">12.9</button><button type="button" class="opt">2400</button><button type="button" class="opt">601</button><button type="button" class="opt" data-ok="1">165.6</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>C(16, 8)² = 12 870² ≈ 1.656 亿。一个 CI 向量占 1.3 GB——已经很重，但仍是常规 CASSCF；CAS(18,18) 为 24 亿。</div></div>
+</div></details></section>
+<script src="js/casscf.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="cas";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/casscf.js"></script>
+
+</body>
+</html>

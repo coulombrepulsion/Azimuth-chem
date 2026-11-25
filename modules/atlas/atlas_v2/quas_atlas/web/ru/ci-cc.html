@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Конфигурационное взаимодействие и связанные кластеры</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/cicc.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-ci-cc-g.webp"><!--pose:end-->
+<h1>Конфигурационное взаимодействие и связанные кластеры</h1>
+<p class="lead">Точная волновая функция в данном базисе — комбинация всех определителей, которые можно построить из орбиталей: это полное КВ. Их число растёт так быстро, что точный расчёт доступен только для крошечных систем. Здесь видно, почему обрезанное КВ (CISD) неожиданно портит энергию больших систем и как экспоненциальная форма метода связанных кластеров это исправляет. Модель H₂ в минимальном базисе решается прямо на странице, ряд (H₂)<sub>n</sub> в базисе 6-31G посчитан в PySCF.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Полное КВ — точное решение в данном базисе, но число определителей растёт факториально: для бензола даже в STO-3G их около 3·10¹⁹.</li><li>CISD берёт только одно- и двукратные возбуждения и поэтому не размерно-согласован: для n невзаимодействующих молекул его корреляционная энергия растёт лишь как √n.</li><li>В методе связанных кластеров Ψ = exp(T)·Φ₀; экспонента сама порождает произведения амплитуд (½T₂² и т. д.), поэтому CCSD размерно-согласован.</li><li>CISD и CCSD стоят одинаково (N⁶); поправка (T) добавляет трёхкратные возбуждения по теории возмущений за N⁷.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> модельные системы: H₂ и невзаимодействующие (H₂)ₙ</summary><dl><dt>Что вычисляется</dt><dd>Число определителей по уровням возбуждения; КВ 2 × 2 для H₂ в базисе STO-3G при любом R; энергии HF, CISD, CCSD, CCSD(T) и полного КВ для (H₂)ₙ в базисе 6-31G, n = 1…4; веса конфигураций димера в полном КВ, CISD и CCSD.</dd><dt>Какие приближения приняты</dt><dd>Минимальный базис для H₂; молекулы в (H₂)ₙ не взаимодействуют (10 Å); подсчёт определителей — без учёта симметрии и замороженного остова.</dd><dt>Какой вывод можно сделать</dt><dd>Почему обрезанное КВ не размерно-согласовано и как это исправляет экспоненциальный анзац — да; точность методов для реальных молекул — нет: её показывают страницы «Иерархия методов» и «Сходимость по базису».</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Сколько всего определителей</h2>
+  <p class="hint">Определитель получается, если выбрать, какие спин-орбитали заняты. Возбуждение уровня k — замена k занятых спин-орбиталей на k свободных. Полное КВ включает все уровни, CISD — только одно- и двукратные.</p>
+  <div class="crow"><span class="l">Молекула</span><span class="grp" id="molG" role="group" aria-label="Молекула"></span></div>
+  <div class="crow"><span class="l">Базис</span><span class="grp" id="basG" role="group" aria-label="Базис"></span></div>
+  <svg id="detC" viewBox="0 0 960 300" role="img" aria-label="Число определителей по уровням возбуждения"></svg>
+  <div class="tablewrap" id="detT"></div>
+  <p class="hint" id="detN"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">H₂ в минимальном базисе: две конфигурации</h2>
+  <p class="hint">Из двух орбиталей σ<sub>g</sub> и σ<sub>u</sub> для основного состояния подходят две конфигурации: σ<sub>g</sub>² (Хартри–Фок) и σ<sub>u</sub>². Матрица КВ 2 × 2 связывает их обменным интегралом K = (σ<sub>g</sub>σ<sub>u</sub>|σ<sub>g</sub>σ<sub>u</sub>). Для двух электронов CISD здесь совпадает с полным КВ.</p>
+  <div class="crow"><span class="l">Расстояние R</span><input type="range" id="R" min="0" max="72" step="1" value="7" aria-label="Расстояние R"><span class="val" id="Rv"></span></div>
+  <div class="two">
+    <svg id="h2C" viewBox="0 0 560 330" role="img" aria-label="Энергия H₂: Хартри–Фок и КВ"></svg>
+    <div><div class="mbox" id="h2M"></div><div id="h2W"></div></div>
+  </div>
+  <p class="hint" id="h2N"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Размерная согласованность: n молекул, которые не видят друг друга</h2>
+  <p class="hint">Энергия n невзаимодействующих молекул обязана быть ровно в n раз больше энергии одной. Полное КВ и связанные кластеры это выполняют, CISD — нет: в общей волновой функции нет конфигураций, где возбуждены сразу две молекулы (это уже четырёхкратное возбуждение).</p>
+  <div class="crow"><span class="l">Модель</span><span class="grp" id="szG" role="group" aria-label="Модель"></span></div>
+  <svg id="szC" viewBox="0 0 960 300" role="img" aria-label="Доля корреляционной энергии на молекулу"></svg>
+  <div class="tablewrap" id="szT"></div>
+  <p class="hint" id="szN"></p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">Экспоненциальный анзац</h2>
+  <p class="hint">В методе связанных кластеров Ψ = e<sup>T</sup>Φ<sub>0</sub>, где T = T₁ + T₂ + … — операторы возбуждений. Для двух далёких молекул T = T<sub>A</sub> + T<sub>B</sub>, и e<sup>T<sub>A</sub>+T<sub>B</sub></sup> = e<sup>T<sub>A</sub></sup>·e<sup>T<sub>B</sub></sup>: волновая функция сама распадается на произведение. Член ½T₂² даёт одновременные возбуждения обеих молекул, хотя в T их нет.</p>
+  <svg id="ampC" viewBox="0 0 960 260" role="img" aria-label="Веса конфигураций димера (H₂)₂"></svg>
+  <p class="hint" id="ampN"></p>
+  <div class="eq">
+    <div class="eqb"><div class="t">Почему CISD «теряет» энергию</div>В CISD у n молекул есть только конфигурации с одной возбуждённой молекулой. Их вклад во вторую поправку растёт как n, а нормировка функции — тоже; в итоге корреляционная энергия растёт лишь как √n, и на одну молекулу её приходится всё меньше.</div>
+    <div class="eqb"><div class="t">Связанные кластеры</div>CCSD содержит те же параметры, что CISD (амплитуды t₁, t₂), но экспонента «бесплатно» добавляет их произведения: несвязанные четырёх-, шестикратные возбуждения. Поэтому метод размерно-согласован, а для двухэлектронных фрагментов CCSD точен.</div>
+    <div class="eqb"><div class="t">Цена</div>CISD и CCSD стоят одинаково — N⁶, но уравнения CCSD нелинейны и решаются итерациями. Поправка (T) для трёхкратных возбуждений стоит N⁷ и даёт «золотой стандарт» CCSD(T).</div>
+    <div class="eqb"><div class="t">Где CC тоже ломается</div>Связанные кластеры строятся от одного определителя. Если важны сразу несколько конфигураций (разрыв связей, бирадикалы), амплитуды становятся большими и CCSD(T) уходит ниже точной энергии — см. страницу «Иерархия методов и лестница Якова».</div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Можно ли получить бо́льшую часть корреляции дешевле, чем CCSD?</span><a class="nqA" href="mp2.html" data-goto="mp2">Теория возмущений и MP2 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Вода в базисе 6-31G* со сферическими d-функциями (18 орбиталей, 10 электронов): сколько определителей в полном КВ? Ответ — в миллионах.</span></p>
+<p class="olab">Определителей, млн</p><div class="opts" role="group"><button type="button" class="opt">135</button><button type="button" class="opt">0,04</button><button type="button" class="opt">8,6</button><button type="button" class="opt" data-ok="1">73,4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>C(18, 5)² = 8568² ≈ 73,4 миллиона: пять α-электронов и пять β-электронов независимо распределяются по 18 орбиталям. С шестью декартовыми d-функциями (соглашение страницы «Базисные наборы») орбиталей 19 и определителей ≈ 135 миллионов. В cc-pVDZ (24 орбитали) уже 1,8 миллиарда, а с учётом симметрии и замороженного остова — меньше, но тот же порядок роста.</div></div>
+<div class="tq"><p class="qt"><span>H₂ в STO-3G, R = 0,75 Å: какой вес (в процентах) у конфигурации σu² в функции КВ?</span></p>
+<p class="olab">Вес σu², %</p><div class="opts" role="group"><button type="button" class="opt">13</button><button type="button" class="opt">0,1</button><button type="button" class="opt">46</button><button type="button" class="opt" data-ok="1">1,3</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Около 1,3 %: у равновесия Хартри–Фок почти точен по составу функции, но корреляционная энергия уже 21 мEₕ (13 ккал/моль).</div></div>
+<div class="tq"><p class="qt"><span>Растяните связь до 3 Å. Каков теперь вес σu²?</span></p>
+<p class="olab">Вес σu², %</p><div class="opts" role="group"><button type="button" class="opt">25</button><button type="button" class="opt">1,3</button><button type="button" class="opt">100</button><button type="button" class="opt" data-ok="1">46</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Около 46 %: конфигурации почти равноправны. При полном разрыве их веса становятся одинаковыми, и функция описывает по электрону на каждом атоме. Одна конфигурация σg² здесь уже качественно неверна.</div></div>
+<div class="tq"><p class="qt"><span>Модель «H₂/STO-3G» в разделе о размерной согласованности, R = 0,75 Å: какую долю корреляционной энергии восстанавливает CISD для 10 невзаимодействующих молекул, %?</span></p>
+<p class="olab">Доля корреляции, %</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">90</button><button type="button" class="opt">57</button><button type="button" class="opt">100</button><button type="button" class="opt">98,7</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Около 90 %: для одной молекулы CISD точен, для двух — 98,7 %, для десяти — 90 %, для ста — 57 %. Корреляционная энергия CISD растёт как √n, а должна расти как n.</div></div>
+<div class="tq"><p class="qt"><span>Почему CCSD размерно-согласован, а CISD — нет?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">e^(T_A+T_B) = e^(T_A)·e^(T_B): произведения амплитуд дают одновременные возбуждения обоих фрагментов</button><button type="button" class="opt">CCSD учитывает трёхкратные возбуждения</button><button type="button" class="opt">CCSD работает в большем базисе</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Для далёких фрагментов T = T_A + T_B, и e^(T_A+T_B) = e^(T_A)·e^(T_B): волновая функция сама распадается на произведение. Произведения амплитуд дают одновременные возбуждения обоих фрагментов без новых параметров, а линейная функция CISD их не содержит.</div></div>
+</div></details></section>
+<script src="js/ci-cc.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="cicc";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/ci-cc.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="benzene,methane">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Межмолекулярные взаимодействия</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/disp.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-disp-g.webp"><!--pose:end-->
+<h1>Межмолекулярные взаимодействия: водородная связь и дисперсия</h1>
+<p class="lead">Два атома гелия притягиваются друг к другу, хотя у них нет ни заряда, ни дипольного момента, а электронные оболочки замкнуты. Это дисперсионное взаимодействие: мгновенные флуктуации электронной плотности одного атома наводят согласованные флуктуации у другого. Метод Хартри–Фока такого согласования описать не может — каждый электрон в нём движется в среднем поле. Поэтому дисперсия целиком лежит в энергии корреляции. На этой странице сравниваются две системы: димер гелия, который держится только на дисперсии, и димер воды, где главную роль играет электростатика водородной связи. Все кривые посчитаны той же программой HF и MP2 в гауссовом базисе, что и на странице о теории Бейдера.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Энергия взаимодействия — малая разность больших энергий: ΔE = E(AB) − E(A) − E(B).</li><li>Дисперсия — эффект корреляции: в HF её нет, и He₂ в HF не связан; на больших расстояниях она убывает как −C₆/R⁶.</li><li>Основная часть энергии водородной связи (электростатика, поляризация, перенос заряда) описывается уже в HF, но доля корреляции зависит от базиса: в этом расчёте около 2 кДж/моль, в пределе полного базиса — около четверти энергии связи.</li><li>Суперпозиционная ошибка базиса создаёт ложное притяжение; её убирает поправка противовеса, иначе можно получить правильный ответ по неверной причине.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> HF и MP2 в небольших базисах</summary><dl><dt>Что вычисляется</dt><dd>Кривые взаимодействия He₂ и (H₂O)₂, поправка противовеса, закон R<sup>−6</sup>.</dd><dt>Какие приближения приняты</dt><dd>MP2 вместо точного метода; базисы aug-cc-pVDZ и 6-31G*; жёсткие мономеры; энергии посчитаны заранее. Базис 6-31G* здесь — с декартовыми d-функциями, как в расчётах Атласа (на странице «Суперпозиционная ошибка базиса» — со сферическими). Эталон для димера воды 21,0 кДж/моль (5,02 ккал/моль) — другая оценка, чем −4,86 ккал/моль на той странице.</dd><dt>Какой вывод можно сделать</dt><dd>Качественно: дисперсия — эффект корреляции, BSSE искажает результат. Количественно ответ зависит от базиса.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Энергия взаимодействия: HF и MP2</h2>
+  <div class="formula2">ΔE(R) = E(AB) − E(A) − E(B)</div>
+  <p class="small">Энергия взаимодействия — малая разность больших чисел: у димера воды полная энергия около −152 E<sub>h</sub>, а ΔE около −0,008 E<sub>h</sub>. Поэтому даже маленькие систематические ошибки здесь важны. Самая известная из них — суперпозиционная ошибка базиса (BSSE): в димере каждый мономер «одалживает» базисные функции соседа, понижает свою энергию и создаёт ложное притяжение. Поправка противовеса (counterpoise, Бойс и Бернарди) считает E(A) и E(B) в полном базисе димера: на месте партнёра остаются только его функции, без ядер и электронов («атомы-призраки»).</p>
+  <div class="crow"><span class="l">Система</span><span class="grp" id="sysG" role="group" aria-label="Система"></span></div>
+  <div class="crow"><span class="l">Метод</span><span class="grp" id="metG" role="group" aria-label="Метод"></span></div>
+  <div class="crow"><span class="l">Поправка противовеса</span><span class="grp" id="cpG" role="group" aria-label="Поправка противовеса"></span></div>
+  <div class="crow"><span class="l">Расстояние R</span><input type="range" id="R" min="0" max="1" step="1" style="width:260px" aria-label="Расстояние между мономерами"><span class="val" id="RV"></span></div>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle" id="ttl1"></div>
+      <svg id="cSvg" viewBox="0 0 540 330" role="img" aria-label="Энергия взаимодействия в зависимости от расстояния"></svg>
+      <div class="legend" id="lg1"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <svg id="mSvg" viewBox="0 0 520 170" role="img" aria-label="Геометрия димера"></svg>
+      <div class="tablewrap" id="tab1"></div>
+    </div>
+  </div>
+  <div class="status" id="st1"></div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. Дисперсия убывает как R<sup>−6</sup></h2>
+  <p class="small">На больших расстояниях энергия дисперсии He₂ стремится к −C₆/R⁶ (лондоновская асимптотика; для гелия C₆ = 1,46 ат. ед.). В логарифмических осях степенной закон превращается в прямую с наклоном −6. Здесь показан корреляционный вклад MP2 с поправкой противовеса: ΔE(MP2) − ΔE(HF). Он почти не зависит от перекрывания плотностей и поэтому чище всего показывает дисперсию.</p>
+  <div class="two">
+    <svg id="lSvg" viewBox="0 0 540 320" role="img" aria-label="Корреляционный вклад в логарифмических осях"></svg>
+    <div class="status" id="st2"></div>
+  </div>
+  <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>MP2 − HF, с поправкой противовеса</span><span><i class="sw" style="border-color:var(--ok);border-top-style:dashed"></i>−C₆/R⁶, C₆ = 1,46 (точное значение)</span></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Можно ли учесть корреляцию дешевле — через функционал плотности?</span><a class="nqA" href="dft.html" data-goto="dft">Функционал плотности →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>He₂, HF с поправкой противовеса: есть ли минимум на кривой? Почему?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Нет: дисперсия — эффект корреляции, а в HF её нет</button><button type="button" class="opt">Есть, но мелкая</button><button type="button" class="opt">Есть, и глубже, чем у MP2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Нет: кривая отталкивательная при всех R. Дисперсия — согласованное движение электронов разных атомов, то есть корреляция; в HF каждый электрон движется в среднем поле, и такого согласования нет. Ямка у HF без поправки (около −0,3 см⁻¹) — артефакт суперпозиционной ошибки.</div></div>
+<div class="tq"><p class="qt"><span>He₂: какую часть точной глубины ямы (7,65 см⁻¹) даёт MP2 с поправкой противовеса?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Около трети</button><button type="button" class="opt">Почти всю</button><button type="button" class="opt">Больше 100 %</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Около трети: −2,78 см⁻¹ при 6,2 бор. Базис aug-cc-pVDZ слишком мал для дисперсии — нужны диффузные функции с большими угловыми моментами, да и сам MP2 описывает дисперсию лишь приближённо.</div></div>
+<div class="tq"><p class="qt"><span>Уберите поправку противовеса: MP2 даёт почти точную глубину ямы He₂. Хороший ли это результат?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Нет: это случайная компенсация ошибок</button><button type="button" class="opt">Да: поправка противовеса не нужна</button><button type="button" class="opt">Да, потому что базис содержит диффузные функции</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Нет. Совпадение случайное: суперпозиционная ошибка (около 5 см⁻¹ в минимуме) компенсирует недостаток базиса. В большем базисе BSSE уменьшится, и «хороший» результат исчезнет — это правильный ответ по неверной причине.</div></div>
+<div class="tq"><p class="qt"><span>Раздел 2: как убывает дисперсионная энергия с расстоянием и почему?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Как R⁻⁶ — взаимодействие мгновенного и наведённого диполей</button><button type="button" class="opt">Как R⁻¹, как кулоновское</button><button type="button" class="opt">Экспоненциально, как перекрывание</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Как R⁻⁶: в логарифмических осях наклон ≈ −6. Мгновенный диполь одного атома наводит диполь на другом, а энергия взаимодействия диполя с наведённым диполем пропорциональна R⁻⁶ (формула Лондона).</div></div>
+<div class="tq"><p class="qt"><span>(H₂O)₂, базис 6-31G*: какая часть энергии связи димера получается в этом расчёте уже в HF?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">В этом базисе почти вся: электростатика, поляризация и перенос заряда описываются средним полем</button><button type="button" class="opt">Почти ничего: водородная связь — эффект корреляции</button><button type="button" class="opt">Ровно половина</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>В этом расчёте почти вся: HF с поправкой даёт около −19,9 кДж/моль, MP2 — около −21,8. Электростатика, поляризация и перенос заряда описываются средним полем, а корреляция добавляет здесь около 2 кДж/моль. Но это результат малого базиса: HF в пределе полного базиса даёт около −15 кДж/моль при точной энергии около −21, то есть примерно четверть энергии связи приходится на корреляцию. Обобщать «2 кДж/моль» на водородные связи вообще нельзя.</div></div>
+<div class="tq"><p class="qt"><span>(H₂O)₂: почему суперпозиционная ошибка у MP2 больше, чем у HF?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Корреляция сильнее зависит от полноты базиса</button><button type="button" class="opt">В MP2 больше электронов</button><button type="button" class="opt">BSSE не зависит от метода</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Энергия корреляции сходится по базису гораздо медленнее, чем энергия HF, поэтому мономер сильнее выигрывает от функций соседа. В базисе 6-31G* BSSE у MP2 около 8 кДж/моль, у HF — около 4.</div></div>
+</div></details></section>
+<script src="js/dispersion.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="disp";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/dispersion.js"></script>
+
+</body>
+</html>

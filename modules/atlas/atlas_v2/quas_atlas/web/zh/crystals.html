@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>晶体：晶格与晶胞</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>晶体：晶格与晶胞</h1>
+<p class="lead">晶体是同一晶胞在三个方向上的重复。六个数——棱长 a、b、c 和夹角 α、β、γ——连同晶胞内容决定了一切：密度、原子面间距以及晶体反射 X 射线的角度。固体计算从晶胞开始，罗盘处理 CIF 文件也是如此。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>晶胞体积 V = abc·√(1 − cos²α − cos²β − cos²γ + 2cosα·cosβ·cosγ)；立方为 a³，六方为 a²c·√3/2。</li><li>密度 ρ = Z·M/(N_A·V)，Z 为晶胞中的式单元数；用它检验解析出的结构。</li><li>晶面 (hkl) 间距为 d（立方 d = a/√(h² + k² + l²)），在布拉格角反射射线：λ = 2d·sin θ。</li><li>有心晶格使整组衍射消光：I 保留 h + k + l 为偶数者，F 保留 h、k、l 奇偶相同者；由消光判断晶格类型。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b> 理想刚性晶格，只给谱线位置不给强度</summary><dl><dt>计算的是什么</dt><dd>由晶胞参数求体积和密度；允许衍射的晶面间距、布拉格角和多重性；立方堆积的每晶胞原子数、配位数和空间占有率。</dd><dt>采用了哪些近似</dt><dd>晶格无缺陷、无热振动；不计算强度（谱线高度为多重性）；消光只来自有心化（以及金刚石和 hcp 的基元），不含其他空间群的螺旋轴和滑移面。</dd><dt>能得出什么结论</dt><dd>晶胞如何决定密度和衍射线位置、如何由消光识别晶格——可以；完整强度需要结构因子，能量需要周期性量子化学计算。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">晶胞、体积与密度</h2>
+  <div class="crow"><span class="l">物质</span><span class="grp" id="pG" role="group" aria-label="物质"></span></div>
+  <div class="cin">
+    <label>a，Å<input id="ca" inputmode="decimal"></label><label>b，Å<input id="cb" inputmode="decimal"></label><label>c，Å<input id="cc" inputmode="decimal"></label>
+    <label>α，°<input id="cal" inputmode="decimal"></label><label>β，°<input id="cbe" inputmode="decimal"></label><label>γ，°<input id="cga" inputmode="decimal"></label>
+    <label>Z，式单元数<input id="cZ" inputmode="numeric"></label><label>M，g/mol<input id="cM" inputmode="decimal"></label>
+  </div>
+  <div class="cards" id="ccards"></div>
+  <p class="hint" id="cNote"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">晶面与粉末衍射图</h2>
+  <div class="crow"><span class="l">晶格类型</span><select id="cent" class="chip" aria-label="晶格类型"><option value="P">简单 P</option><option value="I">体心 I</option><option value="F">面心 F</option><option value="D">金刚石</option><option value="H">六方密堆积（hcp）</option></select></div>
+  <div class="crow"><span class="l">辐射</span><span class="grp" id="lG" role="group" aria-label="辐射"></span></div>
+  <svg id="xchart" class="ch" viewBox="0 0 960 240" role="img" aria-label="粉末衍射图"></svg>
+  <div class="tablewrap"><table class="tbl" id="ptab"></table></div>
+  <p class="hint" id="pNote"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">立方堆积</h2>
+  <div class="crow"><span class="l">堆积方式</span><span class="grp" id="kG" role="group" aria-label="堆积方式"></span></div>
+  <div class="two"><svg id="kcube" viewBox="0 0 300 260" role="img" aria-label="立方晶胞"></svg><div><div class="cards" id="kcards"></div><p class="status" id="kNote" style="margin-top:10px"></p></div></div>
+  <p class="hint">顶点上的原子属于晶胞 1/8，面上的 1/2，内部的整个：8·1/8 = 1（sc），+1（bcc），+6·1/2（fcc），内部再 +4（金刚石）。CIF 文件中的晶体可在罗盘中打开：“文件 → 打开…”，即“罗盘 · 晶体”部分。</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">晶胞通过平移重复，其内部还有旋转和反映。分子的对称性如何描述？</span><a class="nqA" href="symmetry.html" data-goto="sym">点群 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>选择 NaCl：a = 5.640 Å，Z = 4。密度是多少？</span></p>
+<p class="olab">ρ，g/cm³</p><div class="opts" role="group"><button type="button" class="opt">1.08</button><button type="button" class="opt" data-ok="1">2.16</button><button type="button" class="opt">4.33</button><button type="button" class="opt">8.65</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>2.16 g/cm³：V = 5.640³ = 179.4 Å³，ρ = 4·58.44/(6.022·10²³·179.4·10⁻²⁴) = 2.16——与手册值（2.165）一致。</div></div>
+<div class="tq"><p class="qt"><span>铜（fcc，a = 3.615 Å），Cu Kα 辐射。衍射图的第一条线在哪里？</span></p>
+<p class="olab">2θ，°</p><div class="opts" role="group"><button type="button" class="opt">25.0 (100)</button><button type="button" class="opt">35.1 (110)</button><button type="button" class="opt" data-ok="1">43.3 (111)</button><button type="button" class="opt">50.4 (200)</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>43.3°——(111) 衍射：fcc 中 (100) 和 (110) 消光（指数奇偶混杂），第一个允许的晶面是 (111)，d = 3.615/√3 = 2.087 Å。</div></div>
+<div class="tq"><p class="qt"><span>硅（金刚石晶格）：衍射图上有没有 (200) 线？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">有，最强</button><button type="button" class="opt">有，很弱</button><button type="button" class="opt" data-ok="1">没有——消光</button><button type="button" class="opt">只有 Mo Kα 才有</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>没有：金刚石在 h、k、l 全为偶数时还要求 h + k + l = 4n，而 (200) 之和为 2。因此 (111) 之后直接是 (220)。</div></div>
+<div class="tq"><p class="qt"><span>面心立方堆积中球占体积的多少？</span></p>
+<p class="olab">占有率</p><div class="opts" role="group"><button type="button" class="opt">34%</button><button type="button" class="opt">52%</button><button type="button" class="opt">68%</button><button type="button" class="opt" data-ok="1">74%</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>74% = π/(3√2)：与六方密堆积一样是最紧密堆积。体心立方 68%，简单立方 52%，金刚石 34%。</div></div>
+</div></details></section>
+<script src="js/crystals.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="cryst";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/crystals.js"></script>
+
+</body>
+</html>

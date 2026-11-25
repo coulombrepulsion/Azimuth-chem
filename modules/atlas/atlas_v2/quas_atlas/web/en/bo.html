@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="hf,hcl">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Born–Oppenheimer and vibrational levels</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/bo.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-bo-g.webp"><!--pose:end-->
+<h1>Born–Oppenheimer and vibrational levels</h1>
+<p class="lead">In the Born–Oppenheimer approximation the electrons adjust instantly to the positions of the nuclei, and the nuclei feel a potential curve U(R) — the same for all isotopes. On this curve the nuclei move as quantum particles: they have discrete vibrational levels and zero-point vibrations. The model is the hydrogen molecule with a Morse potential fitted to the experimental D<sub>e</sub>, R<sub>e</sub> and ω<sub>e</sub>.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>Nuclei are thousands of times heavier than electrons, so the electronic problem is solved at fixed nuclei, giving the PES U(R).</li><li>Mass alone is not enough: the approximation breaks down where electronic states come close and nonadiabatic couplings are large (avoided and conical intersections).</li><li>U(R) does not depend on nuclear masses: isotopologues differ only in their vibrational levels.</li><li>Even in the ground state the molecule vibrates: zero-point energy makes D₀ differ from D<sub>e</sub>.</li><li>Levels of a real (anharmonic) well converge toward the dissociation limit.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> a model Morse potential for H₂</summary><dl><dt>What is computed</dt><dd>Vibrational levels and zero-point vibrations of H₂ and its isotopologues on one curve U(R).</dd><dt>Which approximations are made</dt><dd>The Born–Oppenheimer approximation; a Morse potential fitted to the experimental D<sub>e</sub>, R<sub>e</sub>, ω<sub>e</sub>; rotation is not included.</dd><dt>What can be concluded</dt><dd>The level pattern and the isotope effect are qualitatively right; the exact numbers are a property of the Morse model.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Levels on the potential curve</h2>
+  <div class="crow"><span class="l">Molecule (isotopes)</span><span class="row" id="isoG" role="group" aria-label="Isotopic composition"></span></div>
+  <div class="crow"><span class="l">Reduced mass μ</span><input type="range" id="mu" min="0.3" max="4.7" step="0.005" style="width:260px" aria-label="Reduced mass, logarithmic"><span class="val" id="muV"></span></div>
+  <div class="crow"><span class="l">Potential</span><span class="row" id="potG" role="group" aria-label="Potential"></span></div>
+  <div class="crow"><span class="l">Selected level v</span><button class="btn" id="vDn" type="button" aria-label="Lower level">◀</button><button class="btn" id="vUp" type="button" aria-label="Higher level">▶</button><span class="val" id="vV"></span>
+    <label class="hint" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="prob"> show |ψ|²</label></div>
+  <div class="work">
+    <div class="panel" style="padding:8px 10px">
+      <div class="ptitle">U(R) and vibrational levels</div>
+      <svg id="pot" viewBox="0 0 560 380" role="img" aria-label="Potential curve and vibrational levels"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>Morse potential</span><span><i class="sw" style="border-color:var(--warn);border-top-style:dashed"></i>harmonic approximation</span><span><i class="sw" style="border-color:var(--ok)"></i>wavefunction of the selected level</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="tablewrap" id="kvTab"></div>
+      <div class="tablewrap" id="lvTab"></div>
+      <div class="status" id="st1"></div>
+    </div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. Why the nuclei can be “frozen”</h2>
+  <p class="small">The main motivation for the approximation is that nuclei are heavy: their vibrations are slower than electronic motion, and the zero-point amplitude is small compared with the bond length. Both are set by the mass ratio <span class=fr><span>m<sub>e</sub></span><span>μ</span></span>: the vibrational period <span class=fr><span>2π</span><span>ω</span></span> grows as μ<sup>1/2</sup>, and the amplitude falls as μ<sup>−1/4</sup>. Move the mass down — for “nuclei” as light as an electron there is no separation any more. But a large mass is not a sufficient condition: the electronic states must also be well separated in energy. Where states come close (an avoided or conical intersection), nonadiabatic couplings mix them, and the approximation fails even for heavy nuclei — see the avoided crossing on the PES page.</p>
+  <div class="tablewrap" id="tsTab"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">Two atoms give a curve U(R). What do three atoms give?</span><a class="nqA" href="pes.html" data-goto="pes">Potential energy surface →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>How does the zero-point energy change when H₂ is replaced by D₂?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Doubles</button><button type="button" class="opt" data-ok="1">Decreases by about √2</button><button type="button" class="opt">Stays the same: the well is the same</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Decreases by about √2: ω ∝ <span class=fr><span>1</span><span>√μ</span></span>, and the reduced mass of D₂ is twice as large. For H₂ E₀ ≈ 26 kJ/mol, for D₂ about 18.4 kJ/mol.</div></div>
+<div class="tq"><p class="qt"><span>Which molecule has the larger dissociation energy D₀ — H₂ or D₂?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">H₂: light nuclei are bound more strongly</button><button type="button" class="opt">The same: U(R) is identical</button><button type="button" class="opt" data-ok="1">D₂: smaller zero-point vibrations</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>D₂ (4.56 eV versus 4.48 eV): the well is the same but the zero-point vibrations are smaller, so the level from which D₀ is measured lies lower.</div></div>
+<div class="tq"><p class="qt"><span>Why do H₂ and D₂ have the same D<sub>e</sub> but different D₀?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">The D₂ well is deeper</button><button type="button" class="opt" data-ok="1">U(R) does not depend on nuclear masses; D₂ has smaller zero-point vibrations</button><button type="button" class="opt">The D₂ bond is longer</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>In the Born–Oppenheimer approximation U(R) is set only by the electrons and the nuclear charges; nuclear masses do not enter the electronic problem. The masses affect only the nuclear motion: the frequency and zero-point vibrations, and hence D₀ = D<sub>e</sub> − E₀.</div></div>
+<div class="tq"><p class="qt"><span>How does the number of bound vibrational levels change from H₂ to D₂?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Increases by about √2</button><button type="button" class="opt">Decreases</button><button type="button" class="opt">Stays the same: the well is the same</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Increases by about √2 (17 levels for H₂ and 25 for D₂ in the Morse model; the real molecules have 15 and 22): the levels of the heavier molecule are denser, while the well depth is the same.</div></div>
+<div class="tq"><p class="qt"><span>How does the spacing between neighboring vibrational levels change as v increases?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Does not change</button><button type="button" class="opt">It grows</button><button type="button" class="opt" data-ok="1">It decreases</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>It decreases: for Morse ΔE<sub>v→v+1</sub> = ω<sub>e</sub> − 2ω<sub>e</sub>x<sub>e</sub>(v + 1), and the levels crowd toward the dissociation limit. For the harmonic oscillator the spacing is constant and equals ω<sub>e</sub>.</div></div>
+<div class="tq"><p class="qt"><span>Decrease the mass μ with the slider. Why does the Born–Oppenheimer approximation stop working for very light “nuclei”?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">The curve U(R) itself changes</button><button type="button" class="opt" data-ok="1">Zero-point vibrations are comparable to the well depth, and the motions cannot be separated by speed</button><button type="button" class="opt">The nuclei become stationary</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The zero-point energy becomes comparable to the well depth, and for μ ≲ 7 m<sub>e</sub> fewer than two levels remain in it: the “nucleus” moves as fast as the electrons, and the motions can no longer be separated.</div></div>
+</div></details></section>
+<script src="js/bo.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="bo";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/bo.js"></script>
+
+</body>
+</html>

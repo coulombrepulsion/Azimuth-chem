@@ -1,0 +1,8 @@
+xray_anomalous.json — f' and f'' of the neutral atoms H…U at the Kα₁ lines of the X-ray tubes of powder.py.
+
+Source: B. L. Henke, E. M. Gullikson and J. C. Davis, «X-ray interactions: photoabsorption, scattering, transmission,
+and reflection at E = 50–30000 eV, Z = 1–92», Atomic Data and Nuclear Data Tables 54, 181–342 (1993); the
+atomic scattering factor files of the Center for X-Ray Optics, Lawrence Berkeley National Laboratory,
+https://henke.lbl.gov/optical_constants/sf/ (read on 2026-11-14). The tables are published for free use;
+the values here are f' = f1 − Z and f'' = f2 linearly interpolated at the energy of each line (E = 12398.4198 eV·Å / λ).
+Please cite the paper above when using them.

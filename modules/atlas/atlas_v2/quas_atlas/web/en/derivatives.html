@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Properties as derivatives of the energy</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>Properties as derivatives of the energy</h1>
+<p class="lead">The dipole moment, the polarizability, the forces on the nuclei, the frequencies are derivatives of the energy with respect to a field or the coordinates. When a program cannot compute them analytically, they come from finite differences — and the subtleties begin: which step to take, how accurate the energy must be, why the polarizability needs diffuse functions.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>A property is a coefficient of the series of the energy in a perturbation: E(F) = E₀ − μF − ½αF² − …, μ = −∂E/∂F, α = −∂²E/∂F². The Hellmann–Feynman theorem: dE/dλ = ⟨Ψ|∂Ĥ/∂λ|Ψ⟩ for an exact or a fully variational function (HF, DFT, CASSCF), but not for MP2 and CC.</li><li>Finite differences: forward — error ∝ h, central — ∝ h², second derivative from three points — ∝ h². The noise of the energy δE gives an error δE/h (first derivative) and δE/h² (second): too small a step is as bad as too large.</li><li>The optimal step of the central difference is h ≈ (3δE/|f‴|)^⅓: for δE = 10⁻⁶ hartree about 0.01 angstrom. A numerical derivative costs 2 calculations per coordinate — 6N for a gradient, which is why optimizations run on analytic forces.</li><li>The finite-field method: α from the energies needs the SCF converged to 10⁻⁹–10⁻¹⁰ (the noise is divided by F²); from the dipoles in the field the noise is divided by F. The dipole of an ion depends on the origin: Δμ = Q·d, 4.8 D per angstrom.</li><li>The polarizability = 2Σ|⟨n|μ̂|0⟩|²/(E_n − E₀). The field pulls the density outward: without diffuse functions the polarizability of water is almost halved (def2-SVP 5.3, def2-SVPD 9.8 against 9.8 a.u. measured).</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Finite differences: which step to take</h2>
+  <div class="crow"><span class="l">The energy is known to 10<sup>−n</sup> hartree, n</span><input type="range" id="dg" min="4" max="14" step="1" value="6" aria-label="n"><span class="val" id="dgv"></span></div>
+  <svg id="schart" class="ch" viewBox="0 0 960 320" role="img" aria-label="Error of the derivative against the step"></svg>
+  <div class="legend" id="sleg"></div>
+  <div class="cards" id="scards"></div>
+  <p class="status" id="sNote"></p>
+  <p class="hint">The example of lecture 1: E(R) = D<sub>e</sub>(1 − e<sup>−a(R−R<sub>e</sub>)</sup>)², D<sub>e</sub> = 0.17, a = 1.0, R<sub>e</sub> = 1.4 (a.u.); the derivative at R = 1.6 bohr, E′ = 0.050460. The energies are rounded to 10<sup>−n</sup>, as if the SCF converged to the n-th digit. Forward: [E(R+h) − E(R)]/h; central: [E(R+h) − E(R−h)]/(2h); second: [E(R+h) + E(R−h) − 2E(R)]/h².</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">The finite field: the dipole moment and the polarizability</h2>
+  <div class="crow"><span class="l">log₁₀ F (field, a.u.)</span><input type="range" id="lf" min="-5" max="-1" step="0.05" value="-2.7" aria-label="lgF"><span class="val" id="lfv"></span></div>
+  <div class="crow"><span class="l">log₁₀ δE (SCF convergence, hartree)</span><input type="range" id="ld" min="-12" max="-4" step="0.5" value="-8" aria-label="lgδE"><span class="val" id="ldv"></span></div>
+  <svg id="fchart" class="ch" viewBox="0 0 960 320" role="img" aria-label="Errors of μ and α against the field"></svg>
+  <div class="legend" id="fleg"></div>
+  <div class="cards" id="fcards"></div>
+  <p class="status" id="fNote"></p>
+  <p class="hint">A model water: E(F) = E₀ − μF − ½αF² − βF³/6 − γF⁴/24, μ = 0.728 a.u. (1.85 D), α = 9.8 a.u.; β and γ are orders of magnitude. Each energy is shifted by a random number up to ±δE, the dipole up to ±δE (printed with the same number of digits). 1 a.u. of field = 5.14·10<sup>11</sup> V/m.</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">The polarizability: two levels and diffuse functions</h2>
+  <div class="crow"><span class="l">Transition dipole |μ₀₁|, a.u.</span><input type="range" id="m1" min="0.1" max="3" step="0.05" value="1.2" aria-label="μ01"><span class="val" id="m1v"></span></div>
+  <div class="crow"><span class="l">Excitation energy ΔE, hartree</span><input type="range" id="ge" min="0.05" max="1" step="0.01" value="0.3" aria-label="ΔE"><span class="val" id="gev"></span></div>
+  <svg id="tchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="The polarizability of water in different bases and in the two-level model"></svg>
+  <div class="legend" id="tleg"></div>
+  <div class="cards" id="tcards"></div>
+  <p class="status" id="tNote"></p>
+  <p class="hint">The bases: B3LYP, water (r = 0.969 Å, 104.0°), ORCA 6.0.1, computed for lecture 5 (23.11.2026). The experiment: 9.8 a.u. The two-level model: α = 2|μ₀₁|²/ΔE; with ΔE ≈ 0.3 hartree the measured α corresponds to an effective |μ₀₁| ≈ 1.2 a.u.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">The NMR chemical shift is a derivative of the energy too: a second one, with respect to the magnetic field and the moment of the nucleus. Why does it need GIAO orbitals?</span><a class="nqA" href="nmr.html" data-goto="nmr">NMR: from shielding to the chemical shift →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>The energies are known to 10⁻⁶ hartree (the example of lecture 1). With which step does the central difference give the best derivative?</span></p>
+<p class="olab">h, bohr</p><div class="opts" role="group"><button type="button" class="opt">0.1</button><button type="button" class="opt" data-ok="1">0.01</button><button type="button" class="opt">10⁻⁴</button><button type="button" class="opt">10⁻⁵</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>0.01 bohr: an error of −9.6·10⁻⁶. At 0.1 the error of the formula (h²) gets in the way, at 10⁻⁴ and below the rounding (δE/h). The formula h<sub>opt</sub> = (3δE/|E‴|)<sup>⅓</sup> gives 0.017.</div></div>
+<div class="tq"><p class="qt"><span>The step of the central difference was made 10 times smaller (exact energies). By how much does the error fall?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">10 times</button><button type="button" class="opt" data-ok="1">100 times</button><button type="button" class="opt">1000 times</button><button type="button" class="opt">it does not change</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>100 times: the error of the central difference is ∝ h²·f‴/6. The forward difference has an error ∝ h and would fall 10 times.</div></div>
+<div class="tq"><p class="qt"><span>The polarizability from the energies in a field F = 10⁻⁴ a.u., the SCF converged to 10⁻⁸. What is the error of α?</span></p>
+<p class="olab">δα, a.u.</p><div class="opts" role="group"><button type="button" class="opt">0.02</button><button type="button" class="opt" data-ok="1">2</button><button type="button" class="opt">2·10⁻⁴</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>≈ 2 a.u.: δα ~ 2δE/F² = 2·10⁻⁸/10⁻⁸. At F = 10⁻³ it is 0.02, at 2·10⁻³ 0.005. Hence the choice F ≈ 10⁻³ and a tight SCF convergence.</div></div>
+<div class="tq"><p class="qt"><span>What corrects the polarizability of water in B3LYP/def2-SVP (5.3 a.u. against 9.8 measured) the most?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Adding a diffuse shell (def2-SVPD)</button><button type="button" class="opt">Going to def2-TZVP</button><button type="button" class="opt">Taking MP2 instead of B3LYP</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>A diffuse shell: def2-SVPD gives 9.8. def2-TZVP without diffuse functions gives only 6.8: a larger ζ adds tight functions at the nuclei, while the field pulls the density outward.</div></div>
+</div></details></section>
+<script src="js/derivatives.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="derivatives";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/derivatives.js"></script>
+
+</body>
+</html>

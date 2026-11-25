@@ -1,0 +1,26 @@
+#!/bin/zsh
+# Finder starts this executable directly, without opening Terminal.
+set -eu
+app_root="$(cd "$(dirname "$0")/../../.." && pwd)"
+cd "$app_root"
+# The environment is checked (PySide6, VTK, numpy, Qt WebEngine — 1.8 s of imports) only when it is new or its
+# packages changed since the last good check: the stamp is newer than every site-packages folder. A start that fails
+# on an import removes the stamp (gui_launcher.py), so the next one checks again.
+stamp=.venv/.azimuth-checked
+setopt null_glob
+needs_check=1
+if [[ -x .venv/bin/python && -f $stamp ]]; then
+    needs_check=0
+    for packages in .venv/lib/python*/site-packages; do
+        [[ $packages -nt $stamp ]] && needs_check=1
+    done
+fi
+if [[ $needs_check == 1 ]]; then
+    if [[ -x .venv/bin/python ]] && .venv/bin/python -c 'from PySide6 import QtWidgets, QtSvg; import vtk, numpy; import PySide6.QtWebEngineWidgets' >/dev/null 2>&1; then
+        touch $stamp
+    else
+        # Only first-time setup uses the existing installer/diagnostic launcher.
+        exec /usr/bin/open -a Terminal "$app_root/Launch-macOS.command"
+    fi
+fi
+exec .venv/bin/python -B gui_launcher.py "$@"

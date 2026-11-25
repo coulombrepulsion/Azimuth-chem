@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,ethanol,benzene">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>NMR：从屏蔽到化学位移</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-nmr-g.webp"><!--pose:end-->
+<h1>NMR：从屏蔽到化学位移</h1>
+<p class="lead">具有磁矩的核在磁场 B₀ 中以拉莫尔频率进动。核周围的电子使磁场略微减弱——即屏蔽，因此同一分子中不同原子的共振频率略有不同。程序计算屏蔽常数 σ（GIAO 方法），化学位移 δ 则由参比物——用同一方法计算的四甲基硅烷——的 σ 减去得到。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>拉莫尔频率 ν₀ = γB₀/2π：¹H 为每特斯拉 42.58 MHz，“400 MHz”谱仪的磁场为 9.4 T。</li><li>位移 δ = σ(TMS) − σ，以百万分之一（ppm）表示，与磁场无关；参比必须与分子用相同的方法和基组计算。</li><li>n 个等价的自旋 ½ 相邻核产生 n + 1 条谱线，强度符合帕斯卡三角；以赫兹表示的裂分 J 与磁场无关。</li><li>好的 DFT 计算对 ¹H 精确到 0.1–0.3 ppm，对 ¹³C 精确到 2–5 ppm；溶剂和构象对位移的影响与此相当。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b> 孤立分子，一级谱</summary><dl><dt>计算的是什么</dt><dd>给定磁场下各核的拉莫尔频率；由计算的屏蔽 σ 和参比（或线性标定）得到的位移 δ；一级多重峰与谱图形状。</dd><dt>采用了哪些近似</dt><dd>一级裂分（J 远小于频率差）；所有相邻核等价且 J 相同；洛伦兹线型；屏蔽直接取自你的计算。</dd><dt>能得出什么结论</dt><dd>σ、δ、磁场和 J 之间的关系以及如何阅读计算谱——可以；二级谱、交换、构象平均和溶剂效应在此不作模拟。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">拉莫尔频率</h2>
+  <div class="crow"><span class="l">谱仪的 ¹H 频率</span><span class="grp" id="fG" role="group" aria-label="谱仪频率"></span></div>
+  <div class="crow"><span class="l">磁场 B₀，T</span><input type="range" id="B" min="1" max="28.2" step="0.01" value="9.39" aria-label="磁场"><span class="val" id="Bv"></span></div>
+  <div class="cards" id="lcards"></div>
+  <p class="hint" id="lNote"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">多重峰：相邻核、J 与磁场</h2>
+  <div class="crow"><span class="l">等价相邻核数 n</span><input type="range" id="n" min="0" max="6" step="1" value="2" aria-label="相邻核数"><span class="val" id="nv"></span></div>
+  <div class="crow"><span class="l">偶合常数 J</span><input type="range" id="J" min="0" max="20" step="0.1" value="7" aria-label="偶合常数 J"><span class="val" id="Jv"></span></div>
+  <div class="crow"><span class="l">谱仪</span><span class="grp" id="mfG" role="group" aria-label="谱仪频率"></span></div>
+  <svg id="mchart" class="ch" viewBox="0 0 960 240" role="img" aria-label="多重峰谱线"></svg>
+  <p class="status" id="mNote"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">自己的计算：σ → δ 与谱图</h2>
+  <p class="hint">每组等价核一行：输出文件中的屏蔽 σ（ppm；ORCA 在“CHEMICAL SHIELDING SUMMARY”中给出，Gaussian 为“Isotropic”）、核数、等价相邻核数和 J（Hz）。参比为用相同方法和基组计算的 TMS 中该核的 σ。</p>
+  <div class="cin">
+    <label class="wide">σ、核数、相邻核数、J<textarea id="cRows" spellcheck="false">30.66 3 2 7.0
+28.19 2 3 7.0
+29.27 1 0 0</textarea></label>
+    <label>参比（TMS）的 σ，ppm<input id="cRef" inputmode="decimal" value="31.88"></label>
+    <label>谱仪频率，MHz<input id="cF" inputmode="decimal" value="400"></label>
+    <label class="chk"><input type="checkbox" id="cScale"> 用线性标定代替参比</label>
+    <label>斜率 m（通常约 −1）<input id="cM" inputmode="decimal" value="-1.05"></label>
+    <label>截距 b，ppm<input id="cB" inputmode="decimal" value="31.9"></label>
+  </div>
+  <div class="row"><button type="button" class="btn" id="bEx">示例：乙醇</button><button type="button" class="btn primary" id="bCalc">计算</button></div>
+  <div class="status" id="cMsg" role="status"></div>
+  <svg id="schart" class="ch" viewBox="0 0 960 260" role="img" aria-label="NMR 谱" hidden></svg>
+  <p class="hint">示例为教学用：乙醇的 σ 经过选取，使位移与 CDCl₃ 中的实验值一致（CH₃ 1.22，CH₂ 3.69，OH 约 2.6 ppm；OH 的位移取决于浓度和交换）。NMR 的 δ 轴从右向左增大。</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">位移取决于方法和基组。如何检验计算能否重现实验？</span><a class="nqA" href="validation.html" data-goto="val">检验计算 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">EPR：费米接触与核附近的基组</h2>
+  <div class="crow"><span class="l">氢原子 1s 函数</span><span class="grp" id="fG" role="group" aria-label="氢原子 1s 函数"></span></div>
+  <svg id="fchart" class="ch" viewBox="0 0 960 280" role="img" aria-label="氢原子 1s 函数：精确与高斯"></svg>
+  <div class="legend" id="fleg"></div>
+  <div class="cards" id="fcards"></div>
+  <p class="status" id="fNote"></p>
+  <p class="hint">A<sub>iso</sub> = (2μ₀/3h)·g<sub>e</sub>μ<sub>B</sub>g<sub>N</sub>μ<sub>N</sub>·|ψ(0)|²；氢 1s 的 |ψ(0)|² = 1/(πa₀³)。单个高斯为最优高斯（α = 8/(9π)），STO-3G 与 STO-6G 为 ζ = 1 的标准收缩。第 5 讲推导 6。</p>
+</section>
+<section class="panel" aria-labelledby="h5s">
+  <h2 id="h5s">NICS：环电流与芳香性</h2>
+  <div class="crow"><span class="l">环</span><span class="grp" id="rG" role="group" aria-label="环"></span></div>
+  <div class="crow"><span class="l">π 电流的 NICS(0)，ppm</span><input type="range" id="ni" min="-30" max="30" step="0.5" value="-10" aria-label="NICS0"><span class="val" id="niv"></span></div>
+  <div class="crow"><span class="l">环半径，Å</span><input type="range" id="rr" min="0.8" max="2" step="0.01" value="1.39" aria-label="R"><span class="val" id="rrv"></span></div>
+  <svg id="rchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="沿环轴与环平面内的 NICS"></svg>
+  <div class="legend" id="rleg"></div>
+  <div class="cards" id="rcards"></div>
+  <p class="status" id="rNote"></p>
+  <p class="hint">模型为半径 R 的电流环（毕奥–萨伐尔定律），按中心处给定的 NICS(0) 标定；只含 π 电流，不含 σ 键贡献。讲座参考值：苯约 −10，环丁二烯约 +27 ppm（Schleyer et al., JACS 118, 6317 (1996)）。环上质子在环外 1.09 Å 处。</p>
+</section>
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>把磁场设为 14.1 T。质子在什么频率共振？</span></p>
+<p class="olab">¹H 频率，MHz</p><div class="opts" role="group"><button type="button" class="opt">400</button><button type="button" class="opt" data-ok="1">600</button><button type="button" class="opt">900</button><button type="button" class="opt">150</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>600 MHz：ν = 42.577·14.1 = 600 MHz。谱仪按质子频率命名：“600 MHz”即 14.1 T。</div></div>
+<div class="tq"><p class="qt"><span>乙醇的 CH₃ 多重峰：甲基有两个 CH₂ 相邻氢。谱线强度比是多少？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">1:1</button><button type="button" class="opt" data-ok="1">1:2:1</button><button type="button" class="opt">1:3:3:1</button><button type="button" class="opt">1:4:6:4:1</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>1:2:1 三重峰：n = 2 个相邻核给出 n + 1 = 3 条谱线，系数为帕斯卡三角的一行。</div></div>
+<div class="tq"><p class="qt"><span>J = 7 Hz，n = 2，300 MHz 谱仪：三重峰宽度是多少 ppm？</span></p>
+<p class="olab">宽度，ppm</p><div class="opts" role="group"><button type="button" class="opt">0.023</button><button type="button" class="opt" data-ok="1">0.047</button><button type="button" class="opt">7</button><button type="button" class="opt">14</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>0.047 ppm：宽度 2J = 14 Hz，14/300 = 0.047 ppm。在 600 MHz 下同一宽度只占一半，0.023 ppm，所以强场中多重峰不重叠。</div></div>
+<div class="tq"><p class="qt"><span>“自己的计算”：σ(TMS) = 31.9 ppm，某质子 σ = 24.6 ppm。这是什么质子？</span></p>
+<p class="olab">δ，ppm</p><div class="opts" role="group"><button type="button" class="opt">1.3——烷基</button><button type="button" class="opt">3.5——邻近氧</button><button type="button" class="opt" data-ok="1">7.3——芳香</button><button type="button" class="opt">9.8——醛基</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>δ = 31.9 − 24.6 = 7.3 ppm——芳香质子区（苯 7.3 ppm）：π 电子的环电流使环外质子去屏蔽。</div></div>
+</div></details></section>
+<script src="js/nmr.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="nmr";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/nmr.js"></script>
+
+</body>
+</html>

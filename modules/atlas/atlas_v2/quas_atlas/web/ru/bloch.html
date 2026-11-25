@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Теорема Блоха и k-точки</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>Теорема Блоха и k-точки</h1>
+<p class="lead">В кристалле потенциал повторяется с периодом решётки, и каждое состояние электрона нумеруется волновым вектором k. Расчёт кристалла — это расчёт в наборе точек k (k-сетке) с базисом из плоских волн. Здесь видно, откуда берётся k, почему металлам нужна густая сетка и что задаёт E<sub>cut</sub>.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Теорема Блоха: ψ<sub>k</sub>(x + a) = e<sup>ika</sup>ψ<sub>k</sub>(x). Векторы k и k + 2π/a дают одно состояние, поэтому k берут в первой зоне Бриллюэна (−π/a…π/a).</li><li>Энергия кристалла — интеграл по зоне, в расчёте — сумма по k-точкам. У диэлектрика она сходится быстро, у металла медленно: уровень Ферми режет зону.</li><li>Симметрия решётки сводит k-сетку к немногим неравноценным точкам с весами (в выводе Quantum ESPRESSO — «number of k points»).</li><li>Базис плоских волн: входят волны с |k + G|² ≤ E<sub>cut</sub>; их число растёт как V·E<sub>cut</sub><sup>3/2</sup>. Плотности нужно 4·E<sub>cut</sub> (ультрамягким псевдопотенциалам — 8–12).</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Блоховская волна на цепочке</h2>
+  <div class="crow"><span class="l">Волновой вектор k (π/a)</span><input type="range" id="kk" min="-1" max="1" step="0.01" value="0.3" aria-label="k"><span class="val" id="kkv"></span></div>
+  <div class="crow"><span class="l">Та же волна с</span><span class="grp" id="mG" role="group" aria-label="Та же волна с"></span></div>
+  <div class="two"><svg id="bchart" class="ch" viewBox="0 0 420 260" role="img" aria-label="Зона E(k)"></svg><svg id="wchart" class="ch" viewBox="0 0 540 260" role="img" aria-label="Волна на цепочке"></svg></div>
+  <div class="cards" id="wcards"></div>
+  <p class="status" id="wNote"></p>
+  <p class="hint">Цепочка атомов с одной орбиталью на атом и перескоком β между соседями: E(k) = 2β cos ka. Точка на зоне — выбранное k.</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">k-сетка: металл и диэлектрик</h2>
+  <div class="crow"><span class="l">Щель диэлектрика Δ (|β|)</span><input type="range" id="dl" min="0.2" max="4" step="0.1" value="1" aria-label="Δ"><span class="val" id="dlv"></span></div>
+  <svg id="mchart" class="ch" viewBox="0 0 960 280" role="img" aria-label="Ошибка энергии от числа k-точек"></svg>
+  <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>металл (цепочка, один электрон на атом)</span><span><i class="sw" style="border-color:var(--warn)"></i>диэлектрик (два атома в ячейке, нижняя зона полна)</span></div>
+  <div class="cards" id="mcards"></div>
+  <p class="status" id="mNote"></p>
+  <div class="crow"><span class="l">Сетка квадратной решётки</span><span class="grp" id="nG" role="group" aria-label="Сетка квадратной решётки"></span></div>
+  <div class="crow"><span class="l">Сетка</span><span class="grp" id="shG" role="group" aria-label="Сетка"></span></div>
+  <div class="two"><svg id="zchart" viewBox="0 0 300 300" role="img" aria-label="k-сетка в зоне Бриллюэна"></svg><div><div class="cards" id="zcards"></div><p class="status" id="zNote" style="margin-top:10px"></p><p class="hint">Закрашен неприводимый клин зоны: остальная зона получается из него поворотами и отражениями.</p></div></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Плоские волны и E<sub>cut</sub></h2>
+  <div class="crow"><span class="l">Кристалл</span><span class="grp" id="cG" role="group" aria-label="Кристалл"></span></div>
+  <div class="crow"><span class="l">E<sub>cut</sub> (Ry)</span><input type="range" id="ec" min="10" max="100" step="5" value="30" aria-label="Ecut"><span class="val" id="ecv"></span></div>
+  <div class="cards" id="pcards"></div>
+  <svg id="pchart" class="ch" viewBox="0 0 960 240" role="img" aria-label="Число плоских волн от Ecut"></svg>
+  <p class="status" id="pNote"></p>
+  <p class="hint">Кривая — оценка V·G<sub>max</sub>³/(6π²), точка — точный счёт векторов обратной решётки в точке Γ. Время расчёта растёт с числом волн N примерно как N·log N на каждую орбиталь.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">В каждой точке k — свой набор уровней. Как из них складываются зоны и откуда берётся запрещённая зона?</span><a class="nqA" href="bands.html" data-goto="bands">Зонная структура и DOS →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Цепочка: k = 0,3 π/a и k = 2,3 π/a (выберите «k + 2π/a»). Одинаковы ли эти состояния на атомах?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Да: на атомах e<sup>i(k+2π/a)na</sup> = e<sup>ikna</sup></button><button type="button" class="opt">Нет, у второго длина волны меньше</button><button type="button" class="opt">Только при k = 0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Да. Между атомами волны разные, но электрон описывается значениями на решётке, а там множитель e<sup>i2πn</sup> = 1. Поэтому все k приводят в первую зону.</div></div>
+<div class="tq"><p class="qt"><span>Сетка 4 × 4, сдвинутая на ½. Сколько точек нужно считать?</span></p>
+<p class="olab">Точек</p><div class="opts" role="group"><button type="button" class="opt">16</button><button type="button" class="opt">6</button><button type="button" class="opt" data-ok="1">3</button><button type="button" class="opt">4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>3: точки (1/8, 1/8), (3/8, 1/8), (3/8, 3/8) с весами 4, 8, 4. Сетка с точкой Γ дала бы 6 разных точек.</div></div>
+<div class="tq"><p class="qt"><span>Где энергия на ячейку сходится быстрее по числу k-точек?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">У металла</button><button type="button" class="opt" data-ok="1">У диэлектрика</button><button type="button" class="opt">Одинаково</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>У диэлектрика: под интегралом гладкая функция, и сумма по сетке сходится экспоненциально. У металла функция обрывается на уровне Ферми — ошибка падает медленно и скачет.</div></div>
+<div class="tq"><p class="qt"><span>Кремний, E<sub>cut</sub> = 30 Ry. Сколько плоских волн у орбитали в точке Γ?</span></p>
+<p class="olab">Волн</p><div class="opts" role="group"><button type="button" class="opt">190</button><button type="button" class="opt" data-ok="1">749</button><button type="button" class="opt">5985</button><button type="button" class="opt">16889</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>749: векторы с |G|² ≤ 30 бор⁻². 5985 и 16889 — векторы плотности при 120 и 240 Ry: их Quantum ESPRESSO печатает как «Smooth grid» и «Dense grid».</div></div>
+</div></details></section>
+<script src="js/bloch.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="bloch";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/bloch.js"></script>
+
+</body>
+</html>

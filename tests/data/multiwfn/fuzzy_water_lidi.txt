@@ -1,0 +1,175 @@
+answers: 15 | 4 | n | 0 | q
+
+ WARNING: "settings.ini" was found neither in current folder nor in the path defined by "Multiwfnpath" environment variable. Now using default settings instead, and all your modifications (if any) on settings.ini will not take effect!
+
+[95m Multiwfn -- A Multifunctional Wavefunction Analyzer
+[0m[32m Version 2026.7.15 (release date is the same as version name)
+[0m Developer: Tian Lu (Beijing Kein Research Center for Natural Sciences)
+ Multiwfn official website: http://sobereva.com/multiwfn
+ Multiwfn English forum: http://sobereva.com/wfnbbs
+ Multiwfn Chinese forum: http://bbs.keinsci.com/wfn
+ ( Number of parallel threads:   4  Current date: 2026-11-02  Time: 13:22:29 )
+
+ Both following papers ***MUST BE CITED IN MAIN TEXT*** if Multiwfn is used:
+[36m  Tian Lu, Feiwu Chen, J. Comput. Chem., 33, 580 (2012) DOI: 10.1002/jcc.22885
+  Tian Lu, J. Chem. Phys., 161, 082503 (2024) DOI: 10.1063/5.0216272
+[0m See "How to cite Multiwfn.pdf" in Multiwfn binary package for more information
+
+ Warning: You should set OMP_STACKSIZE environment variable as mentioned in Section 2.1.2 of Multiwfn manual!
+
+ Please wait...
+ Loading various information of the wavefunction
+ The highest angular moment basis functions is P
+ Loading basis set definition...
+ Loading orbitals...
+ Converting basis function information to GTF information...
+ Generating density matrix based on SCF orbitals...
+ Generating overlap matrix...
+
+ Total/Alpha/Beta electrons:     10.0000      5.0000      5.0000
+ Net charge:     0.00000      Expected multiplicity:    1
+ Atoms:      3,  Basis functions:      7,  GTFs:     21
+ Total energy:     -75.002282127454 Hartree,   Virial ratio:  2.00600493
+ This is a restricted single-determinant wavefunction
+ Orbitals from 1 to     5 are occupied
+ Title line of this file: Water
+
+ Loaded input.fchk successfully!
+
+ Formula: H2 O1      Total atoms:       3
+ Molecule weight:        18.01529 Da
+ Point group: C2v
+
+ "q": Exit program gracefully          "r": Load a new file
+                    ************ Main function menu ************
+ 0 Show molecular structure and view orbitals
+ 1 Output all properties at a point       2 Topology analysis
+ 3 Output and plot specific property in a line
+ 4 Output and plot specific property in a plane
+ 5 Output and plot specific property within a spatial region (calc. grid data)
+ 6 Check & modify wavefunction
+ 7 Population analysis and calculation of atomic charges
+ 8 Orbital composition analysis           9 Bond order analysis
+ 10 Plot total DOS, PDOS, OPDOS, local DOS, COHP and photoelectron spectrum
+ 11 Plot IR/Raman/UV-Vis/ECD/VCD/ROA/NMR spectrum
+ 12 Quantitative analysis of molecular surface
+ 13 Process grid data (No grid data is presented currently)
+ 14 Adaptive natural density partitioning (AdNDP) analysis
+ 15 Fuzzy atomic space analysis
+ 16 Charge decomposition analysis (CDA) and plot orbital interaction diagram
+ 17 Basin analysis                       18 Electron excitation analysis
+ 19 Orbital localization analysis        20 Visual study of weak interaction
+ 21 Energy decomposition analysis        22 Conceptual DFT (CDFT) analysis
+ 23 ETS-NOCV analysis                    24 (Hyper)polarizability analysis
+ 25 Electron delocalization and aromaticity analyses
+ 26 Structure and geometry related analyses
+ 100 Other functions (Part 1)            200 Other functions (Part 2)
+ 300 Other functions (Part 3)
+
+                 ======== Fuzzy atomic space analysis ========
+ -10 Set X,Y,Z of reference point, current:    0.00000   0.00000   0.00000 Bohr
+ -6 Choose type of integration grid for AOM, current: Atomic grid
+ -5 Define the atoms to be considered in options 1, 2, 13, current: all atoms
+ -4 Adjust reference parameter for FLU
+ -3 Set the number of iterations for Becke partition, current:  3
+ -2 Select radius definition for Becke partition, current: Modified CSD
+ -1 Select method for partitioning atomic spaces, current: Becke
+ 0 Return
+ 1 Perform integration in fuzzy atomic spaces for a real space function
+ 2 Calculate atomic and molecular multipole moments and <r^2>
+ 3 Calculate and output atomic overlap matrix (AOM) in current folder
+ 33 Calculate and output fragment overlap matrix (FOM) in current folder
+ 4 Calculate localization (LI) and delocalization index (DI)
+ 44 Calculate fragment LI (FLI) and interfragment DI (IFDI)
+ 5 Calculate PDI (Para-delocalization index)
+ 6 Calculate FLU (Aromatic fluctuation index)
+ 7 Calculate FLU-pi
+ 8 Perform integration in fuzzy overlap region for a real space functions
+ 9 Calculate condensed linear response kernel (CLRK)
+ 10 Calculate PLR (Para linear response index)
+ 11 Calculate multi-center delocalization index
+ 12 Calculate information-theoretic aromaticity index (ACS Omega, 3, 18370)
+ 13 Calculate atomic effective volume, free volume, polarizability and C6 coefficient
+ Note: The highest     2 virtual orbitals will not be taken into account
+ Allocating memory...
+ Radial points:   45    Angular points:  170   Total:      7650 per center
+ Please wait...
+
+ Progress: [--------------------------------------------------]     0.0 %     -
+ Progress: [################----------------------------------]    33.3 %     \
+ Progress: [#################################-----------------]    66.7 %     |
+ Progress: [##################################################]   100.0 %     /
+ Calculation took up       0 seconds wall clock time
+ Error of AOM is    0.00001403
+ Maximum diagonal deviation to 1:     0.000015 at orbital     3
+ Maximum nondiagonal deviation to 0:  0.000007 between orbitals     2     4
+
+ Calculating LI and DI from AOM...
+
+ Note: Delocalization index in fuzzy atomic space is also known as fuzzy bond order
+ Note: Diagonal terms are the sum of corresponding row or column elements, for closed-shell cases, they are also known as atomic valence
+
+ ********************* Total delocalization index matrix *********************
+             1             2             3      
+     1    1.87886132    0.93943066    0.93943066
+     2    0.93943066    0.96326101    0.02383035
+     3    0.93943066    0.02383035    0.96326101
+
+ Localization index:
+    1(O ):  7.639    2(H ):  0.229    3(H ):  0.229
+
+ If also outputting LI and DI to LIDI.txt in current folder? (y/n)
+
+                 ======== Fuzzy atomic space analysis ========
+ -10 Set X,Y,Z of reference point, current:    0.00000   0.00000   0.00000 Bohr
+ -6 Choose type of integration grid for AOM, current: Atomic grid
+ -5 Define the atoms to be considered in options 1, 2, 13, current: all atoms
+ -4 Adjust reference parameter for FLU
+ -3 Set the number of iterations for Becke partition, current:  3
+ -2 Select radius definition for Becke partition, current: Modified CSD
+ -1 Select method for partitioning atomic spaces, current: Becke
+ 0 Return
+ 1 Perform integration in fuzzy atomic spaces for a real space function
+ 2 Calculate atomic and molecular multipole moments and <r^2>
+ 3 Calculate and output atomic overlap matrix (AOM) in current folder
+ 33 Calculate and output fragment overlap matrix (FOM) in current folder
+ 4 Calculate localization (LI) and delocalization index (DI)
+ 44 Calculate fragment LI (FLI) and interfragment DI (IFDI)
+ 5 Calculate PDI (Para-delocalization index)
+ 6 Calculate FLU (Aromatic fluctuation index)
+ 7 Calculate FLU-pi
+ 8 Perform integration in fuzzy overlap region for a real space functions
+ 9 Calculate condensed linear response kernel (CLRK)
+ 10 Calculate PLR (Para linear response index)
+ 11 Calculate multi-center delocalization index
+ 12 Calculate information-theoretic aromaticity index (ACS Omega, 3, 18370)
+ 13 Calculate atomic effective volume, free volume, polarizability and C6 coefficient
+
+ "q": Exit program gracefully          "r": Load a new file
+                    ************ Main function menu ************
+ 0 Show molecular structure and view orbitals
+ 1 Output all properties at a point       2 Topology analysis
+ 3 Output and plot specific property in a line
+ 4 Output and plot specific property in a plane
+ 5 Output and plot specific property within a spatial region (calc. grid data)
+ 6 Check & modify wavefunction
+ 7 Population analysis and calculation of atomic charges
+ 8 Orbital composition analysis           9 Bond order analysis
+ 10 Plot total DOS, PDOS, OPDOS, local DOS, COHP and photoelectron spectrum
+ 11 Plot IR/Raman/UV-Vis/ECD/VCD/ROA/NMR spectrum
+ 12 Quantitative analysis of molecular surface
+ 13 Process grid data (No grid data is presented currently)
+ 14 Adaptive natural density partitioning (AdNDP) analysis
+ 15 Fuzzy atomic space analysis
+ 16 Charge decomposition analysis (CDA) and plot orbital interaction diagram
+ 17 Basin analysis                       18 Electron excitation analysis
+ 19 Orbital localization analysis        20 Visual study of weak interaction
+ 21 Energy decomposition analysis        22 Conceptual DFT (CDFT) analysis
+ 23 ETS-NOCV analysis                    24 (Hyper)polarizability analysis
+ 25 Electron delocalization and aromaticity analyses
+ 26 Structure and geometry related analyses
+ 100 Other functions (Part 1)            200 Other functions (Part 2)
+ 300 Other functions (Part 3)
+
+--- stderr ---
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG

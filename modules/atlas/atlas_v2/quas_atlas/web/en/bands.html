@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Band structure and density of states</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>Band structure and density of states</h1>
+<p class="lead">The levels of all points k make bands. The bands and the density of states (DOS) tell whether we have a metal or an insulator, what the band gap is and of which atoms it is made (PDOS). This is what is plotted from a Quantum ESPRESSO calculation.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>A band structure is E(k) along a path through the special points of the zone (Γ, X, M, K…); the DOS g(E) is how many states fall into an interval of energy.</li><li>The Fermi level inside a band — a metal; in a gap — an insulator or a semiconductor. The gap runs from the top of the valence band to the bottom of the conduction band.</li><li>The PDOS splits the DOS by atoms and orbitals: the conduction band is usually on the atoms with higher orbital energies.</li><li>Graphene: the bands touch at the point K (the Dirac cone); different atoms on the sites (h-BN) open a gap.</li><li>Nearly free electrons: a weak potential opens a gap 2|V| at the zone boundary; a plane-wave basis converges as waves are added.</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">A chain of two atoms: bands, DOS and PDOS</h2>
+  <div class="crow"><span class="l">Energy difference of the atoms Δ (|β|)</span><input type="range" id="dl" min="0" max="4" step="0.05" value="1" aria-label="Δ"><span class="val" id="dlv"></span></div>
+  <div class="crow"><span class="l">Hopping inside a cell β₁ (|β|)</span><input type="range" id="b1" min="-2" max="-0.2" step="0.05" value="-1" aria-label="β1"><span class="val" id="b1v"></span></div>
+  <div class="crow"><span class="l">Hopping between cells β₂ (|β|)</span><input type="range" id="b2" min="-2" max="-0.2" step="0.05" value="-1" aria-label="β2"><span class="val" id="b2v"></span></div>
+  <div class="crow"><span class="l">Electrons per cell</span><input type="range" id="ne" min="0" max="4" step="0.05" value="2" aria-label="electrons"><span class="val" id="nev"></span></div>
+  <div class="two" style="grid-template-columns:minmax(0,2.07fr) minmax(0,1fr)"><svg id="achart" class="ch" viewBox="0 0 620 300" role="img" aria-label="Bands of the chain"></svg><svg id="adchart" class="ch" viewBox="0 0 300 300" role="img" aria-label="Density of states"></svg></div>
+  <div class="legend" id="aleg"></div>
+  <div class="cards" id="acards"></div>
+  <p class="status" id="aNote"></p>
+  <p class="hint">E<sub>±</sub>(k) = ±√(Δ²/4 + β₁² + β₂² + 2β₁β₂ cos ka); at the zone boundary the gap is 2√(Δ²/4 + (β₁ − β₂)²). Dashed is the Fermi level. Unequal β₁ and β₂ are alternating short and long bonds (as in polyacetylene).</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Graphene and h-BN: the Dirac cone</h2>
+  <div class="crow"><span class="l">Energy difference of the atoms Δ (eV)</span><input type="range" id="gd" min="0" max="6" step="0.1" value="0" aria-label="Δ"><span class="val" id="gdv"></span></div>
+  <div class="two" style="grid-template-columns:minmax(0,2.07fr) minmax(0,1fr)"><svg id="gchart" class="ch" viewBox="0 0 620 300" role="img" aria-label="Bands of graphene"></svg><svg id="gdchart" class="ch" viewBox="0 0 300 300" role="img" aria-label="Density of states"></svg></div>
+  <div class="cards" id="gcards"></div>
+  <p class="status" id="gNote"></p>
+  <p class="hint">A model of one pz orbital per atom with a hopping β = −2.8 eV between neighbours (Castro Neto et al., 2009). The path Γ–M–K–Γ is the one plotted in a band-structure calculation of graphene.</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Nearly free electrons and plane waves</h2>
+  <div class="crow"><span class="l">Potential V</span><input type="range" id="vv" min="0" max="3" step="0.05" value="0.3" aria-label="V"><span class="val" id="vvv"></span></div>
+  <div class="crow"><span class="l">Plane waves 2M + 1, M</span><input type="range" id="mm" min="0" max="6" step="1" value="3" aria-label="M"><span class="val" id="mmv"></span></div>
+  <svg id="nchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Bands of nearly free electrons"></svg>
+  <div class="cards" id="ncards"></div>
+  <p class="status" id="nNote"></p>
+  <p class="hint">Dashed is the free electron E = (k + G)², solid the bands in the potential 2V cos(2πx/a); energies in units of ħ²/(2ma²).</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">The bands show a gap — but DFT with LDA or PBE usually gives it smaller than the experiment. Why?</span><a class="nqA" href="dft.html" data-goto="dft">Density functional theory →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Δ = 0, β₁ = β₂, two electrons per cell (one per atom). A metal or an insulator?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">A metal: the bands touch at the zone boundary</button><button type="button" class="opt">An insulator: the lower band is full</button><button type="button" class="opt">A semiconductor with a gap |β|</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>A metal: the gap 2√(Δ²/4 + (β₁ − β₂)²) = 0, the lower band is full, but the upper one starts at the same energy. Unequal β₁ and β₂ open a gap — this is how polyacetylene becomes a semiconductor (the Peierls transition).</div></div>
+<div class="tq"><p class="qt"><span>Δ = 1, β₁ = β₂ = −1. How wide is the gap?</span></p>
+<p class="olab">Gap, |β|</p><div class="opts" role="group"><button type="button" class="opt">0</button><button type="button" class="opt">0.5</button><button type="button" class="opt" data-ok="1">1</button><button type="button" class="opt">2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>1: at the zone boundary cos ka = −1, and E<sub>±</sub> = ±Δ/2 — the gap equals Δ.</div></div>
+<div class="tq"><p class="qt"><span>Graphene: what is the energy of the upper band at Γ with β = −2.8 eV?</span></p>
+<p class="olab">E, eV</p><div class="opts" role="group"><button type="button" class="opt">2.8</button><button type="button" class="opt">5.6</button><button type="button" class="opt" data-ok="1">8.4</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>8.4 eV = 3|β|: at Γ all three neighbours add in phase. At M the energy is ±|β| = 2.8 eV, at K zero (the Dirac cone).</div></div>
+<div class="tq"><p class="qt"><span>Nearly free electrons, V = 0.3. What is the gap between the first and the second band at the zone boundary?</span></p>
+<p class="olab">Gap</p><div class="opts" role="group"><button type="button" class="opt">0.3</button><button type="button" class="opt" data-ok="1">0.6</button><button type="button" class="opt">0.09</button><button type="button" class="opt">1.2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>0.6 ≈ 2|V|: at the zone boundary the two waves e<sup>±iπx/a</sup> have one energy, the potential mixes them and pushes them apart by 2|V|. With one plane wave (M = 0) there is no gap.</div></div>
+</div></details></section>
+<script src="js/bands.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="bands";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/bands.js"></script>
+
+</body>
+</html>

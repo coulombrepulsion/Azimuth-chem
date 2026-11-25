@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Дефекты и поверхности кристаллов</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>Дефекты и поверхности кристаллов</h1>
+<p class="lead">Настоящий кристалл не идеален: в нём есть вакансии, примеси и, конечно, поверхность. Программа умеет считать только периодические системы, поэтому дефект кладут в сверхъячейку, а поверхность — в слэб с вакуумом. Здесь видно, сколько стоит дефект, как его заряд зависит от уровня Ферми и какие ловушки ждут в расчёте поверхности.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Энергия образования вакансии: E<sub>f</sub> = E<sub>N−1</sub> − (N − 1)/N · E<sub>N</sub> — ячейку с вакансией сравнивают с тем же числом атомов идеального кристалла. Оценка по связям: E<sub>f</sub> ≈ 2ε, энергия связи на атом.</li><li>Равновесная доля вакансий c = e^(−E<sub>f</sub>/kT). Ошибка E<sub>f</sub> в 0,3 эВ — множитель около восьми у точки плавления кремния: расчёт говорит, какой дефект преобладает, а не сколько его.</li><li>Заряженный дефект обменивается электронами с уровнем Ферми: E<sub>f</sub>(q; E<sub>F</sub>) = E<sub>f</sub>(q; 0) + q·E<sub>F</sub>. Где прямые двух зарядов пересекаются — уровень перехода ε(q/q′), это разность полных энергий, а не энергия орбитали.</li><li>Заряженная сверхъячейка взаимодействует со своими копиями и фоном: поправка ≈ q²α/(2εL) убывает как 1/L, медленно. Нужны сотни атомов, гибридный функционал для щели и разные стартовые структуры.</li><li>Поверхность — слэб из N слоёв и вакуум: E<sub>слэб</sub>(N) = N·E<sub>об</sub> + 2Aγ. Энергию объёма берут из наклона этой прямой: «чужая» E<sub>об</sub> с ошибкой δ даёт ошибку γ = Nδ/(2A), растущую с толщиной.</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Вакансия: энергия образования и концентрация</h2>
+  <div class="crow"><span class="l">Энергия образования E<sub>f</sub>, эВ</span><input type="range" id="ef" min="0.5" max="6" step="0.05" value="3.6" aria-label="Ef"><span class="val" id="efv"></span></div>
+  <div class="crow"><span class="l">Температура, K</span><input type="range" id="tt" min="300" max="2000" step="1" value="1687" aria-label="T"><span class="val" id="ttv"></span></div>
+  <svg id="vchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Доля вакансий в зависимости от температуры"></svg>
+  <div class="legend" id="vleg"></div>
+  <div class="cards" id="vcards"></div>
+  <p class="status" id="vNote"></p>
+  <p class="hint">c = e<sup>−E<sub>f</sub>/kT</sup>, k = 8,617·10<sup>−5</sup> эВ/K; узлов кремния — 5·10<sup>22</sup> в 1 см³. Опытная E<sub>f</sub> вакансии в кремнии — около 3,6 эВ; модельный потенциал лекции даёт 4,34 эВ без релаксации и 2,7–2,8 эВ после неё. Колебательная энтропия образования не учтена.</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Заряженные дефекты и уровни перехода</h2>
+  <div class="crow"><span class="l">E<sub>f</sub> заряда +1 при E<sub>F</sub> = 0, эВ</span><input type="range" id="ep" min="-1" max="6" step="0.05" value="2.9" aria-label="Ef(+)"><span class="val" id="epv"></span></div>
+  <div class="crow"><span class="l">E<sub>f</sub> нейтрального, эВ</span><input type="range" id="e0" min="-1" max="6" step="0.05" value="3.4" aria-label="Ef(0)"><span class="val" id="e0v"></span></div>
+  <div class="crow"><span class="l">E<sub>f</sub> заряда −1 при E<sub>F</sub> = 0, эВ</span><input type="range" id="em" min="-1" max="6" step="0.05" value="4.3" aria-label="Ef(−)"><span class="val" id="emv"></span></div>
+  <div class="crow"><span class="l">Ширина щели, эВ</span><input type="range" id="gp" min="0.3" max="5" step="0.01" value="1.17" aria-label="щель"><span class="val" id="gpv"></span></div>
+  <svg id="cchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Энергия образования в зависимости от уровня Ферми"></svg>
+  <div class="legend" id="cleg"></div>
+  <div class="cards" id="ccards"></div>
+  <p class="status" id="cNote"></p>
+  <div class="crow"><span class="l">Заряд дефекта q</span><span class="grp" id="qG" role="group" aria-label="Заряд дефекта q"></span></div>
+  <div class="crow"><span class="l">Диэлектрическая проницаемость ε</span><input type="range" id="ee" min="1" max="30" step="0.1" value="11.7" aria-label="ε"><span class="val" id="eev"></span></div>
+  <div class="cards" id="scards"></div>
+  <p class="status" id="sNote"></p>
+  <p class="hint">E<sub>f</sub>(q; E<sub>F</sub>) = E<sub>f</sub>(q; 0) + q·E<sub>F</sub>; ε(q/q′) = [E<sub>f</sub>(q; 0) − E<sub>f</sub>(q′; 0)]/(q′ − q). Поправка ΔE ≈ q²α·14,4 эВ·Å/(2εL), α = 2,84; сверхъячейки кремния из 2³…6³ кубических ячеек по 8 атомов. ε = 11,7 — кремний, около 5 — типичный оксид. Числа энергий условные, как на слайде лекции.</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Поверхность: слэб и энергия поверхности</h2>
+  <div class="crow"><span class="l">Грань кремния</span><span class="grp" id="fG" role="group" aria-label="Грань кремния"></span></div>
+  <div class="crow"><span class="l">Ошибка энергии объёма δ, мэВ на атом</span><input type="range" id="dd" min="-20" max="20" step="0.5" value="10" aria-label="δ"><span class="val" id="ddv"></span></div>
+  <div class="crow"><span class="l">Шум энергии слэба, мэВ</span><input type="range" id="nz" min="0" max="10" step="0.5" value="1" aria-label="шум"><span class="val" id="nzv"></span></div>
+  <svg id="schart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Энергия поверхности в зависимости от числа слоёв"></svg>
+  <div class="legend" id="sleg"></div>
+  <div class="cards" id="gcards"></div>
+  <p class="status" id="gNote"></p>
+  <p class="hint">γ = (E<sub>слэб</sub> − N·E<sub>об</sub>)/(2A); по связям γ ≈ n·(ε/2)/A, ε = 2,17 эВ (модельный потенциал, 2ε = 4,34 эВ на атом); (111): n = 1, A = √3/4·a² = 12,8 Å²; (100): n = 2, A = a²/2 = 14,7 Å². 1 эВ/Å² = 16,02 Дж/м². «Из прямой» — пересечение прямой МНК по слэбам из 2…N слоёв.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">На поверхности садятся молекулы. Почему одни металлы держат водород крепко, а другие нет, и откуда берётся магнетизм железа?</span><a class="nqA" href="adsorption.html" data-goto="adsorption">Адсорбция и магнетизм →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Кремний, E<sub>f</sub> = 3,6 эВ, у точки плавления 1687 K. Какая доля узлов пуста?</span></p>
+<p class="olab">c</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">2·10⁻¹¹</button><button type="button" class="opt">2·10⁻⁵</button><button type="button" class="opt">3·10⁻²⁷</button><button type="button" class="opt">0,01</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>e<sup>−24,8</sup> ≈ 2·10<sup>−11</sup>: E<sub>f</sub>/kT = 3,6/(8,617·10<sup>−5</sup>·1687) = 24,8. Одна вакансия на 50 миллиардов атомов — около 10<sup>12</sup> в кубическом сантиметре.</div></div>
+<div class="tq"><p class="qt"><span>E<sub>f</sub>(+; 0) = 2,9, E<sub>f</sub>(0) = 3,4, E<sub>f</sub>(−; 0) = 4,3 эВ. Где уровень ε(0/−)?</span></p>
+<p class="olab">ε(0/−), эВ</p><div class="opts" role="group"><button type="button" class="opt">0,5</button><button type="button" class="opt" data-ok="1">0,9</button><button type="button" class="opt">1,4</button><button type="button" class="opt">4,3</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>0,9 эВ: ε(0/−) = [E<sub>f</sub>(0) − E<sub>f</sub>(−; 0)]/(−1 − 0) = 4,3 − 3,4. Уровень ε(+/0) = 3,4 − 2,9 = 0,5 эВ: ниже него дефект — донор, выше 0,9 эВ — акцептор.</div></div>
+<div class="tq"><p class="qt"><span>Кремний (ε = 11,7), заряд +1, сверхъячейка из 216 атомов. Чему примерно равна поправка Макова–Пейна?</span></p>
+<p class="olab">ΔE, эВ</p><div class="opts" role="group"><button type="button" class="opt">0,16</button><button type="button" class="opt" data-ok="1">0,11</button><button type="button" class="opt">0,02</button><button type="button" class="opt">1,5</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>0,11 эВ: L = 3·5,43 = 16,3 Å, ΔE = 2,84·14,4/(2·11,7·16,3). 0,16 эВ — для 64 атомов; поправка убывает как 1/L, медленно. 1,5 эВ получается у оксида с ε = 5 и зарядом 2.</div></div>
+<div class="tq"><p class="qt"><span>Энергию объёма взяли из отдельного расчёта с ошибкой δ на атом. Как ведёт себя ошибка энергии поверхности с ростом числа слоёв?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Растёт пропорционально N</button><button type="button" class="opt">Убывает как 1/N</button><button type="button" class="opt">Не зависит от N</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Растёт: Δγ = Nδ/(2A) — ошибка δ умножается на число атомов в слэбе. Поэтому энергию объёма берут из наклона прямой E<sub>слэб</sub>(N), посчитанной с теми же параметрами, что слэбы.</div></div>
+</div></details></section>
+<script src="js/defects.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="defects";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/defects.js"></script>
+
+</body>
+</html>

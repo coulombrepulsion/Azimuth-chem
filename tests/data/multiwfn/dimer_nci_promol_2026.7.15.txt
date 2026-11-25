@@ -1,0 +1,169 @@
+ WARNING: "settings.ini" was found neither in current folder nor in the path defined by "Multiwfnpath" environment variable. Now using default settings instead, and all your modifications (if any) on settings.ini will not take effect!
+
+ Multiwfn -- A Multifunctional Wavefunction Analyzer
+ Version 2026.7.15 (release date is the same as version name)
+ Developer: Tian Lu (Beijing Kein Research Center for Natural Sciences)
+ Multiwfn official website: http://sobereva.com/multiwfn
+ Multiwfn English forum: http://sobereva.com/wfnbbs
+ Multiwfn Chinese forum: http://bbs.keinsci.com/wfn
+ ( Number of parallel threads:   4  Current date: 2026-10-28  Time: 10:25:22 )
+
+ Both following papers ***MUST BE CITED IN MAIN TEXT*** if Multiwfn is used:
+  Tian Lu, Feiwu Chen, J. Comput. Chem., 33, 580 (2012) DOI: 10.1002/jcc.22885
+  Tian Lu, J. Chem. Phys., 161, 082503 (2024) DOI: 10.1063/5.0216272
+ See "How to cite Multiwfn.pdf" in Multiwfn binary package for more information
+
+ Warning: You should set OMP_STACKSIZE environment variable as mentioned in Section 2.1.2 of Multiwfn manual!
+
+ Please wait...
+ Title line: water dimer (S22, CCSD(T)/cc-pVQZ geometry)
+ Totally       6 atoms
+
+ Loaded dimer.xyz successfully!
+
+ Formula: H4 O2      Total atoms:       6
+ Molecule weight:        36.03057 Da
+ Point group: Cs 
+
+ "q": Exit program gracefully          "r": Load a new file
+                    ************ Main function menu ************
+ 0 Show molecular structure and view orbitals
+ 1 Output all properties at a point       2 Topology analysis
+ 3 Output and plot specific property in a line
+ 4 Output and plot specific property in a plane
+ 5 Output and plot specific property within a spatial region (calc. grid data)
+ 6 Check & modify wavefunction
+ 7 Population analysis and calculation of atomic charges
+ 8 Orbital composition analysis           9 Bond order analysis
+ 10 Plot total DOS, PDOS, OPDOS, local DOS, COHP and photoelectron spectrum
+ 11 Plot IR/Raman/UV-Vis/ECD/VCD/ROA/NMR spectrum
+ 12 Quantitative analysis of molecular surface
+ 13 Process grid data (No grid data is presented currently)
+ 14 Adaptive natural density partitioning (AdNDP) analysis
+ 15 Fuzzy atomic space analysis
+ 16 Charge decomposition analysis (CDA) and plot orbital interaction diagram
+ 17 Basin analysis                       18 Electron excitation analysis
+ 19 Orbital localization analysis        20 Visual study of weak interaction
+ 21 Energy decomposition analysis        22 Conceptual DFT (CDFT) analysis
+ 23 ETS-NOCV analysis                    24 (Hyper)polarizability analysis
+ 25 Electron delocalization and aromaticity analyses
+ 26 Structure and geometry related analyses
+ 100 Other functions (Part 1)            200 Other functions (Part 2)
+ 300 Other functions (Part 3)
+ Reviews of functions in this module:
+ Tian Lu and Qinxue Chen, Visualization Analysis of Weak Interactions in Chemical Systems. In Comprehensive Computational Chemistry, vol. 2, pp. 240-264. Oxford: Elsevier (2024) DOI: 10.1016/B978-0-12-821978-2.00076-3
+ Tian Lu, Visualization Analysis of Covalent and Noncovalent Interactions in Real Space, Angew. Chem. Int. Ed., 137, e202504895 (2025) DOI: 10.1002/anie.202504895
+
+            ============ Visual study of weak interaction ============ 
+  0 Return
+  1 NCI analysis (also known as RDG analysis)
+  2 NCI analysis based on promolecular density
+  3 aNCI: Averaged NCI analysis
+  4 IRI: Interaction region indicator analysis (Chemistry-Methods, 1, 231)
+  5 DORI analysis
+  6 Visualization of van der Waals potential (JMM, 26, 315)
+  9 Becke/Hirshfeld surface analysis
+  10 IGM analysis
+ -10 mIGM: Modified IGM analysis
+  11 IGMH: IGM analysis based on Hirshfeld partition of molecular density (JCC, 43, 539)
+  12 aIGM: Averaged IGM analysis
+ -12 amIGM: Averaged mIGM analysis
+ *** Please cite the following papers along with Multiwfn original papers ***
+   Original paper of NCI: J. Am. Chem. Soc., 132, 6498 (2010)
+   Comprehensive reviews:
+ Tian Lu, Qinxue Chen, Visualization Analysis of Weak Interactions in Chemical Systems. In Comprehensive Computational Chemistry, vol. 2, pp. 240-264. Oxford: Elsevier (2024) DOI: 10.1016/B978-0-12-821978-2.00076-3
+ Tian Lu, Visualization Analysis of Covalent and Noncovalent Interactions in Real Space, Angew. Chem. Int. Ed., e202504895 (2025) DOI: 10.1002/anie.202504895
+
+ Please select a method to set up grid
+ -10 Set extension distance of grid range for mode 1~4, current:  1.500 Bohr
+ 1 Low quality grid,    covering whole system, about 125000 points in total
+ 2 Medium quality grid, covering whole system, about 512000 points in total
+ 3 High quality grid,   covering whole system, about 1728000 points in total
+ 4 Input the number of points or grid spacing in X,Y,Z, covering whole system
+ 5 Input original point, grid spacings, and the number of points
+ 6 Input center coordinate, number of points and extension distance
+ 7 The same as 6, but input two atoms, the midpoint will be defined as center
+ 8 Use grid setting of another cube file
+ 10 Set box of grid data visually using a GUI window
+ 11 Select a set of atoms, set extension distance around them and grid spacing
+ Coordinate of origin in X,Y,Z is      -5.155220   -2.206268   -2.933473 Bohr
+ Coordinate of end point in X,Y,Z is    4.717818    2.997089    2.936982 Bohr
+ Grid spacing in X,Y,Z is    0.133419    0.133419    0.133419 Bohr
+ Number of points in X,Y,Z is   75   40   45   Total:      135000
+ Note: All exponential functions exp(x) with x< -40.000 will be ignored 
+
+ Calculation of grid data took up wall clock time         0 s
+
+                   ---------- Post-processing menu ----------
+ -3 Set RDG value where value of sign(lambda2)rho is out of a certain range
+ -2 Set RDG value where value of sign(lambda2)rho is within a certain range
+ -1 Draw scatter graph
+ 0 Exit
+ 1 Save the scatter graph to file
+ 2 Output scatter points to output.txt in current folder
+ 3 Output cube files to func1.cub and func2.cub in current folder
+ 4 Change range of X-axis of scatter graph, current: -1.0000E-01 to  1.0000E-01
+ 5 Change range of Y-axis of scatter graph, current:  0.0000E+00 to  2.0000E+00
+ 6 Show isosurface of sign(lambda2)rho
+ 7 Show isosurface of RDG
+ 8 Output sign(lambda2)rho to output.txt where RDG is within in certain range
+ Exporting...
+ The cube file of sign(lambda2)rho has been exported to func1.cub in current folder
+ The cube file of RDG has been exported to func2.cub in current folder
+
+                   ---------- Post-processing menu ----------
+ -3 Set RDG value where value of sign(lambda2)rho is out of a certain range
+ -2 Set RDG value where value of sign(lambda2)rho is within a certain range
+ -1 Draw scatter graph
+ 0 Exit
+ 1 Save the scatter graph to file
+ 2 Output scatter points to output.txt in current folder
+ 3 Output cube files to func1.cub and func2.cub in current folder
+ 4 Change range of X-axis of scatter graph, current: -1.0000E-01 to  1.0000E-01
+ 5 Change range of Y-axis of scatter graph, current:  0.0000E+00 to  2.0000E+00
+ 6 Show isosurface of sign(lambda2)rho
+ 7 Show isosurface of RDG
+ 8 Output sign(lambda2)rho to output.txt where RDG is within in certain range
+
+            ============ Visual study of weak interaction ============ 
+  0 Return
+  1 NCI analysis (also known as RDG analysis)
+  2 NCI analysis based on promolecular density
+  3 aNCI: Averaged NCI analysis
+  4 IRI: Interaction region indicator analysis (Chemistry-Methods, 1, 231)
+  5 DORI analysis
+  6 Visualization of van der Waals potential (JMM, 26, 315)
+  9 Becke/Hirshfeld surface analysis
+  10 IGM analysis
+ -10 mIGM: Modified IGM analysis
+  11 IGMH: IGM analysis based on Hirshfeld partition of molecular density (JCC, 43, 539)
+  12 aIGM: Averaged IGM analysis
+ -12 amIGM: Averaged mIGM analysis
+
+ Note: A set of grid data is presented in memory
+ "q": Exit program gracefully          "r": Load a new file
+                    ************ Main function menu ************
+ 0 Show molecular structure and view orbitals
+ 1 Output all properties at a point       2 Topology analysis
+ 3 Output and plot specific property in a line
+ 4 Output and plot specific property in a plane
+ 5 Output and plot specific property within a spatial region (calc. grid data)
+ 6 Check & modify wavefunction
+ 7 Population analysis and calculation of atomic charges
+ 8 Orbital composition analysis           9 Bond order analysis
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG
+ 10 Plot total DOS, PDOS, OPDOS, local DOS, COHP and photoelectron spectrum
+ 11 Plot IR/Raman/UV-Vis/ECD/VCD/ROA/NMR spectrum
+ 12 Quantitative analysis of molecular surface
+ 13 Process grid data
+ 14 Adaptive natural density partitioning (AdNDP) analysis
+ 15 Fuzzy atomic space analysis
+ 16 Charge decomposition analysis (CDA) and plot orbital interaction diagram
+ 17 Basin analysis                       18 Electron excitation analysis
+ 19 Orbital localization analysis        20 Visual study of weak interaction
+ 21 Energy decomposition analysis        22 Conceptual DFT (CDFT) analysis
+ 23 ETS-NOCV analysis                    24 (Hyper)polarizability analysis
+ 25 Electron delocalization and aromaticity analyses
+ 26 Structure and geometry related analyses
+ 100 Other functions (Part 1)            200 Other functions (Part 2)
+ 300 Other functions (Part 3)

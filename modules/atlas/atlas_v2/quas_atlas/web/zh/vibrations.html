@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,co2,ammonia,methane,formaldehyde">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>简正振动</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/nm.css">
+
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-nm-g.webp"><!--pose:end-->
+<h1>简正振动</h1>
+<p class="lead">由 N 个原子组成的分子有 3N − 6 个振动（线形分子为 3N − 5）。每个简正振动都按点群的一个不可约表示变换，而正是对称类型决定它在红外光谱中是否有谱带、在拉曼（Raman）光谱中是否有谱线。振动形式由简单的价力场计算，频率是实验基频，但按谐振模型对应，未考虑非谐性和费米共振。例如，CO₂ 的对称伸缩振动在真实拉曼光谱中呈现约 1285 和 1388 cm⁻¹ 的费米双峰；1333 cm⁻¹ 是不考虑共振时 ν₁ 的约定值。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>由 N 个原子组成的分子有 3N − 6 个简正振动（线形分子为 3N − 5）。</li><li>每个振动按一个不可约表示变换；各类型振动的数目由 Γ<sub>3N</sub> 和约化公式求出。</li><li>红外活性的是 x、y、z 型振动，拉曼活性的是二次函数型振动；有对称中心时适用互斥规则。</li><li>简并振动是同一频率下的几种振动形式。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>简单力场的谐振模型</summary><dl><dt>计算的是什么</dt><dd>简正振动的形式、对称性、红外和拉曼活性。</dd><dt>采用了哪些近似</dt><dd>谐振近似，模型价力场；频率取自实验；未考虑非谐性和费米共振。 H₂O 位于 yz 平面内（Mulliken 约定）；“分子点群”页面采用 xz 平面，因此同一振动在那里标为 B₁ 而不是 B₂。</dd><dt>能得出什么结论</dt><dd>振动的数目和对称性以及选择定则是可靠的；振动形式是定性的；强度未计算。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. 分子的振动</h2>
+  <div class="crow"><span class="l">分子</span><span class="row" id="molG" role="group" aria-label="分子"></span></div>
+  <div class="work">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <svg id="mv" data-no-axis viewBox="0 0 440 340" role="img" aria-label="振动动画"></svg>
+      <div class="row"><button class="btn primary" id="bPlay" type="button">❚❚ 暂停</button>
+        <span class="hint">振幅</span><input type="range" id="amp" min="0.05" max="0.45" step="0.01" style="width:140px" aria-label="振幅">
+        <label class="hint" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="arr" checked> 位移箭头</label></div>
+      <div class="row" id="cmpRow" hidden><span class="hint">简并振动的分量</span><span class="row" id="cmpG" role="group" aria-label="分量"></span></div>
+      <p class="hint">拖动分子可以旋转它。</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="tablewrap" id="modeTab"></div>
+      <div class="status" id="st1"></div>
+    </div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. 各对称类型的振动数目</h2>
+  <p class="small">按类计数的方法：对每一类，数出操作保持不动的原子数，乘以一个原子的贡献 χ = ±1 + 2cos φ（正号用于旋转，负号用于旋转反映和反映），得到 Γ<sub>3N</sub>。减去平动（按 x、y、z 变换）和转动（按 R<sub>x</sub>、R<sub>y</sub>、R<sub>z</sub> 变换），再用约化公式分解剩余部分。</p>
+  <div class="tablewrap" id="g3nTab"></div>
+  <div class="red" id="redBox"></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">3. 红外与拉曼光谱</h2>
+  <p class="small">若振动的对称类型与 x、y 或 z 相同，它就是红外活性的：振动时偶极矩发生变化。与二次函数 x²、xy、… 同类型的振动是拉曼活性的：它们改变极化率。对于有对称中心的分子适用<b>互斥规则</b>：没有一个振动同时具有红外和拉曼活性。</p>
+  <svg id="spec" viewBox="0 0 1100 190" role="img" aria-label="红外与拉曼光谱示意图"></svg>
+  <div class="status" id="st3"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">配位环境的对称性如何使金属的 d 能级分裂？</span><a class="nqA" href="crystal-field.html" data-goto="cf">晶体场 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面探索练习与训练器。在页面上完成操作并作答——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>H₂O：分子有多少个振动？各属于什么对称类型？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">2A₁ + B₂</button><button type="button" class="opt">A₁ + 2B₂</button><button type="button" class="opt">3A₁</button><button type="button" class="opt">A₁ + B₁ + B₂</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>3N − 6 = 3。由第 2 部分的表：Γ<sub>振</sub> = 2A₁ + B₂——对称伸缩（3657 cm⁻¹）、弯曲（1595 cm⁻¹）和反对称伸缩（3756 cm⁻¹）。</div></div>
+<div class="tq"><p class="qt"><span>CO₂：红外光谱中有几个谱带（基频）？</span></p>
+<p class="olab">红外谱带数</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">2</button><button type="button" class="opt">3</button><button type="button" class="opt">4</button><button type="button" class="opt">1</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>2 个：反对称伸缩 Σ<sub>u</sub><sup>+</sup>（2349 cm⁻¹）和二重简并弯曲 Π<sub>u</sub>（667 cm⁻¹）。对称伸缩 Σ<sub>g</sub><sup>+</sup>（1333 cm⁻¹——不考虑费米共振的约定值）不改变偶极矩，只在拉曼光谱中出现；在真实光谱中它是约 1285 和 1388 cm⁻¹ 的费米双峰。</div></div>
+<div class="tq"><p class="qt"><span>CH₄：拉曼光谱中有几条谱线？</span></p>
+<p class="olab">拉曼谱线数</p><div class="opts" role="group"><button type="button" class="opt">3</button><button type="button" class="opt">9</button><button type="button" class="opt">2</button><button type="button" class="opt" data-ok="1">4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>4：A₁、E 和两个 T₂ 都是拉曼活性的。红外中只有两个 T₂ 振动（按 x、y、z 变换）。</div></div>
+<div class="tq"><p class="qt"><span>SF₆：有几个振动既非红外活性也非拉曼活性？</span></p>
+<p class="olab">非活性振动数</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">1</button><button type="button" class="opt">2</button><button type="button" class="opt">15</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>一个——T<sub>2u</sub>（347 cm⁻¹）：u 型没有拉曼活性，而红外中只有 T<sub>1u</sub> 是活性的。这类振动称为“沉默”振动；它们的频率由组合谱带或计算求得。</div></div>
+<div class="tq"><p class="qt"><span>为什么 CO₂ 没有一个频率同时出现在红外和拉曼光谱中？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">分子是线形的</button><button type="button" class="opt" data-ok="1">分子有对称中心</button><button type="button" class="opt">CO₂ 的所有振动都是简并的</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>CO₂ 有对称中心。x、y、z 在反演下变号（u 型），而二次函数不变号（g 型），因此一个振动不可能同时具有两种活性——这就是互斥规则。H₂O 没有对称中心，三个振动在两种光谱中都能看到。</div></div>
+<div class="tq"><p class="qt"><span>NH₃：振动数 3N − 6 = 6。分子有多少个不同的频率？</span></p>
+<p class="olab">不同频率数</p><div class="opts" role="group"><button type="button" class="opt">6</button><button type="button" class="opt">2</button><button type="button" class="opt" data-ok="1">4</button><button type="button" class="opt">3</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>4：Γ<sub>振</sub> = 2A₁ + 2E。每个二重简并的 E 振动是频率相同的两种形式。</div></div>
+<!--self:start--><div class="selfBox"><h3 id="h4s">自我检测</h3>
+  <p class="small">对下面的分子，求出振动数、不同频率的数目（简并振动算一个频率）以及其中红外和拉曼活性的数目。</p>
+  <div class="row"><b id="qMol" style="font-family:var(--f-display);font-size:19px"></b><button class="btn" id="qNew" type="button">换一个分子</button></div>
+  <div class="quiz">
+    <label><span>振动数</span><input id="q0" inputmode="numeric" autocomplete="off"></label>
+    <label><span>不同频率数</span><input id="q1" inputmode="numeric" autocomplete="off"></label>
+    <label><span>红外活性</span><input id="q2" inputmode="numeric" autocomplete="off"></label>
+    <label><span>拉曼活性</span><input id="q3" inputmode="numeric" autocomplete="off"></label>
+  </div>
+  <div class="row"><button class="btn primary" id="qChk" type="button">检查</button><button class="btn" id="qShow" type="button">显示解答</button></div>
+  <div class="status" id="qRes">输入数字并点击“检查”。</div>
+</div><!--self:end--></div></details></section>
+<script src="js/vibrations.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="nm";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="../assets/js/ballstick.js"></script>
+<script src="js/vibrations.js"></script>
+
+</body>
+</html>

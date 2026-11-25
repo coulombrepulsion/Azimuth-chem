@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Свойства кристаллов: сжатие, фононы, теплоёмкость</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>Свойства кристаллов: сжатие, фононы, теплоёмкость</h1>
+<p class="lead">Из полной энергии кристалла при разных объёмах получают равновесную постоянную решётки и модуль сжатия, из вторых производных энергии по смещениям атомов — фононы, из фононов — теплоёмкость и термохимию. Здесь видно, как устроена каждая из этих величин и что портит её расчёт.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Уравнение состояния E(V): серию расчётов при разных объёмах подгоняют формулой Бёрча–Мурнагана и получают V₀, модуль всестороннего сжатия B₀ = V·d²E/dV² и его производную по давлению B₀′.</li><li>B₀ требует точной энергии: диапазон объёмов ±5–10 %, хорошая сходимость по k-точкам и E<sub>cut</sub>. Шум в несколько мэВ при узком диапазоне делает B₀′ бессмысленным.</li><li>Фононы — колебания решётки с волновым вектором q. При двух атомах в ячейке есть акустическая ветвь (ω → 0 в Γ) и оптическая; между ними щель тем шире, чем больше разница масс.</li><li>Теплоёмкость: при T ≪ θ<sub>D</sub> C<sub>v</sub> ∝ T³ (модель Дебая), при T ≳ θ<sub>D</sub> — 3R на моль атомов (закон Дюлонга и Пти). Модель Эйнштейна с одной частотой занижает C<sub>v</sub> при низких T.</li><li>В Quantum ESPRESSO: E(V) — серия pw.x и ev.x (или vc-relax); фононы — ph.x, q2r.x и matdyn.x; из фононной DOS — теплоёмкость и энтропия кристалла.</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Уравнение состояния и модуль сжатия</h2>
+  <div class="crow"><span class="l">Вещество</span><span class="grp" id="eG" role="group" aria-label="Вещество"></span></div>
+  <div class="crow"><span class="l">Диапазон объёмов ±, %</span><input type="range" id="sp" min="1" max="20" step="0.5" value="6" aria-label="диапазон"><span class="val" id="spv"></span></div>
+  <div class="crow"><span class="l">Число расчётов</span><input type="range" id="np" min="4" max="15" step="1" value="7" aria-label="точек"><span class="val" id="npv"></span></div>
+  <div class="crow"><span class="l">Шум энергии, мэВ</span><input type="range" id="nz" min="0" max="20" step="0.5" value="0" aria-label="шум"><span class="val" id="nzv"></span></div>
+  <svg id="echart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Энергия в зависимости от объёма"></svg>
+  <div class="legend" id="eleg"></div>
+  <div class="cards" id="ecards"></div>
+  <p class="status" id="eNote"></p>
+  <p class="hint">E(V) = E₀ + (9V₀B₀/16)·{[(V₀/V)<sup>2/3</sup> − 1]³B₀′ + [(V₀/V)<sup>2/3</sup> − 1]²[6 − 4(V₀/V)<sup>2/3</sup>]}. «Расчёты» — точки справочной кривой со сдвигом до ± шума (как от неполной сходимости). 1 эВ/Å³ = 160,2 ГПа. Справочные B₀ — по Киттелю.</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Фононы цепочки из двух атомов</h2>
+  <div class="crow"><span class="l">Масса атома 1, а.е.м.</span><input type="range" id="m1" min="1" max="200" step="0.1" value="24.3" aria-label="m1"><span class="val" id="m1v"></span></div>
+  <div class="crow"><span class="l">Масса атома 2, а.е.м.</span><input type="range" id="m2" min="1" max="200" step="0.1" value="16" aria-label="m2"><span class="val" id="m2v"></span></div>
+  <div class="crow"><span class="l">Жёсткость связи C, Н/м</span><input type="range" id="cc" min="5" max="200" step="1" value="60" aria-label="C"><span class="val" id="ccv"></span></div>
+  <svg id="pchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Дисперсия фононов"></svg>
+  <div class="legend" id="pleg"></div>
+  <div class="cards" id="pcards"></div>
+  <p class="status" id="phNote"></p>
+  <p class="hint">ω² = C(1/m₁ + 1/m₂) ∓ C·√[(1/m₁ + 1/m₂)² − 4 sin²(qa/2)/(m₁m₂)]. Края ветвей на границе зоны: √(2C/m<sub>тяж</sub>) и √(2C/m<sub>лёг</sub>), оптическая в Γ — √(2C(1/m₁ + 1/m₂)). Массы 24,3 и 16 — как у Mg и O.</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Теплоёмкость: Дебай и Эйнштейн</h2>
+  <div class="crow"><span class="l">Вещество</span><span class="grp" id="cG" role="group" aria-label="Вещество"></span></div>
+  <div class="crow"><span class="l">Температура, K</span><input type="range" id="tt" min="5" max="1500" step="5" value="300" aria-label="T"><span class="val" id="ttv"></span></div>
+  <svg id="cchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Теплоёмкость в зависимости от температуры"></svg>
+  <div class="legend" id="cleg"></div>
+  <div class="cards" id="ccards"></div>
+  <p class="status" id="cNote"></p>
+  <p class="hint">Дебай: C<sub>v</sub>/3R = 3(T/θ<sub>D</sub>)³∫₀<sup>θ<sub>D</sub>/T</sup> x⁴eˣ/(eˣ − 1)² dx; Эйнштейн: C<sub>v</sub>/3R = (θ<sub>E</sub>/T)²e<sup>θ<sub>E</sub>/T</sup>/(e<sup>θ<sub>E</sub>/T</sup> − 1)², θ<sub>E</sub> = 0,806·θ<sub>D</sub>; закон T³: C<sub>v</sub>/3R = (4π⁴/5)(T/θ<sub>D</sub>)³. Температуры Дебая — по Киттелю.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Фононы дают энтропию и нулевые колебания кристалла. А как из колебательных частот получают энтальпию и энергию Гиббса молекулы?</span><a class="nqA" href="thermochemistry.html" data-goto="thermo">Термохимия из частот →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Si, диапазон ±1 %, 7 расчётов, шум 5 мэВ. Какую величину подгонка ещё находит разумно?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">V₀</button><button type="button" class="opt">B₀</button><button type="button" class="opt">B₀′</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>V₀: положение минимума видно и по шумным точкам (19,92 Å³ при справочных 20,02). А энергия на краю диапазона меняется всего на ~0,6 мэВ — меньше шума, и B₀ выходит в тысячи ГПа. Чтобы найти B₀, нужен диапазон ±5–10 % или меньший шум.</div></div>
+<div class="tq"><p class="qt"><span>Цепочка с массами 40 и 10 а.е.м., C = 50 Н/м. Какова щель между ветвями?</span></p>
+<p class="olab">Щель, см⁻¹</p><div class="opts" role="group"><button type="button" class="opt">0</button><button type="button" class="opt">46</button><button type="button" class="opt" data-ok="1">206</button><button type="button" class="opt">412</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>206 см⁻¹: верх акустической ветви √(2C/m<sub>тяж</sub>) = 206 см⁻¹, низ оптической √(2C/m<sub>лёг</sub>) = 412 см⁻¹ — в два раза выше, потому что массы различаются в четыре раза.</div></div>
+<div class="tq"><p class="qt"><span>Как движутся атомы в оптической ветви в точке Γ?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Атомы двух сортов движутся навстречу друг другу</button><button type="button" class="opt">Кристалл сдвигается как целое</button><button type="button" class="opt">Колеблются только тяжёлые атомы</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Навстречу друг другу: центр масс ячейки стоит на месте. Сдвиг как целое — акустическая ветвь в Γ (ω = 0). Только тяжёлые атомы колеблются в акустической ветви на границе зоны.</div></div>
+<div class="tq"><p class="qt"><span>Алмаз (θ<sub>D</sub> = 2230 K) при 300 K. Чему примерно равно C<sub>v</sub>/3R?</span></p>
+<p class="olab">C<sub>v</sub>/3R</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">0,17</button><button type="button" class="opt">0,5</button><button type="button" class="opt">0,94</button><button type="button" class="opt">1,0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>≈ 0,17: комнатная температура много ниже θ<sub>D</sub>, и большая часть колебаний алмаза «заморожена». Медь (θ<sub>D</sub> = 343 K) при той же температуре почти достигает предела Дюлонга и Пти: 0,94.</div></div>
+</div></details></section>
+<script src="js/solidprops.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="solidprops";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/solidprops.js"></script>
+
+</body>
+</html>

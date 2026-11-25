@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>H₂ 的解离：RHF、UHF、CI</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/h2.css">
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-h2-g.webp"><!--pose:end-->
+<h1>H₂ 的解离：RHF、UHF 与 CI</h1>
+<p class="lead">在最小基组 STO-3G（ζ = 1.24）下，对每个核间距 R 进行的真实 H₂ 计算。同一个分子有五种计算方法，键拉得越长，它们的差别就越大。用滑块或点击图表来选择 R。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>拉伸 H₂ 时，RHF 让离子结构 H⁺H⁻ 与共价结构同等重要，能量升得过高。</li><li>CI 混合 σ<sub>g</sub>² 和 σ<sub>u</sub>²，正确描述解离——这是静态相关。</li><li>在平衡附近相关是动态的，MP2 给出其大部分；在大 R 时 MP2 失效：它不是变分的。</li><li>UHF 通过破坏自旋对称性得到正确的极限。</li><li>计算误差可分为三部分：未收敛的 SCF（针对它的措施是使 SCF 收敛）、方法（与同一基组中的完全 CI 比较）和基组（完全 CI 与精确能量之差）。这种分解只在固定条件下有意义：方法误差本身取决于基组。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>完全 CI 是给定基组中的精确解</summary><dl><dt>计算的是什么</dt><dd>任意 R 下 H₂ 在最小基组中的 RHF、UHF、完全 CI、MP2 和三重态；在直到 6-31G** 的基组中把误差分解为三部分。</dd><dt>采用了哪些近似</dt><dd>最小基组 STO-3G（误差一节中直到 6-31G**）；非相对论哈密顿量，Born–Oppenheimer 近似。</dd><dt>能得出什么结论</dt><dd>静态和动态相关的定性图像是正确的；最小基组中的能量离精确值很远。</dd></dl></details><!--lim:end-->
+<section class="controls" aria-label="参数">
+  <div class="crow"><span class="l">距离 R</span><input type="range" id="R" min="0.5" max="8" step="0.05" style="width:300px"><span class="val" id="Rv"></span></div>
+  <div class="crow"><span class="l">在图中显示</span><span id="show" role="group" aria-label="图中的方法"></span></div>
+</section>
+<div class="work">
+  <div class="panel">
+    <div class="ptitle">总能量 E(R)，a.u.</div>
+    <svg id="ech" viewBox="0 0 560 380" role="img" aria-label="不同方法的能量曲线" style="cursor:pointer"></svg>
+    <div class="legend" id="eleg"></div>
+  </div>
+  <div class="panel">
+    <div class="ptitle" id="atR"></div>
+    <div class="tablewrap"><table class="mtab"><thead><tr><th>方法</th><th>E</th><th>E − E<sub>CI</sub></th><th>含义</th></tr></thead><tbody id="etab"></tbody></table></div>
+    <div class="ptitle" style="margin-top:4px">组态相互作用</div>
+    <div id="ci" style="font-size:14.5px;display:flex;flex-direction:column;gap:6px"></div>
+    <div class="ptitle" style="margin-top:4px">静态相关的迹象</div>
+    <div class="tablewrap"><table class="mtab"><thead><tr><th>指标</th><th>数值</th><th>警戒阈值</th></tr></thead><tbody id="diag"></tbody></table></div>
+  </div>
+</div>
+<div class="status" id="explain" style="font-size:15px"></div>
+<div class="two">
+  <div class="panel">
+    <div class="ptitle">沿 R 的诊断</div>
+    <svg id="dch" viewBox="0 0 540 250" role="img" aria-label="主组态系数、σu 布居和自旋污染"></svg>
+    <div class="legend"><span><i class="sw c"></i>c₀——CI 中 |σ<sub>g</sub>σ̄<sub>g</sub>| 的系数</span><span><i class="sw" style="border-color:var(--mp2)"></i>n(σ<sub>u</sub>)——自然轨道的布居</span><span><i class="sw" style="border-color:var(--rho-l)"></i>⟨S²⟩ UHF</span><span><i class="sw" style="border-color:var(--muted);border-top-style:dashed"></i>阈值 0.9 和 0.1</span></div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">所选 R 下沿键轴的轨道</div>
+    <svg id="och" viewBox="0 0 540 250" role="img" aria-label="RHF 与 UHF 轨道"></svg>
+    <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>σ<sub>g</sub>（RHF）：两个电子</span><span><i class="sw" style="border-color:var(--virt);border-top-style:dashed"></i>σ<sub>u</sub></span><span><i class="sw" style="border-color:var(--rho-l)"></i>UHF：α 轨道</span><span><i class="sw" style="border-color:var(--rho-l);border-top-style:dotted"></i>UHF：β 轨道</span></div>
+  </div>
+</div>
+<section class="panel" aria-labelledby="hV">
+  <h2 id="hV">共价结构与离子结构</h2>
+  <p class="hint" style="font-size:14px">将波函数用原子轨道 A 和 B 展开。共价结构 A(1)B(2) + B(1)A(2)——每个原子上各有一个电子（海特勒–伦敦）。离子结构 A(1)A(2) + B(1)B(2)——两个电子都在同一个原子上，即 H⁻H⁺ 或 H⁺H⁻。λ 为两者系数之比。</p>
+  <div id="vb" style="display:flex;flex-direction:column;gap:8px"></div>
+</section>
+
+<section class="panel" aria-labelledby="hErr">
+  <h2 id="hErr">三种误差</h2>
+  <p class="hint" style="font-size:14px">在固定的 R 和基组下，与精确能量的偏差可分解为三部分，每一部分都有针对它的措施。<b>未收敛的计算</b>：SCF 在收敛前停止——需要使其收敛（更多迭代；收敛困难时用 DIIS、阻尼或另一个初始猜测，见“SCF 迭代”页面）。<b>方法的局限</b>：RHF 或 MP2 与同一基组中的完全 CI 不同——需要能更好地描述相关的方法。<b>基组的局限</b>：即使完全 CI（给定基组中的精确解）也与精确能量不同——需要更大的基组。这三部分并不独立：方法误差本身取决于基组，因此这种分解只在所选条件下有意义。能量是事先用与巴德理论页面相同的高斯基组 HF、MP2 和 CI 程序计算的；RHF 从核心哈密顿量出发，不用 DIIS 加速。R = 1.4 bohr 时的精确能量为 −1.174475 E<sub>h</sub>（Kołos 和 Wolniewicz），R = 10 bohr 时为两个 H 原子的能量 −1 E<sub>h</sub>。</p>
+  <div class="crow"><span class="l">距离</span><span class="grp" id="eR" role="group" aria-label="距离"></span></div>
+  <div class="crow"><span class="l">基组</span><span class="grp" id="eB" role="group" aria-label="基组"></span></div>
+  <div class="crow"><span class="l">方法</span><span class="grp" id="eM" role="group" aria-label="方法"></span></div>
+  <div class="crow"><span class="l">SCF 迭代</span><span class="grp" id="eI" role="group" aria-label="SCF 迭代"></span></div>
+  <div class="tablewrap"><table class="mtab"><thead><tr><th class="l">物理量</th><th>mE<sub>h</sub></th><th>kJ/mol</th><th class="l">针对它的措施</th></tr></thead><tbody id="eTab"></tbody></table></div>
+  <div class="status" id="eSt"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">在 H₂ 中，相关随键的拉伸而增大。在有两个电子的原子中是否也存在相关？</span><a class="nqA" href="helium.html" data-goto="he">氦原子 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>拉伸 H₂。主组态权重 c₀ 降到 0.9 以下意味着什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">动态相关增大</button><button type="button" class="opt" data-ok="1">一个组态不够了——静态相关</button><button type="button" class="opt">RHF 变得精确</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>一个组态已经不够：σ<sub>u</sub>² 需要较大的权重——这是静态相关。大约从 3.2 bohr（≈ 1.7 Å）开始，即键适度拉伸时。</div></div>
+<div class="tq"><p class="qt"><span>在平衡附近（R = 1.4 bohr）：MP2 给出多少相关能，为什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">几乎没有</button><button type="button" class="opt" data-ok="1">大部分：相关是动态的</button><button type="button" class="opt">超过 100%</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>约三分之二（−0.0206 a.u. 的 64%）：平衡附近相关是动态的，微扰理论能处理好。</div></div>
+<div class="tq"><p class="qt"><span>打开 MP2。为什么在大 R 时 MP2 能量低于精确值？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">MP2 比 CI 包含更多相关</button><button type="button" class="opt">这是基组误差</button><button type="button" class="opt" data-ok="1">MP2 不是变分的，且分母趋于零</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>MP2 不是变分的，拉伸时分母 ε<sub>σu</sub> − ε<sub>σg</sub> 趋于零，修正无限增大（约在 6.6 bohr 之后低于 CI，在 7.6 bohr 之后低于精确极限 −1 E<sub>h</sub>）。</div></div>
+<div class="tq"><p class="qt"><span>RHF 函数与 CI 函数在离子结构 H⁺H⁻ 的系数上有何不同？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">在 RHF 中，离子结构和共价结构的系数始终相等</button><button type="button" class="opt">RHF 中完全没有离子结构</button><button type="button" class="opt">两种方法的 λ 相同</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>在 RHF 中，离子结构和共价结构在任何 R 下都以相等的系数出现（λ = 1）。在 CI 中，R = 1.4 bohr 时 λ ≈ 0.29，拉伸时 λ → 0。λ 是系数之比，而不是概率：在有限 R 下这些结构相互重叠。</div></div>
+<div class="tq"><p class="qt"><span>为什么在 R = 6 bohr 时 UHF 的能量接近三重态的能量？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">单重态和三重态几乎简并，而 UHF 函数是它们的混合</button><button type="button" class="opt">UHF 在任何 R 下都与三重态重合</button><button type="button" class="opt">这是最小基组的误差</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>在大 R 下两者都描述几乎独立的 H 原子，单重态和三重态几乎简并。UHF 函数是它们的混合（⟨S²⟩ ≈ 1），因此其能量接近共同的能量。这种相等只是近似的：在 6 bohr 时 UHF 比 CI 高 0.5 kJ/mol、比三重态低 0.5 kJ/mol，而在 4 bohr 时与 CI 的差约为 21 kJ/mol。</div></div>
+<div class="tq"><p class="qt"><span>“三种误差”一节：R = 1.4 bohr，6-31G** 基组，RHF，1 次迭代。误差由哪些部分组成？依次改为“直到收敛”、完全 CI、STO-3G 时，各消除了什么？</span></p>
+<p class="olab">未收敛 SCF 的误差，mE<sub>h</sub></p><div class="opts" role="group"><button type="button" class="opt">9.3</button><button type="button" class="opt">33.9</button><button type="button" class="opt">105.3</button><button type="button" class="opt" data-ok="1">62.1</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>共 105.3 mE<sub>h</sub>：未收敛的 SCF 占 62.1，方法占 33.9（该基组中的相关能），基组占 9.3。迭代到收敛消除 62.1 mE<sub>h</sub>，完全 CI 再消除 33.9；剩下的是基组误差。改用 STO-3G 时它增大到 37.2 mE<sub>h</sub>，而 STO-3G 中 RHF 的方法误差反而更小——20.6 mE<sub>h</sub>：误差的各部分相互依赖。每一部分都有针对它的措施。</div></div>
+<div class="tq"><p class="qt"><span>现在 R = 10 bohr，RHF，已收敛。从 6-31G 换成 6-31G** 时，方法误差会减小吗？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">不会：这是方法误差，基组无法修正</button><button type="button" class="opt">会，大约减半</button><button type="button" class="opt">会，降到零</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>不会：两个基组中都约为 248 mE<sub>h</sub>（650 kJ/mol）。单个 RHF 行列式无法描述两个分开的 H 原子——这是静态相关，扩大基组不能消除它（在 STO-3G 中误差甚至更大，为 337 mE<sub>h</sub>）。需要能描述静态相关的方法，这里是完全 CI。</div></div>
+</div></details></section>
+<script src="js/h2.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="h2";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/h2.js"></script>
+
+</body>
+</html>

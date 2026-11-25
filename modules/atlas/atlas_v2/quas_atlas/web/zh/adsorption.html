@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>吸附与磁性</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>吸附与磁性</h1>
+<p class="lead">为什么氢能吸附在铂上而不能吸附在金上，为什么铁有磁性而铜没有，为什么 PBE 把绝缘体 NiO 算成金属。三个简单模型：金属 d 带上的吸附物能级、Stoner 判据和 Hubbard 双原子——以及由此而来的 DFT+U 修正。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>吸附能：E<sub>ads</sub> = E<sub>slab+ads</sub> − E<sub>slab</sub> − E<sub>gas</sub>，三个计算参数相同；为负表示吸附有利。原子氢的参考点为半个 H₂ 分子。</li><li>化学吸附：吸附物能级与金属能级形成成键态和反键态。反键态位于费米能级之上且为空时键牢固。d 带中心越高，吸附越强（Hammer 与 Nørskov）。</li><li>Stoner 铁磁性：翻转自旋要付出动能，但获得交换能；当 I·N(E<sub>F</sub>) > 1 时出现磁矩——费米能级位于其中的窄能带（Fe、Co、Ni）。</li><li>Hubbard 模型：跃迁 t 与原子上的排斥 U。U ≫ t 时电子局域化，交换 J ≈ 4t²/U 为反铁磁；按能带论为金属的物质变成 Mott 绝缘体。</li><li>PBE 低估 U（自相互作用误差），3d 金属氧化物得到小带隙或金属。DFT+U 加上惩罚 (U/2)·n(1 − n)：占据轨道下移 U/2，空轨道上移，带隙增大 U。U 是参数，不同 U 的能量不能比较。</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">化学吸附：d 带上的吸附物能级</h2>
+  <div class="crow"><span class="l">金属（d 带中心与宽度）</span><span class="grp" id="mG" role="group" aria-label="金属（d 带中心与宽度）"></span></div>
+  <div class="crow"><span class="l">吸附物能级 εa，eV</span><input type="range" id="ea" min="-6" max="2" step="0.05" value="-2" aria-label="εa"><span class="val" id="eav"></span></div>
+  <div class="crow"><span class="l">d 带中心 εd，eV</span><input type="range" id="ed" min="-5" max="1" step="0.01" value="-2.25" aria-label="εd"><span class="val" id="edv"></span></div>
+  <div class="crow"><span class="l">d 带宽度 W，eV</span><input type="range" id="ww" min="1" max="10" step="0.1" value="6.5" aria-label="W"><span class="val" id="wwv"></span></div>
+  <div class="crow"><span class="l">耦合 V，eV</span><input type="range" id="vv" min="0" max="4" step="0.05" value="2" aria-label="V"><span class="val" id="vvv"></span></div>
+  <svg id="achart" class="ch" viewBox="0 0 960 300" role="img" aria-label="吸附物上的态密度与 d 带"></svg>
+  <div class="legend" id="aleg"></div>
+  <div class="cards" id="acards"></div>
+  <svg id="tchart" class="ch" viewBox="0 0 960 200" role="img" aria-label="不同金属上的键能"></svg>
+  <p class="status" id="aNote"></p>
+  <p class="hint">Newns–Anderson 模型：能级 εa 与半椭圆 d 带的 80 个能级耦合。ΔE = 2Σ（有耦合的占据态）− 2Σ（无耦合的占据态）+ 2αV²·f，f 为 d 带占据份额，α = 0.05 eV⁻¹（泡利排斥）。d 带中心取自 Hammer 与 Nørskov，宽度为近似值。未计入对所有金属相同的 sp 带：数值显示趋势，而非实验能量。</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">铁磁性：Stoner 判据</h2>
+  <div class="crow"><span class="l">金属</span><span class="grp" id="sG" role="group" aria-label="金属"></span></div>
+  <div class="crow"><span class="l">d 电子数</span><input type="range" id="nn" min="0" max="10" step="0.1" value="7.4" aria-label="n"><span class="val" id="nnv"></span></div>
+  <div class="crow"><span class="l">d 带宽度，eV</span><input type="range" id="sw" min="1" max="12" step="0.1" value="4" aria-label="W"><span class="val" id="swv"></span></div>
+  <div class="crow"><span class="l">交换参数 I，eV</span><input type="range" id="si" min="0" max="2" step="0.01" value="0.93" aria-label="I"><span class="val" id="siv"></span></div>
+  <svg id="schart" class="ch" viewBox="0 0 960 300" role="img" aria-label="能量随磁矩的变化"></svg>
+  <div class="cards" id="scards"></div>
+  <p class="status" id="sNote"></p>
+  <p class="hint">E(m) = E<sub>kin</sub>(n↑) + E<sub>kin</sub>(n↓) − 2E<sub>kin</sub>(n/2) − I·m²/4，m = n↑ − n↓；每个自旋的 d 带是含五个态的半椭圆。m 小时：E ≈ (m²/4)·(1/N(E<sub>F</sub>) − I)。金属参数的选取使模型给出其磁矩：Fe ≈ 2.2–2.6 μB，Ni ≈ 0.6 μB。</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Hubbard 模型与 DFT+U 修正</h2>
+  <div class="crow"><span class="l">排斥 U，以 t 为单位</span><input type="range" id="uu" min="0" max="20" step="0.1" value="4" aria-label="U"><span class="val" id="uuv"></span></div>
+  <div class="crow"><span class="l">DFT+U 的 U<sub>eff</sub>，eV</span><input type="range" id="ue" min="0" max="10" step="0.1" value="5" aria-label="Ueff"><span class="val" id="uev"></span></div>
+  <div class="two" style="grid-template-columns:minmax(0,2.07fr) minmax(0,1fr)"><svg id="hchart" class="ch" viewBox="0 0 620 300" role="img" aria-label="单重态与三重态的能量"></svg><svg id="pchart" class="ch" viewBox="0 0 300 300" role="img" aria-label="DFT+U 惩罚"></svg></div>
+  <div class="legend" id="hleg"></div>
+  <div class="cards" id="hcards"></div>
+  <p class="status" id="hNote"></p>
+  <p class="hint">两个原子、两个电子：E<sub>T</sub> = 0，E<sub>S</sub> = U/2 − √(U²/4 + 4t²)；U ≫ t 时 J = E<sub>T</sub> − E<sub>S</sub> → 4t²/U。DFT+U（Dudarev）：E<sub>U</sub> = (U/2)Σn<sub>i</sub>(1 − n<sub>i</sub>)，V<sub>i</sub> = U(1/2 − n<sub>i</sub>)。NiO：实验带隙大于 4 eV，PBE 约为 1 eV。</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">DFT+U 是人工修正自相互作用误差。泛函的这个误差从何而来？杂化泛函又如何应对？</span><a class="nqA" href="dft.html" data-goto="dft">密度泛函理论 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>在 d 带模型中，为什么氢几乎不能吸附在金上？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">d 带远低于费米能级：反键态被占满</button><button type="button" class="opt">金没有 d 电子</button><button type="button" class="opt">金的 d 带在费米能级之上且为空</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>金的 d 带中心为 −3.6 eV。吸附物与 d 带形成的成键态和反键态都低于费米能级且被占满：没有能量降低，只剩泡利排斥。镍（−1.3 eV）有部分反键态高于费米能级——键牢固。</div></div>
+<div class="tq"><p class="qt"><span>钯：I ≈ 0.7 eV，N(E<sub>F</sub>) ≈ 每 eV 每自旋 1.14 个态。它是铁磁体吗？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">不是：I·N(E<sub>F</sub>) ≈ 0.8 < 1</button><button type="button" class="opt">是：I·N(E<sub>F</sub>) > 1</button><button type="button" class="opt">冷却到 0 K 就是</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>不是：乘积 ≈ 0.8，不满足 Stoner 判据 I·N(E<sub>F</sub>) > 1。钯“几乎”是铁磁体：磁化率大大增强，少量铁杂质就使它具有磁性。</div></div>
+<div class="tq"><p class="qt"><span>Hubbard 双原子，U = 20t。交换 J = E<sub>T</sub> − E<sub>S</sub> 约为多少？</span></p>
+<p class="olab">J</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">0.2t</button><button type="button" class="opt">2t</button><button type="button" class="opt">20t</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>≈ 0.2t：U ≫ t 时 J ≈ 4t²/U = 4/20 = 0.2t（精确值 0.198t）。每个电子待在各自原子上，单重态只因虚跃迁而低于三重态。</div></div>
+<div class="tq"><p class="qt"><span>DFT+U，U = 5 eV，轨道半占据（n = ½）。该轨道的惩罚 E<sub>U</sub> 是多少？</span></p>
+<p class="olab">E<sub>U</sub>，eV</p><div class="opts" role="group"><button type="button" class="opt">0</button><button type="button" class="opt" data-ok="1">0.63</button><button type="button" class="opt">1.25</button><button type="button" class="opt">2.5</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>0.63 eV：E<sub>U</sub> = (U/2)·n(1 − n) = 2.5·¼ = U/8。n = 0 和 n = 1 时惩罚为零。势 U(½ − n) 使占据轨道下移 U/2，空轨道上移 U/2。</div></div>
+</div></details></section>
+<script src="js/adsorption.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="adsorption";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/adsorption.js"></script>
+
+</body>
+</html>

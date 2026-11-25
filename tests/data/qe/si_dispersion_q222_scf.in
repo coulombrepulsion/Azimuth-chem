@@ -1,0 +1,30 @@
+&CONTROL
+  calculation = 'scf'
+  prefix = 'azimuth'
+  pseudo_dir = '/home/azimuth/.tools/qe/pseudo/SSSP_1.3.0_PBE_efficiency'
+  outdir = './out'
+  tprnfor = .true.
+  tstress = .true.
+/
+&SYSTEM
+  force_symmorphic = .true.
+  ibrav = 0
+  nat = 2
+  ntyp = 1
+  ecutwfc = 30
+  ecutrho = 240
+/
+&ELECTRONS
+  conv_thr = 2.0e-08
+/
+ATOMIC_SPECIES
+  Si 28.0850 Si.pbe-n-rrkjus_psl.1.0.0.UPF
+CELL_PARAMETERS angstrom
+      3.84029693     0.00000000     0.00000000
+      1.92014846     3.32579470     0.00000000
+      1.92014846     1.10859823     3.13558931
+ATOMIC_POSITIONS crystal
+  Si 0.37500000 0.87500000 0.87500000
+  Si 0.62500000 0.12500000 0.12500000
+K_POINTS automatic
+  9 9 9 0 0 0

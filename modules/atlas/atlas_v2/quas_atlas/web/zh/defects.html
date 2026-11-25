@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>晶体的缺陷与表面</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>晶体的缺陷与表面</h1>
+<p class="lead">真实晶体并不完美：有空位、杂质，当然还有表面。程序只能计算周期体系，所以把缺陷放进超胞，把表面放进带真空层的表面板（slab）。这里可以看到缺陷的代价、其电荷如何取决于费米能级，以及表面计算中有哪些陷阱。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>空位形成能：E<sub>f</sub> = E<sub>N−1</sub> − (N − 1)/N · E<sub>N</sub>——含空位的晶胞与同样数目原子的完美晶体比较。按键估算：E<sub>f</sub> ≈ 2ε，即每个原子的键能。</li><li>空位的平衡份额 c = e^(−E<sub>f</sub>/kT)。E<sub>f</sub> 误差 0.3 eV 在硅熔点附近约为八倍：计算告诉我们哪种缺陷占优，而不是有多少。</li><li>带电缺陷与费米能级交换电子：E<sub>f</sub>(q; E<sub>F</sub>) = E<sub>f</sub>(q; 0) + q·E<sub>F</sub>。两种电荷的直线相交处为跃迁能级 ε(q/q′)，它是总能量之差，而不是轨道能量。</li><li>带电超胞与其镜像及背景相互作用：修正 ≈ q²α/(2εL)，按 1/L 缓慢下降。需要数百个原子、用杂化泛函得到带隙，并尝试多个初始结构。</li><li>表面是 N 层的表面板加真空：E<sub>slab</sub>(N) = N·E<sub>bulk</sub> + 2Aγ。体相能量取这条直线的斜率：“外部”体相能量若有误差 δ，γ 的误差为 Nδ/(2A)，随厚度增大。</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">空位：形成能与浓度</h2>
+  <div class="crow"><span class="l">形成能 E<sub>f</sub>，eV</span><input type="range" id="ef" min="0.5" max="6" step="0.05" value="3.6" aria-label="Ef"><span class="val" id="efv"></span></div>
+  <div class="crow"><span class="l">温度，K</span><input type="range" id="tt" min="300" max="2000" step="1" value="1687" aria-label="T"><span class="val" id="ttv"></span></div>
+  <svg id="vchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="空位份额随温度的变化"></svg>
+  <div class="legend" id="vleg"></div>
+  <div class="cards" id="vcards"></div>
+  <p class="status" id="vNote"></p>
+  <p class="hint">c = e<sup>−E<sub>f</sub>/kT</sup>，k = 8.617·10<sup>−5</sup> eV/K；硅每 cm³ 有 5·10<sup>22</sup> 个格点。硅中空位的实验 E<sub>f</sub> 约为 3.6 eV；讲座的模型势未弛豫时为 4.34 eV，弛豫后为 2.7–2.8 eV。未计入形成振动熵。</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">带电缺陷与跃迁能级</h2>
+  <div class="crow"><span class="l">E<sub>F</sub> = 0 时电荷 +1 的 E<sub>f</sub>，eV</span><input type="range" id="ep" min="-1" max="6" step="0.05" value="2.9" aria-label="Ef(+)"><span class="val" id="epv"></span></div>
+  <div class="crow"><span class="l">中性的 E<sub>f</sub>，eV</span><input type="range" id="e0" min="-1" max="6" step="0.05" value="3.4" aria-label="Ef(0)"><span class="val" id="e0v"></span></div>
+  <div class="crow"><span class="l">E<sub>F</sub> = 0 时电荷 −1 的 E<sub>f</sub>，eV</span><input type="range" id="em" min="-1" max="6" step="0.05" value="4.3" aria-label="Ef(−)"><span class="val" id="emv"></span></div>
+  <div class="crow"><span class="l">带隙，eV</span><input type="range" id="gp" min="0.3" max="5" step="0.01" value="1.17" aria-label="带隙"><span class="val" id="gpv"></span></div>
+  <svg id="cchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="形成能随费米能级的变化"></svg>
+  <div class="legend" id="cleg"></div>
+  <div class="cards" id="ccards"></div>
+  <p class="status" id="cNote"></p>
+  <div class="crow"><span class="l">缺陷电荷 q</span><span class="grp" id="qG" role="group" aria-label="缺陷电荷 q"></span></div>
+  <div class="crow"><span class="l">介电常数 ε</span><input type="range" id="ee" min="1" max="30" step="0.1" value="11.7" aria-label="ε"><span class="val" id="eev"></span></div>
+  <div class="cards" id="scards"></div>
+  <p class="status" id="sNote"></p>
+  <p class="hint">E<sub>f</sub>(q; E<sub>F</sub>) = E<sub>f</sub>(q; 0) + q·E<sub>F</sub>；ε(q/q′) = [E<sub>f</sub>(q; 0) − E<sub>f</sub>(q′; 0)]/(q′ − q)。修正 ΔE ≈ q²α·14.4 eV·Å/(2εL)，α = 2.84；硅超胞由 2³…6³ 个 8 原子立方晶胞组成。ε = 11.7 为硅，约 5 为典型氧化物。能量数值为示意，与讲座幻灯片相同。</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">表面：表面板与表面能</h2>
+  <div class="crow"><span class="l">硅的晶面</span><span class="grp" id="fG" role="group" aria-label="硅的晶面"></span></div>
+  <div class="crow"><span class="l">体相能量误差 δ，meV/原子</span><input type="range" id="dd" min="-20" max="20" step="0.5" value="10" aria-label="δ"><span class="val" id="ddv"></span></div>
+  <div class="crow"><span class="l">表面板能量噪声，meV</span><input type="range" id="nz" min="0" max="10" step="0.5" value="1" aria-label="噪声"><span class="val" id="nzv"></span></div>
+  <svg id="schart" class="ch" viewBox="0 0 960 300" role="img" aria-label="表面能随层数的变化"></svg>
+  <div class="legend" id="sleg"></div>
+  <div class="cards" id="gcards"></div>
+  <p class="status" id="gNote"></p>
+  <p class="hint">γ = (E<sub>slab</sub> − N·E<sub>bulk</sub>)/(2A)；按键估算 γ ≈ n·(ε/2)/A，ε = 2.17 eV（模型势，每个原子 2ε = 4.34 eV）；(111)：n = 1，A = √3/4·a² = 12.8 Å²；(100)：n = 2，A = a²/2 = 14.7 Å²。1 eV/Å² = 16.02 J/m²。“由直线”指对 2…N 层表面板最小二乘直线的截距。</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">分子会落在表面上。为什么有的金属牢牢吸住氢而有的不能？铁的磁性又从何而来？</span><a class="nqA" href="adsorption.html" data-goto="adsorption">吸附与磁性 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>硅，E<sub>f</sub> = 3.6 eV，熔点 1687 K。空着的格点占多少？</span></p>
+<p class="olab">c</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">2·10⁻¹¹</button><button type="button" class="opt">2·10⁻⁵</button><button type="button" class="opt">3·10⁻²⁷</button><button type="button" class="opt">0.01</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>e<sup>−24.8</sup> ≈ 2·10<sup>−11</sup>：E<sub>f</sub>/kT = 3.6/(8.617·10<sup>−5</sup>·1687) = 24.8。每 500 亿个原子一个空位——每立方厘米约 10<sup>12</sup> 个。</div></div>
+<div class="tq"><p class="qt"><span>E<sub>f</sub>(+; 0) = 2.9，E<sub>f</sub>(0) = 3.4，E<sub>f</sub>(−; 0) = 4.3 eV。能级 ε(0/−) 在哪里？</span></p>
+<p class="olab">ε(0/−)，eV</p><div class="opts" role="group"><button type="button" class="opt">0.5</button><button type="button" class="opt" data-ok="1">0.9</button><button type="button" class="opt">1.4</button><button type="button" class="opt">4.3</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>0.9 eV：ε(0/−) = [E<sub>f</sub>(0) − E<sub>f</sub>(−; 0)]/(−1 − 0) = 4.3 − 3.4。能级 ε(+/0) = 3.4 − 2.9 = 0.5 eV：低于它缺陷是施主，高于 0.9 eV 是受主。</div></div>
+<div class="tq"><p class="qt"><span>硅（ε = 11.7），电荷 +1，216 原子超胞。Makov–Payne 修正约为多少？</span></p>
+<p class="olab">ΔE，eV</p><div class="opts" role="group"><button type="button" class="opt">0.16</button><button type="button" class="opt" data-ok="1">0.11</button><button type="button" class="opt">0.02</button><button type="button" class="opt">1.5</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>0.11 eV：L = 3·5.43 = 16.3 Å，ΔE = 2.84·14.4/(2·11.7·16.3)。0.16 eV 对应 64 个原子；修正按 1/L 缓慢下降。1.5 eV 是 ε = 5、电荷 2 的氧化物的值。</div></div>
+<div class="tq"><p class="qt"><span>体相能量取自单独计算，每个原子误差 δ。随着表面板变厚，表面能误差如何变化？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">与 N 成正比增大</button><button type="button" class="opt">按 1/N 减小</button><button type="button" class="opt">与 N 无关</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>增大：Δγ = Nδ/(2A)——误差 δ 乘以表面板中的原子数。所以体相能量取自用相同参数计算的直线 E<sub>slab</sub>(N) 的斜率。</div></div>
+</div></details></section>
+<script src="js/defects.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="defects";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/defects.js"></script>
+
+</body>
+</html>

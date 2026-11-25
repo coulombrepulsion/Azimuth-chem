@@ -1,0 +1,44 @@
+                       TD-DFT/TDA EXCITED STATES
+
+   ...  [lines omitted from the excerpt]
+
+------------------------------------------
+NATURAL TRANSITION ORBITALS FOR STATE    1
+------------------------------------------
+
+Making the (pseudo)densities                ... done
+Solving eigenvalue problem for the occupied space ... done
+Solving eigenvalue problem for the virtual space ... done
+Making the (pseudo)densities                ... done
+Solving eigenvalue problem for the occupied space ... done
+Solving eigenvalue problem for the virtual space ... done
+Natural Transition Orbitals were saved in OrcaRun.s1.nto
+Threshold for printing occupation numbers 0.000100
+
+ E=   0.069734 au      1.898 eV    15304.8 cm**-1
+   322a -> 323a  : n=  0.00291785
+   321a -> 324a  : n=  0.00185236
+   320a -> 325a  : n=  0.00034278
+   319a -> 326a  : n=  0.00028437
+   318a -> 327a  : n=  0.00026275
+   320b -> 321b  : n=  0.96066403
+   319b -> 322b  : n=  0.03066164
+   318b -> 323b  : n=  0.00045244
+   317b -> 324b  : n=  0.00038742
+   316b -> 325b  : n=  0.00020821
+   315b -> 326b  : n=  0.00017808
+   314b -> 327b  : n=  0.00011766
+   313b -> 328b  : n=  0.00010186
+
+------------------------------------------
+NATURAL TRANSITION ORBITALS FOR STATE    2
+------------------------------------------
+
+Natural Transition Orbitals were saved in OrcaRun.s2.nto
+Threshold for printing occupation numbers 0.000100
+
+ E=   0.071929 au      1.957 eV    15786.6 cm**-1
+   320b -> 321b  : n=  0.95627403
+   319b -> 322b  : n=  0.03103354
+
+   ...  [lines omitted from the excerpt]

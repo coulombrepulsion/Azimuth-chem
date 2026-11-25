@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>作为能量导数的性质</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>作为能量导数的性质</h1>
+<p class="lead">偶极矩、极化率、核上的力、频率都是能量对场或坐标的导数。程序不能解析计算时，就用有限差分求——于是出现了细节问题：步长取多少，能量需要多精确，为什么极化率需要弥散函数。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>性质是能量对微扰展开式的系数：E(F) = E₀ − μF − ½αF² − …，μ = −∂E/∂F，α = −∂²E/∂F²。Hellmann–Feynman 定理：对精确的或完全变分的波函数（HF、DFT、CASSCF），dE/dλ = ⟨Ψ|∂Ĥ/∂λ|Ψ⟩，但对 MP2 和 CC 不成立。</li><li>有限差分：前向误差 ∝ h，中心差分 ∝ h²，三点二阶导数 ∝ h²。能量噪声 δE 带来误差 δE/h（一阶导数）和 δE/h²（二阶）：步长太小和太大同样糟糕。</li><li>中心差分的最佳步长 h ≈ (3δE/|f‴|)^⅓：δE = 10⁻⁶ hartree 时约 0.01 埃。数值导数每个坐标要算 2 次——梯度要 6N 次，所以优化用解析力。</li><li>有限场方法：由能量求 α 需要 SCF 收敛到 10⁻⁹–10⁻¹⁰（噪声除以 F²）；由场中偶极矩求时噪声除以 F。离子的偶极矩依赖于原点：Δμ = Q·d，每埃 4.8 D。</li><li>极化率 = 2Σ|⟨n|μ̂|0⟩|²/(E_n − E₀)。场把密度向外拉：没有弥散函数时水的极化率几乎低了一半（def2-SVP 5.3，def2-SVPD 9.8，实验 9.8 a.u.）。</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">有限差分：步长取多少</h2>
+  <div class="crow"><span class="l">能量精确到 10<sup>−n</sup> hartree，n</span><input type="range" id="dg" min="4" max="14" step="1" value="6" aria-label="n"><span class="val" id="dgv"></span></div>
+  <svg id="schart" class="ch" viewBox="0 0 960 320" role="img" aria-label="导数误差随步长的变化"></svg>
+  <div class="legend" id="sleg"></div>
+  <div class="cards" id="scards"></div>
+  <p class="status" id="sNote"></p>
+  <p class="hint">第 1 讲的例子：E(R) = D<sub>e</sub>(1 − e<sup>−a(R−R<sub>e</sub>)</sup>)²，D<sub>e</sub> = 0.17，a = 1.0，R<sub>e</sub> = 1.4（原子单位）；R = 1.6 bohr 处的导数 E′ = 0.050460。能量舍入到 10<sup>−n</sup>，如同 SCF 收敛到第 n 位。前向：[E(R+h) − E(R)]/h；中心：[E(R+h) − E(R−h)]/(2h)；二阶：[E(R+h) + E(R−h) − 2E(R)]/h²。</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">有限场：偶极矩与极化率</h2>
+  <div class="crow"><span class="l">lg F（场，a.u.）</span><input type="range" id="lf" min="-5" max="-1" step="0.05" value="-2.7" aria-label="lgF"><span class="val" id="lfv"></span></div>
+  <div class="crow"><span class="l">lg δE（SCF 收敛，hartree）</span><input type="range" id="ld" min="-12" max="-4" step="0.5" value="-8" aria-label="lgδE"><span class="val" id="ldv"></span></div>
+  <svg id="fchart" class="ch" viewBox="0 0 960 320" role="img" aria-label="μ 与 α 的误差随场的变化"></svg>
+  <div class="legend" id="fleg"></div>
+  <div class="cards" id="fcards"></div>
+  <p class="status" id="fNote"></p>
+  <p class="hint">模型水分子：E(F) = E₀ − μF − ½αF² − βF³/6 − γF⁴/24，μ = 0.728 a.u.（1.85 D），α = 9.8 a.u.；β 和 γ 为数量级。每个能量加上至多 ±δE 的随机数，偶极矩加上至多 ±δE（以相同位数输出）。1 a.u. 场强 = 5.14·10<sup>11</sup> V/m。</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">极化率：二能级与弥散函数</h2>
+  <div class="crow"><span class="l">跃迁偶极 |μ₀₁|，a.u.</span><input type="range" id="m1" min="0.1" max="3" step="0.05" value="1.2" aria-label="μ01"><span class="val" id="m1v"></span></div>
+  <div class="crow"><span class="l">激发能 ΔE，hartree</span><input type="range" id="ge" min="0.05" max="1" step="0.01" value="0.3" aria-label="ΔE"><span class="val" id="gev"></span></div>
+  <svg id="tchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="不同基组和二能级模型中水的极化率"></svg>
+  <div class="legend" id="tleg"></div>
+  <div class="cards" id="tcards"></div>
+  <p class="status" id="tNote"></p>
+  <p class="hint">基组数据：B3LYP，水（r = 0.969 Å，104.0°），ORCA 6.0.1，为第 5 讲计算（2026.11.23）。实验值 9.8 a.u.。二能级模型：α = 2|μ₀₁|²/ΔE；ΔE ≈ 0.3 hartree 时实验 α 对应有效 |μ₀₁| ≈ 1.2 a.u.。</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">NMR 化学位移也是能量的导数：对磁场和核磁矩的二阶导数。为什么它需要 GIAO 轨道？</span><a class="nqA" href="nmr.html" data-goto="nmr">NMR：从屏蔽到化学位移 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>能量精确到 10⁻⁶ hartree（第 1 讲的例子）。中心差分用多大步长得到的导数最好？</span></p>
+<p class="olab">h，bohr</p><div class="opts" role="group"><button type="button" class="opt">0.1</button><button type="button" class="opt" data-ok="1">0.01</button><button type="button" class="opt">10⁻⁴</button><button type="button" class="opt">10⁻⁵</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>0.01 bohr：误差 −9.6·10⁻⁶。0.1 时公式误差（h²）妨碍，10⁻⁴ 及以下时舍入（δE/h）妨碍。公式 h<sub>opt</sub> = (3δE/|E‴|)<sup>⅓</sup> 给出 0.017。</div></div>
+<div class="tq"><p class="qt"><span>中心差分步长减小到十分之一（能量精确）。误差下降多少倍？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">10 倍</button><button type="button" class="opt" data-ok="1">100 倍</button><button type="button" class="opt">1000 倍</button><button type="button" class="opt">不变</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>100 倍：中心差分误差 ∝ h²·f‴/6。前向差分误差 ∝ h，只会下降 10 倍。</div></div>
+<div class="tq"><p class="qt"><span>在 F = 10⁻⁴ a.u. 的场中由能量求极化率，SCF 收敛到 10⁻⁸。α 的误差是多少？</span></p>
+<p class="olab">δα，a.u.</p><div class="opts" role="group"><button type="button" class="opt">0.02</button><button type="button" class="opt" data-ok="1">2</button><button type="button" class="opt">2·10⁻⁴</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>≈ 2 a.u.：δα ~ 2δE/F² = 2·10⁻⁸/10⁻⁸。F = 10⁻³ 时为 0.02，2·10⁻³ 时为 0.005。所以取 F ≈ 10⁻³ 并严格收敛 SCF。</div></div>
+<div class="tq"><p class="qt"><span>B3LYP/def2-SVP 下水的极化率为 5.3 a.u.（实验 9.8）。什么改进最大？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">加一个弥散壳层（def2-SVPD）</button><button type="button" class="opt">换成 def2-TZVP</button><button type="button" class="opt">用 MP2 代替 B3LYP</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>弥散壳层：def2-SVPD 给出 9.8。不带弥散函数的 def2-TZVP 只有 6.8：增大 ζ 增加的是核附近的紧函数，而场把密度向外拉。</div></div>
+</div></details></section>
+<script src="js/derivatives.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="derivatives";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/derivatives.js"></script>
+
+</body>
+</html>

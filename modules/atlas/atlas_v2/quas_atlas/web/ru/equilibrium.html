@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Равновесие: от энергии к константе</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/eqm.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-eqm-g.webp"><!--pose:end-->
+<h1>Равновесие: от энергии к константе</h1>
+<p class="lead">Константа равновесия определяется стандартной энергией Гиббса реакции: K = exp(−ΔG°/RT). Расчёт даёт электронные энергии участников, к ним добавляют нулевые колебания и термопоправки (страница «Термохимия из частот») — и получают ΔH°, ΔS°, ΔG° и K при любой температуре. Здесь видно, какой вклад даёт каждый шаг и насколько K чувствительна к ошибке в энергии.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Константа равновесия определяется стандартной энергией Гиббса реакции: K = exp(−ΔG°/RT); её считают из электронных энергий участников плюс нулевые колебания и термопоправки.</li><li>Нулевые колебания заметно меняют энергию реакций, где образуются или рвутся связи с водородом.</li><li>Знак ΔH° определяет, как K зависит от температуры; знак ΔS° — в какую сторону температура сдвигает ΔG°.</li><li>Ошибка 5,7 кДж/моль в ΔG° при 298 K меняет K в 10 раз: даже «химическая точность» даёт K лишь с точностью до порядка.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> идеальный газ, стандартное давление 1 бар</summary><dl><dt>Что вычисляется</dt><dd>ΔH°, ΔS°, ΔG° и константа равновесия газовой реакции при любой температуре — по энергиям и частотам участников.</dd><dt>Какие приближения приняты</dt><dd>Термопоправки — модель идеального газа, жёсткого ротатора и гармонического осциллятора; электронная энергия реакции получена обратным счётом из табличной ΔH°(298); идеальная газовая смесь.</dd><dt>Какой вывод можно сделать</dt><dd>Как меняются ΔG° и K с температурой и как ошибка в энергии переходит в ошибку K — да; точная константа для реального процесса (давление, неидеальность, растворитель) — нет.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Реакция и температура</h2>
+  <div class="crow"><span class="l">Реакция</span><span class="grp" id="rxG" role="group" aria-label="Реакция"></span></div>
+  <div class="rxn" id="rxn"></div>
+  <div class="crow"><span class="l">Температура T</span><input type="range" id="T" min="200" max="1500" step="1" value="298" aria-label="Температура"><span class="val" id="Tv"></span><button type="button" class="chip" id="bT298">298,15 K</button></div>
+  <p class="hint" id="rxInfo"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">От электронной энергии к ΔG°</h2>
+  <div class="steps" id="steps"></div>
+  <div class="cards" id="cards"></div>
+  <div class="ref" id="refBox"></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Зависимость от температуры</h2>
+  <div class="crow"><span class="l">Показать</span><span class="grp" id="qG" role="group" aria-label="Величина"></span></div>
+  <svg id="chart" viewBox="0 0 960 330" role="img" aria-label="Зависимость от температуры"></svg>
+  <div class="legend" id="leg"></div>
+  <p class="hint" id="chartNote"></p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">Чувствительность к ошибке расчёта</h2>
+  <div class="crow"><span class="l">Ошибка в ΔG°, кДж/моль</span><input type="range" id="dG" min="-20" max="20" step="0.5" value="4" aria-label="Ошибка в ΔG"><span class="val" id="dGv"></span></div>
+  <p class="status" id="sens"></p>
+</section>
+<section class="panel" aria-labelledby="h5s">
+  <h2 id="h5s">Своя реакция: энергии из выходных файлов</h2>
+  <p class="hint">Для каждого участника введите стехиометрический коэффициент (у исходных веществ — со знаком минус), электронную энергию и поправку к энергии Гиббса из выходного файла, обе в хартри. Поправки должны быть рассчитаны при той же температуре и в том же стандартном состоянии (идеальный газ, 1 бар или 1 атм).</p>
+  <div class="tablewrap"><table class="ctab"><thead><tr><th>участник</th><th>коэффициент</th><th>E<sub>эл</sub>, E<sub>h</sub></th><th>G<sub>корр</sub>, E<sub>h</sub></th></tr></thead><tbody id="cRows"></tbody></table></div>
+  <div class="crow"><span class="l">Температура расчёта, K</span><input id="cT" class="formula" value="298.15" inputmode="decimal" aria-label="Температура расчёта"></div>
+  <div class="row"><button type="button" class="btn" id="bEx">Пример: синтез аммиака</button><button type="button" class="btn primary" id="bCalc">Рассчитать</button></div>
+  <p class="status" id="cMsg" role="status"></p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Равновесие говорит, куда пойдёт реакция. А как быстро она идёт?</span><a class="nqA" href="kinetics.html" data-goto="kin">Скорость реакции: переходное состояние →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Синтез аммиака при 298 K: какой шаг делает ΔH° по модулю вдвое меньше электронной энергии реакции?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Нулевые колебания</button><button type="button" class="opt">Тепловая поправка</button><button type="button" class="opt">Энтропийный член</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Нулевые колебания: ΔE<sub>эл</sub> = −161 кДж/моль, ΔZPE = +84 кДж/моль, ΔH°(0) = −77. В двух молекулах NH₃ шесть связей N–H с большими нулевыми энергиями, а в N₂ и 3H₂ — четыре связи. Без ZPE энергия реакции ошибочна вдвое.</div></div>
+<div class="tq"><p class="qt"><span>При какой температуре константа синтеза аммиака становится равной 1 (ΔG° = 0)?</span></p>
+<p class="olab">Температура, при которой K = 1, K</p><div class="opts" role="group"><button type="button" class="opt">1000</button><button type="button" class="opt">200</button><button type="button" class="opt">298</button><button type="button" class="opt" data-ok="1">457</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Около 457 K. Реакция экзотермична (ΔH° < 0) и идёт с уменьшением числа молей газа (ΔS° ≈ −198 Дж/(моль·К)), поэтому при нагревании −TΔS° растёт и равновесие сдвигается влево. Процесс Габера ведут при 700–800 K ради скорости и компенсируют потерю выхода давлением.</div></div>
+<div class="tq"><p class="qt"><span>Конверсия CO водяным паром: найдите K при 1000 K. Почему K так медленно меняется с температурой?</span></p>
+<p class="olab">K при 1000 K</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">1,4</button><button type="button" class="opt">1000</button><button type="button" class="opt">0,14</button><button type="button" class="opt">0,0001</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>K(1000 K) ≈ 1,4. ΔH° всего −41 кДж/моль, а число молей газа не меняется, поэтому ΔS° мала (−42 Дж/(моль·К)): наклон lg K от 1/T пропорционален ΔH°, и при малой ΔH° константа меняется медленно.</div></div>
+<div class="tq"><p class="qt"><span>Паровой риформинг метана: почему его ведут при 1100–1200 K?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">ΔS° > 0: число молей газа растёт, и при высокой T член −TΔS° перевешивает ΔH° > 0</button><button type="button" class="opt">Реакция экзотермична</button><button type="button" class="opt">При высокой T растёт ΔH°</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Реакция сильно эндотермична (ΔH° ≈ +206 кДж/моль), но ΔS° ≈ +214 Дж/(моль·К): из двух молекул газа получается четыре. ΔG° обращается в ноль около 895 K, выше равновесие сдвинуто к продуктам; при 1000 K K ≈ 24.</div></div>
+<div class="tq"><p class="qt"><span>Раздел «Чувствительность»: ошибка 4 кДж/моль в ΔG° при 298 K — во сколько раз ошибётся K?</span></p>
+<p class="olab">Во сколько раз ошибётся K</p><div class="opts" role="group"><button type="button" class="opt">1,6</button><button type="button" class="opt">1,0</button><button type="button" class="opt" data-ok="1">5,0</button><button type="button" class="opt">10</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>В 5,0 раза: exp(4000/(8,314·298,15)) = 5,0. Изменение K в 10 раз отвечает 5,7 кДж/моль. «Химическая точность» расчёта даёт константу равновесия с точностью до множителя, а не до процентов.</div></div>
+<div class="tq"><p class="qt"><span>Блок «Своя реакция»: загрузите пример и рассчитайте. Совпадает ли ΔG° с верхней частью страницы? Что изменится, если забыть поправки G и взять только электронные энергии?</span></p>
+<p class="olab">ΔG°, кДж/моль</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">-32,9</button><button type="button" class="opt">32,9</button><button type="button" class="opt">-161</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Совпадает: ΔG° = −32,9 кДж/моль, K = 5,9·10⁵. Без поправок получилось бы ΔE<sub>эл</sub> = −161 кДж/моль и K порядка 10²⁸ — ошибка в 23 порядка: ZPE, тепловые вклады и особенно энтропия обязательны.</div></div>
+</div></details></section>
+<script src="js/equilibrium.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="eqm";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/equilibrium.js"></script>
+
+</body>
+</html>

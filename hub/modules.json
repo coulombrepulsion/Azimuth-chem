@@ -1,0 +1,7 @@
+[
+  {"id":"atlas","title":"Атлас","en":"Atlas","zh":"图谱","page":null,"icon":"atlas"},
+  {"id":"compass","title":"Компас · Молекула","en":"Compass · Molecule","zh":"罗盘 · 分子","page":0,"icon":"compass"},
+  {"id":"crystal","title":"Компас · Кристалл","en":"Compass · Crystal","zh":"罗盘 · 晶体","page":0,"icon":"crystal"},
+  {"id":"sextant","title":"Секстант","en":"Sextant","zh":"六分仪","page":1,"icon":"sextant"},
+  {"id":"spectrum","title":"Спектр","en":"Spectrum","zh":"光谱","page":2,"icon":"spectrum"}
+]

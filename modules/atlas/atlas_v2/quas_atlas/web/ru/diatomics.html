@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="n2,hf">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>МО-диаграммы двухатомных молекул</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/mo.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-mo-g.webp"><!--pose:end-->
+<h1>МО-диаграммы двухатомных молекул</h1>
+<p class="lead">Молекулярные орбитали строятся как линейные комбинации атомных (ЛКАО). Соединяются орбитали одной симметрии и близкой энергии, а электроны заселяют МО по принципу Паули и правилу Хунда. Из диаграммы сразу следуют порядок связи и магнитные свойства. Энергии получены в простой модели (расширенный метод Хюккеля в валентном базисе), поэтому диаграмма качественная.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>МО строят из АО одной симметрии и близкой энергии: связывающие лежат ниже исходных АО, разрыхляющие — выше.</li><li>Порядок связи <span class=fr><span>связывающие − разрыхляющие</span><span>2</span></span> коррелирует с длиной и прочностью связи.</li><li>Порядок уровней σ2p и π2p определяется s–p-смешиванием: оно сильное у B₂–N₂ и слабое у O₂ и F₂.</li><li>Неспаренные электроны на вырожденных МО объясняют парамагнетизм O₂ и B₂.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> качественная диаграмма МО</summary><dl><dt>Что вычисляется</dt><dd>Диаграммы МО двухатомных молекул, порядок связи, магнитные свойства.</dd><dt>Какие приближения приняты</dt><dd>Расширенный метод Хюккеля в валентном базисе.</dd><dt>Какой вывод можно сделать</dt><dd>Порядок уровней, s–p-смешивание и порядок связи — качественно; энергии не количественные.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Диаграмма</h2>
+  <div class="crow"><span class="l">Гомоядерные</span><span class="row" id="homG" role="group" aria-label="Гомоядерные молекулы"></span></div>
+  <div class="crow"><span class="l">Ионы и гетероядерные</span><span class="row" id="hetG" role="group" aria-label="Ионы и гетероядерные молекулы"></span></div>
+  <div class="crow"><span class="l">Своя комбинация</span><select class="selx" id="selA" aria-label="Атом A"></select><select class="selx" id="selB" aria-label="Атом B"></select>
+    <span class="hint">заряд</span><button class="btn" id="qDn" type="button" aria-label="Уменьшить заряд">−</button><span class="val" id="qV">0</span><button class="btn" id="qUp" type="button" aria-label="Увеличить заряд">+</button></div>
+  <div class="crow"><span class="l">s–p-смешивание</span><span class="row" id="mixG" role="group" aria-label="s–p-смешивание"></span></div>
+  <div class="work">
+    <div class="panel" style="padding:8px 10px">
+      <svg id="dia" viewBox="0 0 520 520" role="img" aria-label="Энергетическая диаграмма МО"></svg>
+      <p class="hint">Нажмите на уровень МО, чтобы увидеть её состав и форму.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="cfg" id="cfg"></div>
+      <div class="tablewrap" id="sumTab"></div>
+      <div class="status" id="st1"></div>
+      <div class="panel" style="padding:8px 10px">
+        <div class="ptitle" id="moT"></div>
+        <svg id="shape" viewBox="0 0 420 170" role="img" aria-label="Схема выбранной МО"></svg>
+        <div class="bars" id="comp"></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. Порядок связи и свойства молекул</h2>
+  <p class="small">Чем больше порядок связи, тем короче и прочнее связь. Порядок связи по диаграмме сравнивается с экспериментальными длинами связей R<sub>e</sub> и энергиями диссоциации D₀. Нажмите на строку, чтобы открыть диаграмму этой частицы.</p>
+  <div class="two">
+    <div class="tablewrap" id="propTab"></div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="ptitle">Длина связи и энергия диссоциации в зависимости от порядка связи</div>
+      <svg id="boPlot" viewBox="0 0 460 300" role="img" aria-label="Зависимость длины связи и энергии диссоциации от порядка связи"></svg>
+      <div class="legend"><span><i class="box" style="background:var(--accent)"></i>D₀, эВ (левая шкала)</span><span><i class="box" style="background:var(--warn)"></i>R<sub>e</sub>, Å (правая шкала)</span></div>
+    </div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Как симметрия граничных орбиталей решает, пойдёт ли реакция?</span><a class="nqA" href="wh.html" data-goto="wh">π-орбитали и реакции →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания на исследование страницы и тренажёр. Выполните действие на странице и ответьте — ответ проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>O₂: сколько неспаренных электронов?</span></p>
+<p class="olab">Неспаренных электронов</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">2</button><button type="button" class="opt">4</button><button type="button" class="opt">1</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>2: двенадцать валентных электронов, последние два занимают две вырожденные π*2p-орбитали по одному с параллельными спинами (правило Хунда). Поэтому O₂ парамагнитен — жидкий кислород притягивается магнитом. Метод валентных связей с двойной связью O=O этого не объясняет.</div></div>
+<div class="tq"><p class="qt"><span>Чему равен порядок связи в O₂⁻?</span></p>
+<p class="olab">Порядок связи</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">1,5</button><button type="button" class="opt">2,5</button><button type="button" class="opt">1</button><button type="button" class="opt">2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>1,5: (8 − 5) / 2. Добавленный электрон попадает на разрыхляющую π*-орбиталь, связь удлиняется с 1,21 до 1,35 Å.</div></div>
+<div class="tq"><p class="qt"><span>Выберите B₂ и выключите s–p-смешивание. Какими были бы магнитные свойства B₂?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Парамагнитна</button><button type="button" class="opt" data-ok="1">Диамагнитна</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Диамагнитна: без смешивания σ2p лежит ниже π2p, и два последних электрона спариваются на σ2p. Опыт показывает, что B₂ парамагнитна (терм ³Σ<sub>g</sub><sup>−</sup>) — это прямое доказательство s–p-смешивания.</div></div>
+<div class="tq"><p class="qt"><span>Как меняется прочность связи при ионизации O₂ → O₂⁺ (сравните с N₂ → N₂⁺)?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Ослабевает, как у N₂</button><button type="button" class="opt" data-ok="1">Упрочняется, в отличие от N₂</button><button type="button" class="opt">Не меняется</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>У O₂ уходит электрон с разрыхляющей π*-орбитали: порядок связи растёт с 2 до 2,5, связь укорачивается (1,208 → 1,116 Å) и упрочняется (D₀ 5,12 → 6,66 эВ). У N₂ электрон уходит со связывающей σ2p, и связь ослабевает (порядок 3 → 2,5).</div></div>
+<div class="tq"><p class="qt"><span>CO: на каком атоме в основном локализована ВЗМО (σ2p)?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">На углероде</button><button type="button" class="opt">На кислороде</button><button type="button" class="opt">Поровну на обоих атомах</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>На углероде: по составу МО около 70 % приходится на 2s и 2p<sub>z</sub> атома C. Это неподелённая пара углерода, поэтому CO координируется к металлам через атом C, а не O.</div></div>
+<div class="tq"><p class="qt"><span>Чему равен порядок связи в C₂?</span></p>
+<p class="olab">Порядок связи</p><div class="opts" role="group"><button type="button" class="opt">4</button><button type="button" class="opt">1</button><button type="button" class="opt">3</button><button type="button" class="opt" data-ok="1">2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>2: восемь валентных электронов (σ2s)² (σ*2s)² (π2p)⁴. Обе пары связи — π-связи, σ-связи «в чистом виде» нет; это одно из следствий s–p-смешивания.</div></div>
+<!--self:start--><div class="selfBox"><h3 id="h3s">Проверьте себя</h3>
+  <p class="small">Постройте в уме диаграмму для частицы ниже и определите порядок связи и число неспаренных электронов. Для B₂, C₂ и N₂ не забудьте про s–p-смешивание.</p>
+  <div class="row"><b id="qMol" style="font-family:var(--f-display);font-size:19px"></b><button class="btn" id="qNew" type="button">Другая частица</button></div>
+  <div class="quiz">
+    <label><span>Порядок связи</span><input id="q0" inputmode="decimal" autocomplete="off"></label>
+    <label><span>Неспаренных электронов</span><input id="q1" inputmode="numeric" autocomplete="off"></label>
+  </div>
+  <div class="row"><button class="btn primary" id="qChk" type="button">Проверить</button><button class="btn" id="qShow" type="button">Показать решение</button></div>
+  <div class="status" id="qRes">Введите ответы и нажмите «Проверить».</div>
+</div><!--self:end--></div></details></section>
+<script src="js/diatomics.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="mo";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/diatomics.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Атом водорода и атомные орбитали</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/hat.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-hat-g.webp"><!--pose:end-->
+<h1>Атом водорода и атомные орбитали</h1>
+<p class="lead">Атом водорода — единственный атом, для которого уравнение Шрёдингера решается точно. Волновая функция распадается на радиальную часть R<sub>nl</sub>(r) и угловую Y<sub>lm</sub>(θ, φ); энергия зависит только от n: E<sub>n</sub> = −<span class=fr><span>Z²</span><span>2n²</span></span> хартри. Здесь показаны вещественные орбитали (p<sub>x</sub>, d<sub>xy</sub>, …) — именно их рисуют в учебниках и используют в квантовой химии. Они получены линейными комбинациями комплексных сферических гармоник Y<sub>lm</sub>: например, p<sub>x</sub> ∝ (Y<sub>1,−1</sub> − Y<sub>1,1</sub>)/√2. Квантовое число m — это проекция орбитального момента на ось z, и у p<sub>x</sub>, p<sub>y</sub> определённого m нет; m = 0 соответствует p<sub>z</sub>.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Состояние электрона в атоме водорода задают квантовые числа: n определяет энергию, l — орбитальный момент и форму, m — проекцию момента на выбранную ось z. Вещественные орбитали p<sub>x</sub>, p<sub>y</sub> — линейные комбинации состояний с m = +1 и m = −1, поэтому отдельного значения m у них нет.</li><li>Узлов всего n − 1: радиальных n − l − 1 и угловых l.</li><li>Энергия зависит только от n (вырождение n²); в многоэлектронных атомах вырождение по l снимается.</li><li>Переходы между уровнями дают линейчатый спектр: ν̃ ∝ <span class=fr><span>1</span><span>n₁²</span></span> − <span class=fr><span>1</span><span>n₂²</span></span>.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> точное решение для водородоподобного атома</summary><dl><dt>Что вычисляется</dt><dd>Орбитали, радиальные функции, уровни энергии и спектральные серии.</dd><dt>Какие приближения приняты</dt><dd>Нерелятивистский гамильтониан, точечное ядро; тонкая структура и спин не учитываются. Показаны вещественные орбитали — комбинации состояний с +m и −m. Энергии уровней и длины волн линий посчитаны с постоянной Ридберга для данного ядра, с учётом приведённой массы: у водорода граница серии 13,598 эВ (для бесконечно тяжёлого ядра — 13,6057 эВ); длины волн — в вакууме.</dd><dt>Какой вывод можно сделать</dt><dd>Энергии и узлы точны в этой модели; к многоэлектронным атомам они переносятся только качественно.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Орбиталь: срез и радиальная функция</h2>
+  <div class="crow"><span class="l">Главное число n</span><span class="row" id="nG" role="group" aria-label="Главное квантовое число"></span></div>
+  <div class="crow"><span class="l">Орбиталь</span><span class="row" id="oG" role="group" aria-label="Орбиталь"></span></div>
+  <div class="crow"><span class="l">Ядро</span><span class="row" id="zG" role="group" aria-label="Заряд ядра"></span></div>
+  <div class="crow"><span class="l">Плоскость среза</span><span class="row" id="pG" role="group" aria-label="Плоскость среза"></span>
+    <span class="row" id="vG" role="group" aria-label="Что показывать"></span></div>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle" id="mapT"></div>
+      <canvas id="map" width="420" height="420" role="img" aria-label="Срез орбитали"></canvas>
+      <div class="legend"><span><i class="box" style="background:var(--lp)"></i>ψ &gt; 0</span><span><i class="box" style="background:var(--ln)"></i>ψ &lt; 0</span><span>тонкие линии — узлы ψ</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="ptitle">Радиальная функция R(r) и радиальная плотность r²R²</div>
+      <svg id="rad" viewBox="0 0 520 300" role="img" aria-label="Радиальная функция"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>R(r)</span><span><i class="sw" style="border-color:var(--warn)"></i>r²R²(r)</span><span><i class="sw" style="border-color:var(--muted);border-top-style:dashed"></i>⟨r⟩</span></div>
+      <div class="tablewrap" id="infoTab"></div>
+    </div>
+  </div>
+  <div class="status" id="st1"></div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. Электронное облако</h2>
+  <p class="small">Каждая точка — возможное положение электрона: точки разбросаны с плотностью |ψ|², цвет показывает знак ψ. Перетащите облако, чтобы повернуть его.</p>
+  <div class="two">
+    <canvas id="cloud" width="460" height="400" role="img" aria-label="Электронное облако"></canvas>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="row"><button class="btn" id="bNew" type="button">Новая выборка</button><span class="hint" id="cloudN"></span></div>
+      <div class="status" id="st2"></div>
+      <div class="ptitle">Точки по расстоянию от ядра и радиальная плотность r²R²</div>
+      <svg id="cHist" viewBox="0 0 520 300" role="img" aria-label="Гистограмма расстояний точек от ядра"></svg>
+      <div class="legend"><span><i class="box" style="background:var(--lp);opacity:.35"></i>доля точек</span><span><i class="sw" style="border-color:var(--warn)"></i>r²R²(r)</span></div>
+    </div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">3. Уровни энергии и спектр</h2>
+  <p class="small">При переходе электрона с уровня n₂ на уровень n₁ испускается фотон с волновым числом ν̃ = R<sub>H</sub>Z²(<span class=fr><span>1</span><span>n₁²</span></span> − <span class=fr><span>1</span><span>n₂²</span></span>). Выберите серию — переходы появятся на диаграмме, а линии серии Бальмера попадают в видимую область.</p>
+  <div class="crow"><span class="l">Серия</span><span class="row" id="sG" role="group" aria-label="Серия"></span></div>
+  <div class="two">
+    <svg id="lev" viewBox="0 0 520 360" role="img" aria-label="Уровни энергии"></svg>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="tablewrap" id="serTab"></div>
+      <div class="specw" id="specW"><div class="spec"></div></div>
+      <div class="status" id="st3" style="margin-top:18px"></div>
+    </div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Точно решается только атом водорода. Как получить приближённое решение для остальных и насколько ему верить?</span><a class="nqA" href="variational.html" data-goto="var">Вариационный метод и ТВ →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания на исследование страницы и тренажёр. Выполните действие на странице и ответьте — ответ проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Сколько радиальных узлов у орбитали 4s?</span></p>
+<p class="olab">Радиальных узлов</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">3</button><button type="button" class="opt">2</button><button type="button" class="opt">4</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Три: n − l − 1 = 4 − 0 − 1 = 3. На графике R(r) — три точки, где функция меняет знак; в облаке точек это пустые сферические прослойки.</div></div>
+<div class="tq"><p class="qt"><span>Чему равен средний радиус ⟨r⟩ для 1s атома водорода (в a₀)?</span></p>
+<p class="olab">⟨r⟩, a₀</p><div class="opts" role="group"><button type="button" class="opt">3</button><button type="button" class="opt">0,5</button><button type="button" class="opt" data-ok="1">1,5</button><button type="button" class="opt">1</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>⟨r⟩ = <span class=fr><span>3n² − l(l + 1)</span><span>2Z</span></span> = 1,5 a₀ ≈ 0,79 Å. Это больше наиболее вероятного расстояния, потому что у распределения длинный «хвост» на больших r.</div></div>
+<div class="tq"><p class="qt"><span>Где максимум радиальной плотности r²R² для 1s (в a₀)?</span></p>
+<p class="olab">r, a₀</p><div class="opts" role="group"><button type="button" class="opt">1,5</button><button type="button" class="opt" data-ok="1">1</button><button type="button" class="opt">2</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>При r = a₀ = 0,529 Å — это боровский радиус. Сама плотность |ψ|² максимальна в ядре, но объём тонкого сферического слоя 4πr²dr там стремится к нулю.</div></div>
+<div class="tq"><p class="qt"><span>Серия Бальмера: длина волны линии H<sub>α</sub> (переход 3 → 2), нм?</span></p>
+<p class="olab">λ, нм</p><div class="opts" role="group"><button type="button" class="opt">122</button><button type="button" class="opt">365</button><button type="button" class="opt">486</button><button type="button" class="opt" data-ok="1">656</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>ν̃ = R<sub>H</sub>(<span class=fr><span>1</span><span>2²</span></span> − <span class=fr><span>1</span><span>3²</span></span>) ≈ 15 233 см⁻¹, λ = <span class=fr><span>1</span><span>ν̃</span></span> ≈ 656 нм — красная линия водорода. Остальные линии серии: 486, 434, 410 нм.</div></div>
+<div class="tq"><p class="qt"><span>Чему равна энергия ионизации иона He⁺ из основного состояния, эВ?</span></p>
+<p class="olab">E, эВ</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">54,4</button><button type="button" class="opt">13,6</button><button type="button" class="opt">27,2</button><button type="button" class="opt">24,6</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>E = Z² · 13,6 эВ = 4 · 13,6 ≈ 54,4 эВ. Выберите ядро He⁺: все уровни опускаются в Z² = 4 раза, а орбитали сжимаются в 2 раза.</div></div>
+<div class="tq"><p class="qt"><span>Почему в атоме водорода 2s и 2p имеют одинаковую энергию?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">В кулоновском поле одного ядра энергия зависит только от n</button><button type="button" class="opt">2s и 2p — это одна и та же орбиталь</button><button type="button" class="opt">Из-за спина электрона</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>В чисто кулоновском поле одного ядра энергия зависит только от n («случайное» вырождение). В многоэлектронных атомах 2s проникает к ядру глубже, чем 2p, хуже экранирована и лежит ниже — вырождение по l снимается.</div></div>
+<!--self:start--><div class="selfBox"><h3 id="h4s">Проверьте себя</h3>
+  <p class="small">Для орбитали ниже определите число радиальных и угловых узлов и энергию уровня (для атома водорода, в эВ).</p>
+  <div class="row"><b id="qOrb" style="font-family:var(--f-display);font-size:19px"></b><button class="btn" id="qNew" type="button">Другая орбиталь</button></div>
+  <div class="quiz">
+    <label><span>Радиальных узлов</span><input id="q0" inputmode="numeric" autocomplete="off"></label>
+    <label><span>Угловых узлов</span><input id="q1" inputmode="numeric" autocomplete="off"></label>
+    <label><span>E, эВ</span><input id="q2" inputmode="decimal" autocomplete="off"></label>
+  </div>
+  <div class="row"><button class="btn primary" id="qChk" type="button">Проверить</button><button class="btn" id="qShow" type="button">Показать решение</button></div>
+  <div class="status" id="qRes">Введите ответы и нажмите «Проверить».</div>
+</div><!--self:end--></div></details></section>
+<script src="js/hydrogen.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="hat";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/hydrogen.js"></script>
+
+</body>
+</html>

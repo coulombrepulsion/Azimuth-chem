@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>The error of a calculation: from the error of a method to a conclusion</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>The error of a calculation: from the error of a method to a conclusion</h1>
+<p class="lead">A number from a calculation without an error bar is not a result. Here — how the errors of the method, the basis and the convergence add up, how to go from the mean error on a test set to an interval for your own quantity, how isodesmic reactions and a related system cancel errors, and why conformer shares are so sensitive to them.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>Independent errors add in squares: σ = √(σ²_method + σ²_basis + σ²_convergence). The largest one decides the total, so the numerical error should be several times smaller than the error of the method — then it is invisible.</li><li>The error of a method is taken from test sets (GMTKN55, S66) — for your type of quantity. MAE = 0.80σ, σ = 1.25·MAE; 95 % of the errors lie within ±2σ: MAE 8 kJ/mol → ±20. A rate constant is then known to a factor e^{2σ/RT} ≈ 3000.</li><li>An isodesmic reaction has as many bonds of each type on the left as on the right, and systematic bond errors cancel. The enthalpy of formation of ethanol through C₂H₅OH + CH₄ → CH₃OH + C₂H₆: −232.9 kJ/mol against the experiment −234 ± 2.</li><li>A correction by a related system: ΔE_corr = ΔE_target + (ΔE_ref^exp − ΔE_ref^calc), σ² = 2σ²(1 − ρ). A similar reaction (ρ = 0.8) reduces the error from 8 to 5 kJ/mol, a dissimilar one (ρ = 0) raises it to 11.</li><li>The last link of the chain to the observable is an exponential. ΔG = 2 ± 4 kJ/mol between conformers gives the share of the second from 8 to 69 %: the calculation does not tell which one dominates. Another frequent correction is the standard state: 1 atm → 1 mol/L gives RT ln 24.5 = 7.9 kJ/mol per particle.</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">How errors add up</h2>
+  <div class="crow"><span class="l">Error of the method, kJ/mol</span><input type="range" id="sm" min="0" max="30" step="0.5" value="8" aria-label="method"><span class="val" id="smv"></span></div>
+  <div class="crow"><span class="l">Error of the basis, kJ/mol</span><input type="range" id="sb" min="0" max="30" step="0.5" value="3" aria-label="basis"><span class="val" id="sbv"></span></div>
+  <div class="crow"><span class="l">Non-convergence, kJ/mol</span><input type="range" id="sc" min="0" max="30" step="0.5" value="1" aria-label="convergence"><span class="val" id="scv"></span></div>
+  <svg id="schart" class="ch" viewBox="0 0 960 280" role="img" aria-label="The contributions and the total error"></svg>
+  <div class="cards" id="scards"></div>
+  <p class="status" id="sNote"></p>
+  <p class="hint">Lecture 18, derivation 2: method 8, basis 3, convergence 1 kJ/mol — total 8.6; without the convergence 8.5; non-convergence 10 — total 13. Adding in squares holds for independent errors.</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">From the mean error to an interval</h2>
+  <div class="crow"><span class="l">MAE of the method for your type of quantity, kJ/mol</span><input type="range" id="mae" min="0.5" max="30" step="0.5" value="8" aria-label="MAE"><span class="val" id="maev"></span></div>
+  <div class="crow"><span class="l">Temperature, K</span><input type="range" id="tt" min="200" max="1000" step="10" value="298" aria-label="T"><span class="val" id="ttv"></span></div>
+  <svg id="ichart" class="ch" viewBox="0 0 960 260" role="img" aria-label="A normal distribution of errors with σ = 1.25·MAE"></svg>
+  <div class="legend" id="ileg"></div>
+  <div class="cards" id="icards"></div>
+  <p class="status" id="iNote"></p>
+  <p class="hint">MAE = σ√(2/π). The factor of a rate constant is e^{2σ/RT}: that is how much k may be off for a barrier error of 2σ.</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Cancelling errors: an isodesmic reaction and a related system</h2>
+  <div class="crow"><span class="l">Error per C–H bond, kJ/mol</span><input type="range" id="ch" min="0" max="20" step="0.5" value="2" aria-label="CH"><span class="val" id="chv"></span></div>
+  <div class="crow"><span class="l">Error per C–C bond</span><input type="range" id="cc" min="0" max="20" step="0.5" value="5" aria-label="CC"><span class="val" id="ccv"></span></div>
+  <div class="crow"><span class="l">Error per C–O bond</span><input type="range" id="co" min="0" max="20" step="0.5" value="6" aria-label="CO"><span class="val" id="cov"></span></div>
+  <div class="crow"><span class="l">Error per O–H bond</span><input type="range" id="oh" min="0" max="20" step="0.5" value="3" aria-label="OH"><span class="val" id="ohv"></span></div>
+  <svg id="dchart" class="ch" viewBox="0 0 960 280" role="img" aria-label="The accumulated error through atomization and in the isodesmic reaction"></svg>
+  <div class="legend" id="dleg"></div>
+  <div class="crow"><span class="l">σ of the method for the correction, kJ/mol</span><input type="range" id="sg" min="0" max="30" step="0.5" value="8" aria-label="sigma"><span class="val" id="sgv"></span></div>
+  <div class="crow"><span class="l">Correlation of the target and reference errors ρ</span><input type="range" id="rh" min="-1" max="1" step="0.05" value="0.8" aria-label="rho"><span class="val" id="rhv"></span></div>
+  <svg id="rchart" class="ch" viewBox="0 0 960 220" role="img" aria-label="The error after a correction by a related system"></svg>
+  <div class="cards" id="dcards"></div>
+  <p class="status" id="dNote"></p>
+  <p class="hint">The bond errors are conventional (lecture 18, derivation 4). Experimental ΔfH(298, gas) — NIST WebBook; ΔrH = 23.0 kJ/mol — B3LYP-D3(BJ)/def2-TZVP with frequencies at 298.15 K (ORCA 6.0.1). The middle bars: the reactants and the products of the isodesmic reaction — equal sums, zero difference.</p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">Conformer shares and their error</h2>
+  <div class="crow"><span class="l">ΔG = G₂ − G₁, kJ/mol</span><input type="range" id="dg" min="-10" max="10" step="0.1" value="2" aria-label="dG"><span class="val" id="dgv"></span></div>
+  <div class="crow"><span class="l">Error of the method σ, kJ/mol</span><input type="range" id="ss" min="0" max="10" step="0.1" value="4" aria-label="sigma"><span class="val" id="ssv"></span></div>
+  <div class="crow"><span class="l">Temperature, K</span><input type="range" id="t4" min="200" max="1000" step="10" value="298" aria-label="T"><span class="val" id="t4v"></span></div>
+  <svg id="cchart" class="ch" viewBox="0 0 960 280" role="img" aria-label="The share of the second conformer against ΔG"></svg>
+  <div class="cards" id="ccards"></div>
+  <p class="status" id="cNote"></p>
+  <p class="hint">Two conformers, x₂/x₁ = e^{−ΔG/RT}. The green band is ΔG ± σ, the orange one the corresponding interval of the share. Lecture 18, derivation 10.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">Conformer shares depend on whether all the minima have been found. How to search for conformers?</span><a class="nqA" href="conformers.html" data-goto="conf">Conformers: which minima to look for →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>The error of the method is 8, of the basis 3, of the convergence 1 kJ/mol. The convergence was improved to 0.01. How does the total change?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">From 8.6 to 8.5 — hardly at all</button><button type="button" class="opt">From 12 to 11</button><button type="button" class="opt">Twofold</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>√(64 + 9 + 1) = 8.6, √(64 + 9) = 8.5. The largest error decides the total.</div></div>
+<div class="tq"><p class="qt"><span>The MAE of a functional for barriers is 8 kJ/mol. Within what interval is the error of your barrier with 95 % probability?</span></p>
+<p class="olab">kJ/mol</p><div class="opts" role="group"><button type="button" class="opt">±8</button><button type="button" class="opt">±10</button><button type="button" class="opt" data-ok="1">±20</button><button type="button" class="opt">±4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>σ = 1.25·MAE = 10, ±2σ = ±20. The mean error is not a bound: 42 % of the reactions err by more than MAE.</div></div>
+<div class="tq"><p class="qt"><span>Why is the enthalpy of formation of ethanol more accurate through an isodesmic reaction than through atomization?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">There are as many bonds of each type on both sides — systematic bond errors cancel</button><button type="button" class="opt">It has fewer atoms</button><button type="button" class="opt">It is computed by a more accurate method</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Through atomization the errors of all eight bonds add up (24 kJ/mol in the lecture's conventional numbers), in the isodesmic reaction they cancel.</div></div>
+<div class="tq"><p class="qt"><span>A calculation gave ΔG = 2 ± 4 kJ/mol between two conformers. What is the honest statement?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Conformer 1 — 69 %</button><button type="button" class="opt" data-ok="1">Close in energy, both present (the second 8–69 %)</button><button type="button" class="opt">Conformer 2 does not exist</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The exponential turns ±4 kJ/mol into an interval of 8–69 %. A more accurate method for one difference narrows it: at σ = 1 — 23–40 %.</div></div>
+</div></details></section>
+<script src="js/errors.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="errors";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/errors.js"></script>
+
+</body>
+</html>

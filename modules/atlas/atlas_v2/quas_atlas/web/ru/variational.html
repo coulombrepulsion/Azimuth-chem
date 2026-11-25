@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Вариационный метод и теория возмущений</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/var.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-var-g.webp"><!--pose:end-->
+<h1>Вариационный метод и теория возмущений</h1>
+<p class="lead">Точно уравнение Шрёдингера решается лишь для немногих систем, поэтому квантовая химия опирается на два приближённых подхода. Вариационный метод даёт энергию, которая никогда не бывает ниже точной: E[φ] = <span class=fr><span>⟨φ|Ĥ|φ⟩</span><span>⟨φ|φ⟩</span></span> ≥ E₀. На нём построены метод Хартри–Фока и КВ. Теория возмущений раскладывает энергию в ряд по малому возмущению; на ней основан метод MP2.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Вариационный принцип: энергия любой пробной функции не ниже точной энергии основного состояния, поэтому из двух функций та, у которой энергия ниже, лучше по этому критерию. Отсюда не следует, что у неё точнее плотность, дипольный момент или поведение у ядра.</li><li>Линейный вариационный метод (секулярное уравнение) лежит в основе Хартри–Фока–Рутана и КВ; если новый базис содержит старый, а гамильтониан тот же, энергия может только понизиться. При замене одного базиса другим или для невариационных методов (например, MP2) такой гарантии нет.</li><li>Теория возмущений раскладывает энергию по порядкам: E<sup>(1)</sup> — среднее возмущения, E<sup>(2)</sup> для основного состояния отрицательна.</li><li>Ряд теории возмущений хорош при малом возмущении и может расходиться при большом; MP2 — её второй порядок для корреляции.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> верхняя граница энергии, а не точность всех свойств</summary><dl><dt>Что вычисляется</dt><dd>Вариационные энергии атома H для пробных функций и базисов из гауссианов; ряд теории возмущений для ангармонического осциллятора.</dd><dt>Какие приближения приняты</dt><dd>Ограниченная пробная функция или конечный базис; ряд теории возмущений обрывается на втором порядке.</dd><dt>Какой вывод можно сделать</dt><dd>Вариационная энергия не ниже точной, но о плотности и других свойствах функции она ничего не гарантирует; ряд теории возмущений может расходиться.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Пробная функция для атома водорода</h2>
+  <div class="crow"><span class="l">Пробная функция</span><span class="row" id="tG" role="group" aria-label="Пробная функция"></span></div>
+  <div class="crow"><span class="l" id="parL"></span><input type="range" id="par" min="-3" max="1" step="0.01" style="width:260px" aria-label="Параметр пробной функции"><span class="val" id="parV"></span>
+    <button class="btn" id="bOpt" type="button">Найти минимум</button></div>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle">Энергия E(параметр) и точное значение E₀ = −0,5 E<sub>h</sub></div>
+      <svg id="eSvg" viewBox="0 0 520 300" role="img" aria-label="Энергия как функция параметра"></svg>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle">Радиальная плотность r²φ²: пробная функция и точная 1s</div>
+      <svg id="fSvg" viewBox="0 0 520 300" role="img" aria-label="Пробная и точная функции"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>пробная</span><span><i class="sw" style="border-color:var(--ok);border-top-style:dashed"></i>точная 1s</span></div>
+    </div>
+  </div>
+  <div class="status" id="st1"></div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. Линейный вариационный метод: базис из гауссианов</h2>
+  <p class="small">Функцию ищем в виде φ = Σ c<sub>k</sub>g<sub>k</sub>, где g<sub>k</sub> = e<sup>−α<sub>k</sub>r²</sup>, а показатели образуют геометрическую прогрессию α<sub>k</sub> = α₀β<sup>k</sup>. Минимизация по коэффициентам сводится к секулярному уравнению det(H − ES) = 0. Каждая добавленная функция (старый базис остаётся частью нового) может только понизить энергию, а все корни приближаются к точным уровням сверху (теорема Хиллерааса–Ундхейма).</p>
+  <div class="crow"><span class="l">Число функций N</span><span class="row" id="nG" role="group" aria-label="Число базисных функций"></span></div>
+  <div class="crow"><span class="l">α₀ (самый диффузный)</span><input type="range" id="a0" min="-3" max="0" step="0.01" style="width:220px" aria-label="Наименьший показатель, логарифм"><span class="val" id="a0V"></span></div>
+  <div class="crow"><span class="l">β (шаг прогрессии)</span><input type="range" id="be" min="1.5" max="8" step="0.05" style="width:220px" aria-label="Шаг прогрессии"><span class="val" id="beV"></span>
+    <button class="btn" id="bOpt2" type="button">Оптимизировать α₀ и β</button></div>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle">Ошибка энергии основного состояния E − E₀ в зависимости от N (логарифмическая шкала)</div>
+      <svg id="nSvg" viewBox="0 0 520 280" role="img" aria-label="Сходимость по размеру базиса"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>текущие α₀ и β</span><span><i class="sw" style="border-color:var(--ok);border-top-style:dashed"></i>α₀ и β оптимальны для каждого N</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle">Функция φ(r) в выбранном базисе и точная 1s (вблизи ядра)</div>
+      <svg id="wSvg" viewBox="0 0 520 280" role="img" aria-label="Волновая функция в базисе"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>φ(r) из базиса</span><span><i class="sw" style="border-color:var(--ok);border-top-style:dashed"></i>точная e<sup>−r</sup>/√π</span></div>
+    </div>
+  </div>
+  <div class="tablewrap" id="rootTab"></div>
+  <div class="status" id="st2"></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">3. Теория возмущений: ангармонический осциллятор</h2>
+  <p class="small">Ĥ = Ĥ₀ + λV̂, где Ĥ₀ = p²/2 + x²/2 — гармонический осциллятор с уровнями n + ½, а возмущение V̂ = x⁴. Поправки первого и второго порядка известны в явном виде; «точные» энергии получены диагонализацией в базисе из 40 функций осциллятора.</p>
+  <div class="formula2" id="ptF"></div>
+  <div class="crow"><span class="l">Уровень n</span><span class="row" id="lvG" role="group" aria-label="Уровень"></span></div>
+  <div class="crow"><span class="l">Сила возмущения λ</span><input type="range" id="lam" min="0" max="0.5" step="0.005" style="width:260px" aria-label="Сила возмущения"><span class="val" id="lamV"></span></div>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle">E<sub>n</sub>(λ): точное решение и ряд теории возмущений</div>
+      <svg id="ptSvg" viewBox="0 0 520 300" role="img" aria-label="Энергия как функция λ"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--ink)"></i>точно</span><span><i class="sw" style="border-color:var(--accent);border-top-style:dashed"></i>E⁽⁰⁾ + E⁽¹⁾</span><span><i class="sw" style="border-color:var(--warn)"></i>E⁽⁰⁾ + E⁽¹⁾ + E⁽²⁾</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle">Потенциал x²/2 + λx⁴ и уровни</div>
+      <svg id="vSvg" viewBox="0 0 520 300" role="img" aria-label="Потенциал и уровни"></svg>
+    </div>
+  </div>
+  <div class="tablewrap" id="ptTab"></div>
+  <div class="status" id="st3"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Вариационный метод применяют к гамильтониану. Как выглядит гамильтониан настоящей молекулы?</span><a class="nqA" href="hamiltonian.html" data-goto="ham">Молекулярный гамильтониан →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Найдите минимум для гауссовой пробной функции. Чему равна энергия, E<sub>h</sub>?</span></p>
+<p class="olab">E, Eₕ</p><div class="opts" role="group"><button type="button" class="opt">-0,5000</button><button type="button" class="opt">-0,3333</button><button type="button" class="opt">-0,2830</button><button type="button" class="opt" data-ok="1">-0,4244</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>E<sub>min</sub> = −<span class=fr><span>4</span><span>3π</span></span> ≈ −0,4244 E<sub>h</sub> при α = <span class=fr><span>8</span><span>9π</span></span> ≈ 0,283. Это на 0,076 E<sub>h</sub> (около 47 ккал/моль) выше точной энергии.</div></div>
+<div class="tq"><p class="qt"><span>Может ли вариационная энергия оказаться ниже точной энергии основного состояния −0,5 E<sub>h</sub>?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Нет — это запрещает вариационный принцип</button><button type="button" class="opt">Да, если взять очень много функций</button><button type="button" class="opt">Да, для гауссовых функций</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Нет: для любой допустимой пробной функции E[φ] ≥ E₀ — это и есть вариационный принцип. Поэтому из двух вариационных расчётов с одним гамильтонианом тот, у которого энергия ниже, лучше приближает энергию основного состояния. Плотность или дипольный момент при этом не обязательно точнее.</div></div>
+<div class="tq"><p class="qt"><span>Раздел 2, зелёная кривая: как меняется ошибка при добавлении функций в базис?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Может стать отрицательной</button><button type="button" class="opt" data-ok="1">Уменьшается, оставаясь положительной</button><button type="button" class="opt">После N = 2 не меняется</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Уменьшается, но всегда остаётся положительной: энергия подходит к точной сверху. Меньше 1 ккал/моль ошибка становится при N = 4; дальше каждая функция даёт всё меньший выигрыш.</div></div>
+<div class="tq"><p class="qt"><span>Ангармонический осциллятор, n = 0, λ = 0,1: насколько хорошо работает теория возмущений?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Оба порядка близки к точной энергии</button><button type="button" class="opt">Разумен только первый порядок</button><button type="button" class="opt">Обе поправки бесполезны</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Хорошо: точная энергия 0,5591, первый порядок даёт 0,575, второй — 0,5488. Оба близки, второй немного ближе.</div></div>
+<div class="tq"><p class="qt"><span>Чему равна поправка первого порядка E<sup>(1)</sup> для n = 0 при λ = 0,2?</span></p>
+<p class="olab">E⁽¹⁾</p><div class="opts" role="group"><button type="button" class="opt">0,05</button><button type="button" class="opt">0,2</button><button type="button" class="opt">0,6</button><button type="button" class="opt" data-ok="1">0,15</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>E<sup>(1)</sup> = λ⟨0|x⁴|0⟩ = <span class=fr><span>3λ</span><span>4</span></span> = 0,15. Это просто среднее значение возмущения в невозмущённом основном состоянии.</div></div>
+<div class="tq"><p class="qt"><span>Увеличивайте λ для n = 0. Что происходит с рядом теории возмущений?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Ряд сходится всё быстрее</button><button type="button" class="opt" data-ok="1">Поправки становятся немалыми: второй порядок хуже первого</button><button type="button" class="opt">Поправки исчезают</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Примерно с λ ≈ 0,16 второй порядок даёт уже большую ошибку, чем первый: поправка E<sup>(2)</sup> ∝ −λ² растёт быстрее, чем уменьшается ошибка первого порядка. Ряд для x⁴ асимптотический — при любом λ &gt; 0 он в конце концов расходится.</div></div>
+<div class="tq"><p class="qt"><span>Пробная функция A даёт энергию ниже, чем функция B. Какая из них даёт дипольный момент ближе к точному?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">По этим данным определить нельзя</button><button type="button" class="opt">Функция A</button><button type="button" class="opt">Функция B</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>По этим данным определить нельзя. Вариационный принцип ограничивает только энергию: ошибка функции первого порядка даёт ошибку энергии лишь второго порядка, а дипольный момент чувствителен к ошибке функции в первом порядке. Функция с меньшей энергией может описывать другие свойства хуже.</div></div>
+</div></details></section>
+<script src="js/variational.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="var";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/variational.js"></script>
+
+</body>
+</html>

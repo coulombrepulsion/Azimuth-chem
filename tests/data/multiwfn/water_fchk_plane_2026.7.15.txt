@@ -1,0 +1,197 @@
+ WARNING: "settings.ini" was found neither in current folder nor in the path defined by "Multiwfnpath" environment variable. Now using default settings instead, and all your modifications (if any) on settings.ini will not take effect!
+
+ Multiwfn -- A Multifunctional Wavefunction Analyzer
+ Version 2026.7.15 (release date is the same as version name)
+ Developer: Tian Lu (Beijing Kein Research Center for Natural Sciences)
+ Multiwfn official website: http://sobereva.com/multiwfn
+ Multiwfn English forum: http://sobereva.com/wfnbbs
+ Multiwfn Chinese forum: http://bbs.keinsci.com/wfn
+ ( Number of parallel threads:   4  Current date: 2026-10-28  Time: 12:57:30 )
+
+ Both following papers ***MUST BE CITED IN MAIN TEXT*** if Multiwfn is used:
+  Tian Lu, Feiwu Chen, J. Comput. Chem., 33, 580 (2012) DOI: 10.1002/jcc.22885
+  Tian Lu, J. Chem. Phys., 161, 082503 (2024) DOI: 10.1063/5.0216272
+ See "How to cite Multiwfn.pdf" in Multiwfn binary package for more information
+
+ Warning: You should set OMP_STACKSIZE environment variable as mentioned in Section 2.1.2 of Multiwfn manual!
+
+ Please wait...
+ Loading various information of the wavefunction
+ The highest angular moment basis functions is P
+ Loading basis set definition...
+ Loading orbitals...
+ Converting basis function information to GTF information...
+ Generating density matrix based on SCF orbitals...
+ Generating overlap matrix...
+
+ Total/Alpha/Beta electrons:     10.0000      5.0000      5.0000
+ Net charge:     0.00000      Expected multiplicity:    1
+ Atoms:      3,  Basis functions:      7,  GTFs:     21
+ Total energy:     -75.002282127454 Hartree,   Virial ratio:  2.00600493
+ This is a restricted single-determinant wavefunction
+ Orbitals from 1 to     5 are occupied
+ Title line of this file: Water
+
+ Loaded water.fchk successfully!
+
+ Formula: H2 O1      Total atoms:       3
+ Molecule weight:        18.01529 Da
+ Point group: C2v
+
+ "q": Exit program gracefully          "r": Load a new file
+                    ************ Main function menu ************
+ 0 Show molecular structure and view orbitals
+ 1 Output all properties at a point       2 Topology analysis
+ 3 Output and plot specific property in a line
+ 4 Output and plot specific property in a plane
+ 5 Output and plot specific property within a spatial region (calc. grid data)
+ 6 Check & modify wavefunction
+ 7 Population analysis and calculation of atomic charges
+ 8 Orbital composition analysis           9 Bond order analysis
+ 10 Plot total DOS, PDOS, OPDOS, local DOS, COHP and photoelectron spectrum
+ 11 Plot IR/Raman/UV-Vis/ECD/VCD/ROA/NMR spectrum
+ 12 Quantitative analysis of molecular surface
+ 13 Process grid data (No grid data is presented currently)
+ 14 Adaptive natural density partitioning (AdNDP) analysis
+ 15 Fuzzy atomic space analysis
+ 16 Charge decomposition analysis (CDA) and plot orbital interaction diagram
+ 17 Basin analysis                       18 Electron excitation analysis
+ 19 Orbital localization analysis        20 Visual study of weak interaction
+ 21 Energy decomposition analysis        22 Conceptual DFT (CDFT) analysis
+ 23 ETS-NOCV analysis                    24 (Hyper)polarizability analysis
+ 25 Electron delocalization and aromaticity analyses
+ 26 Structure and geometry related analyses
+ 100 Other functions (Part 1)            200 Other functions (Part 2)
+ 300 Other functions (Part 3)
+ -10 Return to main menu
+ -2 Obtain deformation property
+ -1 Obtain promolecule property
+ 0 Set custom operation
+             ----------- Available real space functions -----------
+ 1 Electron density (rho)     2 Gradient norm of rho     3 Laplacian of rho
+ 4 Value of orbital wavefunction         44 Orbital probability density
+ 5 Electron spin density
+ 6 Hamiltonian kinetic energy density K(r)
+ 7 Lagrangian kinetic energy density G(r)
+ 8 Electrostatic potential from nuclear charges
+ 9 Electron localization function (ELF)
+ 10 Localized orbital locator (LOL)
+ 11 Local information entropy
+ 12 Total electrostatic potential (ESP)
+ 13 Reduced density gradient (RDG)       14 RDG with promolecular approximation
+ 15 Sign(lambda2)*rho      16 Sign(lambda2)*rho with promolecular approximation
+ 17 Correlation hole for alpha, ref. point:   0.00000   0.00000   0.00000
+ 18 Average local ionization energy (ALIE)
+ 19 Source function, mode: 1, ref. point:   0.00000   0.00000   0.00000
+ 20 Electron delocal. range func. EDR(r;d)  21 Orbital overlap dist. func. D(r)
+ 22 Delta-g (promolecular approximation)    23 Delta-g (Hirshfeld partition)
+ 24 Interaction region indicator (IRI)    25 van der Waals potential (probe=C )
+ 100 User-defined function (iuserfunc=    0), see Section 2.7 of manual
+ -10 Return to main menu
+ Draw which kind of map?
+ 1 Color-filled map (with/without contour lines)
+ 2 Contour line map
+ 3 Relief map
+ 4 Shaded relief map
+ 5 Shaded relief map with projection
+ 6 Gradient lines map with/without contour lines
+ 7 Vector field map with/without contour lines
+  -10 Return to main menu
+ How many grids in the two dimensions, respectively?
+ (200,200 is recommended)
+ Hint: You can press ENTER button directly to use recommended value
+
+  -10 Return to main menu
+ Please define the plane to be plotted
+ 1: XY plane   2: XZ plane   3: YZ plane
+ 4: Define by three atoms    5: Define by three given points
+ 6: Input origin and translation vector (For expert users)
+ 7: Parallel to a bond and meantime normal to a plane defined by three atoms
+ 8: Above or below the plane consisting of specific atoms
+ 0: Set extension distance for plane type 1~5, current:  4.5000 Bohr
+ -1: Set translation and rotation of the map for plane types 4, 5 and 8
+ Input index of three atoms, e.g. 3,6,7
+
+ X/Y/Z of origin of the plane:    0.00000   7.79614  -0.01502 Bohr
+ X/Y/Z of end of the plane:      -0.00000  -7.23250  -2.07593 Bohr
+ X/Y/Z of translation vector 1:  0.00000 -0.08682  0.06542 Bohr, Norm:  0.10871
+ X/Y/Z of translation vector 2: -0.00000 -0.06499 -0.08624 Bohr, Norm:  0.10798
+
+ Calculating plane data, please wait...
+ Note: All exponential functions exp(x) with x< -40.000 will be ignored
+
+
+ Calculation took up wall clock time         0 s
+
+ The minimum of data:   1.0052643937211093E-011
+ The maximum of data:   129.84768772726505     
+
+          -------- Post-processing menu of plotting plane map --------
+ -9 Only plot the data around certain atoms
+ -8 Change length unit of the graph to Angstrom
+ -7 Multiply the current data by a factor
+ -6 Export the current plane data to plane.txt in current folder
+ -5 Return to main menu
+ -4 Save (load) all plotting settings to (from) an external file
+ -3 Change other plotting settings
+ -2 Set label intervals in X, Y and color scale axes, current:  1.537  1.527    0.065000
+ -1 Show the graph again
+ 0 Save the graph to a graphical file in current folder
+ 1 Set lower&upper limit of color scale, current:      0.0000000      0.6500000
+ 2 Enable showing contour lines
+ 3 Change contour line setting
+ 4 Enable showing atom labels and reference point
+ 8 Enable showing bonds
+ 15 Enable showing the contour line corresponding to vdW surface (rho=0.001)
+ 18 Change style of atomic labels: Only plot element symbol
+ 19 Set color transition, current: Rainbow & white/black for out-of-limit data
+ The column 1,2,3 correspond to Cartesian X,Y,Z coordinates, respectively
+ The column 4,5,6 correspond to X,Y coordinates in the graph and function value, respectively
+ Data has been ouputted to plane.txt in current folder, length unit is in Angstrom
+
+          -------- Post-processing menu of plotting plane map --------
+ -9 Only plot the data around certain atoms
+ -8 Change length unit of the graph to Angstrom
+ -7 Multiply the current data by a factor
+ -6 Export the current plane data to plane.txt in current folder
+ -5 Return to main menu
+ -4 Save (load) all plotting settings to (from) an external file
+ -3 Change other plotting settings
+ -2 Set label intervals in X, Y and color scale axes, current:  1.537  1.527    0.065000
+ -1 Show the graph again
+ 0 Save the graph to a graphical file in current folder
+ 1 Set lower&upper limit of color scale, current:      0.0000000      0.6500000
+ 2 Enable showing contour lines
+ 3 Change contour line setting
+ 4 Enable showing atom labels and reference point
+ 8 Enable showing bonds
+ 15 Enable showing the contour line corresponding to vdW surface (rho=0.001)
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG
+ 18 Change style of atomic labels: Only plot element symbol
+ 19 Set color transition, current: Rainbow & white/black for out-of-limit data
+
+ "q": Exit program gracefully          "r": Load a new file
+                    ************ Main function menu ************
+ 0 Show molecular structure and view orbitals
+ 1 Output all properties at a point       2 Topology analysis
+ 3 Output and plot specific property in a line
+ 4 Output and plot specific property in a plane
+ 5 Output and plot specific property within a spatial region (calc. grid data)
+ 6 Check & modify wavefunction
+ 7 Population analysis and calculation of atomic charges
+ 8 Orbital composition analysis           9 Bond order analysis
+ 10 Plot total DOS, PDOS, OPDOS, local DOS, COHP and photoelectron spectrum
+ 11 Plot IR/Raman/UV-Vis/ECD/VCD/ROA/NMR spectrum
+ 12 Quantitative analysis of molecular surface
+ 13 Process grid data (No grid data is presented currently)
+ 14 Adaptive natural density partitioning (AdNDP) analysis
+ 15 Fuzzy atomic space analysis
+ 16 Charge decomposition analysis (CDA) and plot orbital interaction diagram
+ 17 Basin analysis                       18 Electron excitation analysis
+ 19 Orbital localization analysis        20 Visual study of weak interaction
+ 21 Energy decomposition analysis        22 Conceptual DFT (CDFT) analysis
+ 23 ETS-NOCV analysis                    24 (Hyper)polarizability analysis
+ 25 Electron delocalization and aromaticity analyses
+ 26 Structure and geometry related analyses
+ 100 Other functions (Part 1)            200 Other functions (Part 2)
+ 300 Other functions (Part 3)

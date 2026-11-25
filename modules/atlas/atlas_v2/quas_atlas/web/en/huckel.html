@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="ethene,butadiene,benzene,naphthalene,pyridine,pyrrole,furan">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Hückel method</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/huckel.css">
+<link rel="stylesheet" href="../assets/css/addon.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-huckel-g.webp"><!--pose:end-->
+<h1>Hückel method</h1>
+<p class="lead">π-electron systems of planar conjugated molecules: each atom contributes one p orbital, with Coulomb integral α and resonance integral β (β &lt; 0) between neighbors; overlap is neglected. Choose a molecule or build your own; clicking an atom changes its type (C → N → O), clicking a level shows the orbital.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>In the Hückel method the π system is defined only by atom connectivity: α on atoms, β between neighbors.</li><li>MO coefficients give charges, bond orders, the delocalization energy and reactivity indices.</li><li>The 4n + 2 rule follows from filling the levels on the Frost circle.</li><li>Charges (charge control) and frontier orbitals (orbital control) can point to different reactive sites.</li><li>Electronegativity χ = (I + A)/2 and hardness η = (I − A)/2 are derivatives of the energy with respect to the number of electrons; the Fukui functions f⁺ and f⁻ show where the molecule accepts or gives an electron — in the Hückel model these are the LUMO and HOMO densities.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> the Hückel method</summary><dl><dt>What is computed</dt><dd>π orbitals, charges and bond orders of conjugated molecules.</dd><dt>Which approximations are made</dt><dd>Only π electrons; the parameters α and β; the overlap of neighbouring orbitals is neglected.</dd><dt>What can be concluded</dt><dd>The nodal structure and trends, yes; the energies only in units of β.</dd></dl></details><!--lim:end-->
+<section class="controls" aria-label="Molecule selection">
+  <div class="crow"><span class="l">Chains</span><span class="grp" data-g="chain"></span></div>
+  <div class="crow"><span class="l">Rings</span><span class="grp" data-g="ring"></span></div>
+  <div class="crow"><span class="l">Fused and branched</span><span class="grp" data-g="fused"></span></div>
+  <div class="crow"><span class="l">With heteroatoms</span><span class="grp" data-g="het"></span></div>
+  <div class="crow"><span class="l">Custom molecule</span><span class="grp"><button class="chip" type="button" id="bChain">chain</button><button class="chip" type="button" id="bRing">ring</button><input type="range" id="nAt" min="2" max="10" step="1" aria-label="Number of atoms"><span class="val" id="nAtV"></span></span></div>
+  <div class="crow"><span class="l">Charge</span><span class="grp" id="chg" role="group" aria-label="Charge"></span><span class="hint" id="neTxt"></span></div>
+</section>
+<div class="work" style="grid-template-columns:minmax(0,1.05fr) minmax(0,0.95fr)">
+  <div class="panel">
+    <div class="sel-row" role="tablist" aria-label="What to show on the molecule"><button class="chip" type="button" data-v="mo">Orbital</button><button class="chip" type="button" data-v="diag">Molecular diagram</button><button class="chip" type="button" data-v="react">Reactivity</button></div>
+    <svg id="mol" viewBox="0 0 480 340" role="img" aria-label="Molecule"></svg>
+    <div class="legend" id="molLeg"></div>
+    <div class="status" id="molTxt"></div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">π-MO levels: E = α + xβ; bonding below, antibonding above</div>
+    <svg id="lev" viewBox="0 0 440 440" role="img" aria-label="Energy level diagram" style="touch-action:manipulation"></svg>
+    <div class="sel-row"><button class="btn" type="button" id="moPrev" aria-label="Previous MO">◀</button><span class="val" id="moName" style="min-width:12ch;text-align:center"></span><button class="btn" type="button" id="moNext" aria-label="Next MO">▶</button><button class="chip" type="button" id="toH">HOMO</button><button class="chip" type="button" id="toL">LUMO</button></div>
+    <div class="kvt" id="sum"></div>
+  </div>
+</div>
+<section class="panel" aria-labelledby="hT">
+  <h2 id="hT">Numbers</h2>
+  <div class="tabs" role="tablist"><button class="tab" role="tab" type="button" data-t="coef">MO coefficients</button><button class="tab" role="tab" type="button" data-t="det">Secular determinant</button><button class="tab" role="tab" type="button" data-t="atoms">Atoms and bonds</button></div>
+  <div id="tpane" style="display:flex;flex-direction:column;gap:10px"></div>
+</section>
+<section class="panel" aria-labelledby="hP">
+  <h2 id="hP">Heteroatom parameters</h2>
+  <p class="small">α<sub>X</sub> = α + hβ, β<sub>CX</sub> = kβ (Streitwieser values). A heteroatom with h &gt; 0 is more electronegative than carbon: its level is lower and the electron density on it is higher. An atom that donates a lone pair to the system (pyrrole-type N, furan-type O) contributes 2 π electrons.</p>
+  <div class="tablewrap" id="parTab"></div>
+</section>
+<section class="panel addon" aria-labelledby="hReact">
+  <h2 id="hReact">Global indices and Fukui functions</h2>
+  <p class="hint">The energy as a function of the number of electrons E(N) is approximated by a parabola through E(N − 1), E(N), E(N + 1), i.e. through the ionisation energy I and the electron affinity A. Its slope is the chemical potential μ = −χ, its curvature the hardness η.</p>
+  <div class="tablewrap"><table class="tbl" id="gTab"></table></div>
+  <div class="cin"><label>Your molecule: I, eV (here ethylene)<input id="gI" inputmode="decimal" value="10.51"></label><label>A, eV (the ethylene anion is unbound)<input id="gA" inputmode="decimal" value="-1.76"></label></div>
+  <p class="status note" id="gNote"></p>
+  <h3>Fukui functions in the Hückel model</h3>
+  <div class="crow"><span class="l">Molecule</span><span class="grp" id="fG" role="group" aria-label="Molecule"></span></div>
+  <div class="tablewrap"><table class="tbl" id="fTab"></table></div>
+  <p class="hint" id="fNote"></p>
+</section>
+<section class="panel addon" aria-labelledby="hSemi">
+  <h2 id="hSemi">From Hückel to xtb: semi-empirical methods</h2>
+  <p class="hint">The Hückel method is the first step of a ladder of approximate methods. Extended Hückel takes all valence orbitals and the overlap; CNDO, INDO and NDDO (MNDO, AM1, PM3, PM7) introduce two-electron integrals but neglect the differential overlap of different atoms; GFN2-xTB is tight binding with charges, multipoles and D4 dispersion for the whole table up to Rn. How many integrals remain at each level:</p>
+  <div class="crow"><span class="l">Example</span><span class="grp" id="sG" role="group" aria-label="Example"></span></div>
+  <div class="cin"><label>Heavy atoms (C–F)<input id="sn" inputmode="numeric" value="6"></label><label>H atoms<input id="sm" inputmode="numeric" value="6"></label></div>
+  <div class="tablewrap"><table class="tbl" id="sTab"></table></div>
+  <p class="status note" id="sNote"></p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">How do the signs of the π-orbital coefficients decide whether a reaction goes?</span><a class="nqA" href="wh.html" data-goto="wh">π orbitals and reactions →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Butadiene: compare the π bond orders 1–2 and 2–3. What does this say about the bond lengths?</span></p>
+<p class="olab">π bond order 2–3</p><div class="opts" role="group"><button type="button" class="opt">0</button><button type="button" class="opt" data-ok="1">0.447</button><button type="button" class="opt">1</button><button type="button" class="opt">0.894</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>p₁₂ = 0.894, p₂₃ = 0.447: the central bond is partly double. Estimated lengths are 1.356 and 1.437 Å: the terminal bonds are longer than in ethylene, the central one shorter than a single bond. Delocalization energy 0.472β.</div></div>
+<div class="tq"><p class="qt"><span>Allyl: switch the charge between +1, 0, −1. What changes in the levels, and what in the atomic charges?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">The energy levels change</button><button type="button" class="opt">The charge is spread equally over three atoms</button><button type="button" class="opt" data-ok="1">Levels stay the same; only the charges on the terminal atoms change</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The levels do not change (α + 1.414β, α, α − 1.414β); only the occupation of the nonbonding MO changes. It has a node on the central atom (coefficients ±0.707 at the ends), so the charge of +0.5 in the cation and −0.5 in the anion sits only on the terminal atoms.</div></div>
+<div class="tq"><p class="qt"><span>Benzene and cyclobutadiene: compare the delocalization energies and the level filling on the Frost circle.</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Both systems are aromatic</button><button type="button" class="opt" data-ok="1">Benzene: DE = 2β; cyclobutadiene: DE = 0, a biradical</button><button type="button" class="opt">Cyclobutadiene has a larger DE than benzene</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Benzene: 6 = 4n + 2 electrons, all bonding MOs are filled, DE = 2β. Cyclobutadiene: 4 = 4n, two electrons occupy the degenerate pair at α, DE = 0, and in Hückel theory it is a biradical (antiaromaticity).</div></div>
+<div class="tq"><p class="qt"><span>Cyclopentadienyl: which charge makes the system aromatic? Compare the cation and the anion.</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Cation (+1)</button><button type="button" class="opt" data-ok="1">Anion (−1)</button><button type="button" class="opt">Neutral radical</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Anion: 6 π electrons, closed shell, DE = 2.472β — hence the high acidity of cyclopentadiene. Cation: 4 electrons, the degenerate pair is half-filled, two unpaired electrons.</div></div>
+<div class="tq"><p class="qt"><span>Naphthalene: where will an electrophile go, and where a radical? Which bond is the shortest?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Both go to the α positions</button><button type="button" class="opt">Electrophile to α, radical to β</button><button type="button" class="opt">Both go to the β positions</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The α positions (1, 4, 5, 8): HOMO density 0.181 versus 0.069 at β, free valence 0.453 versus 0.404. The shortest bond is 1–2 (p = 0.725, ≈ 1.387 Å).</div></div>
+<div class="tq"><p class="qt"><span>Azulene is an isomer of naphthalene. Look at the molecular diagram: where does its dipole moment come from?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">The five-membered ring is positive, the seven-membered ring negative</button><button type="button" class="opt" data-ok="1">The five-membered ring is negative, the seven-membered ring positive</button><button type="button" class="opt">In the Hückel method the dipole moment is zero</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The five-membered ring is negatively charged (−0.173 on C1 and C3), the seven-membered ring positively (+0.145 on C4 and C8, +0.130 on C6): like a combination of the cyclopentadienyl anion and the tropylium cation. An electrophile attacks C1/C3, a nucleophile attacks the seven-membered ring.</div></div>
+<div class="tq"><p class="qt"><span>Acrolein, nucleophilic attack: compare the “frontier orbitals” and “π charges” criteria.</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Both criteria point to C1</button><button type="button" class="opt">Both criteria point to C3</button><button type="button" class="opt" data-ok="1">By the LUMO — C3 (1,4-addition), by charges — C1 (1,2-addition)</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>By the LUMO — atom C3 (c² = 0.431), i.e. 1,4-addition, typical of soft nucleophiles. By the charges — the carbonyl C1 (q = +0.333), i.e. 1,2-addition of hard nucleophiles. The two criteria describe orbital and charge control of the reaction.</div></div>
+<div class="tq"><p class="qt"><span>Select benzene and click atom 1 to make it a pyridine-type nitrogen. How did the charges change, and where will a nucleophile go now?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">To position 3</button><button type="button" class="opt" data-ok="1">To positions 2 and 4</button><button type="button" class="opt">To the nitrogen atom</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>−0.195 on nitrogen, +0.077 on C2/C6, +0.050 on C4, almost zero on C3/C5. A nucleophile goes to positions 2 and 4, an electrophile (by charges) to position 3: exactly how pyridine behaves.</div></div>
+<div class="tq"><p class="qt"><span>“Global indices”: which atom of the table is the most electronegative by Mulliken, and what is its hardness?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Cl: χ = 8.3, η = 4.7 eV</button><button type="button" class="opt" data-ok="1">F: χ = 10.4, η = 7.0 eV</button><button type="button" class="opt">O: χ = 7.5, η = 6.1 eV</button><button type="button" class="opt">H: χ = 7.2, η = 6.4 eV</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Fluorine: χ = (17.42 + 3.40)/2 = 10.41 eV, η = (17.42 − 3.40)/2 = 7.01 eV — the most electronegative and one of the hardest. Chlorine is less electronegative and softer (η = 4.68 eV).</div></div>
+<div class="tq"><p class="qt"><span>Fukui functions of acrolein CH₂=CH–CH=O: which atom will a nucleophile attack by the largest f⁺?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">O</button><button type="button" class="opt">Cα</button><button type="button" class="opt" data-ok="1">Cβ (the terminal CH₂)</button><button type="button" class="opt">all equally</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Cβ: f⁺ = 0.43 against 0.33 on the carbonyl carbon. This is conjugate (Michael) addition; soft nucleophiles attack Cβ, hard ones the carbonyl carbon (charge control).</div></div>
+</div></details></section>
+<script src="js/huckel.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="huckel";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/huckel.js"></script>
+
+<script src="js/huckel2.js"></script>
+</body>
+</html>

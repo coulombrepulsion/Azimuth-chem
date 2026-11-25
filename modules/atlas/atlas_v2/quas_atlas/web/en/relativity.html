@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Heavy elements: relativity and pseudopotentials</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-rel-g.webp"><!--pose:end-->
+<h1>Heavy elements: relativity and pseudopotentials</h1>
+<p class="lead">The Schrödinger equation knows nothing of relativity, and for light atoms this does not show. The inner electrons of a heavy atom, however, move at a speed comparable to that of light: their mass grows, the s shells contract, and chemistry changes — the colour of gold, liquid mercury, the lead–acid battery. A calculation takes this into account in two ways: a pseudopotential in place of the inner electrons or a relativistic Hamiltonian.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>The mean speed of the 1s electron of a hydrogen-like atom is Z atomic units, i.e. v/c = Z/137: 0.58 of the speed of light for gold.</li><li>The mass grows by γ = 1/√(1 − v²/c²) and the s orbitals contract: the 1s of gold is 18 % smaller, the valence 6s contracts and is stabilised too.</li><li>A pseudopotential (ECP) replaces the inner electrons by a potential fitted to relativistic atomic calculations: in def2 these are 28 electrons for Rb–Xe, 46 for Cs–La and 60 for Hf–Rn.</li><li>Without an ECP relativity enters through the Hamiltonian (DKH2, ZORA, X2C) — with special all-electron basis sets, for example DKH-def2 or ZORA-def2 in ORCA.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> a hydrogen-like 1s electron, a point nucleus</summary><dl><dt>What is computed</dt><dd>Speed, mass increase, radius contraction and the Dirac level of one 1s electron in the field of a nucleus Z; the core size of the def2 pseudopotentials.</dd><dt>Which approximations are made</dt><dd>One electron without screening by the others; a point nucleus; radius ∝ 1/m (the Bohr estimate); the valence shells of a many-electron atom are described only qualitatively.</dd><dt>What can be concluded</dt><dd>Why relativity matters for heavy elements and what a pseudopotential does — yes; the size of the effects on valence shells and chemical properties comes only from calculations with an ECP or a relativistic Hamiltonian.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">The 1s electron of a heavy atom</h2>
+  <div class="crow"><span class="l">Element</span><span class="grp" id="zG" role="group" aria-label="Element"></span></div>
+  <div class="crow"><span class="l">Nuclear charge Z</span><input type="range" id="Z" min="1" max="118" step="1" value="79" aria-label="Nuclear charge"><span class="val" id="Zv"></span></div>
+  <div class="cards" id="acards"></div>
+  <p class="status" id="aNote"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Contraction across the periodic table</h2>
+  <svg id="rchart" class="ch" viewBox="0 0 960 280" role="img" aria-label="1s contraction against nuclear charge"></svg>
+  <p class="hint">r(rel.)/r(non-rel.) = √(1 − (Z/137)²): below Z ≈ 30 the effect is under 5 %, in the sixth period from 8 % (Cs) to 22 % (Rn). The Dirac 1s energy: E = c²(√(1 − (Z/c)²) − 1), the Schrödinger one −Z²/2 E<sub>h</sub>.</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">def2 pseudopotentials</h2>
+  <div class="crow"><span class="l">Element</span><span class="grp" id="eG" role="group" aria-label="Element"></span></div>
+  <div class="cards" id="ecards"></div>
+  <p class="status" id="eNote"></p>
+  <table class="tbl"><tr><th>Approach</th><th>What it does</th><th>How to set it (ORCA)</th></tr>
+  <tr><td>ECP + def2</td><td>the core is a potential, the valence electrons are explicit; scalar relativity is already included</td><td><span class="code">! B3LYP D3BJ def2-TZVP</span></td></tr>
+  <tr><td>DKH2</td><td>all electrons, the second-order Douglas–Kroll–Hess relativistic Hamiltonian</td><td><span class="code">! DKH DKH-def2-TZVP SARC/J</span></td></tr>
+  <tr><td>ZORA</td><td>all electrons, the zeroth-order regular approximation</td><td><span class="code">! ZORA ZORA-def2-TZVP SARC/J</span></td></tr>
+  <tr><td>X2C</td><td>all electrons, the exact two-component transformation</td><td><span class="code">! X2C x2c-TZVPall</span></td></tr></table>
+  <p class="hint">Keywords follow the ORCA 6 manual; in Gaussian the def2 pseudopotential comes with the Def2TZVP basis, DKH2 with Int=DKH. For 4d–5d metals and the halogens I, At an ECP is usually enough; spin–orbit effects (for example in heavy p elements) need two-component calculations. The DKH-def2 and ZORA-def2 basis sets exist only for H–Kr: a heavy atom gets its basis separately, for gold, say, <span class="code">%basis NewGTO Au "SARC-ZORA-TZVP" end end</span> (with DKH, SARC-DKH-TZVP); x2c-TZVPall covers H–Rn.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">A pseudopotential comes with a basis for the valence electrons. How are basis sets built, and how many functions are needed?</span><a class="nqA" href="basis.html" data-goto="basis">Basis sets →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Choose gold (Z = 79). At what fraction of the speed of light does the 1s electron move?</span></p>
+<p class="olab">v/c</p><div class="opts" role="group"><button type="button" class="opt">0.08</button><button type="button" class="opt">0.25</button><button type="button" class="opt" data-ok="1">0.58</button><button type="button" class="opt">0.99</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>0.58: v/c = Z/137 = 79/137. The mass is then larger by γ = 1.22.</div></div>
+<div class="tq"><p class="qt"><span>By how many per cent is the 1s radius of gold smaller than the non-relativistic one?</span></p>
+<p class="olab">Contraction, %</p><div class="opts" role="group"><button type="button" class="opt">2</button><button type="button" class="opt">8</button><button type="button" class="opt" data-ok="1">18</button><button type="button" class="opt">42</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>By 18 %: √(1 − 0.58²) = 0.82. The valence 6s shell contracts too — it is closer to the nucleus and holds its electron more firmly, hence the nobility of gold.</div></div>
+<div class="tq"><p class="qt"><span>Gold in a def2 basis: how many electrons are in the pseudopotential and how many are explicit?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">28 and 51</button><button type="button" class="opt">46 and 33</button><button type="button" class="opt" data-ok="1">60 and 19</button><button type="button" class="opt">0 and 79</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>60 in the core (1s–4f) and 19 explicit (5s, 5p, 5d, 6s): the Stuttgart–Cologne pseudopotential for Hf–Rn.</div></div>
+<div class="tq"><p class="qt"><span>Bromine (Z = 35) in def2-TZVP — with a pseudopotential or without?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">ECP with 10 electrons</button><button type="button" class="opt">ECP with 28 electrons</button><button type="button" class="opt" data-ok="1">No ECP, all electrons</button><button type="button" class="opt">DKH2 is needed</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>No ECP: in def2 the elements up to Kr are all-electron. Pseudopotentials start at rubidium (28 core electrons).</div></div>
+</div></details></section>
+<script src="js/relativity.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="rel";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/relativity.js"></script>
+
+</body>
+</html>

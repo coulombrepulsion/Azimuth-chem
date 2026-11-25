@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Многоконфигурационные методы: CASSCF</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/cas.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261028-casscf-g.webp"><!--pose:end-->
+<h1>Многоконфигурационные методы: CASSCF</h1>
+<p class="lead">Хартри–Фок, MP2 и связанные кластеры строятся от одного определителя. Когда несколько конфигураций одинаково важны — при разрыве связи, в бирадикале, при повороте вокруг двойной связи, — эта опора ломается. Метод CASSCF берёт полное КВ в небольшом «активном пространстве» орбиталей и одновременно оптимизирует сами орбитали. Он описывает статическую корреляцию, а динамическую добавляют поверх — например, теорией возмущений NEVPT2. Все кривые посчитаны в PySCF в базисе cc-pVDZ.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Когда несколько конфигураций одинаково важны (разрыв связи, бирадикал), однодетерминантные методы ломаются — это статическая корреляция.</li><li>CASSCF решает полное КВ в активном пространстве орбиталей и одновременно оптимизирует орбитали.</li><li>Числа заполнения натуральных орбиталей заметно между 0 и 2 — признак многоконфигурационного характера.</li><li>Динамическую корреляцию добавляют поверх CASSCF: NEVPT2, CASPT2, MRCI; размер активного пространства ограничен примерно 18 орбиталями.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> двухатомные и малые молекулы, cc-pVDZ</summary><dl><dt>Что вычисляется</dt><dd>Кривые H₂ (RHF, UHF, CASSCF(2,2), полное КВ), поворот этилена (RHF, CASSCF(2,2), NEVPT2), кривые N₂ (RHF, CCSD, CCSD(T), CASSCF(6,6), NEVPT2); числа заполнения натуральных орбиталей; число определителей для CAS(n,m).</dd><dt>Какие приближения приняты</dt><dd>Базис cc-pVDZ; жёсткая геометрия этилена при повороте; NEVPT2 — эталон для N₂ вместо полного КВ; CCSD при больших R может не сходиться.</dd><dt>Какой вывод можно сделать</dt><dd>Когда один определитель не годится и как это видно по числам заполнения — да; точные энергии разрыва связей — нет: нужны большие базисы и MRCI или аналогичные методы.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">H₂: статическая и динамическая корреляция</h2>
+  <p class="hint">Активное пространство CAS(2,2) — два электрона на двух орбиталях σ<sub>g</sub> и σ<sub>u</sub>. Ограниченный Хартри–Фок (RHF) держит оба электрона на одной орбитали и при разрыве связи уходит вверх. Неограниченный (UHF) разводит α- и β-электроны по разным атомам и даёт правильную энергию, но ценой смешения спиновых состояний. CASSCF правильно разрывает связь и остаётся синглетом.</p>
+  <div class="crow"><span class="l">Расстояние R</span><input type="range" id="R" min="0" max="35" step="1" value="2" aria-label="Расстояние R"><span class="val" id="Rv"></span></div>
+  <div class="two">
+    <svg id="h2C" viewBox="0 0 560 330" role="img" aria-label="Энергия H₂: RHF, UHF, CASSCF и полное КВ"></svg>
+    <div><div class="mbox" id="h2M"></div></div>
+  </div>
+  <p class="hint" id="h2N"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Этилен: поворот вокруг двойной связи</h2>
+  <p class="hint">При повороте одной группы CH₂ π-связь рвётся: при 90° орбитали π и π* вырождены, и основное состояние — бирадикал с двумя равноправными конфигурациями. Активное пространство CAS(2,2) — те же две орбитали π и π*.</p>
+  <div class="crow"><span class="l">Угол поворота</span><input type="range" id="ang" min="0" max="9" step="1" value="0" aria-label="Угол поворота"><span class="val" id="angV"></span></div>
+  <div class="two">
+    <svg id="ethC" viewBox="0 0 560 330" role="img" aria-label="Энергия этилена при повороте вокруг связи C=C"></svg>
+    <div><div class="mbox" id="ethM"></div></div>
+  </div>
+  <p class="hint" id="ethN"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">N₂: три связи рвутся одновременно</h2>
+  <p class="hint">Для тройной связи нужно активное пространство CAS(6,6): орбитали σ, π, π и разрыхляющие σ*, π*, π*. Здесь же — CCSD и CCSD(T), лучшие однодетерминантные методы, и NEVPT2 — CASSCF с поправкой на динамическую корреляцию по теории возмущений. Энергии каждого метода отсчитаны от его же энергии при 1,1 Å, около равновесия.</p>
+  <div class="crow"><span class="l">Расстояние R</span><input type="range" id="Rn" min="0" max="21" step="1" value="2" aria-label="Расстояние R в N₂"><span class="val" id="RnV"></span></div>
+  <div class="two">
+    <svg id="n2C" viewBox="0 0 560 330" role="img" aria-label="Кривые энергии N₂ для разных методов"></svg>
+    <div><div class="mbox" id="n2M"></div></div>
+  </div>
+  <p class="hint" id="n2N"></p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">Сколько стоит активное пространство</h2>
+  <p class="hint">Внутри активного пространства CASSCF решает полное КВ, поэтому число определителей растёт так же быстро, как в полном КВ, — только орбиталей здесь немного. Подберите число электронов и орбиталей.</p>
+  <div class="crow"><span class="l">Активных электронов n</span><input type="range" id="ne" min="2" max="24" step="2" value="6" aria-label="Число активных электронов"><span class="val" id="neV"></span></div>
+  <div class="crow"><span class="l">Активных орбиталей m</span><input type="range" id="no" min="2" max="24" step="1" value="6" aria-label="Число активных орбиталей"><span class="val" id="noV"></span></div>
+  <div class="kvt" id="casK"></div>
+  <p class="hint" id="casN"></p>
+  <div class="eq">
+    <div class="eqb"><div class="t">Как выбирать активные орбитали</div>В активное пространство берут орбитали, числа заполнения которых заметно отличаются от 2 и 0: связывающие и разрыхляющие орбитали рвущихся связей, неспаренные d-орбитали металла, π-систему. Числа заполнения натуральных орбиталей — главный признак: от 0,02 до 1,98 — орбиталь нужна в активном пространстве.</div>
+    <div class="eqb"><div class="t">Статическая и динамическая</div>CASSCF описывает статическую корреляцию — вырождение нескольких конфигураций. Динамическую — то, как электроны обходят друг друга на малых расстояниях, — он почти не учитывает. Её добавляют поверх: CASPT2, NEVPT2 (теория возмущений) или MRCI (КВ от нескольких опорных конфигураций).</div>
+    <div class="eqb"><div class="t">Предел размеров</div>Обычный CASSCF доступен примерно до 18 электронов на 18 орбиталях: это около 2,4·10⁹ определителей. Дальше — приближённые решатели: DMRG, отобранное КВ (selected CI), RASSCF с ограничением числа возбуждений.</div>
+    <div class="eqb"><div class="t">Подвохи</div>Результат зависит от выбора активного пространства, а у разных геометрий или состояний оптимальные орбитали могут «переключаться». Поэтому кривые считают, передавая орбитали от точки к точке, а для нескольких состояний используют усреднение по состояниям (SA-CASSCF).</div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Почему два атома He всё-таки притягиваются, хотя в HF они не связаны?</span><a class="nqA" href="dispersion.html" data-goto="disp">Межмолекулярные взаимодействия →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>H₂, R = 2,0 Å: каково число заполнения орбитали σu в CASSCF(2,2)?</span></p>
+<p class="olab">Заполнение σu</p><div class="opts" role="group"><button type="button" class="opt">1,55</button><button type="button" class="opt" data-ok="1">0,45</button><button type="button" class="opt">0,05</button><button type="button" class="opt">1,00</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Около 0,45: на σ<sub>g</sub> приходится 1,55 электрона, на σ<sub>u</sub> — 0,45. Функция уже заметно двухконфигурационная, а RHF при этом выше полного КВ на 251 кДж/моль.</div></div>
+<div class="tq"><p class="qt"><span>При том же R = 2,0 Å: каково ⟨S²⟩ у функции UHF?</span></p>
+<p class="olab">⟨S²⟩</p><div class="opts" role="group"><button type="button" class="opt">2,00</button><button type="button" class="opt">0,75</button><button type="button" class="opt" data-ok="1">0,90</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Около 0,90 вместо 0 у синглета. Энергия UHF всего на 39 кДж/моль выше полного КВ, но функция — смесь синглета и триплета примерно поровну, поэтому её спиновые свойства и плотность неверны.</div></div>
+<div class="tq"><p class="qt"><span>Этилен: какой барьер вращения (при 90°) даёт CASSCF(2,2), кДж/моль?</span></p>
+<p class="olab">Барьер, кДж/моль</p><div class="opts" role="group"><button type="button" class="opt">542</button><button type="button" class="opt" data-ok="1">312</button><button type="button" class="opt">160</button><button type="button" class="opt">272</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Около 312 кДж/моль; NEVPT2 — 322, RHF — 542. Экспериментальная энергия активации цис-транс-изомеризации — около 272 кДж/моль; расчётный барьер выше, потому что геометрия при повороте не релаксирует.</div></div>
+<div class="tq"><p class="qt"><span>Почему CCSD(T) при больших R даёт для N₂ энергию ниже, чем у равновесия?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Поправка (T) строится от одного определителя; при почти наполовину заполненных орбиталях она уже не мала</button><button type="button" class="opt">Базис cc-pVDZ слишком мал</button><button type="button" class="opt">У N₂ при больших R меняется спин основного состояния</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Связанные кластеры строятся от одного определителя RHF, а поправку (T) считают по теории возмущений. При разрыве тройной связи шесть орбиталей заполнены почти наполовину, амплитуды велики, и поправка перестаёт быть малой: она «проваливает» энергию. Признак беды виден заранее — по числам заполнения натуральных орбиталей.</div></div>
+<div class="tq"><p class="qt"><span>Раздел об активном пространстве: сколько определителей в CAS(16,16)? Ответ — в миллионах.</span></p>
+<p class="olab">Определителей, млн</p><div class="opts" role="group"><button type="button" class="opt">12,9</button><button type="button" class="opt">2400</button><button type="button" class="opt">601</button><button type="button" class="opt" data-ok="1">165,6</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>C(16, 8)² = 12 870² ≈ 165,6 миллиона. Вектор КВ занимает 1,3 ГБ — это уже тяжёлый, но ещё обычный CASSCF; CAS(18,18) — 2,4 миллиарда.</div></div>
+</div></details></section>
+<script src="js/casscf.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="cas";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/casscf.js"></script>
+
+</body>
+</html>

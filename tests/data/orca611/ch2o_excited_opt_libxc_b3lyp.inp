@@ -1,0 +1,19 @@
+# CH2O_B3LYP_def2-SVP
+! LibXC(B3LYP) def2-SVP Opt TightSCF
+%pal nprocs 1 end
+%maxcore 500
+
+%geom
+  MaxIter 100
+end
+%tddft
+  nroots 3
+  iroot 1
+end
+
+* xyz 0 1
+C   0.00000000  0.00000000 -0.52900000
+O   0.00000000  0.00000000  0.67700000
+H   0.00000000  0.93700000 -1.11500000
+H   0.00000000 -0.93700000 -1.11500000
+*

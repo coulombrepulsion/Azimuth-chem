@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,phenol,methanol">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>溶剂模型</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/solv.css">
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-solvation-g.webp"><!--pose:end-->
+<h1>溶剂模型</h1>
+<p class="lead">大多数反应在溶液中进行，而量子化学计算默认描述的是真空中的分子。考虑溶剂最便宜的方法是把它换成介电常数为 ε 的连续介质：分子位于空穴中，使介质极化，介质反过来产生反应场。这里给出离子的最简单玻恩模型，以及中性分子的极化连续介质模型（C-PCM），后者用 PySCF 计算并与实验水合自由能比较。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>隐式模型把溶剂换成介电常数为 ε 的连续介质；分子使介质极化，反应场又使分子极化。</li><li>玻恩模型给出离子的溶剂化能 −694.7·z²/a·(1 − 1/ε) kJ/mol；关键参数是有效空穴半径。</li><li>PCM 描述极性分子的静电作用，但缺少空穴和色散贡献，对非极性分子误差较大。</li><li>ε ≈ 20 以后溶剂化能几乎不再变化：最重要的是溶剂是否有极性。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型边界：</b>连续介质：只有静电作用</summary><dl><dt>计算的是什么</dt><dd>用玻恩模型计算的离子水合能；十一个分子的 C-PCM 静电溶剂化能（B3LYP/6-31+G*，ε = 78.36）以及水和丙酮的溶剂化能随 ε 的变化。</dd><dt>采用了哪些近似</dt><dd>不含空穴、色散和排斥贡献；HF/6-31G* 几何构型在溶液中不弛豫；空穴半径采用 PySCF 默认值；两相标准态均为 1 mol/L。 C-PCM 按构造以 (ε−1)/ε 缩放极化场，因此其对 ε 的依赖与玻恩公式相似，部分是方法本身决定的。</dd><dt>能得出什么结论</dt><dd>溶剂如何稳定极性分子和离子、为什么连续介质不够——可以；化学精度的溶剂化能——不行：需要含非静电贡献的模型（如 SMD）以及显式溶剂分子。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">玻恩模型：介电质中的离子</h2>
+  <p class="hint">半径为 a 的带电球从真空移入介电常数为 ε 的介质，获得的能量为 ΔG = −(N<sub>A</sub>q²/8πε<sub>0</sub>a)·(1 − 1/ε) = −694.7·z²/a[Å]·(1 − 1/ε) kJ/mol。关键问题是半径取多大：离子的晶体半径给出的能量增益过大。</p>
+  <div class="crow"><span class="l">介电常数 ε</span><input type="range" id="eps" min="1" max="100" step="0.1" value="78.4" aria-label="介电常数 ε"><span class="val" id="epsV"></span></div>
+  <div class="crow"><span class="l">阳离子半径增量 δ<sub>+</sub></span><input type="range" id="dp" min="0" max="1.2" step="0.01" value="0" aria-label="阳离子半径增量"><span class="val" id="dpV"></span></div>
+  <div class="crow"><span class="l">阴离子半径增量 δ<sub>−</sub></span><input type="range" id="dm" min="0" max="1.2" step="0.01" value="0" aria-label="阴离子半径增量"><span class="val" id="dmV"></span></div>
+  <svg id="bornC" viewBox="0 0 960 320" role="img" aria-label="离子水合能：玻恩模型与实验"></svg>
+  <div class="legend" id="bornL"></div>
+  <div class="tablewrap" id="bornT"></div>
+  <p class="hint" id="bornN"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">分子的极化连续介质模型（C-PCM）</h2>
+  <p class="hint">空穴由原子周围的球构成，其表面上出现极化电荷，这些电荷进入分子的哈密顿量，并在每个自洽场循环中重新计算。这里用 B3LYP/6-31+G*，水（ε = 78.36），几何构型为 HF/6-31G*。ΔG 只是静电贡献。</p>
+  <svg id="pcmC" viewBox="0 0 960 360" role="img" aria-label="水合能：C-PCM 计算与实验"></svg>
+  <div class="tablewrap" id="pcmT"></div>
+  <p class="hint" id="pcmN"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">结果如何依赖于 ε</h2>
+  <p class="hint">同样的计算在不同极性的溶剂中进行。静电溶剂化能大致正比于因子 (ε − 1)/ε：它在 ε 较小时增长很快，ε ≈ 20 以后几乎不再变化。</p>
+  <div class="crow"><span class="l">分子</span><span class="grp" id="emG" role="group" aria-label="分子"></span></div>
+  <svg id="epsC" viewBox="0 0 960 320" role="img" aria-label="溶剂化能随 ε 的变化"></svg>
+  <p class="hint" id="epsN"></p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">连续介质中缺少什么</h2>
+  <div class="eq">
+    <div class="eqb"><div class="t">非静电贡献</div>在水中形成空穴需要耗能，而与溶剂分子的色散和排斥作用会部分补偿。SMD 等模型按拟合实验的经验公式加入这些贡献；没有它们，非极性分子会显得过于“亲水”。</div>
+    <div class="eqb"><div class="t">特异性相互作用</div>连续介质只能平均地描述与第一层水分子的氢键。对阴离子和具有强氢键给体的分子，会显式加入几个水分子，再把这个团簇置于介质中（团簇-连续介质模型）。</div>
+    <div class="eqb"><div class="t">空穴半径</div>结果明显依赖于原子球的半径：这是主要的拟合参数。因此溶剂化模型要与其校准时所用的半径一起比较和使用。</div>
+    <div class="eqb"><div class="t">标准态</div>这里比较的是“气相 1 mol/L → 溶液 1 mol/L”的转移。如果气相取 1 bar，则需加上 RT·ln(24.79) = 7.96 kJ/mol（1.90 kcal/mol）——这是计算溶液中 pKₐ 和平衡常数时常见的误差来源。</div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">溶剂会使分子的电荷重新分布。究竟该如何把电荷分配给单个原子？</span><a class="nqA" href="charges.html" data-goto="chg">原子电荷：几种方案的比较 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>玻恩模型，ε = 78.4，半径增量为零：它给出 Na⁺ 的水合能是多少（kJ/mol）？</span></p>
+<p class="olab">ΔG(Na⁺)，kJ/mol</p><div class="opts" role="group"><button type="button" class="opt">-694.7</button><button type="button" class="opt">-365</button><button type="button" class="opt" data-ok="1">-672</button><button type="button" class="opt">-8.9</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>ΔG = −694.7/1.02 · (1 − 1/78.4) ≈ −672 kJ/mol——绝对值几乎是实验值（−365）的两倍。对连续介质中的空穴来说，晶体半径太小了。</div></div>
+<div class="tq"><p class="qt"><span>调节增量 δ₊，使玻恩模型给出 Na⁺ 的 −365 kJ/mol。</span></p>
+<p class="olab">δ₊, Å</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">0.86</button><button type="button" class="opt">0</button><button type="button" class="opt">1.88</button><button type="button" class="opt">0.43</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>a = 694.7·(1 − 1/78.4)/365 ≈ 1.88 Å，即 δ₊ ≈ 0.86 Å——与 Latimer、Pitzer 和 Slansky 在 1939 年为所有阳离子提出的增量 0.85 Å 几乎相同。</div></div>
+<div class="tq"><p class="qt"><span>水的 C-PCM：计算与实验相差多少 kcal/mol（计算减实验）？</span></p>
+<p class="olab">计算 − 实验，kcal/mol</p><div class="opts" role="group"><button type="button" class="opt">1.3</button><button type="button" class="opt" data-ok="1">-1.3</button><button type="button" class="opt">0</button><button type="button" class="opt">-7.6</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>约 −1.3 kcal/mol：−7.6 对 −6.3。没有空穴贡献的静电作用高估了能量增益；对能形成氢键的分子，连续介质对第一水合层也只能平均描述。</div></div>
+<div class="tq"><p class="qt"><span>为什么乙烷的 C-PCM 溶剂化能为负，而实验值为正（+1.8 kcal/mol）？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">模型中没有形成空穴的正贡献；静电作用总是带来能量增益</button><button type="button" class="opt">基组太小</button><button type="button" class="opt">乙烷的几何构型不对</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>静电贡献总是负的：介质只会稳定电荷分布。正的部分——在水中形成空穴的代价——这个模型不计算，而对非极性分子恰恰是它起主要作用。</div></div>
+<div class="tq"><p class="qt"><span>在关于 ε 依赖性的一节中，丙酮：在氯仿中（ε = 4.8）它已获得水中溶剂化能的多大比例，%？</span></p>
+<p class="olab">比例，%</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">77</button><button type="button" class="opt">21</button><button type="button" class="opt">99</button><button type="button" class="opt">50</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>约 77%：ε = 4.8 时因子 (ε − 1)/ε 为 0.79，而在水中为 0.99。因此“在某种极性溶剂中”的计算与在水中差别不大，但从气相到氯仿已经给出了效应的主要部分。</div></div>
+</div></details></section>
+<script>window.DEMO=[{t:'晶体半径',d:"玻恩模型：离子是电介质中的带电球，水合能取决于球的半径。如果用离子的晶体半径，模型会把水合能高估近一倍。",a:[['scroll','#h1s'],['set','#dp',0],['set','#dm',0]]},{t:'Latimer 修正',d:"拉蒂默校正：增大半径——阳离子加 0.85 Å，阴离子加 0.1 Å。这考虑到最近邻的水分子并不是连续电介质。现在模型几乎与实验一致。",a:[['set','#dp',0.85],['set','#dm',0.1]]},{t:'PCM 中的分子',d:"分子的可极化连续介质模型 C-PCM：溶剂是包围一个分子形状空腔的连续介质。对极性分子误差约 1 kcal/mol。非极性分子缺少空腔形成和色散的贡献。",a:[['scroll','#h2s']]},{t:'溶剂的极性',d:"溶剂化能如何随介电常数 ε 变化？高度非线性：在氯仿中（ε ≈ 5），水就已获得在水本身中（ε ≈ 78）溶剂化能的约 78%。",a:[['scroll','#h3s'],['click','#emG button',0]]}];</script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="solv";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/solvation.js"></script>
+
+</body>
+</html>

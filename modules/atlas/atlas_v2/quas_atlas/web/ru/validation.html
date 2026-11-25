@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,ammonia,hf">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Проверка расчётов</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/val.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+
+
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-validation-g.webp"><!--pose:end-->
+<h1>Проверка расчётов</h1>
+<p class="lead">Страницы о теории Бейдера, межмолекулярных взаимодействиях и оптимизации геометрии считают по-настоящему: интегралы по гауссовым функциям, Хартри–Фок, MP2. Но ответы к заданиям получены той же программой, поэтому они проверяют студента, а не программу. Программу проверяют независимыми эталонами — опубликованными результатами других программ для тех же молекул, геометрий и базисов. Ниже собраны такие контрольные точки; каждую можно пересчитать прямо в браузере.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Самопроверка заданий той же программой не проверяет саму программу: для этого нужны независимые эталоны.</li><li>Совпадение с независимыми эталонами подтверждает корректность проверенных расчётов — с указанной точностью и только для проверенных случаев; о точности самого метода оно ничего не говорит.</li><li>Отличие от эксперимента складывается из ошибок метода, базиса и модели (например, гармонического приближения).</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> проверяется программа, а не метод</summary><dl><dt>Что вычисляется</dt><dd>Энергии RHF, MP2, дипольный момент и заряды — в сравнении с опубликованными результатами; геометрия и частоты — только проверка согласованности.</dd><dt>Какие приближения приняты</dt><dd>Те же геометрии, базисы и методы, что в эталонах.</dd><dt>Какой вывод можно сделать</dt><dd>Совпадение подтверждает корректность проверенных расчётов; ошибку в других случаях оно может не обнаружить, а ошибки метода и базиса не устраняет.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Энергии Хартри–Фока</h2>
+  <p class="small">Эталон — таблицы учебника Сабо и Остлунда «Современная квантовая химия» (гл. 3): энергии RHF при тех же геометриях и в тех же базисах, с точностью до 0,001 E<sub>h</sub>. Совпадение до последнего знака таблицы подтверждает, что в этих расчётах базис, интегралы и процедура SCF работают правильно.</p>
+  <div class="crow"><span class="row"><button class="btn primary" type="button" id="bRun">Пересчитать в браузере</button><span class="val" id="runV"></span></span></div>
+  <div class="tablewrap" id="tE"></div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. Подробная контрольная точка: H₂O в базисе STO-3G</h2>
+  <p class="small">Эталон — учебный набор задач по программированию квантовой химии группы Кроуфорда (Virginia Tech, «Programming Projects», проекты 3 и 4): та же геометрия, напечатанная с 12 знаками. Сравниваются энергия, поправка MP2, дипольный момент (первый момент плотности) и заряды по Малликену.</p>
+  <div class="tablewrap" id="tC"></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">3. Геометрия и частоты H₂O, HF/6-31G*</h2>
+  <p class="small">Минимум найден этой программой по длине связи и углу (симметрия C<sub>2v</sub>), частоты — из полного декартова гессиана (численные вторые производные энергии, 9 × 9) после отделения переносов и вращений. Все три колебательные частоты вещественные, включая антисимметричное валентное колебание, — значит, это минимум по всем координатам. Расчёт долгий (около 200 расчётов SCF), поэтому результат приведён готовым. В отличие от разделов 1 и 2, это проверка согласованности, а не сверка с внешним эталоном.</p>
+  <div class="tablewrap" id="tF"></div>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">4. Другие программы на страницах</h2>
+  <p class="small">На страницах о H₂, SCF и гелии работают отдельные, более простые программы. Их контрольные точки известны точно или аналитически.</p>
+  <div class="tablewrap" id="tO"></div>
+</section>
+<section class="panel" aria-labelledby="h5s">
+  <h2 id="h5s">5. Что подтверждает и чего не подтверждает такая проверка</h2>
+  <p class="small">Совпадение с независимыми эталонами в пределах их точности (0,001 E<sub>h</sub> для таблиц Сабо и Остлунда, 10⁻⁵ E<sub>h</sub> и точнее для набора Кроуфорда) подтверждает корректность проверенных расчётов: для этих молекул, геометрий и базисов верно работают базисные функции, интегралы, итерации SCF и формулы MP2. Это не доказательство правильности всей программы: контрольные точки могут не обнаружить ошибку в другом типе базисных функций, в непроверенной геометрии или в трудном режиме сходимости. И совпадение ничего не говорит о том, насколько хороши сами уравнения. Энергия HF/6-31G* воспроизведена точно, но от точной энергии молекулы она отличается примерно на 1100 кДж/моль (около 0,43 хартри: корреляция и неполнота базиса), а частоты HF завышены примерно на 10 %. Ошибку программы, ошибку метода и ошибку базиса нужно различать — см. задание «Три вида ошибок» на странице «Диссоциация H₂».</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Программа считает правильно. Откуда тогда расхождение с экспериментом и с точной энергией?</span><a class="nqA" href="h2.html" data-goto="h2">Диссоциация H₂ →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Раздел 1: у N₂ и CO энергии в базисах 6-31G* и 6-31G** одинаковы. Почему?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">В N₂ и CO нет водорода, а 6-31G** добавляет функции только на H</button><button type="button" class="opt">Это ошибка программы</button><button type="button" class="opt">Энергия не зависит от базиса</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Базис 6-31G** отличается от 6-31G* только p-функциями на атомах водорода. В N₂ и CO водорода нет, поэтому для них это один и тот же базис.</div></div>
+<div class="tq"><p class="qt"><span>Раздел 3: программа дала 4189 см⁻¹, а в эксперименте 3756 см⁻¹ (гармоническое значение 3943). Можно ли по этому сравнению судить, ошибается ли программа?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Нельзя: в расхождение входят ошибки метода, базиса и ангармоничности</button><button type="button" class="opt">Да: программа завышает частоты</button><button type="button" class="opt">Эксперимент неточен</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Нет, по этому сравнению определить нельзя. Расхождение с экспериментом включает ошибку метода HF (нет корреляции), неполноту базиса и ангармоничность; ошибку программы оно от них не отделяет. Для проверки программы нужен другой расчёт тем же методом при тех же условиях (геометрия, d-функции, массы) — для частот такая сверка здесь ещё не выполнена.</div></div>
+<div class="tq"><p class="qt"><span>Ответы к заданиям на страницах проверяются той же программой, что делает расчёт. Что гарантирует такая самопроверка?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Только согласие ответа с программой</button><button type="button" class="opt">Правильность программы</button><button type="button" class="opt">Правильность метода</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Только то, что ответ студента согласован с программой. Ошибку самой программы она не заметит: для этого нужны независимые эталоны, как в разделах 1–4.</div></div>
+</div></details></section>
+<script src="js/validation.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="val";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/validation.js"></script>
+
+</body>
+</html>

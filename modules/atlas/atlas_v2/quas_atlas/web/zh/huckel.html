@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="ethene,butadiene,benzene,naphthalene,pyridine,pyrrole,furan">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>休克尔方法</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/huckel.css">
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/addon.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-huckel-g.webp"><!--pose:end-->
+<h1>休克尔方法</h1>
+<p class="lead">平面共轭分子的 π 电子体系：每个原子提供一个 p 轨道，库仑积分 α、相邻原子间的共振积分 β（β &lt; 0），忽略重叠。选择一个分子或自行搭建；点击原子可改变其类型（C → N → O），点击能级可显示对应轨道。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>在 Hückel 方法中 π 体系只由原子的连接方式决定：原子上为 α，相邻原子之间为 β。</li><li>分子轨道系数给出电荷、键级、离域能和反应活性指数。</li><li>4n + 2 规则来自 Frost 圆上能级的填充。</li><li>电荷（电荷控制）与前线轨道（轨道控制）可能指向不同的反应中心。</li><li>电负性 χ = (I + A)/2 和硬度 η = (I − A)/2 是能量对电子数的导数；福井函数 f⁺ 和 f⁻ 指出分子在何处接受或给出电子——在休克尔方法中即 LUMO 和 HOMO 密度。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>Hückel 方法</summary><dl><dt>计算的是什么</dt><dd>共轭分子的 π 轨道、电荷和键级。</dd><dt>采用了哪些近似</dt><dd>只考虑 π 电子；参数 α 和 β；不考虑相邻轨道的重叠。</dd><dt>能得出什么结论</dt><dd>节点结构和趋势——可以；能量——只能以 β 为单位。</dd></dl></details><!--lim:end-->
+<section class="controls" aria-label="选择分子">
+  <div class="crow"><span class="l">链</span><span class="grp" data-g="chain"></span></div>
+  <div class="crow"><span class="l">环</span><span class="grp" data-g="ring"></span></div>
+  <div class="crow"><span class="l">稠环与支链</span><span class="grp" data-g="fused"></span></div>
+  <div class="crow"><span class="l">含杂原子</span><span class="grp" data-g="het"></span></div>
+  <div class="crow"><span class="l">自定义分子</span><span class="grp"><button class="chip" type="button" id="bChain">链</button><button class="chip" type="button" id="bRing">环</button><input type="range" id="nAt" min="2" max="10" step="1" aria-label="原子数"><span class="val" id="nAtV"></span></span></div>
+  <div class="crow"><span class="l">粒子电荷</span><span class="grp" id="chg" role="group" aria-label="电荷"></span><span class="hint" id="neTxt"></span></div>
+</section>
+<div class="work" style="grid-template-columns:minmax(0,1.05fr) minmax(0,0.95fr)">
+  <div class="panel">
+    <div class="sel-row" role="tablist" aria-label="在分子上显示什么"><button class="chip" type="button" data-v="mo">轨道</button><button class="chip" type="button" data-v="diag">分子图</button><button class="chip" type="button" data-v="react">反应活性</button></div>
+    <svg id="mol" viewBox="0 0 480 340" role="img" aria-label="分子"></svg>
+    <div class="legend" id="molLeg"></div>
+    <div class="status" id="molTxt"></div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">π-MO 能级：E = α + xβ；下方为成键轨道，上方为反键轨道</div>
+    <svg id="lev" viewBox="0 0 440 440" role="img" aria-label="能级图" style="touch-action:manipulation"></svg>
+    <div class="sel-row"><button class="btn" type="button" id="moPrev" aria-label="上一个 MO">◀</button><span class="val" id="moName" style="min-width:12ch;text-align:center"></span><button class="btn" type="button" id="moNext" aria-label="下一个 MO">▶</button><button class="chip" type="button" id="toH">HOMO</button><button class="chip" type="button" id="toL">LUMO</button></div>
+    <div class="kvt" id="sum"></div>
+  </div>
+</div>
+<section class="panel" aria-labelledby="hT">
+  <h2 id="hT">数值</h2>
+  <div class="tabs" role="tablist"><button class="tab" role="tab" type="button" data-t="coef">MO 系数</button><button class="tab" role="tab" type="button" data-t="det">久期行列式</button><button class="tab" role="tab" type="button" data-t="atoms">原子与键</button></div>
+  <div id="tpane" style="display:flex;flex-direction:column;gap:10px"></div>
+</section>
+<section class="panel" aria-labelledby="hP">
+  <h2 id="hP">杂原子参数</h2>
+  <p class="small">α<sub>X</sub> = α + hβ，β<sub>CX</sub> = kβ（施特赖特维泽参数）。h &gt; 0 的杂原子电负性大于碳：其能级更低，其上的电子密度更高。向体系提供孤对电子的原子（吡咯型 N、呋喃型 O）贡献 2 个 π 电子。</p>
+  <div class="tablewrap" id="parTab"></div>
+</section>
+<section class="panel addon" aria-labelledby="hReact">
+  <h2 id="hReact">全局指数与福井函数</h2>
+  <p class="hint">把能量作为电子数的函数 E(N)，用过 E(N − 1)、E(N)、E(N + 1) 的抛物线近似，即用电离能 I 和电子亲和能 A。其斜率为化学势 μ = −χ，曲率为硬度 η。</p>
+  <div class="tablewrap"><table class="tbl" id="gTab"></table></div>
+  <div class="cin"><label>自定义分子：I，eV（此处为乙烯）<input id="gI" inputmode="decimal" value="10.51"></label><label>A，eV（乙烯阴离子不稳定）<input id="gA" inputmode="decimal" value="-1.76"></label></div>
+  <p class="status note" id="gNote"></p>
+  <h3>休克尔方法中的福井函数</h3>
+  <div class="crow"><span class="l">分子</span><span class="grp" id="fG" role="group" aria-label="分子"></span></div>
+  <div class="tablewrap"><table class="tbl" id="fTab"></table></div>
+  <p class="hint" id="fNote"></p>
+</section>
+<section class="panel addon" aria-labelledby="hSemi">
+  <h2 id="hSemi">从休克尔到 xtb：半经验方法</h2>
+  <p class="hint">休克尔方法是近似方法阶梯的第一级。扩展休克尔方法包含全部价轨道和重叠；CNDO、INDO 和 NDDO（MNDO、AM1、PM3、PM7）引入双电子积分，但忽略不同原子间的微分重叠；GFN2-xTB 是含电荷、多极和 D4 色散的紧束缚方法，覆盖到 Rn 的整个周期表。各层次保留的积分数：</p>
+  <div class="crow"><span class="l">示例</span><span class="grp" id="sG" role="group" aria-label="示例"></span></div>
+  <div class="cin"><label>重原子数（C–F）<input id="sn" inputmode="numeric" value="6"></label><label>H 原子数<input id="sm" inputmode="numeric" value="6"></label></div>
+  <div class="tablewrap"><table class="tbl" id="sTab"></table></div>
+  <p class="status note" id="sNote"></p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">π 轨道系数的符号如何决定反应能否进行？</span><a class="nqA" href="wh.html" data-goto="wh">π 轨道与周环反应 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>丁二烯：比较 1–2 和 2–3 的 π 键级。这对键长说明了什么？</span></p>
+<p class="olab">2–3 π 键级</p><div class="opts" role="group"><button type="button" class="opt">0</button><button type="button" class="opt" data-ok="1">0.447</button><button type="button" class="opt">1</button><button type="button" class="opt">0.894</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>p₁₂ = 0.894，p₂₃ = 0.447：中间的键具有部分双键性质。估算键长为 1.356 和 1.437 Å——两端的键比乙烯中的长，中间的键比单键短。离域能 0.472β。</div></div>
+<div class="tq"><p class="qt"><span>烯丙基：切换电荷 +1、0、−1。能级有何变化？原子上的电荷又有何变化？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">能级改变</button><button type="button" class="opt">电荷平均分布在三个原子上</button><button type="button" class="opt" data-ok="1">能级不变，只有端位原子上的电荷改变</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>能级不变（α + 1.414β、α、α − 1.414β），只有非键 MO 的占据数改变。该轨道在中心原子上有节点（两端系数为 ±0.707），因此阳离子的 +0.5 电荷和阴离子的 −0.5 电荷只分布在端位原子上。</div></div>
+<div class="tq"><p class="qt"><span>苯与环丁二烯：比较离域能以及弗罗斯特圆上能级的填充情况。</span></p>
+<div class="opts" role="group"><button type="button" class="opt">两者都是芳香性的</button><button type="button" class="opt" data-ok="1">苯：离域能 = 2β；环丁二烯：离域能 = 0，双自由基</button><button type="button" class="opt">环丁二烯的离域能比苯大</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>苯：6 = 4n + 2 个电子，所有成键 MO 均被填满，离域能 = 2β。环丁二烯：4 = 4n，两个电子位于能量为 α 的简并轨道对上，离域能 = 0，按休克尔方法为双自由基（反芳香性）。</div></div>
+<div class="tq"><p class="qt"><span>环戊二烯基：什么电荷能使体系具有芳香性？比较阳离子和阴离子。</span></p>
+<div class="opts" role="group"><button type="button" class="opt">阳离子（+1）</button><button type="button" class="opt" data-ok="1">阴离子（−1）</button><button type="button" class="opt">中性自由基</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>阴离子：6 个 π 电子，闭壳层，离域能 = 2.472β——这就是环戊二烯酸性较强的原因。阳离子：4 个电子，简并轨道对半充满，有两个未成对电子。</div></div>
+<div class="tq"><p class="qt"><span>萘：亲电试剂和自由基会进攻哪里？哪根键最短？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">两者都进攻 α 位</button><button type="button" class="opt">亲电试剂进攻 α 位，自由基进攻 β 位</button><button type="button" class="opt">两者都进攻 β 位</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>进攻 α 位（1、4、5、8）：HOMO 密度 0.181，而 β 位为 0.069；自由价 0.453，而 β 位为 0.404。最短的键是 1–2（p = 0.725，≈ 1.387 Å）。</div></div>
+<div class="tq"><p class="qt"><span>薁是萘的同分异构体。观察分子图：它的偶极矩从何而来？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">五元环带正电，七元环带负电</button><button type="button" class="opt" data-ok="1">五元环带负电，七元环带正电</button><button type="button" class="opt">按休克尔方法偶极矩为零</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>五元环带负电（C1 和 C3 上为 −0.173），七元环带正电（C4 和 C8 上为 +0.145，C6 上为 +0.130）：相当于环戊二烯基阴离子与䓬鎓阳离子的组合。亲电试剂进攻 C1/C3，亲核试剂进攻七元环。</div></div>
+<div class="tq"><p class="qt"><span>丙烯醛的亲核进攻：比较“前线轨道”和“π 电荷”两种判据。</span></p>
+<div class="opts" role="group"><button type="button" class="opt">两个判据都指向 C1</button><button type="button" class="opt">两个判据都指向 C3</button><button type="button" class="opt" data-ok="1">按 LUMO——C3（1,4-加成），按电荷——C1（1,2-加成）</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>按 LUMO 判断——C3 原子（c² = 0.431），即 1,4-加成，是软亲核试剂的典型反应。按电荷判断——羰基碳 C1（q = +0.333），即硬亲核试剂的 1,2-加成。两种判据分别描述反应的轨道控制和电荷控制。</div></div>
+<div class="tq"><p class="qt"><span>选择苯，点击原子 1，把它变成吡啶型氮。电荷如何变化？亲核试剂现在会进攻哪里？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">进攻 3 位</button><button type="button" class="opt" data-ok="1">进攻 2 位和 4 位</button><button type="button" class="opt">进攻氮原子</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>氮上为 −0.195，C2/C6 上为 +0.077，C4 上为 +0.050，C3/C5 上几乎为零。亲核试剂进攻 2 位和 4 位，亲电试剂（按电荷）进攻 3 位：吡啶正是如此。</div></div>
+<div class="tq"><p class="qt"><span>“全局指数”：表中哪个原子的马利肯电负性最大，其硬度是多少？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Cl：χ = 8.3，η = 4.7 eV</button><button type="button" class="opt" data-ok="1">F：χ = 10.4，η = 7.0 eV</button><button type="button" class="opt">O：χ = 7.5，η = 6.1 eV</button><button type="button" class="opt">H：χ = 7.2，η = 6.4 eV</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>氟：χ = (17.42 + 3.40)/2 = 10.41 eV，η = (17.42 − 3.40)/2 = 7.01 eV——电负性最大，也是最硬的原子之一。氯电负性较小、较软（η = 4.68 eV）。</div></div>
+<div class="tq"><p class="qt"><span>丙烯醛 CH₂=CH–CH=O 的福井函数：按最大 f⁺，亲核试剂进攻哪个原子？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">O</button><button type="button" class="opt">Cα</button><button type="button" class="opt" data-ok="1">Cβ（末端 CH₂）</button><button type="button" class="opt">所有原子相同</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>Cβ：f⁺ = 0.43，而羰基碳为 0.33。这是共轭（迈克尔）加成；软亲核试剂进攻 Cβ，硬亲核试剂进攻羰基碳（电荷控制）。</div></div>
+</div></details></section>
+<script src="js/huckel.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="huckel";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/huckel.js"></script>
+
+<script src="js/huckel2.js"></script>
+</body>
+</html>

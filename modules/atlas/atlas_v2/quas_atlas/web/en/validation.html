@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,ammonia,hf">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Checking the calculations</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/val.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+
+
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-validation-g.webp"><!--pose:end-->
+<h1>Checking the calculations</h1>
+<p class="lead">The pages on Bader theory, intermolecular interactions and geometry optimisation compute for real: integrals over Gaussian functions, Hartree–Fock, MP2. But the answers to the exercises were obtained with the same program, so they test the student, not the program. The program is tested against independent references: published results of other programs for the same molecules, geometries and basis sets. Such control points are collected below; each can be recomputed right in the browser.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>Self-checking the exercises with the same program does not test the program itself: that requires independent references.</li><li>Agreement with independent references confirms the correctness of the checked calculations, to the stated accuracy and only for the checked cases; it says nothing about the accuracy of the method itself.</li><li>The difference from experiment comes from errors of the method, the basis and the model (for example, the harmonic approximation).</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> the program is tested, not the method</summary><dl><dt>What is computed</dt><dd>RHF energies, MP2, the dipole moment and charges, compared with published results; geometry and frequencies, only a consistency check.</dd><dt>Which approximations are made</dt><dd>The same geometries, basis sets and methods as in the references.</dd><dt>What can be concluded</dt><dd>Agreement confirms the correctness of the checked calculations; it may not reveal an error in other cases, and it does not remove the method and basis errors.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Hartree–Fock energies</h2>
+  <p class="small">The reference is the tables of the Szabo and Ostlund textbook “Modern Quantum Chemistry” (ch. 3): RHF energies at the same geometries and in the same basis sets, to 0.001 E<sub>h</sub>. Agreement to the last digit of the table confirms that in these calculations the basis, the integrals and the SCF procedure work correctly.</p>
+  <div class="crow"><span class="row"><button class="btn primary" type="button" id="bRun">Recompute in the browser</button><span class="val" id="runV"></span></span></div>
+  <div class="tablewrap" id="tE"></div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. A detailed control point: H₂O in the STO-3G basis</h2>
+  <p class="small">The reference is the teaching set of quantum chemistry programming exercises by the Crawford group (Virginia Tech, “Programming Projects”, projects 3 and 4): the same geometry, printed to 12 digits. The energy, the MP2 correction, the dipole moment (the first moment of the density) and the Mulliken charges are compared.</p>
+  <div class="tablewrap" id="tC"></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">3. Geometry and frequencies of H₂O, HF/6-31G*</h2>
+  <p class="small">The minimum was found by this program over the bond length and angle (C<sub>2v</sub> symmetry); the frequencies come from the full Cartesian Hessian (numerical second derivatives of the energy, 9 × 9) after separating translations and rotations. All three vibrational frequencies are real, including the antisymmetric stretch, so this is a minimum in all coordinates. The calculation is long (about 200 SCF calculations), so the result is given ready-made. Unlike sections 1 and 2, this is a consistency check, not a comparison with an external reference.</p>
+  <div class="tablewrap" id="tF"></div>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">4. Other programs on the pages</h2>
+  <p class="small">The pages on H₂, SCF and helium run separate, simpler programs. Their control points are known exactly or analytically.</p>
+  <div class="tablewrap" id="tO"></div>
+</section>
+<section class="panel" aria-labelledby="h5s">
+  <h2 id="h5s">5. What such a check confirms and what it does not</h2>
+  <p class="small">Agreement with independent references within their precision (0.001 E<sub>h</sub> for the Szabo–Ostlund tables, 10⁻⁵ E<sub>h</sub> or better for the Crawford set) confirms the correctness of the checked calculations: for these molecules, geometries and basis sets the basis functions, integrals, SCF iterations and MP2 formulas work correctly. It is not a proof that the whole program is correct: the control points may miss an error in another type of basis function, at an unchecked geometry or in a difficult convergence regime. Nor does agreement say anything about how good the equations themselves are. The HF/6-31G* energy is reproduced exactly, yet it differs from the exact energy of the molecule by about 1100 kJ/mol (about 0.43 hartree: correlation and basis incompleteness), and HF frequencies are too high by about 10 %. Program errors, method errors and basis errors must be told apart: see the “Three kinds of error” exercise on the “H₂ dissociation” page.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">The program computes correctly. Where then does the discrepancy with experiment and with the exact energy come from?</span><a class="nqA" href="h2.html" data-goto="h2">H₂ dissociation →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Section 1: for N₂ and CO the energies in the 6-31G* and 6-31G** basis sets are the same. Why?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">N₂ and CO contain no hydrogen, and 6-31G** adds functions only on H</button><button type="button" class="opt">It is a program error</button><button type="button" class="opt">The energy does not depend on the basis</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The 6-31G** basis differs from 6-31G* only by p functions on the hydrogen atoms. N₂ and CO contain no hydrogen, so for them it is one and the same basis.</div></div>
+<div class="tq"><p class="qt"><span>Section 3: the program gives 4189 cm⁻¹, while experiment gives 3756 cm⁻¹ (harmonic value 3943). Can this comparison tell whether the program is wrong?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">No: the discrepancy contains method, basis and anharmonicity errors</button><button type="button" class="opt">Yes: the program overestimates the frequencies</button><button type="button" class="opt">The experiment is inaccurate</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>No, it cannot be determined from this comparison. The discrepancy with experiment includes the error of the HF method (no correlation), basis incompleteness and anharmonicity; it does not separate a program error from these. Testing the program needs another calculation by the same method under the same conditions (geometry, d functions, masses), and such a comparison for the frequencies has not been done here yet.</div></div>
+<div class="tq"><p class="qt"><span>The answers to the exercises on the pages are checked by the same program that does the calculation. What does such a self-check guarantee?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Only that the answer agrees with the program</button><button type="button" class="opt">That the program is correct</button><button type="button" class="opt">That the method is correct</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Only that the answer of the student agrees with the program. It will not notice an error of the program itself: that requires independent references, as in sections 1–4.</div></div>
+</div></details></section>
+<script src="js/validation.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="val";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/validation.js"></script>
+
+</body>
+</html>

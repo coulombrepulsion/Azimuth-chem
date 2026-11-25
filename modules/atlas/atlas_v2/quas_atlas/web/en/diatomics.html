@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="n2,hf">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>MO diagrams of diatomic molecules</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/mo.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-mo-g.webp"><!--pose:end-->
+<h1>MO diagrams of diatomic molecules</h1>
+<p class="lead">Molecular orbitals are built as linear combinations of atomic orbitals (LCAO). Orbitals of the same symmetry and similar energy combine, and electrons fill the MOs according to the Pauli principle and Hund’s rule. The bond order and magnetic properties follow directly from the diagram. The energies come from a simple model (the extended Hückel method in a valence basis), so the diagram is qualitative.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>MOs are built from AOs of the same symmetry and similar energy: bonding MOs lie below the parent AOs, antibonding ones above.</li><li>The bond order <span class=fr><span>bonding − antibonding</span><span>2</span></span> correlates with bond length and strength.</li><li>The order of σ2p and π2p is set by s–p mixing: strong in B₂–N₂ and weak in O₂ and F₂.</li><li>Unpaired electrons in degenerate MOs explain the paramagnetism of O₂ and B₂.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> a qualitative MO diagram</summary><dl><dt>What is computed</dt><dd>MO diagrams of diatomic molecules, bond order, magnetic properties.</dd><dt>Which approximations are made</dt><dd>The extended Hückel method in a valence basis.</dd><dt>What can be concluded</dt><dd>The order of the levels, s–p mixing and the bond order, qualitatively; the energies are not quantitative.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Diagram</h2>
+  <div class="crow"><span class="l">Homonuclear</span><span class="row" id="homG" role="group" aria-label="Homonuclear molecules"></span></div>
+  <div class="crow"><span class="l">Ions and heteronuclear</span><span class="row" id="hetG" role="group" aria-label="Ions and heteronuclear molecules"></span></div>
+  <div class="crow"><span class="l">Custom pair</span><select class="selx" id="selA" aria-label="Atom A"></select><select class="selx" id="selB" aria-label="Atom B"></select>
+    <span class="hint">charge</span><button class="btn" id="qDn" type="button" aria-label="Decrease charge">−</button><span class="val" id="qV">0</span><button class="btn" id="qUp" type="button" aria-label="Increase charge">+</button></div>
+  <div class="crow"><span class="l">s–p mixing</span><span class="row" id="mixG" role="group" aria-label="s–p mixing"></span></div>
+  <div class="work">
+    <div class="panel" style="padding:8px 10px">
+      <svg id="dia" viewBox="0 0 520 520" role="img" aria-label="MO energy diagram"></svg>
+      <p class="hint">Click an MO level to see its composition and shape.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="cfg" id="cfg"></div>
+      <div class="tablewrap" id="sumTab"></div>
+      <div class="status" id="st1"></div>
+      <div class="panel" style="padding:8px 10px">
+        <div class="ptitle" id="moT"></div>
+        <svg id="shape" viewBox="0 0 420 170" role="img" aria-label="Sketch of the selected MO"></svg>
+        <div class="bars" id="comp"></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. Bond order and molecular properties</h2>
+  <p class="small">The higher the bond order, the shorter and stronger the bond. The bond order from the diagram is compared with the experimental bond lengths R<sub>e</sub> and dissociation energies D₀. Click a row to open the diagram of that species.</p>
+  <div class="two">
+    <div class="tablewrap" id="propTab"></div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="ptitle">Bond length and dissociation energy vs. bond order</div>
+      <svg id="boPlot" viewBox="0 0 460 300" role="img" aria-label="Bond length and dissociation energy as functions of bond order"></svg>
+      <div class="legend"><span><i class="box" style="background:var(--accent)"></i>D₀, eV (left axis)</span><span><i class="box" style="background:var(--warn)"></i>R<sub>e</sub>, Å (right axis)</span></div>
+    </div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">How does the symmetry of the frontier orbitals decide whether a reaction goes?</span><a class="nqA" href="wh.html" data-goto="wh">π orbitals and reactions →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises for exploring the page, plus a trainer. Do the action on the page and answer — your answer is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>O₂: how many unpaired electrons?</span></p>
+<p class="olab">Unpaired electrons</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">2</button><button type="button" class="opt">4</button><button type="button" class="opt">1</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>2: twelve valence electrons, and the last two occupy the two degenerate π*2p orbitals one each with parallel spins (Hund’s rule). That is why O₂ is paramagnetic — liquid oxygen is attracted by a magnet. The valence-bond picture with a double bond O=O does not explain this.</div></div>
+<div class="tq"><p class="qt"><span>What is the bond order of O₂⁻?</span></p>
+<p class="olab">Bond order</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">1.5</button><button type="button" class="opt">2.5</button><button type="button" class="opt">1</button><button type="button" class="opt">2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>1.5: (8 − 5) / 2. The added electron goes into an antibonding π* orbital, and the bond lengthens from 1.21 to 1.35 Å.</div></div>
+<div class="tq"><p class="qt"><span>Select B₂ and switch off s–p mixing. What would the magnetic properties of B₂ be?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Paramagnetic</button><button type="button" class="opt" data-ok="1">Diamagnetic</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Diamagnetic: without mixing σ2p lies below π2p, and the last two electrons pair up in σ2p. Experiment shows that B₂ is paramagnetic (term ³Σ<sub>g</sub><sup>−</sup>) — direct evidence of s–p mixing.</div></div>
+<div class="tq"><p class="qt"><span>How does the bond strength change on ionization O₂ → O₂⁺ (compare with N₂ → N₂⁺)?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">It weakens, as in N₂</button><button type="button" class="opt" data-ok="1">It strengthens, unlike N₂</button><button type="button" class="opt">Does not change</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>O₂ loses an electron from an antibonding π* orbital: the bond order rises from 2 to 2.5, the bond shortens (1.208 → 1.116 Å) and strengthens (D₀ 5.12 → 6.66 eV). N₂ loses an electron from the bonding σ2p, and the bond weakens (order 3 → 2.5).</div></div>
+<div class="tq"><p class="qt"><span>CO: on which atom is the HOMO (σ2p) mainly localized?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">On carbon</button><button type="button" class="opt">On oxygen</button><button type="button" class="opt">Equally on both atoms</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>On carbon: about 70 % of the MO comes from the 2s and 2p<sub>z</sub> of the C atom. It is the lone pair of carbon, which is why CO binds to metals through C rather than O.</div></div>
+<div class="tq"><p class="qt"><span>What is the bond order of C₂?</span></p>
+<p class="olab">Bond order</p><div class="opts" role="group"><button type="button" class="opt">4</button><button type="button" class="opt">1</button><button type="button" class="opt">3</button><button type="button" class="opt" data-ok="1">2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>2: eight valence electrons (σ2s)² (σ*2s)² (π2p)⁴. Both bonding pairs are π bonds and there is no σ bond “as such”; this is one of the consequences of s–p mixing.</div></div>
+<!--self:start--><div class="selfBox"><h3 id="h3s">Test yourself</h3>
+  <p class="small">Build the diagram for the species below in your head and find the bond order and the number of unpaired electrons. For B₂, C₂ and N₂, remember s–p mixing.</p>
+  <div class="row"><b id="qMol" style="font-family:var(--f-display);font-size:19px"></b><button class="btn" id="qNew" type="button">Another species</button></div>
+  <div class="quiz">
+    <label><span>Bond order</span><input id="q0" inputmode="decimal" autocomplete="off"></label>
+    <label><span>Unpaired electrons</span><input id="q1" inputmode="numeric" autocomplete="off"></label>
+  </div>
+  <div class="row"><button class="btn primary" id="qChk" type="button">Check</button><button class="btn" id="qShow" type="button">Show solution</button></div>
+  <div class="status" id="qRes">Enter your answers and press “Check”.</div>
+</div><!--self:end--></div></details></section>
+<script src="js/diatomics.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="mo";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/diatomics.js"></script>
+
+</body>
+</html>

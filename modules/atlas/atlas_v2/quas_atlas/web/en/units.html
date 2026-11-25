@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Atomic units</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/au.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-au-g.webp"><!--pose:end-->
+<h1>Atomic units</h1>
+<p class="lead">In atomic units the electron mass, its charge, Planck’s constant ħ and 4πε₀ are equal to one. The equations lose their constants, and typical quantities in atoms and molecules become numbers of order one. Quantum chemistry programs compute in atomic units, and their output is usually in them too.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>In atomic units ħ = m<sub>e</sub> = e = 4πε₀ = 1, and the equations of quantum chemistry are written without constants.</li><li>The unit of length is the bohr (0.529 Å), of energy the hartree (27.2 eV ≈ 2625 kJ/mol).</li><li>Chemical energies are small fractions of a hartree, while total molecular energies are tens to hundreds of hartree.</li><li>Unit conversion is a routine step when reading program output files.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> exact definitions of the units</summary><dl><dt>What is computed</dt><dd>Conversion of quantities between atomic units and SI, energy scales in chemistry.</dd><dt>Which approximations are made</dt><dd>There are none: atomic units are just a choice of scale (ħ, m<sub>e</sub>, e and 4πε₀ are taken as 1), not a model. The conversions to SI use the CODATA 2018 recommended values of the constants; an error is possible only in their last digits.</dd><dt>What can be concluded</dt><dd>The conversions are exact; the “typical” energies on the scale are orders of magnitude.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">One Hamiltonian, two ways to write it</h2>
+  <div class="eq">
+    <div class="eqb"><div class="t">hydrogen atom in SI</div><span class="big">Ĥ = −<span class=fr><span>ħ²</span><span>2m<sub>e</sub></span></span> ∇² − <span class=fr><span>e²</span><span>4πε₀r</span></span></span></div>
+    <div class="eqb"><div class="t">in atomic units</div><span class="big">Ĥ = −<span class=fr><span>1</span><span>2</span></span> ∇² − <span class=fr><span>1</span><span>r</span></span></span></div>
+  </div>
+  <div class="tablewrap" id="baseTab"></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Where the bohr and the hartree come from</h2>
+  <p class="small">An estimate of the size of the hydrogen atom from the uncertainty relation: if the electron is confined to a region of radius r, its momentum is p ~ <span class=fr><span>ħ</span><span>r</span></span> and its kinetic energy ~ <span class=fr><span>ħ²</span><span>2m<sub>e</sub>r²</span></span>. Compression gains in the attraction −<span class=fr><span>e²</span><span>4πε₀r</span></span> but loses in kinetic energy. The sum has its minimum at r = a₀ = <span class=fr><span>4πε₀ħ²</span><span>m<sub>e</sub>e²</span></span>: this is the bohr, and the energy at the minimum is −½ hartree.</p>
+  <div class="crow"><span class="l">Nuclear charge Z</span><input type="range" id="Z" min="1" max="6" step="1" style="width:200px" aria-label="Nuclear charge"><span class="val" id="Zv"></span></div>
+  <div class="crow"><span class="l">Radius r</span><input type="range" id="r" min="0.05" max="2" step="0.005" style="width:280px" aria-label="Radius"><span class="val" id="rv"></span><button class="btn primary" type="button" id="rMin">Go to minimum</button></div>
+  <div class="crow"><span class="l">Plot units</span><span class="grp" id="uG" role="group" aria-label="Units"></span></div>
+  <div class="two"><svg id="eChart" viewBox="0 0 540 300" role="img" aria-label="Energy versus radius"></svg><div style="display:flex;flex-direction:column;gap:8px"><div class="kvt" id="eKv"></div><div class="status" id="t3"></div></div></div>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">Energy scale in chemistry</h2>
+  <div class="crow"><span class="l">Show in</span><span class="grp" id="sG" role="group" aria-label="Scale units"></span></div>
+  <svg id="scale" viewBox="0 0 900 420" role="img" aria-label="Characteristic energies on a logarithmic scale"></svg>
+  <p class="hint">Logarithmic scale: each division is a factor of 10. Energies are taken in absolute value; the values are approximate. kT and “chemical accuracy” are highlighted in orange; it is convenient to compare everything else with them.</p>
+</section>
+<section class="panel convP" aria-labelledby="h2s">
+  <details class="convD"><summary><h2 id="h2s">Converter</h2></summary>
+<!-- below the energy scale and collapsed by default -->
+  <div class="crow"><span class="l">Quantity</span><span class="grp" id="catG" role="group" aria-label="Quantity"></span></div>
+  <div class="conv"><input id="cv" value="1" inputmode="decimal" aria-label="Value"><select id="cu" aria-label="Unit"></select></div>
+  <div class="tablewrap" id="convTab"></div>
+  <p class="hint">Constant values are CODATA 2018. The decimal separator may be a comma or a period.</p>
+  </details>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">Which system can be solved exactly, and what follows from it?</span><a class="nqA" href="hydrogen.html" data-goto="hat">Hydrogen atom →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Convert 1 hartree to eV and kJ/mol.</span></p>
+<p class="olab">1 hartree, eV</p><div class="opts" role="group"><button type="button" class="opt">627.5</button><button type="button" class="opt" data-ok="1">27.211</button><button type="button" class="opt">2625.5</button><button type="button" class="opt">13.606</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>27.211 eV and 2625.5 kJ/mol (627.5 kcal/mol). Worth remembering: 1 eV ≈ 96.5 kJ/mol.</div></div>
+<div class="tq"><p class="qt"><span>The C–C bond energy is ≈ 348 kJ/mol. How much is that in hartrees?</span></p>
+<p class="olab">Bond energy, hartree</p><div class="opts" role="group"><button type="button" class="opt">133</button><button type="button" class="opt">0.0133</button><button type="button" class="opt">3.6</button><button type="button" class="opt" data-ok="1">0.133</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>≈ 0.133 E<sub>h</sub>. Chemical energies are hundredths and tenths of a hartree, while total energies of molecules are tens and hundreds of hartrees. That is why total energies are printed with 6–8 decimal places.</div></div>
+<div class="tq"><p class="qt"><span>What is kT at 298 K in hartrees and in kJ/mol?</span></p>
+<p class="olab">kT, kJ/mol</p><div class="opts" role="group"><button type="button" class="opt">0.025</button><button type="button" class="opt">8.31</button><button type="button" class="opt" data-ok="1">2.48</button><button type="button" class="opt">0.59</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>9.4·10⁻⁴ E<sub>h</sub> = 2.48 kJ/mol. “Chemical accuracy”, 1 kcal/mol = 1.6·10⁻³ E<sub>h</sub>, is less than 2 mE<sub>h</sub>.</div></div>
+<div class="tq"><p class="qt"><span>In the section “Where the bohr and the hartree come from”, click “Go to minimum” for Z = 1 and Z = 2. How do the size and the energy grow?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Size ∝ Z, energy ∝ Z</button><button type="button" class="opt" data-ok="1">Size ∝ <span class=fr><span>1</span><span>Z</span></span>, energy ∝ Z²</button><button type="button" class="opt">Size unchanged, energy ∝ Z²</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Z = 1: r = 1 bohr, E = −0.5 E<sub>h</sub> = −13.6 eV. Z = 2 (He⁺): r = 0.5 bohr, E = −2 E<sub>h</sub> = −54.4 eV. Size ∝ <span class=fr><span>1</span><span>Z</span></span>, energy ∝ Z².</div></div>
+<div class="tq"><p class="qt"><span>The dipole moment of water is 1.85 D. How much is that in atomic units?</span></p>
+<p class="olab">Dipole moment, a.u.</p><div class="opts" role="group"><button type="button" class="opt">4.70</button><button type="button" class="opt" data-ok="1">0.73</button><button type="button" class="opt">0.39</button><button type="button" class="opt">1.85</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>≈ 0.73 a.u. (1 a.u. = e·a₀ = 2.54 D). Programs print the dipole moment in both units.</div></div>
+<div class="tq"><p class="qt"><span>How many electron masses are in 1 u (atomic mass unit)? How is this related to the Born–Oppenheimer approximation?</span></p>
+<p class="olab">Electron masses</p><div class="opts" role="group"><button type="button" class="opt">931.5</button><button type="button" class="opt">1</button><button type="button" class="opt">1836.2</button><button type="button" class="opt" data-ok="1">1822.9</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>1822.9. Even a proton is 1836 times heavier than an electron, so the nuclei move much more slowly and the electrons have time to adjust to their positions.</div></div>
+</div></details></section>
+<script src="js/units.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="au";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/units.js"></script>
+
+</body>
+</html>

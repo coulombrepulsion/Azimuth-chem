@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Molecular Hamiltonian</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/ham.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-ham-g.webp"><!--pose:end-->
+<h1>Molecular Hamiltonian</h1>
+<p class="lead">The full nonrelativistic Hamiltonian of a molecule consists of five types of terms: the kinetic energies of the nuclei and electrons, electron–nucleus attraction, electron repulsion and nuclear repulsion. Choose a molecule — the page writes the Hamiltonian in atomic units and counts the terms of each type.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>The molecular Hamiltonian contains the kinetic energy of electrons and nuclei and all Coulomb interactions.</li><li>The number of terms grows as the square of the number of particles; electron–electron repulsion is the main difficulty.</li><li>In the Born–Oppenheimer approximation the nuclei are fixed: T<sub>N</sub> is dropped, V<sub>NN</sub> becomes a number, and the electronic problem is solved.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> the exact form of the operator</summary><dl><dt>What is computed</dt><dd>The terms of the full Hamiltonian of the chosen molecule and their number.</dd><dt>Which approximations are made</dt><dd>A non-relativistic Hamiltonian, point nuclei, no spin–orbit interaction.</dd><dt>What can be concluded</dt><dd>The operator is written exactly, but the equation with it can only be solved approximately.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Molecule</h2>
+  <div class="crow"><span class="l">Examples</span><span class="row" id="molG" role="group" aria-label="Example molecules"></span></div>
+  <div class="crow"><span class="l">Your formula and charge</span><input class="fin" id="fIn" value="H₂O" spellcheck="false" aria-label="Molecular formula"><select class="fin" id="qIn" style="width:90px" aria-label="Charge"></select><button class="btn primary" id="bGo" type="button">Write the Hamiltonian</button></div>
+  <p class="hint">Formula: element symbols with numbers, parentheses allowed — for example CH<sub>3</sub>COOH, Fe(C<sub>5</sub>H<sub>5</sub>)<sub>2</sub>, NH<sub>4</sub> with charge +1. Each nucleus is treated as a point charge Z<sub>A</sub>.</p>
+  <div class="status" id="sum"></div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. The Hamiltonian in atomic units</h2>
+  <div class="row"><button class="chip" id="bFull" type="button" aria-pressed="true">Full Hamiltonian</button><button class="chip" id="bEl" type="button" aria-pressed="false">Nuclei fixed (Born–Oppenheimer)</button></div>
+  <div class="ham" id="hamBox"></div>
+  <div class="status" id="hamTxt"></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">3. How many terms</h2>
+  <div class="cnt" id="cnt"></div>
+  <p class="hint">The bar lengths are on a logarithmic scale. Electron repulsion grows as <span class=fr><span>N²</span><span>2</span></span> — this is what makes the many-electron problem hard.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">There are too many terms. Can the motion of the nuclei be separated from that of the electrons?</span><a class="nqA" href="bo.html" data-goto="bo">Born–Oppenheimer and vibrations →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises for exploring the page, plus a trainer. Do the action on the page and answer — your answer is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>CaH₂: how many terms are there in V<sub>ee</sub>?</span></p>
+<p class="olab">Terms in V<sub>ee</sub></p><div class="opts" role="group"><button type="button" class="opt">253</button><button type="button" class="opt" data-ok="1">231</button><button type="button" class="opt">22</button><button type="button" class="opt">462</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>N = 20 + 1 + 1 = 22 electrons; the number of pairs is <span class=fr><span>N(N − 1)</span><span>2</span></span> = <span class=fr><span>22·21</span><span>2</span></span> = 231.</div></div>
+<div class="tq"><p class="qt"><span>Benzene: how many terms are there in V<sub>eN</sub>?</span></p>
+<p class="olab">Terms in V<sub>eN</sub></p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">504</button><button type="button" class="opt">252</button><button type="button" class="opt">42</button><button type="button" class="opt">546</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>N = 6·6 + 6 = 42 electrons, M = 12 nuclei: every electron with every nucleus, N·M = 504.</div></div>
+<div class="tq"><p class="qt"><span>Compare CH₄ and NH₄⁺. What is the same?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Only the number of electrons</button><button type="button" class="opt" data-ok="1">The numbers of terms of all types</button><button type="button" class="opt">Nothing except the number of nuclei</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The numbers of nuclei (5) and electrons (10) are the same, so the numbers of terms of every type coincide too. Only the charges differ: in V<sub>eN</sub> and V<sub>NN</sub> of NH₄⁺ there is Z = 7 instead of 6.</div></div>
+<div class="tq"><p class="qt"><span>Turn on “Nuclei fixed”. Why does V<sub>NN</sub> not enter the electronic Hamiltonian as an operator?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">With fixed nuclei it is a number: it shifts all levels equally</button><button type="button" class="opt">It is negligible compared with V<sub>eN</sub></button><button type="button" class="opt">It is already included in V<sub>eN</sub></button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>For given nuclear coordinates V<sub>NN</sub> is just a number. It shifts all electronic levels equally and does not change the wavefunctions, so it is added to E<sub>el</sub> to give U(R).</div></div>
+<div class="tq"><p class="qt"><span>How many times heavier than an electron is a proton?</span></p>
+<p class="olab">How many times</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">1836</button><button type="button" class="opt">207</button><button type="button" class="opt">43</button><button type="button" class="opt">1823</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>1836 times. That is why nuclei move much more slowly than electrons — the Born–Oppenheimer approximation rests on this.</div></div>
+<div class="tq"><p class="qt"><span>How does the number of terms in V<sub>ee</sub> change if the number of electrons doubles?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Twice as many</button><button type="button" class="opt" data-ok="1">About 4 times as many</button><button type="button" class="opt">It does not change</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>About 4 times: <span class=fr><span>N(N − 1)</span><span>2</span></span> ≈ <span class=fr><span>N²</span><span>2</span></span>. Electron repulsion is the most numerous and the hardest part of the problem.</div></div>
+<!--self:start--><div class="selfBox"><h3 id="h4s">Test yourself</h3>
+  <p class="small">A typical problem: for the molecule below, give the number of electrons and the number of terms of each type in the electronic Hamiltonian and in V<sub>NN</sub>.</p>
+  <div class="row"><b id="qMol" style="font-family:var(--f-display);font-size:19px"></b><button class="btn" id="qNew" type="button">New molecule</button></div>
+  <div class="quiz">
+    <label><span>Electrons N</span><input id="q0" inputmode="numeric" autocomplete="off"></label>
+    <label><span>Terms in T<sub>e</sub></span><input id="q1" inputmode="numeric" autocomplete="off"></label>
+    <label><span>Terms in V<sub>eN</sub></span><input id="q2" inputmode="numeric" autocomplete="off"></label>
+    <label><span>Terms in V<sub>ee</sub></span><input id="q3" inputmode="numeric" autocomplete="off"></label>
+    <label><span>Terms in V<sub>NN</sub></span><input id="q4" inputmode="numeric" autocomplete="off"></label>
+  </div>
+  <div class="row"><button class="btn primary" id="qChk" type="button">Check</button><button class="btn" id="qShow" type="button">Show solution</button></div>
+  <div class="status" id="qRes">Enter the numbers and click “Check”.</div>
+</div><!--self:end--></div></details></section>
+<script src="js/hamiltonian.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="ham";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/hamiltonian.js"></script>
+
+</body>
+</html>

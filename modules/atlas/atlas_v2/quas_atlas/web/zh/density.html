@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,benzene">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>电子密度</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/dens.css">
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-dens-g.webp"><!--pose:end-->
+<h1>电子密度</h1>
+<p class="lead">密度 ρ(r) = Σ P<sub>μν</sub>χ<sub>μ</sub>(r)χ<sub>ν</sub>(r)——与轨道和原子电荷不同，它是可观测量：可以用 X 射线衍射测量。这些图基于 STO-3G 基组下收敛的 RHF 计算（与 SCF 选项卡中相同的 H₂ 和 HeH⁺），所取平面包含键轴。将光标悬停或轻触图上某点，即可查看该点的数值。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>电子密度 ρ(r) 是可观测量：可以测量（X 射线结构分析），也可以计算。</li><li>形变密度 Δρ 显示成键时电子如何重新分布。</li><li>在巴德理论中，依据临界点判断键型：∇²ρ 的符号表明密度是否集中在两核之间。</li><li>静电势显示带电试剂会从哪里靠近。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>最小基组中的 RHF 密度</summary><dl><dt>计算的是什么</dt><dd>H₂ 和 HeH⁺ 的 ρ、Δρ、∇²ρ 和势的图。</dd><dt>采用了哪些近似</dt><dd>HF 方法，STO-3G 基组。</dd><dt>能得出什么结论</dt><dd>密度的形状和拉普拉斯量的符号——定性；临界点处的精确数值取决于方法和基组。</dd></dl></details><!--lim:end-->
+<section class="controls" aria-label="参数">
+  <div class="crow"><span class="l">分子</span><span class="grp" id="molG" role="group" aria-label="分子"></span></div>
+  <div class="crow"><span class="l">距离 R</span><input type="range" id="R" min="0.8" max="5" step="0.01"><span class="val" id="Rv"></span><button class="btn" type="button" id="Req">平衡值</button></div>
+  <div class="crow"><span class="l">显示内容</span><span class="grp" id="viewG" role="group" aria-label="物理量"></span></div>
+  <div class="crow"><span class="l">等值线</span><label class="chk"><input type="checkbox" id="cont" checked> 显示</label></div>
+</section>
+<div class="work" style="grid-template-columns:minmax(0,1.25fr) minmax(0,0.75fr)">
+  <div class="panel">
+    <div class="ptitle" id="mapTitle"></div>
+    <div class="mapwrap"><canvas id="map" width="720" height="440" role="img" aria-label="包含键轴的平面上的分布图"></canvas></div>
+    <div><div class="cbar" id="cbar"></div><div class="cbl" id="cbl"></div></div>
+    <div class="legend" id="mapLeg"></div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">光标所在点</div>
+    <div class="kvt" id="pt"></div>
+    <div class="ptitle" style="margin-top:6px">键临界点</div>
+    <div class="kvt" id="bcp"></div>
+    <div class="status" id="txt"></div>
+  </div>
+</div>
+<section class="panel" aria-labelledby="hProf">
+  <h2 id="hProf">沿键轴</h2>
+  <svg id="prof" viewBox="0 0 900 260" role="img" aria-label="所选物理量沿键轴的剖面"></svg>
+  <div class="legend" id="profLeg"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">密度只有一个——为什么原子电荷会各不相同？</span><a class="nqA" href="aim.html" data-goto="aim">分子中的原子（巴德） →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>平衡 R 下的 H₂：键临界点处 ∇²ρ 的符号是什么，意味着什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">∇²ρ &gt; 0：密度集中在两核之间</button><button type="button" class="opt" data-ok="1">∇²ρ &lt; 0：密度集中在两核之间——共价键</button><button type="button" class="opt">任何键都有 ∇²ρ = 0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>∇²ρ ≈ −0.84 &lt; 0（ρ = 0.256）：密度集中在两核之间——按巴德的观点是共价键。正的拉普拉斯量是闭壳层相互作用的特征。</div></div>
+<div class="tq"><p class="qt"><span>拉伸 H₂。键临界点处的 ∇²ρ 如何变化？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">变得越来越负</button><button type="button" class="opt">不变</button><button type="button" class="opt" data-ok="1">变号为正</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>它变为正（约从 3.4 bohr 起）：原子之间的密度不再集中，类似闭壳层相互作用——原子几乎不再成键。</div></div>
+<div class="tq"><p class="qt"><span>压缩 H₂。为什么强烈压缩时键临界点消失？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">两核处的密度极大值合并，沿键轴不再有极小值</button><button type="button" class="opt">键断裂了</button><button type="button" class="opt">原子核之间排斥更强</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>在约 1.0 bohr 以下，两核处的密度极大值合并，ρ 沿轴不再有极小值。这部分是高斯基组的特性：它在原子核处没有尖点。</div></div>
+<div class="tq"><p class="qt"><span>H₂ 的形变密度：电子在哪里增加、在哪里减少？为什么核本身处的密度也会增加？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">只在键上增加</button><button type="button" class="opt" data-ok="1">在键上和核附近增加，在外侧减少</button><button type="button" class="opt">核附近减少，外侧增加</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>在键上和核附近增加，在分子外侧减少。核处增加是因为分子函数比原子函数更紧缩（ζ = 1.24 对比 1）。Δρ 的积分为零。</div></div>
+<div class="tq"><p class="qt"><span>平衡 R 下的 HeH⁺：为什么在最小基组中没有键临界点？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">He–H 键是纯离子键</button><button type="button" class="opt" data-ok="1">在高斯基组中 H 没有自己的密度极大值</button><button type="button" class="opt">HeH⁺ 中根本没有化学键</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>H 上电子太少，在高斯基组中它没有自己的密度极大值——临界点大约从 1.74 bohr 才出现。精确密度在每个原子核处都有极大值（尖点），所以这是基组的局限，而不是分子的性质。</div></div>
+<div class="tq"><p class="qt"><span>H₂ 的静电势：哪里为负？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">沿分子轴、在原子核外侧</button><button type="button" class="opt">哪里都不为负：分子是中性的</button><button type="button" class="opt" data-ok="1">在赤道平面的远处</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>只在赤道平面远处，距轴约 2.3 bohr 以外（约 −0.003 a.u.）——这是四极矩的体现。沿轴方向势为正。阳离子 HeH⁺ 处处 φ &gt; 0。</div></div>
+</div></details></section>
+<script src="js/density.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="dens";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/density.js"></script>
+
+</body>
+</html>

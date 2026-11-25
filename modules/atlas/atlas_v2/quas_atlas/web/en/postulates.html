@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Postulates of quantum mechanics</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/post.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-post-g.webp"><!--pose:end-->
+<h1>Postulates of quantum mechanics: state, evolution, measurement</h1>
+<p class="lead">A particle in a one-dimensional box of length L is the simplest system that shows all the postulates. The eigenfunctions of the Hamiltonian are ψ<sub>n</sub>(x) = √<span class=fr><span>2</span><span>L</span></span> sin <span class=fr><span>nπx</span><span>L</span></span>, with energies E<sub>n</sub> = n²E₁. Build a state from them, start the time evolution and make measurements.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>A state is described by a wave function; |Ψ|² is the probability density.</li><li>Stationary states do not change in time (apart from an overall phase), while superpositions of states with different energies evolve.</li><li>A measurement gives one of the eigenvalues with probability |c<sub>n</sub>|² and puts the system into the corresponding state; ⟨E⟩ is the average over many measurements.</li><li>Position and momentum cannot both be sharply defined: Δx·Δp ≥ <span class=fr><span>ħ</span><span>2</span></span>.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> exact solutions of a model problem, a qualitative illustration of the postulates</summary><dl><dt>What is computed</dt><dd>A particle in a one-dimensional box: eigenfunctions and energies, time evolution of a superposition, probabilities of measurement outcomes.</dd><dt>Which approximations are made</dt><dd>One dimension; infinitely high walls; an ideal (projective) measurement.</dd><dt>What can be concluded</dt><dd>The postulates are shown exactly, but the numbers belong to the model, not to a particular molecule.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h0s">
+  <h2 id="h0s">The five postulates of quantum mechanics</h2>
+  <div class="post">
+    <div><b>1. State</b>Everything that can be known about the system is contained in the wavefunction Ψ. Here Ψ = Σ c<sub>n</sub>ψ<sub>n</sub>, set by the amplitudes and phases c<sub>n</sub>.<span class="psec">→ section <a href="#h1s">1</a></span></div>
+    <div><b>2. Observables are operators</b>Energy corresponds to Ĥ, position to x̂, momentum to p̂ = −iħ <span class=fr><span>d</span><span>dx</span></span>. The possible measurement results are the eigenvalues of the operator.<span class="psec">→ section <a href="#h4s">4</a></span></div>
+    <div><b>3. Probabilities</b>The probability of obtaining E<sub>n</sub> is |c<sub>n</sub>|². The probability density of finding the particle at x is |Ψ(x)|².<span class="psec">→ sections <a href="#h2s">2</a>, <a href="#h3s">3</a>, <a href="#h5s">5</a></span></div>
+    <div><b>4. Measurement changes the state</b>After a measurement the system is in the eigenstate with the value obtained — repeating the measurement gives the same result.<span class="psec">→ sections <a href="#h2s">2</a>, <a href="#h3s">3</a></span></div>
+    <div><b>5. Evolution</b>Between measurements Ψ changes according to the Schrödinger equation: each ψ<sub>n</sub> acquires the phase e<sup>−iE<sub>n</sub>t/ħ</sup>.<span class="psec">→ section <a href="#h1s">1</a></span></div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. The state and its evolution</h2>
+  <div class="crow"><span class="l">Ready-made states</span><span class="row" id="preG" role="group" aria-label="Ready-made states"></span></div>
+  <div class="amp" id="ampBox"></div>
+  <div class="row"><button class="btn primary" id="bPlay" type="button">▶ Time evolution</button><button class="btn" id="bT0" type="button" title="Back to the moment the state was prepared or measured">t = 0</button>
+    <span class="l hint">Time</span><input type="range" id="tS" min="0" max="1" step="0.001" style="width:240px" aria-label="Time"><span class="val" id="tV"></span></div>
+  <p class="hint" id="t0Hint">Time t is counted from the moment the state was prepared or measured: that is t = 0 (the «t = 0» button returns there). The unit of time T₁ = 2πħ/E₁ is the time in which the phase of the ground state makes a full turn; after T₁ the whole picture repeats. The axes of the plot stay fixed: their limits are chosen so that the function fits at any t.</p>
+  <div class="work">
+    <div class="panel" style="padding:8px 10px">
+      <div class="ptitle">Probability density |Ψ(x, t)|² and Re Ψ</div>
+      <svg id="psiSvg" viewBox="0 0 560 280" role="img" aria-label="Wavefunction in the box"></svg>
+      <div class="legend"><span><i class="box" style="background:var(--lp-bg)"></i>|Ψ|²</span><span><i class="sw" style="border-color:var(--ln);border-top-style:dashed"></i>Re Ψ</span><span><i class="sw" style="border-color:var(--ok)"></i>⟨x⟩</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="tablewrap" id="obsTab"></div>
+      <div class="status" id="st1"></div>
+    </div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. Measuring the energy</h2>
+  <p class="small">The state set in section 1 is the <b>initial</b> one: this is how the system is prepared before the experiment. <b>A single measurement</b> gives one of the values E<sub>n</sub> at random and <i>changes</i> the state: afterwards the system is in ψ<sub>n</sub>, and a repeated measurement gives the same result. So the probabilities |c<sub>n</sub>|² cannot be seen on one system — you need a <b>series</b>: many systems in the same initial state, each measured once. The “Reset” button undoes the effect of the measurement and returns the system to its initial state.</p>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="ptitle">Probabilities of the results |c<sub>n</sub>|² for the current state</div>
+      <svg id="pSvg" viewBox="0 0 520 200" role="img" aria-label="Probabilities of energy values"></svg>
+      <div class="row"><button class="btn primary" id="bME" type="button">Single measurement</button><button class="btn" id="bM100" type="button">Series: 200 identical systems</button><button class="btn" id="bBack" type="button">Reset to the initial state</button></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="ptitle">Histogram of a series of measurements</div>
+      <svg id="hSvg" viewBox="0 0 520 200" role="img" aria-label="Histogram of results"></svg>
+      <div class="status" id="st2">Press “Single measurement”: the result is random, but the probabilities are set by the state.</div>
+    </div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">3. Measuring the position</h2>
+  <p class="small">The device finds the particle with precision σ. A simple “measure and prepare a packet” idealization is used here: the point x₀ is drawn from the original |Ψ|², and the state is replaced by a real Gaussian packet of width σ around x₀, discarding the phase of the original function. In a more general finite-resolution measurement model the original Ψ is multiplied by a Gaussian around x₀ and renormalized, and the statistics of readings account for the device resolution. A narrow packet is a superposition of many ψ<sub>n</sub>, so the energy becomes highly uncertain and the packet spreads in time.</p>
+  <div class="row"><span class="l hint">Device precision σ</span><input type="range" id="sig" min="0.02" max="0.12" step="0.005" style="width:220px" aria-label="Device precision"><span class="val" id="sigV"></span>
+    <button class="btn primary" id="bMX" type="button">Measure the position</button><span class="hint">After a measurement, changing σ repeats it by itself — at the same point, with the new precision.</span></div>
+    <div class="two">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="ptitle">|Ψ|² before the measurement and the packet after it</div>
+      <svg id="xSvg" viewBox="0 0 520 220" role="img" aria-label="Probability density before and after the position measurement"></svg>
+      <div class="legend"><span><i class="box" style="background:var(--soft);border:1px solid var(--muted)"></i>before</span><span><i class="box" style="background:var(--lp-bg)"></i>after</span><span><i class="sw" style="border-color:var(--warn);border-top-style:dashed"></i>x₀</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="ptitle">Energy probabilities |c<sub>n</sub>|² in the packet</div>
+      <svg id="xpSvg" viewBox="0 0 520 220" role="img" aria-label="Energy probabilities after the position measurement"></svg>
+    </div>
+  </div>
+  <div class="status" id="st3">The position result is random with density |Ψ(x)|². Try it several times.</div>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">4. Observables are operators</h2>
+  <p class="small">Every observable has an operator: the energy Ĥ = −<span class=fr><span>ħ²</span><span>2m</span></span><span class=fr><span>d²</span><span>dx²</span></span>, the momentum p̂ = −iħ<span class=fr><span>d</span><span>dx</span></span>, the position — multiplication by x. If ÂΨ = aΨ, Ψ is an <b>eigenfunction</b>: measuring A gives a for certain. Otherwise the result is random; its mean is ⟨A⟩ = ∫Ψ*ÂΨ dx and its spread ΔA = ‖ÂΨ − ⟨A⟩Ψ‖ — how far ÂΨ is from ⟨A⟩Ψ.</p>
+  <div class="crow"><span class="l">Operator</span><span class="row" id="opG" role="group" aria-label="Operator"></span></div>
+  <div class="crow"><span class="l">Function</span><span class="row" id="opF" role="group" aria-label="Function"></span></div>
+  <div class="work">
+    <div class="panel" style="padding:8px 10px">
+      <div class="ptitle">ÂΨ and ⟨A⟩Ψ coincide only for an eigenfunction</div>
+      <svg id="opSvg" viewBox="0 0 560 250" role="img" aria-label="The operator acting on the function"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--lp)"></i>Re ÂΨ</span><span><i class="sw" style="border-color:var(--ln)"></i>Im ÂΨ</span><span><i class="sw" style="border-color:var(--muted);border-top-style:dashed"></i>⟨A⟩Ψ</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="tablewrap" id="opTab"></div>
+      <div class="status" id="st4"></div>
+    </div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h5s">
+  <h2 id="h5s">5. Superposition and the expectation value</h2>
+  <p class="small">The state of section 1 is a superposition Ψ = Σ c<sub>n</sub>ψ<sub>n</sub>. Each energy measurement gives one of the E<sub>n</sub>, and the mean of many measurements tends to the <b>expectation value</b> ⟨E⟩ = Σ |c<sub>n</sub>|² E<sub>n</sub> — the sum of the contributions of the separate states. The deviation of the mean from ⟨E⟩ falls as <span class=fr><span>ΔE</span><span>√N</span></span>.</p>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="ptitle">Contributions |c<sub>n</sub>|²·E<sub>n</sub> to ⟨E⟩</div>
+      <svg id="cSvg" viewBox="0 0 520 220" role="img" aria-label="Contributions of the states to the mean energy"></svg>
+      <div class="status" id="cTxt"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="ptitle">Mean of the first N measurements</div>
+      <svg id="mSvg" viewBox="0 0 520 220" role="img" aria-label="Mean energy against the number of measurements"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>mean of N measurements</span><span><i class="sw" style="border-color:var(--ok);border-top-style:dashed"></i>⟨E⟩</span><span><i class="box" style="background:var(--lp-bg)"></i>⟨E⟩ ± <span class=fr><span>ΔE</span><span>√N</span></span></span></div>
+      <div class="row"><button class="btn primary" id="bS" type="button">Series: 1000 measurements</button></div>
+      <div class="status" id="st5">Press “Series”: 1000 systems in the state of section 1, the energy of each measured once.</div>
+    </div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">Why are energies in quantum chemistry measured in hartrees and lengths in bohrs?</span><a class="nqA" href="units.html" data-goto="au">Atomic units →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Choose ψ₂ and start the time evolution. Does |Ψ|² change? Why?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Yes, it oscillates with frequency <span class=fr><span>E₂</span><span>h</span></span></button><button type="button" class="opt" data-ok="1">No: a stationary state, the phase factor is common</button><button type="button" class="opt">Yes, but only near the walls</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>No. For a stationary state the factor e<sup>−iE₂t/ħ</sup> is common to the whole function: Re Ψ oscillates, while |Ψ|² and all averages stay constant.</div></div>
+<div class="tq"><p class="qt"><span>The state ψ₁ + ψ₂. With what period does ⟨x⟩ oscillate (in units of T₁)?</span></p>
+<p class="olab">Period of ⟨x⟩, T₁</p><div class="opts" role="group"><button type="button" class="opt">1</button><button type="button" class="opt">1/2</button><button type="button" class="opt" data-ok="1">1/3</button><button type="button" class="opt">3</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden><span class=fr><span>T₁</span><span>3</span></span>: the beat frequency is <span class=fr><span>E₂ − E₁</span><span>h</span></span> = <span class=fr><span>3E₁</span><span>h</span></span>, and T₁ = <span class=fr><span>h</span><span>E₁</span></span>. The larger the energy difference, the faster the density changes.</div></div>
+<div class="tq"><p class="qt"><span>Prepare ψ₁ + ψ₂ + ψ₃ with equal amplitudes. What is ⟨E⟩ in units of E₁?</span></p>
+<p class="olab">⟨E⟩, E₁</p><div class="opts" role="group"><button type="button" class="opt">9</button><button type="button" class="opt">1</button><button type="button" class="opt">3</button><button type="button" class="opt" data-ok="1">14/3</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>⟨E⟩ = <span class=fr><span>1 + 4 + 9</span><span>3</span></span> = <span class=fr><span>14</span><span>3</span></span> ≈ 4.67 E₁. This is the average over many measurements; a single measurement gives only 1, 4 or 9 — never 4.67.</div></div>
+<div class="tq"><p class="qt"><span>Press “Single measurement” twice in a row without resetting the state. What does the second measurement give?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">A random value with the same probabilities</button><button type="button" class="opt">Always E₁</button><button type="button" class="opt" data-ok="1">The same value as the first time</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The same value: after the first measurement the system is in the eigenstate ψ<sub>n</sub> (postulate 4), and the probability of any other outcome is zero.</div></div>
+<div class="tq"><p class="qt"><span>Compare Δx·Δp for ψ₁ and for the packet after a position measurement with σ = 0.02 L.</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">The packet has about <span class=fr><span>ħ</span><span>2</span></span> — in the model it is a real Gaussian packet</button><button type="button" class="opt">For the packet much larger than for ψ₁</button><button type="button" class="opt">For ψ₁ less than <span class=fr><span>ħ</span><span>2</span></span></button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>For ψ₁ it is 0.57ħ, for the narrow Gaussian packet almost exactly <span class=fr><span>ħ</span><span>2</span></span>: a real Gaussian packet is close to the minimum allowed by the uncertainty relation. This is a property of the chosen measurement model, not of every position measurement. But Δp of the packet is huge — hence the wide spread of energies.</div></div>
+<div class="tq"><p class="qt"><span>After the position measurement start the time evolution. After what time (in T₁) does the packet reassemble at the same point?</span></p>
+<p class="olab">Time, T₁</p><div class="opts" role="group"><button type="button" class="opt">1/3</button><button type="button" class="opt" data-ok="1">1</button><button type="button" class="opt">1/9</button><button type="button" class="opt">1/2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>After T₁: all phases n²·2π are multiples of 2π — a full “revival” of the packet. After <span class=fr><span>T₁</span><span>2</span></span> the packet appears at the mirror point L − x.</div></div>
+</div></details></section>
+<script src="js/postulates.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="post";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/postulates.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,20 @@
+ Sum of related IBSIW for each atom in fragment  1
+ Atom    3 :    2.765785
+ Atom    1 :    0.516664
+ Atom    2 :    0.094363
+
+ Sum of related IBSIW for each atom in fragment  2
+ Atom    4 :    2.520960
+ Atom    6 :    0.427926
+ Atom    5 :    0.427926
+
+ IBSIW index (zero terms are not shown)
+    3    4 :    2.090822
+    1    4 :    0.365403
+    3    6 :    0.337482
+    3    5 :    0.337482
+    1    6 :    0.075630
+    1    5 :    0.075630
+    2    4 :    0.064734
+    2    6 :    0.014814
+    2    5 :    0.014814

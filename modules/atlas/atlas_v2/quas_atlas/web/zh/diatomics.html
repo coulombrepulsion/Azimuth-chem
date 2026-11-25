@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="n2,hf">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>双原子分子的分子轨道能级图</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/mo.css">
+
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-mo-g.webp"><!--pose:end-->
+<h1>双原子分子的分子轨道能级图</h1>
+<p class="lead">分子轨道由原子轨道线性组合（LCAO）构成。对称性相同、能量相近的轨道相互组合，电子按泡利原理和洪特规则填入 MO。由能级图可直接得到键级和磁性。能量来自一个简单模型（价层基组中的扩展休克尔方法），因此能级图是定性的。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>分子轨道由对称性相同、能量相近的原子轨道组成：成键轨道低于原来的原子轨道，反键轨道高于它们。</li><li>键级 <span class=fr><span>成键 − 反键</span><span>2</span></span> 与键长和键强相关。</li><li>σ2p 与 π2p 的能级次序由 s–p 混合决定：B₂–N₂ 中混合强，O₂ 和 F₂ 中弱。</li><li>简并分子轨道上的未成对电子解释了 O₂ 和 B₂ 的顺磁性。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>定性的 MO 图</summary><dl><dt>计算的是什么</dt><dd>双原子分子的 MO 图、键级、磁性。</dd><dt>采用了哪些近似</dt><dd>价层基组中的扩展 Hückel 方法。</dd><dt>能得出什么结论</dt><dd>能级顺序、s–p 混合和键级——定性；能量不是定量的。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. 能级图</h2>
+  <div class="crow"><span class="l">同核</span><span class="row" id="homG" role="group" aria-label="同核分子"></span></div>
+  <div class="crow"><span class="l">离子与异核分子</span><span class="row" id="hetG" role="group" aria-label="离子与异核分子"></span></div>
+  <div class="crow"><span class="l">自选组合</span><select class="selx" id="selA" aria-label="原子 A"></select><select class="selx" id="selB" aria-label="原子 B"></select>
+    <span class="hint">电荷</span><button class="btn" id="qDn" type="button" aria-label="减小电荷">−</button><span class="val" id="qV">0</span><button class="btn" id="qUp" type="button" aria-label="增大电荷">+</button></div>
+  <div class="crow"><span class="l">s–p 混合</span><span class="row" id="mixG" role="group" aria-label="s–p 混合"></span></div>
+  <div class="work">
+    <div class="panel" style="padding:8px 10px">
+      <svg id="dia" viewBox="0 0 520 520" role="img" aria-label="MO 能级图"></svg>
+      <p class="hint">点击某个 MO 能级，查看其组成和形状。</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="cfg" id="cfg"></div>
+      <div class="tablewrap" id="sumTab"></div>
+      <div class="status" id="st1"></div>
+      <div class="panel" style="padding:8px 10px">
+        <div class="ptitle" id="moT"></div>
+        <svg id="shape" viewBox="0 0 420 170" role="img" aria-label="所选 MO 的示意图"></svg>
+        <div class="bars" id="comp"></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. 键级与分子性质</h2>
+  <p class="small">键级越高，键越短、越强。由能级图得到的键级与实验键长 R<sub>e</sub> 和解离能 D₀ 进行比较。点击一行即可打开该粒子的能级图。</p>
+  <div class="two">
+    <div class="tablewrap" id="propTab"></div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="ptitle">键长和解离能随键级的变化</div>
+      <svg id="boPlot" viewBox="0 0 460 300" role="img" aria-label="键长和解离能随键级的变化"></svg>
+      <div class="legend"><span><i class="box" style="background:var(--accent)"></i>D₀，eV（左轴）</span><span><i class="box" style="background:var(--warn)"></i>R<sub>e</sub>，Å（右轴）</span></div>
+    </div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">前线轨道的对称性如何决定反应能否进行？</span><a class="nqA" href="wh.html" data-goto="wh">π 轨道与周环反应 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面探索练习与训练器。在页面上完成操作并作答——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>O₂：有几个未成对电子？</span></p>
+<p class="olab">未成对电子</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">2</button><button type="button" class="opt">4</button><button type="button" class="opt">1</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>2：共十二个价电子，最后两个以平行自旋分别占据两个简并的 π*2p 轨道（洪特规则）。因此 O₂ 是顺磁性的——液氧会被磁铁吸引。用 O=O 双键的价键法无法解释这一点。</div></div>
+<div class="tq"><p class="qt"><span>O₂⁻ 的键级是多少？</span></p>
+<p class="olab">键级</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">1.5</button><button type="button" class="opt">2.5</button><button type="button" class="opt">1</button><button type="button" class="opt">2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>1.5：(8 − 5) / 2。新增的电子进入反键 π* 轨道，键长从 1.21 Å 增加到 1.35 Å。</div></div>
+<div class="tq"><p class="qt"><span>选择 B₂ 并关闭 s–p 混合。B₂ 的磁性会是怎样的？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">顺磁性</button><button type="button" class="opt" data-ok="1">抗磁性</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>抗磁性：没有混合时 σ2p 位于 π2p 之下，最后两个电子在 σ2p 上配对。实验表明 B₂ 是顺磁性的（光谱项 ³Σ<sub>g</sub><sup>−</sup>）——这是 s–p 混合的直接证据。</div></div>
+<div class="tq"><p class="qt"><span>电离 O₂ → O₂⁺ 时键的强度如何变化（与 N₂ → N₂⁺ 比较）？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">减弱，与 N₂ 一样</button><button type="button" class="opt" data-ok="1">增强，与 N₂ 相反</button><button type="button" class="opt">不变</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>O₂ 失去的是反键 π* 轨道上的电子：键级从 2 增加到 2.5，键变短（1.208 → 1.116 Å）、变强（D₀ 5.12 → 6.66 eV）。N₂ 失去的是成键 σ2p 上的电子，键减弱（键级 3 → 2.5）。</div></div>
+<div class="tq"><p class="qt"><span>CO：HOMO（σ2p）主要定域在哪个原子上？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">碳原子上</button><button type="button" class="opt">氧原子上</button><button type="button" class="opt">两个原子上各占一半</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>在碳原子上：按 MO 组成，约 70 % 来自 C 原子的 2s 和 2p<sub>z</sub>。这是碳的孤对电子，因此 CO 通过 C 原子而不是 O 原子与金属配位。</div></div>
+<div class="tq"><p class="qt"><span>C₂ 的键级是多少？</span></p>
+<p class="olab">键级</p><div class="opts" role="group"><button type="button" class="opt">4</button><button type="button" class="opt">1</button><button type="button" class="opt">3</button><button type="button" class="opt" data-ok="1">2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>2：八个价电子 (σ2s)² (σ*2s)² (π2p)⁴。两对成键电子都是 π 键，没有“纯粹”的 σ 键；这是 s–p 混合的结果之一。</div></div>
+<!--self:start--><div class="selfBox"><h3 id="h3s">自我检测</h3>
+  <p class="small">在头脑中为下面的粒子画出能级图，求出键级和未成对电子数。对于 B₂、C₂ 和 N₂，别忘了 s–p 混合。</p>
+  <div class="row"><b id="qMol" style="font-family:var(--f-display);font-size:19px"></b><button class="btn" id="qNew" type="button">换一个粒子</button></div>
+  <div class="quiz">
+    <label><span>键级</span><input id="q0" inputmode="decimal" autocomplete="off"></label>
+    <label><span>未成对电子数</span><input id="q1" inputmode="numeric" autocomplete="off"></label>
+  </div>
+  <div class="row"><button class="btn primary" id="qChk" type="button">检查</button><button class="btn" id="qShow" type="button">显示解答</button></div>
+  <div class="status" id="qRes">输入答案并点击“检查”。</div>
+</div><!--self:end--></div></details></section>
+<script src="js/diatomics.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="mo";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/diatomics.js"></script>
+
+</body>
+</html>

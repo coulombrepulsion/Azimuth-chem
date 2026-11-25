@@ -1,0 +1,81 @@
+/* Topic pages of the Atlas on the site: what a phone and a wide screen need.
+   Put into every topic page by tools/build_atlas_site.py after the page's own styles; the pages of the Atlas in the
+   program are not touched. */
+
+/* A phone: Quill stands on the right of the title (not of the lead: it takes the whole
+   width under them), a little larger; the title is a size smaller to keep its words whole (no hyphens). */
+@media (max-width:640px){
+  .qPoseH{padding-right:0;display:grid !important;grid-template-columns:minmax(0,1fr) 104px;column-gap:8px;row-gap:8px;align-items:center}  /* the page writes display:flex on it */
+  .qPoseH>*{grid-column:1 / -1}
+  .qPoseH>h1{grid-column:1;grid-row:1;font-size:clamp(20px,5.6vw,25px);line-height:1.18;overflow-wrap:break-word;margin:0}
+  .qPose{position:static;grid-column:2 !important;grid-row:1;width:104px;height:auto;max-height:116px;object-fit:contain;object-position:right center;margin:0;display:block;align-self:center}
+  @media (max-width:380px){.qPoseH{grid-template-columns:minmax(0,1fr) 88px}.qPose{width:88px}}
+  /* the table of results lost its right column behind the edge. A cell with a sentence in it (.siteLong, marked by
+     atlas-page.js: more than LONG characters) may break its lines — numbers and short names stay whole, or a
+     narrow table would be written a letter a line; a table that still is wider can be moved with a finger, and its
+     edge is shaded while there is more to the right */
+  .tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tablewrap .siteLong{white-space:normal;overflow-wrap:normal;word-break:normal;min-width:11em}
+  /* two columns of a model side by side leave 170 px each (the method of Hückel wrote its energies a letter a line) */
+  main .work{grid-template-columns:minmax(0,1fr) !important}  /* the page sets the columns in its style attribute */
+  /* a phone (390 px): in a list «name — value» (.kvt) the name stands above its value, and a number is never broken;
+     the names of the quantities of «Проверка расчётов» are not squeezed to a letter a line */
+  main .kvt{grid-template-columns:minmax(0,1fr) !important;gap:0 !important}
+  main .kvt>*{overflow-wrap:normal !important;word-break:normal !important}
+  main .kvt>b{margin:0 0 7px;white-space:normal}
+  .tablewrap td,.tablewrap th{overflow-wrap:normal;word-break:normal}
+  .tablewrap td.l{min-width:9em}
+  /* F6: the last tick of the Jahn–Teller plot («δ = 0,2») lay half outside its drawing */
+  #jtSvg{overflow:visible}
+  /* F4: a plot 900–1100 units wide drawn in 328 px made its labels 5–6 px; it keeps a readable width and is moved
+     with a finger (atlas-page.js, .siteWide) */
+  .siteWide{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -2px;padding:0 2px}
+  .siteWide.more{box-shadow:inset -22px 0 16px -16px rgba(0,0,0,.45)}
+  html[data-theme="light"] .siteWide.more{box-shadow:inset -22px 0 16px -16px rgba(0,0,0,.2)}
+  .tablewrap.more{box-shadow:inset -22px 0 16px -16px rgba(0,0,0,.45)}
+  html[data-theme="light"] .tablewrap.more{box-shadow:inset -22px 0 16px -16px rgba(0,0,0,.2)}
+}
+/* the design review §2: a part gone to by a link of the page («→ раздел 1», «Перейти к модели») stood flush with the
+   top edge; it has a little air above it */
+main [id]{scroll-margin-top:14px}
+/* «Перейти к модели»: under the lead, where the first control is more than a screen and a half below (atlas-page.js) */
+.toModel{display:inline-flex;align-items:center;gap:6px;margin:6px 0 2px;padding:7px 12px;border:1px solid var(--line,#2a3140);border-radius:8px;
+  font:500 14px var(--f-body,inherit);color:var(--accent,#5b9bf5);text-decoration:none;background:none;cursor:pointer;align-self:flex-start}
+.toModel:hover{border-color:var(--accent,#5b9bf5)}
+/* A wide screen: the whole topic is one column
+   of SITE_COLUMN in the middle — the width of the home page (.wrap) — and the text, the fields and the notes share its
+   edges. */
+@media (min-width:1100px){
+  main{max-width:1080px !important;margin-left:auto !important;margin-right:auto !important}  /* the page: 1320px */
+  main>header>p,main>section>p,main>section>ul,main>section>ol{max-width:none}
+}
+
+/* the design review §6: the controls of a model beside its result on a wide screen (atlas-page.js, side()) */
+.siteCtl,.siteRes{display:contents}
+@media (min-width:1180px){
+  main section.panel.siteSide{display:grid;grid-template-columns:minmax(330px,5fr) minmax(0,7fr);column-gap:26px;align-items:start}
+  main section.panel.siteSide>:not(.siteCtl):not(.siteRes){grid-column:1 / -1}
+  .siteCtl,.siteRes{display:block;min-width:0}
+  .siteCtl{position:sticky;top:12px}  /* a long result: the controls stay in sight while it is read */
+  .siteRes>.work,.siteRes>.two{grid-template-columns:minmax(0,1fr) !important}
+  .siteRes>.work:first-child,.siteRes>.two:first-child{margin-top:0}
+}
+
+/* «Сообщить о проблеме» at the end of a topic (atlas-page.js) */
+.siteReport{margin:34px 0 8px;padding-top:14px;border-top:1px solid var(--line,#2a3140);font-size:14px;color:var(--muted,#8a93a3)}
+.siteReport a{color:var(--accent,#5b9bf5);font-weight:600;text-decoration:none}
+.siteReport a:hover{text-decoration:underline}
+/* a drawing turned with the mouse or a finger is not selected like a text (Safari wants the
+   -webkit- name; a long touch on a phone gives no menu of a picture) */
+svg,canvas{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+
+/* the line
+   <meta name="color-scheme" content="light dark"> of every page let the controls of the browser (sliders, checkboxes,
+   lists) follow the system — a dark Mac drew the empty part of a slider black on a page in the light theme. A theme
+   chosen on the site is the one the controls take; without a choice they follow the system with the page. */
+:root[data-theme="light"]{color-scheme:light}
+:root[data-theme="dark"]{color-scheme:dark}
+
+/* the header of the Atlas is glass and the page of a topic runs under it (index.html); the controls of
+   the site stop under the header (--qcHead, set by the index page; 0 for a topic opened alone) */
+.siteCtl{top:calc(12px + var(--qcHead,0px))}

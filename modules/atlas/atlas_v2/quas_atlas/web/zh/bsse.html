@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>基组重叠误差</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/bsse.css">
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-bsse-g.webp"><!--pose:end-->
+<h1>基组重叠误差</h1>
+<p class="lead">在计算复合物时，每个分子都可以“借用”邻居的基函数来降低自身能量——而单独计算一个分子时，这些函数并不存在。这个差值看起来像吸引，实际上是基组不完备造成的假象：基组重叠误差（BSSE）。这里用十一种基组（MP2 为十种，CCSD(T) 为九种）计算了水二聚体的结合能，分别给出未校正值和 Boys–Bernardi 均衡校正值，并与完全基组极限的估计值比较。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>在不完备基组中，复合物中的每个分子都会“借用”邻居的函数；这会产生虚假吸引——基组重叠误差。</li><li>均衡校正在整个复合物的基组中计算单体，在伙伴的位置上放置鬼原子。</li><li>BSSE 在小基组中和相关方法中最大；随着基组增大它迅速减小。</li><li>虚假吸引会加深势阱，并把极小值移向更短的距离。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型边界：</b>一个复合物，刚性单体</summary><dl><dt>计算的是什么</dt><dd>水二聚体的结合能，未校正与均衡校正：HF 用十一种基组，MP2 用十种，CCSD(T) 用九种；MP2 沿 O···O 距离的曲线。</dd><dt>采用了哪些近似</dt><dd>单体不弛豫；只有一种取向；完全基组极限估计为 aug-cc-pVQZ 中的 HF，加上按 aug-cc-pVDZ/aug-cc-pVTZ 外推的 MP2 相关能（校正值与未校正值的平均），再加上 aug-cc-pVDZ 中的差值 CCSD(T) − MP2；估计的不确定度约为 0.2 kcal/mol。 这里的 6-31G* 基组使用球谐 d 函数（每个原子 5 个），图谱的其他页面使用笛卡尔 d 函数（6 个）。参考值 −4.86 kcal/mol 对应刚性单体；“分子间相互作用”页面给出另一个估计值 21.0 kJ/mol（5.02 kcal/mol）。</dd><dt>能得出什么结论</dt><dd>不同基组中 BSSE 有多大、均衡校正带来什么——可以；水二聚体的精确结合能——不行：还需要单体形变能和几何优化。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">不同基组中水二聚体的结合能</h2>
+  <p class="hint">刚性单体（r(OH) = 0.9572 Å，∠HOH = 104.52°），线性氢键，R(O···O) = 2.91 Å。相互作用能 ΔE = E(二聚体) − E(单体 1) − E(单体 2)；氧的 1s 电子冻结。</p>
+  <div class="crow"><span class="l">方法</span><span class="grp" id="mG" role="group" aria-label="方法"></span></div>
+  <svg id="bars" viewBox="0 0 960 360" role="img" aria-label="未校正与均衡校正的结合能"></svg>
+  <div class="legend" id="barsL"></div>
+  <div class="tablewrap" id="barsT"></div>
+  <p class="hint" id="barsN"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">相互作用曲线</h2>
+  <p class="hint">MP2，相互作用能随 O···O 距离的变化。细线为校正后的 aug-cc-pVTZ，是本页最接近完全基组极限的曲线。</p>
+  <div class="crow"><span class="l">基组</span><span class="grp" id="sG" role="group" aria-label="基组"></span></div>
+  <svg id="scan" viewBox="0 0 960 330" role="img" aria-label="相互作用能随距离的变化"></svg>
+  <div class="legend" id="scanL"></div>
+  <p class="hint" id="scanN"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">均衡校正是如何工作的</h2>
+  <div class="eq">
+    <div class="eqb"><div class="t">鬼原子</div>单体的能量在二聚体的完整基组中计算：在伙伴的位置上保留它的基函数，但去掉原子核和电子。这样在 ΔE<sub>CP</sub> = E<sub>AB</sub>(AB) − E<sub>A</sub>(AB) − E<sub>B</sub>(AB) 中，三个能量都在同一个基组中计算，函数的“借用”被抵消。</div>
+    <div class="eqb"><div class="t">在完全基组中 BSSE 消失</div>如果单体自身的基组已经完备，它就没有什么可借的。因此误差随基组增大迅速减小，而均衡校正是在较小基组中得到接近极限答案的一种方法。</div>
+    <div class="eqb"><div class="t">校正并不总是改进结果</div>在 cc-pVDZ 和 cc-pVTZ 基组中，校正“矫枉过正”：结合比极限弱，而未校正时则偏强；两者的平均值更接近极限。在含弥散函数的基组中，未校正值本身就已接近极限：虚假吸引部分抵消了基组的不完备。可靠的途径是带弥散函数的大基组加外推。</div>
+    <div class="eqb"><div class="t">还需要考虑什么</div>在几何优化时，复合物中的单体会发生形变；形变能需要单独计算。BSSE 也存在于同一分子内部——在其各片段之间；例如在小基组中它会扭曲构象异构体的相对能量。</div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">去掉基组误差之后，分子间的吸引还剩下什么？为什么 Hartree–Fock 看不到它？</span><a class="nqA" href="dispersion.html" data-goto="disp">分子间相互作用 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>MP2，cc-pVDZ：水二聚体结合能中的 BSSE 有多大？</span></p>
+<p class="olab">BSSE，kcal/mol</p><div class="opts" role="group"><button type="button" class="opt">1.7</button><button type="button" class="opt" data-ok="1">3.5</button><button type="button" class="opt">0.48</button><button type="button" class="opt">7.3</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>约 3.5 kcal/mol：未校正 −7.34，校正后 −3.85。这超过了结合能本身的一半。</div></div>
+<div class="tq"><p class="qt"><span>在 aug-cc-pVTZ 中同一个量是多少？</span></p>
+<p class="olab">BSSE，kcal/mol</p><div class="opts" role="group"><button type="button" class="opt">0.05</button><button type="button" class="opt" data-ok="1">0.48</button><button type="button" class="opt">1.6</button><button type="button" class="opt">3.5</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>约 0.5 kcal/mol（−5.03 对 −4.55）：基组越大，单体越不需要“借用”邻居的函数。</div></div>
+<div class="tq"><p class="qt"><span>比较 cc-pVDZ 中 HF 和 MP2 的 BSSE。哪种方法的更大？为什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">MP2：相关需要更多函数，别人的函数使它降低得更多</button><button type="button" class="opt">HF：它没有相关</button><button type="button" class="opt">一样大</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>MP2：3.5 kcal/mol，而 HF 为 2.1。相关能需要许多高角动量函数，别人的函数使它降低得比 Hartree–Fock 能量更多。</div></div>
+<div class="tq"><p class="qt"><span>cc-pVDZ 曲线：未校正和校正后的极小值在哪里？</span></p>
+<p class="olab">未校正的 R，Å</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">2.91</button><button type="button" class="opt">3.06</button><button type="button" class="opt">2.70</button><button type="button" class="opt">3.30</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>未校正——约 2.91 Å、−7.3 kcal/mol；校正后——约 3.06 Å、−4.1 kcal/mol。虚假吸引加深势阱，并把它移向更短的距离。</div></div>
+<div class="tq"><p class="qt"><span>带均衡校正的结合能需要几次计算？每次用什么基组？</span></p>
+<p class="olab">计算次数</p><div class="opts" role="group"><button type="button" class="opt">2</button><button type="button" class="opt">5</button><button type="button" class="opt" data-ok="1">3</button><button type="button" class="opt">4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>三次，都在二聚体的基组中：二聚体本身，以及带有伙伴鬼原子的每个单体。如果复合物中的单体发生了形变，还要另外计算形变能——单体在自身几何和平衡几何下的能量。</div></div>
+</div></details></section>
+<script src="js/bsse.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="bsse";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/bsse.js"></script>
+
+</body>
+</html>

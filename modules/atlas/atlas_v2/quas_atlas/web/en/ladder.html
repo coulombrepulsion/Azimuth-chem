@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Hierarchy of methods and Jacob’s ladder</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/lad.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-ladder-g.webp"><!--pose:end-->
+<h1>Hierarchy of methods and Jacob’s ladder</h1>
+<p class="lead">Which method should be chosen for a calculation? Wavefunction methods form a hierarchy: each next level is more accurate and more expensive than the previous one, and at the top is full CI, the exact solution in the given basis. Perdew arranged density functionals on “Jacob’s ladder”: the rungs differ in what the functional knows about the electrons. All numbers on this page were computed: errors of methods against full CI as a bond is stretched, the run time for water clusters, and atomization energies of nine molecules.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>Wavefunction methods form the hierarchy HF → MP2 → CCSD → CCSD(T) → full CI: each level is closer to the exact answer in the given basis and more expensive.</li><li>The hierarchy is reliable as long as one configuration dominates; when a bond breaks, methods built on a single determinant, CCSD(T) included, break down.</li><li>The cost grows as a power of the system size: N⁵ for MP2, N⁶ for CCSD, N⁷ for CCSD(T), and factorially for full CI.</li><li>Jacob’s ladder ranks functionals by their ingredients: the density, its gradient, the kinetic energy density, exact exchange, virtual orbitals; higher is usually more accurate, but not always.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> small molecules, one basis per comparison</summary><dl><dt>What is computed</dt><dd>Errors of MP2, CISD, CCSD and CCSD(T) relative to full CI on bond stretching; computing time for water clusters; atomization energies of nine molecules for eight functionals and four wavefunction methods.</dd><dt>Which approximations are made</dt><dd>Full CI only in the 6-31G basis; atomization energies in cc-pVQZ without dispersion, relativistic or core corrections; the reference values are CCSD(T) extrapolated to the complete basis set limit.</dd><dt>What can be concluded</dt><dd>How the levels of the hierarchy and the ladder behave and how the cost grows — yes; a ranking of functionals for your problem — no: nine molecules and one property are too narrow a test.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Wavefunction methods against full CI</h2>
+  <p class="hint">The molecule is in the 6-31G basis with the 1s electrons frozen. Full CI (FCI) is the exact energy in this basis, so the difference from it is the error of the method itself, with no basis set error. The bond is stretched from the equilibrium length r<sub>e</sub> to three r<sub>e</sub>.</p>
+  <div class="crow"><span class="l">Molecule</span><span class="grp" id="molG" role="group" aria-label="Molecule"></span></div>
+  <div class="slrow"><span class="l">r / r<sub>e</sub></span><input type="range" id="kS" min="0" max="6" step="1" value="0" aria-label="Bond stretching"><span class="val" id="kV"></span></div>
+  <svg id="errC" viewBox="0 0 960 330" role="img" aria-label="Error of the methods against full CI"></svg>
+  <div class="legend" id="errL"></div>
+  <div class="tablewrap" id="errT"></div>
+  <p class="hint" id="errN"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">The cost of a calculation</h2>
+  <p class="hint">The run time grows as a power of the system size N (the number of basis functions). The exponent is what really distinguishes the levels: doubling the molecule makes an MP2 calculation 32 times longer and a CCSD(T) one 128 times longer.</p>
+  <div class="slrow"><span class="l">System larger by</span><input type="range" id="fS" min="1" max="10" step="1" value="2" aria-label="How many times larger the system is"><span class="val" id="fV"></span></div>
+  <div class="tablewrap" id="costT"></div>
+  <h3 class="ptitle">Measured time: (H<sub>2</sub>O)<sub>n</sub> chains in cc-pVDZ</h3>
+  <svg id="timeC" viewBox="0 0 960 320" role="img" aria-label="Run time versus the number of basis functions"></svg>
+  <div class="legend" id="timeL"></div>
+  <p class="hint" id="timeN"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Jacob’s ladder of density functionals</h2>
+  <p class="hint">J. Perdew’s metaphor: functionals stand on the rungs of a ladder leading from the Hartree “earth” to the “heaven” of chemical accuracy (about 1 kcal/mol). On each rung the functional gets a new ingredient. Click a rung.</p>
+  <div class="two">
+    <svg id="jac" viewBox="0 0 480 380" role="img" aria-label="Jacob’s ladder"></svg>
+    <div id="rung" class="eqb" aria-live="polite"></div>
+  </div>
+  <h3 class="ptitle">Atomization energies of nine molecules: mean absolute error</h3>
+  <p class="hint">H<sub>2</sub>, CH<sub>4</sub>, NH<sub>3</sub>, H<sub>2</sub>O, HF, N<sub>2</sub>, CO, F<sub>2</sub>, C<sub>2</sub>H<sub>2</sub>; cc-pVQZ basis. The reference values are CCSD(T) extrapolated to the complete basis set limit from cc-pVTZ and cc-pVQZ.</p>
+  <svg id="maeC" viewBox="0 0 960 360" role="img" aria-label="Mean absolute error of atomization energies"></svg>
+  <div class="crow"><span class="l">Molecule</span><span class="grp" id="tmolG" role="group" aria-label="Molecule"></span></div>
+  <div class="tablewrap" id="taeT"></div>
+  <p class="hint" id="taeN"></p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">How to choose</h2>
+  <div class="eq">
+    <div class="eqb"><div class="t">First, the physics of the problem</div>If the molecule has one dominant configuration (an ordinary closed shell near equilibrium), the hierarchy works: CCSD(T) in a good basis is the “gold standard”. When bonds break, for biradicals and for many transition-metal complexes, single-determinant methods break down — multiconfigurational methods are needed.</div>
+    <div class="eqb"><div class="t">Then, the size</div>CCSD(T) is practical up to tens of atoms, MP2 up to one or two hundred, DFT up to thousands. For a large system a hybrid functional with a dispersion correction is usually the best compromise.</div>
+    <div class="eqb"><div class="t">A functional’s rung is not a guarantee</div>Jacob’s ladder describes ingredients, not accuracy: a well-fitted GGA is sometimes better than a poor hybrid. A functional is tested on problems of the same type as yours.</div>
+    <div class="eqb"><div class="t">Method and basis go together</div>An expensive method in a small basis makes no sense: the basis set error outweighs the gain from the method. Basis set convergence is on the next page.</div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">An expensive method in a small basis makes no sense. How fast does the energy converge as the basis grows?</span><a class="nqA" href="cbs.html" data-goto="cbs">Basis set convergence →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>The HF molecule at the equilibrium distance: how many times closer to full CI is CCSD(T) than MP2?</span></p>
+<p class="olab">How many times</p><div class="opts" role="group"><button type="button" class="opt">2</button><button type="button" class="opt">1</button><button type="button" class="opt">90</button><button type="button" class="opt" data-ok="1">9</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>About 9 times: the MP2 error is 3.7 mEₕ, the CCSD(T) error 0.4 mEₕ. With one dominant configuration each level of the hierarchy is noticeably more accurate than the previous one.</div></div>
+<div class="tq"><p class="qt"><span>Stretch the HF bond threefold. What happened to CCSD(T)?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">It dropped below full CI: the method is not variational and breaks down under degeneracy</button><button type="button" class="opt">It coincided with full CI</button><button type="button" class="opt">It did not converge</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The CCSD(T) energy fell 17 mEₕ below full CI. The method is not variational, and with nearly degenerate configurations the (T) correction diverges: the answer looks “better than exact”, but this is a breakdown of the method.</div></div>
+<div class="tq"><p class="qt"><span>The system has doubled. How many times longer does a CCSD(T) calculation take?</span></p>
+<p class="olab">Times longer</p><div class="opts" role="group"><button type="button" class="opt">7</button><button type="button" class="opt">32</button><button type="button" class="opt" data-ok="1">128</button><button type="button" class="opt">2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>About 2⁷ = 128 times (the formal N⁷ estimate). That is why CCSD(T) with a large basis remains a method for small molecules.</div></div>
+<div class="tq"><p class="qt"><span>On which rung of Jacob’s ladder does B3LYP stand?</span></p>
+<p class="olab">Rung number</p><div class="opts" role="group"><button type="button" class="opt">5</button><button type="button" class="opt">3</button><button type="button" class="opt">2</button><button type="button" class="opt" data-ok="1">4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The fourth — hybrids: exact exchange over the occupied orbitals is added to the density, the gradient and (in some functionals) the kinetic energy density.</div></div>
+<div class="tq"><p class="qt"><span>What is the mean error of LDA atomization energies in this set?</span></p>
+<p class="olab">MAE of LDA, kcal/mol</p><div class="opts" role="group"><button type="button" class="opt">100</button><button type="button" class="opt" data-ok="1">35</button><button type="button" class="opt">4.5</button><button type="button" class="opt">3</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>About 35 kcal/mol: LDA overbinds strongly. Already a GGA (BLYP — about 4.5 kcal/mol) removes most of this error.</div></div>
+</div></details></section>
+<script src="js/ladder.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="lad";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/ladder.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Молекулярная динамика и потенциалы машинного обучения</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>Молекулярная динамика и потенциалы машинного обучения</h1>
+<p class="lead">Молекулярная динамика — это сотни тысяч шагов, и на каждом нужны силы на всех атомах. С DFT такая траектория стоит месяцы, с выученным потенциалом — минуты. Здесь видно, как выбрать шаг интегрирования, где выученной модели можно верить и что траектория вообще способна увидеть.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Потенциал машинного обучения: энергия — сумма вкладов атомов, каждый зависит от окружения в сфере обрезания; силы — точные производные. Стоимость растёт линейно с числом атомов, а не как N³ у DFT.</li><li>Модель интерполирует: где обучающих структур не было, она отвечает что угодно и сама об этом не скажет. Комитет моделей (или гауссов процесс) даёт разброс; где он втрое больше обычного, структуру считают DFT и доучивают модель — активное обучение.</li><li>Скоростной Верле обратим во времени: ошибка энергии не копится, а колеблется и растёт как Δt². Шаг — десятая–двадцатая часть периода самого быстрого колебания: 0,5 фс с водородом, 1–2 фс для кремния.</li><li>Мгновенная температура флуктуирует на √(2/(3N)): ±10 % для 64 атомов. Это свойство малой системы, а не ошибка термостата (Ланжевен, Нозе–Гувер).</li><li>Динамика видит то, что происходит за пикосекунды–наносекунды: колебания, диффузию, плавление. Реакцию с барьером 80 кДж/моль — раз в десять секунд — не увидеть ни с какой моделью: для неё переходное состояние и теория Эйринга.</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Интегратор Верле и шаг по времени</h2>
+  <div class="crow"><span class="l">Самое быстрое колебание</span><span class="grp" id="sysG" role="group" aria-label="Самое быстрое колебание"></span></div>
+  <div class="crow"><span class="l">Интегратор</span><span class="grp" id="intG" role="group" aria-label="Интегратор"></span></div>
+  <div class="crow"><span class="l">Шаг Δt, фс</span><input type="range" id="dt" min="0.05" max="6" step="0.05" value="0.5" aria-label="Δt"><span class="val" id="dtv"></span></div>
+  <div class="crow"><span class="l">Энергия колебания, эВ</span><input type="range" id="e0" min="0.02" max="1.5" step="0.01" value="0.3" aria-label="E"><span class="val" id="e0v"></span></div>
+  <svg id="vchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Отклонение полной энергии от начальной"></svg>
+  <div class="cards" id="vcards"></div>
+  <p class="status" id="vNote"></p>
+  <p class="hint">Связь Морзе с частотой O–H 3700 см⁻¹, O–D 2700 см⁻¹ или оптического фонона кремния 15,5 ТГц; 200 фс без термостата. Скоростной Верле: v<sub>½</sub> = v + Δt·F/(2m), r′ = r + Δt·v<sub>½</sub>, v′ = v<sub>½</sub> + Δt·F(r′)/(2m). Эйлер: r′ = r + Δt·v, v′ = v + Δt·F/m.</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Комитет моделей: где выученному потенциалу можно верить</h2>
+  <div class="crow"><span class="l">Обучающих точек</span><input type="range" id="nn" min="4" max="40" step="1" value="16" aria-label="n"><span class="val" id="nnv"></span></div>
+  <div class="crow"><span class="l">Обучение от 2,15 Å до, Å</span><input type="range" id="hi" min="2.4" max="3.5" step="0.05" value="2.9" aria-label="граница"><span class="val" id="hiv"></span></div>
+  <svg id="cchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Энергия связи: «DFT», модели и их разброс"></svg>
+  <div class="legend" id="cleg"></div>
+  <div class="cards" id="ccards"></div>
+  <p class="status" id="cNote"></p>
+  <p class="hint">«DFT» — кривая Морзе связи Si–Si; пять моделей ядерной регрессии с гауссовым ядром, каждая на своих случайных 70 % точек. Разброс σ² = (1/M)Σ(E<sub>m</sub> − Ē)². Закрашено, где σ больше трёх σ в области обучения.</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Что увидит траектория: флуктуации и редкие события</h2>
+  <div class="crow"><span class="l">Атомов в ячейке</span><input type="range" id="na" min="0.9" max="5" step="0.001" value="1.806" aria-label="N"><span class="val" id="nav"></span></div>
+  <div class="crow"><span class="l">Температура, K</span><input type="range" id="tk" min="100" max="2500" step="10" value="300" aria-label="T"><span class="val" id="tkv"></span></div>
+  <div class="crow"><span class="l">Барьер ΔG, эВ</span><input type="range" id="bb" min="0.1" max="2" step="0.01" value="0.8" aria-label="ΔG"><span class="val" id="bbv"></span></div>
+  <div class="crow"><span class="l">Длина траектории</span><input type="range" id="ll" min="0" max="6" step="0.1" value="2" aria-label="длина"><span class="val" id="llv"></span></div>
+  <svg id="echart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Среднее время до события в зависимости от барьера"></svg>
+  <div class="legend" id="eleg"></div>
+  <div class="cards" id="ecards"></div>
+  <p class="status" id="eNote"></p>
+  <p class="hint">δT/T = √(2/(3N)); k = (kT/h)·e<sup>−ΔG/kT</sup>, ожидание — 1/k. 1 эВ = 96,5 кДж/моль. Стоимость: шаг 1 фс, потенциал МО — 30 мс на шаг, DFT — 3 минуты на шаг (64 атома кремния, ноутбук; порядки величин лекции 16).</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Модель может учить не только силы для динамики, но и поправку к дешёвому методу, и свойства по структуре. Как её честно проверить?</span><a class="nqA" href="mlqc.html" data-goto="mlqc">Машинное обучение в квантовой химии →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Связь O–H, 3700 см⁻¹: период колебания около 9 фс. Какой шаг динамики взять?</span></p>
+<p class="olab">Δt, фс</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">0,5</button><button type="button" class="opt">2</button><button type="button" class="opt">5</button><button type="button" class="opt">9</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>0,5 фс — около двадцатой части периода. При 2 фс энергия заметно пилит, при 4–5 фс интегрирование разлетается. Для кремния без водорода (период 64 фс) хватает 1–2 фс.</div></div>
+<div class="tq"><p class="qt"><span>Шаг скоростного Верле увеличили вдвое. Как изменится колебание полной энергии?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Вырастет примерно вчетверо</button><button type="button" class="opt">Вырастет вдвое</button><button type="button" class="opt">Энергия начнёт расти без конца</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Вчетверо: ошибка ∝ Δt². Но она не копится — схема обратима во времени. Без конца растёт энергия у метода Эйлера.</div></div>
+<div class="tq"><p class="qt"><span>64 атома при 300 K. На сколько колеблется мгновенная температура?</span></p>
+<p class="olab">δT</p><div class="opts" role="group"><button type="button" class="opt">±3 K</button><button type="button" class="opt" data-ok="1">±31 K</button><button type="button" class="opt">±100 K</button><button type="button" class="opt">0: её держит термостат</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>±31 K: δT/T = √(2/(3·64)) = 0,10. Это свойство малой системы: сумма 192 квадратов скоростей. В ячейке из 6400 атомов было бы ±3 K.</div></div>
+<div class="tq"><p class="qt"><span>Модель обучена на кристалле при 300 K, а динамику запустили под давлением. Разброс комитета вырос в десятки раз. Что делать?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Посчитать эти структуры DFT и доучить модель</button><button type="button" class="opt">Ничего: средняя модель всё равно точна</button><button type="button" class="opt">Уменьшить шаг по времени</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Посчитать DFT и доучить: модель вне области обучения выдумывает силы, а разброс комитета растёт вместе с ошибкой. Это активное обучение: DFT считает только то, чего модель не знает.</div></div>
+</div></details></section>
+<script src="js/mlmd.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="mlmd";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/mlmd.js"></script>
+
+</body>
+</html>

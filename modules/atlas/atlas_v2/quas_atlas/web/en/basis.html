@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,ammonia">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Basis Sets</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/basis.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-basis-g.webp"><!--pose:end-->
+<h1>Basis Sets</h1>
+<p class="lead">Molecular orbitals are expanded in basis functions centered on the atoms. Slater-type functions e<sup>−ζr</sup> behave correctly both near the nucleus and far from it, but two-electron integrals over them are hard to compute. Therefore calculations use Gaussian functions e<sup>−αr²</sup> and their fixed linear combinations, called contractions. Below we use the hydrogen atom, where the exact answer is known: E = −0.5 a.u.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>MOs are expanded in basis functions; the more complete the basis, the lower the energy (variational principle).</li><li>Gaussians are fast to compute but poorly describe the nuclear cusp and the long-range tail, so they are combined into contracted functions.</li><li>Polarization functions let orbitals change shape; diffuse functions describe anions and weak interactions.</li><li>Cost grows quickly with basis size (formally N⁴ for HF; for CCSD(T) at fixed molecule, as n<sub>virt</sub>⁴), so choosing a basis is a compromise between accuracy and time.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> the H atom, where the exact answer is known</summary><dl><dt>What is computed</dt><dd>The energy of the H 1s orbital expanded in Gaussians; how many functions real basis sets contain.</dd><dt>Which approximations are made</dt><dd>A one-electron atom: there is no correlation, only the basis error is visible.</dd><dt>What can be concluded</dt><dd>How quickly Gaussian expansions converge; for molecules a method error adds to the basis error.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Hydrogen 1s orbital from Gaussians</h2>
+  <div class="crow"><span class="l">Set</span><span class="grp" id="setG" role="group" aria-label="Set"></span></div>
+  <div class="crow" id="nRow"><span class="l">Number of Gaussians n</span><span class="grp" id="nG" role="group" aria-label="Number of Gaussians"></span></div>
+  <div id="sliders" style="display:flex;flex-direction:column;gap:6px"></div>
+  <div class="crow"><span class="l">ψ plot scale</span><span class="grp" id="scG" role="group" aria-label="Scale"></span></div>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:6px"><div class="ptitle" id="psiTitle">ψ(r), a.u.</div><svg id="psi" viewBox="0 0 540 300" role="img" aria-label="Radial function"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--ink)"></i>Slater-type 1s, exact solution</span><span><i class="sw" style="border-color:var(--accent)"></i>sum of Gaussians</span><span><i class="sw" style="border-color:var(--rho-l);border-top-style:dashed"></i>individual Gaussians c<sub>i</sub>g<sub>i</sub></span></div></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><div class="ptitle">Radial density 4πr²ψ²</div><svg id="rad" viewBox="0 0 540 300" role="img" aria-label="Radial density"></svg>
+      <div class="kvt" id="kv"></div></div>
+  </div>
+  <div class="tablewrap" id="primTab"></div>
+  <div class="status" id="t1"></div>
+  <details><summary>Comparison: STO-nG vs. energy-optimized Gaussians</summary><div class="tablewrap" id="cmpTab" style="margin-top:8px"></div><p class="hint" style="margin-top:6px">STO-nG sets are fitted to reproduce the shape of the Slater-type function as closely as possible (least squares), not to minimize the energy. Therefore, for the same n their energy is higher than that of a variationally optimized set, but the same contraction works for any ζ: the exponents are simply multiplied by ζ².</p></details>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">One Gaussian: the variational principle and the virial theorem</h2>
+  <p class="small">For the trial function g = (<span class=fr><span>2α</span><span>π</span></span>)<sup>3/4</sup>e<sup>−αr²</sup> the kinetic energy is T = <span class=fr><span>3α</span><span>2</span></span> and the potential energy is V = −2√<span class=fr><span>2α</span><span>π</span></span>. A tight function (large α) gains in attraction to the nucleus but pays in kinetic energy.</p>
+  <div class="crow"><span class="l">Exponent α</span><input type="range" id="al" min="-2" max="0.6" step="0.005" style="width:280px" aria-label="Exponent alpha, logarithmic scale"><span class="val" id="alv"></span><button class="btn primary" type="button" id="alMin">Go to minimum</button></div>
+  <div class="two"><svg id="ea" viewBox="0 0 540 280" role="img" aria-label="Energy versus exponent alpha"></svg>
+    <div style="display:flex;flex-direction:column;gap:8px"><div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>E = T + V</span><span><i class="sw" style="border-color:var(--warn);border-top-style:dashed"></i>T</span><span><i class="sw" style="border-color:var(--ok);border-top-style:dashed"></i>V</span><span><i class="sw" style="border-color:var(--muted);border-top-style:dotted"></i>exact energy −0.5</span></div><div class="kvt" id="kv2"></div><div class="status" id="t2"></div></div></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">How many functions in a real calculation</h2>
+  <p class="small">Enter the molecular formula of a molecule made of H, B, C, N, O, F atoms. For each basis set you get the number of contracted basis functions N, primitives, occupied and virtual orbitals, and an estimate of the number of two-electron integrals (μν|λσ) ≈ <span class=fr><span>N⁴</span><span>8</span></span>.</p>
+  <div class="crow"><span class="l">Molecule</span><input class="formula" id="fm" value="C6H6" aria-label="Molecular formula" spellcheck="false"><span class="grp" id="fmG"></span></div>
+  <div class="err" id="fmErr"></div>
+  <div class="tablewrap" id="bTab"></div>
+  <svg id="bBar" viewBox="0 0 900 300" role="img" aria-label="Number of basis functions and computational cost"></svg>
+  <div class="status" id="t3"></div>
+  <details><summary>How to read basis set names</summary><div class="small" style="display:flex;flex-direction:column;gap:6px;margin-top:8px">
+    <p><b>STO-3G</b> is a minimal basis: one function per atomic orbital (for C: 1s, 2s, 2p<sub>x,y,z</sub>), each a contraction of three Gaussians.</p>
+    <p><b>6-31G</b> is split-valence: the core 1s is a contraction of 6 Gaussians; each valence orbital is described by two functions, a contraction of 3 Gaussians and a single Gaussian. Two functions of different width let the orbital “breathe”: contract or expand in the molecule. 3-21G and 6-311G are built the same way (6-311G has three functions per valence orbital).</p>
+    <p><b>*</b> or <b>(d)</b> means polarization d functions on heavy atoms, <b>**</b> or <b>(d,p)</b> adds p functions on H as well: they let the electron cloud shift away from the nucleus, which matters for bonds and angles. <b>+</b> means diffuse functions on heavy atoms (anions, weak interactions).</p>
+    <p><b>cc-pVXZ</b> (Dunning; X = D, T, Q for double, triple, quadruple zeta) are built so that the correlation energy converges systematically as X grows; <b>aug-</b> adds one diffuse function of each type. The notation (9s4p1d)/[3s2p1d] means 9 s, 4 p and 1 d primitives contracted into 3 s, 2 p and 1 d functions.</p>
+    <p>Convention for d functions: 6-31G(d) uses 6 Cartesian ones (x², y², z², xy, xz, yz; one combination is effectively an s function), 6-311G(d,p) and cc-pVXZ use 5 spherical ones; f has 7, g has 9.</p></div></details>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">What can be seen in the density itself, obtained in a finite basis?</span><a class="nqA" href="density.html" data-goto="dens">Electron density →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>STO-3G gives an error of about 13 kJ/mol for the H atom. What follows from this?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">The error is negligible compared with bond energies</button><button type="button" class="opt" data-ok="1">A minimal basis is suitable only for qualitative estimates</button><button type="button" class="opt">The error disappears once polarization functions are added</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The error is comparable to conformational and hydrogen-bond energies, so a minimal basis is fit only for qualitative estimates. Polarization functions will not help the H atom: the error lies in the shape of the 1s function itself, and it is fixed by adding s Gaussians.</div></div>
+<div class="tq"><p class="qt"><span>Switch the ψ plot to a logarithmic scale. Where do the Gaussians describe the function worst?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Only in the middle region</button><button type="button" class="opt" data-ok="1">Near the nucleus and at large distances</button><button type="button" class="opt">Equally everywhere</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Near the nucleus (the Slater-type function has a cusp, while a Gaussian has zero derivative at the origin) and at large distances: ln ψ of the Slater-type function is the straight line −r, while for a Gaussian it is the parabola −αr², so it decays too fast. The tails matter for anions and weak interactions, which is exactly why diffuse functions are needed.</div></div>
+<div class="tq"><p class="qt"><span>Why do three energy-optimized Gaussians give −0.49698, while STO-3G gives only −0.49491?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">STO-3G has fewer Gaussians</button><button type="button" class="opt" data-ok="1">STO-3G is fitted to the shape of the Slater function, not optimized for energy</button><button type="button" class="opt">It is a rounding error</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>STO-3G is fitted to reproduce the shape of the Slater-type function (least squares), not to minimize the energy. In return it is universal: for any ζ it is enough to multiply the exponents by ζ².</div></div>
+<div class="tq"><p class="qt"><span>One Gaussian: how does the ratio −<span class=fr><span>V</span><span>T</span></span> behave for different α?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">−<span class=fr><span>V</span><span>T</span></span> = 2 for any α</button><button type="button" class="opt" data-ok="1">−<span class=fr><span>V</span><span>T</span></span> = 2 only at the energy minimum</button><button type="button" class="opt">At the minimum −<span class=fr><span>V</span><span>T</span></span> = 1</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>It equals 2 only at the energy minimum (the virial theorem holds for the optimal function), not at other α. So −<span class=fr><span>V</span><span>T</span></span> = 2 is a handy check that the function parameters are optimized.</div></div>
+<div class="tq"><p class="qt"><span>Benzene: how many times more expensive is an HF calculation in cc-pVTZ than in 6-31G(d)?</span></p>
+<p class="olab">How many times</p><div class="opts" role="group"><button type="button" class="opt">7</button><button type="button" class="opt">420</button><button type="button" class="opt">2.6</button><button type="button" class="opt" data-ok="1">45</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>N = 264 versus 102; by the formal N⁴ law, (<span class=fr><span>264</span><span>102</span></span>)⁴ ≈ 45 times. For CCSD(T) the N⁷ law cannot be applied this way: it describes simultaneous growth of the occupied and virtual spaces. Here there are still 21 occupied orbitals and only the virtual space grows (81 → 243), while the leading (T) term costs ~n<sub>occ</sub>³n<sub>virt</sub>⁴: (243/81)⁴ ≈ 80 times.</div></div>
+<div class="tq"><p class="qt"><span>Why are large calculations run in “direct” mode, recomputing two-electron integrals at every iteration?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">SCF converges faster that way</button><button type="button" class="opt" data-ok="1">There are ~<span class=fr><span>N⁴</span><span>8</span></span> integrals, too expensive to store them all</button><button type="button" class="opt">Direct mode is more accurate</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The number of integrals grows as <span class=fr><span>N⁴</span><span>8</span></span>: for caffeine in cc-pVTZ (560 functions) that is about 1.2·10¹⁰ integrals, roughly 92 GB. Recomputing them is cheaper than storing and reading them from disk.</div></div>
+</div></details></section>
+<script src="js/basis.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="basis";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/basis.js"></script>
+
+</body>
+</html>

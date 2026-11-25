@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Perturbation theory and MP2</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/mp2.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261028-mp2-g.webp"><!--pose:end-->
+<h1>Perturbation theory and MP2</h1>
+<p class="lead">The Møller–Plesset method splits the Hamiltonian into a “simple” part — the sum of Fock operators, for which the Hartree–Fock determinant is exact — and a perturbation, everything the Fock operator misses. The first correction for correlation, MP2 (second-order perturbation theory), recovers most of the correlation in N⁵ operations and is size-consistent. Here you can see where its formula comes from, when the perturbation series converges quickly and when poorly, and how much correlation MP2 gives for real molecules. The H₂ model in a minimal basis is solved right on the page, the rest was computed with PySCF.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>In the Møller–Plesset method the zeroth-order approximation is the sum of Fock operators; the first correction returns the Hartree–Fock energy, the second (MP2) is the first correction for correlation.</li><li>Each MP2 contribution is divided by a difference of orbital energies; at a small gap (stretched bonds, biradicals) MP2 overestimates correlation.</li><li>The Møller–Plesset series does not always converge well: with stretched bonds MP3 can be worse than MP2, the series oscillates, and in basis sets with diffuse functions it may even diverge.</li><li>MP2 is size-consistent and costs ~N⁵; for ordinary molecules it gives about 86–99 % of the CCSD(T) correlation energy in the same basis.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> small molecules, small basis sets</summary><dl><dt>What is computed</dt><dd>The corrections E⁽⁰⁾, E⁽¹⁾, E⁽²⁾ for H₂ in STO-3G at any R; the Møller–Plesset series up to 25th order for water in 6-31G at three bond lengths (in the full CI space); MP2, CCSD and CCSD(T) correlation energies for nine molecules in cc-pVDZ.</dd><dt>Which approximations are made</dt><dd>Geometries are fixed and close to experiment; the core is frozen in cc-pVDZ; the reference for the share of correlation is CCSD(T), not full CI.</dd><dt>What can be concluded</dt><dd>Where the MP2 formula comes from, when the series converges and why MP2 breaks down at small gaps — yes; the accuracy of MP2 for reaction energies — no: that is shown on the page “Hierarchy of methods and Jacob’s ladder”.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">H₂ in a minimal basis: corrections order by order</h2>
+  <p class="hint">The zeroth order is the sum of occupied orbital energies, 2ε<sub>g</sub>. The first correction returns the Hartree–Fock energy. The second is the contribution of the single double excitation σ<sub>g</sub>² → σ<sub>u</sub>²: E<sup>(2)</sup> = −K² / 2(ε<sub>u</sub> − ε<sub>g</sub>). The numerator holds the same exchange integral that couples the configurations in CI, the denominator the difference of orbital energies.</p>
+  <div class="crow"><span class="l">Distance R</span><input type="range" id="R" min="0" max="72" step="1" value="7" aria-label="Distance R"><span class="val" id="Rv"></span></div>
+  <div class="two">
+    <svg id="h2C" viewBox="0 0 560 330" role="img" aria-label="Energy of H₂: Hartree–Fock, MP2 and the exact solution"></svg>
+    <div><div class="mbox" id="h2M"></div></div>
+  </div>
+  <p class="hint" id="h2N"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">The perturbation series: does it converge?</h2>
+  <p class="hint">MP2, MP3, MP4 are the first terms of an infinite series whose sum should give the exact energy in the given basis (full CI). Here the series for the water molecule in the 6-31G basis is computed up to 25th order directly in the space of all 1.66 million determinants. Stretching both O–H bonds, you can see the convergence get worse.</p>
+  <div class="crow"><span class="l">O–H bond length</span><span class="grp" id="geoG" role="group" aria-label="Bond length"></span></div>
+  <div class="crow"><span class="l">Perturbation order n</span><input type="range" id="ord" min="2" max="25" step="1" value="2" aria-label="Perturbation order"><span class="val" id="ordV"></span></div>
+  <div class="two">
+    <svg id="serC" viewBox="0 0 560 330" role="img" aria-label="Error of the partial sums of the Møller–Plesset series by order"></svg>
+    <div class="tablewrap" id="serT"></div>
+  </div>
+  <p class="hint" id="serN"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">How much correlation MP2 gives</h2>
+  <p class="hint">The MP2 correlation energy compared with CCSD(T) for nine molecules in the cc-pVDZ basis (core electrons frozen, geometries close to experiment). CCSD(T) is the reference here: for these molecules it differs from full CI by 1–2 % of the correlation energy.</p>
+  <svg id="tabC" viewBox="0 0 960 300" role="img" aria-label="The share of the CCSD(T) correlation energy given by MP2"></svg>
+  <div class="tablewrap" id="tabT"></div>
+  <p class="hint" id="tabN"></p>
+  <div class="eq">
+    <div class="eqb"><div class="t">Why MP2 is size-consistent</div>The MP2 energy is a sum of contributions of individual electron pairs, without normalizing the whole function. For non-interacting molecules pairs from different molecules contribute nothing, and the energy adds up: for (H₂)ₙ in 6-31G the contribution per molecule is −17.397 mEₕ at n = 1, 2, 3 and 4.</div>
+    <div class="eqb"><div class="t">Cost</div>The most expensive step of MP2 is transforming the two-electron integrals to the molecular-orbital basis, ~N⁵. That is an order of magnitude cheaper than CCSD (N⁶) and cheaper still than CCSD(T) (N⁷); with the RI approximation MP2 can be run for molecules of hundreds of atoms.</div>
+    <div class="eqb"><div class="t">The small denominator</div>Each contribution is divided by a difference of orbital energies. If it is small (stretched bonds, biradicals, metals, aromatic systems with low-lying excitations), the contribution grows without bound — as for H₂ at large distance.</div>
+    <div class="eqb"><div class="t">Where MP2 is used</div>Intermolecular interactions, conformational energies, geometries; in double-hybrid DFT functionals (for example B2PLYP) the MP2 contribution is added to the functional. Variants such as SCS-MP2 scale the same-spin and opposite-spin pair contributions separately.</div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">What to do when one determinant is not enough — in bond breaking or in a biradical?</span><a class="nqA" href="casscf.html" data-goto="cas">Multiconfigurational methods: CASSCF →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>H₂ in STO-3G, R = 0.75 Å: what share of the exact correlation energy does MP2 give, %?</span></p>
+<p class="olab">MP2 share, %</p><div class="opts" role="group"><button type="button" class="opt">36</button><button type="button" class="opt">100</button><button type="button" class="opt">98</button><button type="button" class="opt" data-ok="1">64</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>About 64 %. In a minimal basis H₂ has one excitation σg² → σu², and its second-order contribution is noticeably smaller than the exact one: the rest comes in higher orders. In real basis sets the MP2 share for ordinary molecules is much higher (section 3).</div></div>
+<div class="tq"><p class="qt"><span>Stretch the H₂ bond: at what R (to within 0.05 Å) does MP2 give exactly 100 % of the correlation, and more beyond it?</span></p>
+<p class="olab">R, Å</p><div class="opts" role="group"><button type="button" class="opt">6.0</button><button type="button" class="opt">0.75</button><button type="button" class="opt" data-ok="1">3.5</button><button type="button" class="opt">1.5</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>About 3.5 Å. The gap εu − εg decreases, and it stands in the denominator of E⁽²⁾, so the correction grows faster than the exact correlation energy and then “overshoots”. Hitting 100 % here is a coincidence, not a sign of accuracy.</div></div>
+<div class="tq"><p class="qt"><span>Water with doubled bond lengths: what is the error of MP3 relative to full CI, mEₕ?</span></p>
+<p class="olab">MP3 error, mEₕ</p><div class="opts" role="group"><button type="button" class="opt">45</button><button type="button" class="opt">0</button><button type="button" class="opt" data-ok="1">64</button><button type="button" class="opt">6.4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>About 64 mEₕ — more than for MP2 (45 mEₕ). Here the third order makes the result worse, and the series oscillates and converges slowly: “the higher the order, the better” is not guaranteed for perturbation theory.</div></div>
+<div class="tq"><p class="qt"><span>Why is MP2, unlike CISD, size-consistent?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">The MP2 energy is a sum of pair contributions without normalizing the whole function</button><button type="button" class="opt">MP2 includes quadruple excitations</button><button type="button" class="opt">MP2 is variational</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The MP2 energy is a sum of contributions of individual electron pairs, without normalizing the whole function. For non-interacting molecules pairs from different molecules contribute nothing, and the energy adds up: for (H₂)ₙ the contribution per molecule is the same for any n.</div></div>
+<div class="tq"><p class="qt"><span>What share of the CCSD(T) correlation energy does MP2 give for methane in cc-pVDZ, %?</span></p>
+<p class="olab">Share, %</p><div class="opts" role="group"><button type="button" class="opt">100</button><button type="button" class="opt" data-ok="1">86</button><button type="button" class="opt">64</button><button type="button" class="opt">50</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>About 86 % — the least among these molecules. The rest is higher-order contributions; so for reaction energies involving breaking C–H bonds MP2 errors can reach a few kcal/mol.</div></div>
+</div></details></section>
+<script src="js/mp2.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="mp2";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/mp2.js"></script>
+
+</body>
+</html>

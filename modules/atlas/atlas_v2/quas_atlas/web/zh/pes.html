@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>势能面</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/pes.css">
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-pes-g.webp"><!--pose:end-->
+<h1>势能面</h1>
+<p class="lead">反应 H<sub>A</sub> + H<sub>B</sub>H<sub>C</sub> → H<sub>A</sub>H<sub>B</sub> + H<sub>C</sub>，原子在同一直线上。在玻恩–奥本海默近似下，能量只取决于两个距离：r₁ = r(H<sub>A</sub>–H<sub>B</sub>) 和 r₂ = r(H<sub>B</sub>–H<sub>C</sub>)。该势能面为模型势能面（LEPS），接近精确结果：势垒 0.40 eV，过渡态位于 r₁ = r₂ = 0.93 Å。点击图上任一点进行考察。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>势能面的极小点是稳定结构，一阶鞍点是只有一个虚频的过渡态。</li><li>找到的驻点要通过频率计算来验证：优化可能停在鞍点上。</li><li>零点振动改变有效势垒；H 与 D 的差别产生动力学同位素效应。</li><li>如果两个电子态相互接近，体系可能从一个跳到另一个（Landau–Zener 模型）。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>LEPS 模型势能面，核的经典运动</summary><dl><dt>计算的是什么</dt><dd>共线反应 H + H₂：过渡态、反应路径、轨迹、势能面之间的跃迁概率。</dd><dt>采用了哪些近似</dt><dd>经验势能面 LEPS：势垒高度接近精确的 H₃ 势能面，但势垒更窄（鞍点处虚频约 1980i cm⁻¹，而精确势能面约为 1500i）；原子位于一条直线上；原子核按经典方式运动，不考虑隧穿；跃迁按 Landau–Zener 公式。</dd><dt>能得出什么结论</dt><dd>定性规律（能垒、同位素效应、振动的作用）是正确的；由此得不到速率常数。</dd></dl></details><!--lim:end-->
+<div class="crow"><span class="l">同位素</span><span id="iso" role="group" aria-label="同位素"></span><span class="hint">改变质量：影响频率、零点振动和原子运动；势能面本身与质量无关</span></div>
+<div class="work">
+  <div class="panel">
+    <div class="ptitle">E(r₁, r₂)，eV，相对于 H + H₂；等值线间隔 0.1–0.5 eV</div>
+    <svg id="map" viewBox="0 0 470 470" role="img" aria-label="势能面图" style="cursor:crosshair;touch-action:none"></svg>
+    <div class="legend" id="mapLeg"><span><i class="box" style="background:linear-gradient(90deg,var(--h0),var(--h1),var(--h2),var(--h3))"></i>0 → 3 eV</span><span><i class="sw" style="border-color:#888;border-top-width:5px"></i><i class="sw" style="border-color:#fff;margin-left:-23px;border-top-width:2px;vertical-align:1px"></i>反应路径（IRC）</span><span><i class="sw" style="border-color:var(--traj)"></i>轨迹 / 搜索步</span><span>○ — 过渡态</span></div>
+  </div>
+  <div class="panel">
+    <div class="tabs" role="tablist"><button class="tab" role="tab" data-tab="pt" type="button">势能面上的点</button><button class="tab" role="tab" data-tab="dyn" type="button">碰撞</button></div>
+    <svg id="atoms" viewBox="0 0 520 70" role="img" aria-label="三个原子的位置"></svg>
+    <div id="pane" style="display:flex;flex-direction:column;gap:10px"></div>
+  </div>
+</div>
+<section class="panel" aria-labelledby="hP">
+  <h2 id="hP">反应剖面——势能面沿路径的截面</h2>
+  <svg id="prof" viewBox="0 0 900 230" role="img" aria-label="沿反应路径的能量"></svg>
+  <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>沿路径的势能面能量</span><span><i class="sw" style="border-color:var(--rho-l);border-top-style:dashed"></i>加上垂直于路径的零点振动，H</span><span><i class="sw" style="border-color:var(--virt);border-top-style:dashed"></i>D 的相应曲线</span></div>
+  <p class="hint" style="font-size:14px">横轴为原子坐标空间中的路径长度 s（Å），路径从过渡态（s = 0）出发，沿最陡下降方向向两侧下行：这就是内禀反应坐标（IRC）。反应示意图中常见的“小山”正是这一截面，而不是整个势能面。山谷在每一点的宽度决定了垂直于路径的振动频率。</p>
+  <div class="crow"><span class="l">温度</span><input type="range" id="Tk" min="200" max="1500" step="50" style="width:240px"><span class="val" id="Tkv"></span></div>
+  <div class="tablewrap" id="zpeTab"></div>
+  <div class="status" id="zpeTxt"></div>
+</section>
+<section class="panel" aria-labelledby="hN">
+  <h2 id="hN">一个势能面不够时：避免交叉</h2>
+  <p style="font-size:14.5px">例子——Na + Cl 的“鱼叉”机理。共价态 Na + Cl 几乎是平的，离子态 Na⁺ + Cl⁻ 高出 IP(Na) − EA(Cl) = 1.53 eV，但由于库仑吸引 −<span class=fr><span>14.4</span><span>R</span></span> 而迅速下降。两者在 R<sub>c</sub> ≈ 9.4 Å 处相交。电子相互作用 V 使交叉变为避免交叉：绝热势能曲线分开 2V。</p>
+  <div class="crow"><span class="l">态间耦合 V</span><input type="range" id="V" min="-3" max="-0.7" step="0.01" style="width:260px"><span class="val" id="Vv"></span></div>
+  <div class="crow"><span class="l">核速度 v</span><input type="range" id="vel" min="100" max="5000" step="50" style="width:260px"><span class="val" id="velv"></span></div>
+  <div class="two">
+    <svg id="lz" viewBox="0 0 540 280" role="img" aria-label="透热态与绝热态势能曲线"></svg>
+    <svg id="lzz" viewBox="0 0 540 280" role="img" aria-label="交叉区域放大图"></svg>
+  </div>
+  <div class="legend"><span><i class="sw" style="border-color:var(--muted);border-top-style:dashed"></i>透热态（共价态与离子态）</span><span><i class="sw" style="border-color:var(--accent)"></i>绝热态（固定核时的解）</span></div>
+  <div class="status" id="lzText"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">程序如何在不构建整个势能面的情况下找到其上的极小值？</span><a class="nqA" href="optimization.html" data-goto="opt">几何优化 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>点击“到过渡态”。把 H 换成 D 时虚频如何变化？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">增大</button><button type="button" class="opt" data-ok="1">减小约 √2 倍</button><button type="button" class="opt">不变</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>大约减小为 1/√2：H 约 1977i cm⁻¹，D 约 1398i cm⁻¹——频率与 √m 成反比。这是 LEPS 势能面的频率；在精确的 H₃ 势能面上势垒更宽，虚频约 1500i cm⁻¹。势能面本身（势垒 0.40 eV，位于 r₁ = r₂ = 0.93 Å）与同位素无关。</div></div>
+<div class="tq"><p class="qt"><span>点击点 r₁ = r₂ ≈ 1.2 Å 并启动梯度下降。它会到达哪里？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">到反应物的极小点</button><button type="button" class="opt" data-ok="1">到过渡态</button><button type="button" class="opt">到产物的极小点</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>到达过渡态，而不是极小点：在直线 r₁ = r₂ 上梯度沿该直线方向，下降直接走进鞍点。因此优化之后总要计算频率。</div></div>
+<div class="tq"><p class="qt"><span>带 H₂ 零点振动的“碰撞”（一系列相位）：为什么反应在势垒以下就能发生？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">由于隧穿</button><button type="button" class="opt" data-ok="1">振动能也用于越过势垒</button><button type="button" class="opt">势垒降低了</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>H₂ 的部分振动能也用于越过势垒：没有振动时反应约从 0.41 eV 开始，而有零点振动时 24 个相位中至少有一个约从 0.2 eV 起就发生反应。 这也是经典的零点能“泄漏”：在经典力学中 H₂ 的振动能可以全部转化为沿反应路径的运动，而量子分子做不到这一点。</div></div>
+<div class="tq"><p class="qt"><span>为什么计入零点振动后 D 的有效势垒比 H 高？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">D 的势能面不同</button><button type="button" class="opt">D 的反应物势阱更深</button><button type="button" class="opt" data-ok="1">D 的零点能更小，从中得到的好处更少</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>在过渡态中横向振动比 H₂ 的振动更软，零点能“吃掉”了一部分势垒（H 约 0.26 eV）。D 的所有零点能都更小，好处更少，势垒更高（约 0.30 eV）——这是动力学同位素效应的基础。 这个共线模型缺少过渡态的两个弯曲振动；计入它们的零点能（约 0.1 eV）后，有效势垒几乎等于经典势垒，约 0.39 eV，同位素效应也更小。</div></div>
+<div class="tq"><p class="qt"><span>避免交叉：减小两个电子态之间的耦合 V 会怎样？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">体系总是沿绝热态运动</button><button type="button" class="opt" data-ok="1">在两个电子态之间跳跃的概率增大</button><button type="button" class="opt">没有变化</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>跳跃概率增大：体系更常留在非绝热（透热）态上。当 v = 1000 m/s 时，V ≈ 0.011 eV 左右 P = 0.5；耦合更大时体系沿绝热态运动。</div></div>
+</div></details></section>
+<script src="js/pes.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="pes";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/pes.js"></script>
+
+</body>
+</html>

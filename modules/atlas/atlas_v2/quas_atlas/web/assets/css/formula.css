@@ -1,0 +1,195 @@
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.88em;line-height:1.15;margin:0 .12em}
+.fr>span{padding:0 .12em;white-space:nowrap}.fr>span+span{border-top:1px solid currentColor}
+.try{--tok:#1d7a46;--tbad:#b3261e}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .try{--tok:#6fd39a;--tbad:#ff8a80}}
+:root[data-theme="dark"] .try{--tok:#6fd39a;--tbad:#ff8a80}
+.try .tscore{margin:0;font-size:14px;color:var(--muted);min-height:1em}
+.keys{background:var(--soft);border-left:4px solid var(--accent);border-radius:8px;padding:10px 16px 12px;display:flex;flex-direction:column;gap:6px}
+.keys h2{font-family:var(--f-display);font-size:18px;margin:0}
+.keys ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:14.5px;line-height:1.5}
+.try .selfBox{border-top:2px solid var(--line);margin-top:10px;padding-top:12px;display:flex;flex-direction:column;gap:10px}
+.try /* no heading «Проверьте себя» inside «Проверьте свои знания» — only the dividing line; the heading stays for
+   screen readers and as the anchor of the demonstration */
+.selfBox{position:relative}
+.selfBox h3{position:absolute;width:1px;height:1px;margin:0;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+main p,main .lead,.hwrap p{max-width:none}
+main{max-width:1320px}
+.try details.tryD{border:0;padding:0}
+.try .trySum{align-items:flex-start;gap:10px}
+.try .trySum::before{font-size:19px;line-height:1.3}
+.try .tryHd{display:flex;flex-direction:column;gap:4px}
+.try .trySum:hover h2{color:var(--accent)}
+.try .trySum:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
+.try .tryIn{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.try .tq{border-top:1px solid var(--line);padding:9px 0 4px;display:flex;flex-direction:column;gap:7px}
+.try{counter-reset:tq}.try .tq{counter-increment:tq}
+.try .qt{margin:0;font-size:14.5px;line-height:1.45}.try .qt::before{content:counter(tq) ". ";font-weight:700}
+.try .opts{display:flex;flex-direction:column;gap:5px;align-items:stretch}
+.try .opt{font:inherit;font-size:14px;text-align:left;padding:6px 11px;border:1px solid var(--line);border-radius:7px;background:transparent;color:var(--ink);cursor:pointer;line-height:1.4}
+.try .opt:hover:not(:disabled){border-color:var(--accent)}
+.try .opt:disabled{cursor:default}
+.try .opt.ok{border-color:var(--tok);box-shadow:inset 3px 0 0 var(--tok)}
+.try .opt.bad{border-color:var(--tbad);box-shadow:inset 3px 0 0 var(--tbad);opacity:.85}
+.try .olab{margin:2px 0 6px;font-size:13.5px;color:var(--muted)}
+.try .olab+.opts{flex-direction:row;flex-wrap:wrap}
+.try .olab+.opts .opt{min-width:88px;text-align:center}
+.try .nrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:14px}
+.try .nrow label{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.try .ninp{font:inherit;font-size:15px;width:9em;max-width:100%;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg,transparent);color:var(--ink)}
+.try .ninp.ok{border-color:var(--tok)}.try .ninp.bad{border-color:var(--tbad)}
+.try .tbtn{font:inherit;font-size:14px;padding:5px 13px;border:1px solid var(--accent);border-radius:6px;background:transparent;color:var(--accent);cursor:pointer}
+.try .fb{margin:0;font-size:14px;font-weight:600;min-height:0}
+.try .fb:empty{display:none}
+.try .fb.ok{color:var(--tok)}.try .fb.bad{color:var(--tbad)}
+.try .showA{align-self:flex-start;font:inherit;font-size:13px;padding:0;border:0;background:none;color:var(--muted);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.try .ans{margin:2px 0 4px 0}
+@media (max-width:640px){.demoBtn{font-size:0!important;width:44px;height:44px;padding:0!important;display:inline-flex;align-items:center;justify-content:center}.demoBtn::before{content:'\25B6';font-size:16px}body{padding-bottom:76px}}
+.demoBtn{position:fixed;right:14px;bottom:14px;z-index:40;font-family:var(--f-body,inherit);font-size:14px;padding:8px 14px;border-radius:999px;border:1px solid var(--accent);background:var(--panel);color:var(--accent);cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.demoBtn:hover{background:var(--accent);color:var(--accent-ink,#fff)}
+.themeBtn{position:fixed;right:14px;bottom:60px;z-index:40;width:38px;height:38px;font-size:18px;line-height:1;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;padding:0}
+.themeBtn:hover{border-color:var(--accent);color:var(--accent)}
+.inHub .themeBtn,body.demoOn .themeBtn{display:none}
+@media print{.themeBtn,.demoBtn{display:none}}
+.demoBar{position:fixed;z-index:41;left:12px;bottom:12px;max-width:min(640px,calc(100% - 24px));display:flex;gap:2px;align-items:flex-end;font-family:var(--f-body,inherit);transition:opacity .25s}
+.demoBar.off{opacity:0;pointer-events:none}
+.demoBar .dq{transition:transform .4s cubic-bezier(.3,1.5,.6,1)}
+.demoBar.off .dq{transform:translateY(14px) scale(.8)}
+.demoBar .bub{transform-origin:left bottom;transition:transform .3s ease,opacity .3s ease;min-width:270px}
+.demoBar.off .bub{transform:scale(.85);opacity:0}
+.tryIn{position:relative}
+.try .tq[hidden]{display:block!important;height:0;overflow:hidden;visibility:hidden;margin:0!important;padding:0!important;border:0!important}
+.tnav{display:flex;align-items:center;gap:10px;margin:2px 0 12px}
+.tnav .tbtn:disabled{opacity:.4;cursor:default}
+.tdots{display:flex;gap:6px;flex-wrap:wrap}
+.tdot{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--line);background:transparent;padding:0;cursor:pointer}
+.tdot.on{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 30%,transparent)}
+.tdot.ok{background:var(--ok,#2e8b57);border-color:var(--ok,#2e8b57)}
+.tdot.bad{background:#d9822b;border-color:#d9822b}
+.tdot.show{background:var(--muted);border-color:var(--muted)}
+.tryQ{position:absolute;left:0;top:44px;height:calc(160px*var(--k,1));width:auto;max-width:200px;object-fit:contain;object-position:left top;pointer-events:none;transition:opacity .25s}
+.tryQ.away{opacity:0}
+.tryQ.pop{animation:tqPop .45s cubic-bezier(.3,1.6,.6,1)}
+@keyframes tqPop{0%{transform:scale(.85) translateY(6px)}100%{transform:none}}
+.tryD[open] .tryIn{padding-left:204px;min-height:230px}
+@media (max-width:640px){.tryD[open] .tryIn{padding-left:0;padding-top:0}.tryQ{position:static;display:block;height:calc(92px*var(--k,1));width:auto;margin:0 0 4px auto}}
+@media (prefers-reduced-motion: reduce){.tryQ.pop{animation:none}}
+.eq.eqTabs{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+.eqNav{grid-area:1/1;display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.eqTab{font:inherit;font-size:14px;font-weight:600;line-height:1.25;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;transition:background .15s,border-color .15s,color .15s}
+.eqTab:hover{border-color:var(--accent)}
+.eqTab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink,#fff)}
+.eqTab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.eqTabs>.eqb{grid-area:2/1;visibility:hidden;opacity:0;transition:opacity .25s,visibility 0s .25s}
+.eqTabs>.eqb.on{visibility:visible;opacity:1;transition:opacity .25s}
+.eqTabs>.eqb>.t{display:none}
+.fold:not(.open){display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;overflow:hidden}
+.foldB{display:block;width:fit-content;text-align:left;margin:-2px 0 8px;padding:0;border:0;background:none;color:var(--accent);font:inherit;font-size:13.5px;font-weight:600;cursor:pointer}
+.foldB:hover{text-decoration:underline}.foldB[hidden]{display:none}
+:root.proj .fold{display:block;-webkit-line-clamp:unset;overflow:visible}:root.proj .foldB{display:none}
+@media print{.fold{display:block!important;-webkit-line-clamp:unset!important;overflow:visible!important}.foldB,.eqNav{display:none!important}.eqTabs>.eqb{visibility:visible!important;opacity:1!important;grid-area:auto!important;margin-bottom:8px}.eqTabs>.eqb>.t{display:block!important}}
+.rt{display:inline-block;position:relative;padding-left:.66em;white-space:nowrap;line-height:1.2;vertical-align:baseline}
+.rt>svg{position:absolute;left:.02em;top:.04em;bottom:.08em;width:.62em;height:calc(100% - .12em);overflow:visible;pointer-events:none}
+.rt>.ri{display:inline-block;border-top:.07em solid currentColor;padding:.1em .1em 0 .04em;margin-top:.04em}
+.rt>.rq{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.qcFound{animation:qcFound 2.2s ease-out 1;border-radius:6px}
+@keyframes qcFound{0%,30%{background:color-mix(in srgb,var(--accent) 26%,transparent);box-shadow:0 0 0 6px color-mix(in srgb,var(--accent) 26%,transparent)}100%{background:transparent;box-shadow:0 0 0 6px transparent}}
+.gl{border-bottom:1.5px dotted color-mix(in srgb,var(--accent) 80%,transparent);cursor:help;border-radius:2px}
+.gl:hover,.gl:focus-visible{background:color-mix(in srgb,var(--accent) 12%,transparent);outline:none}
+.glPop{position:absolute;z-index:70;max-width:min(420px,calc(100vw - 16px));background:var(--panel);border:1px solid var(--accent);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.25);padding:10px 14px;font-size:14.5px;line-height:1.45;color:var(--ink);font-family:var(--f-body,inherit)}
+.glPop .glH{font-weight:700;margin-bottom:3px}
+.glPop .glA{display:inline-block;margin-top:6px;color:var(--accent);font-weight:600;text-decoration:none}
+@media print{.gl{border:0}.glPop{display:none}}
+.inHub .demoBtn{display:none!important}
+
+
+
+
+
+
+.demoBar.qr{flex-direction:row-reverse}
+.demoBar.qr .bub{transform-origin:right bottom}
+.demoBar.qr .bub::before{left:auto;right:-8px;border-left:0;border-bottom:0;border-right:1px solid var(--accent);border-top:1px solid var(--accent)}
+.demoBar .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.demoBar .dd:empty,.demoBar b:empty{display:none}
+.demoBar .bub{position:relative;flex:0 1 auto;background:var(--panel);border:1px solid var(--accent);border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.3);padding:11px 14px;display:flex;gap:10px;align-items:flex-start}
+.demoBar .bub::before{content:'';position:absolute;left:-8px;bottom:24px;width:14px;height:14px;background:var(--panel);border-left:1px solid var(--accent);border-bottom:1px solid var(--accent);transform:rotate(45deg)}
+.demoSpot{position:fixed;z-index:39;pointer-events:none;border-radius:12px;opacity:0;box-shadow:0 0 0 200vmax rgba(6,10,18,.68);transition:opacity .45s ease}
+.demoSpot::after{content:'';position:absolute;inset:-3px;border-radius:15px;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 85%,transparent),0 0 46px 16px color-mix(in srgb,var(--accent) 60%,transparent);animation:spotPulse 2.6s ease-in-out infinite}
+@keyframes spotPulse{0%,100%{opacity:.55}50%{opacity:1}}
+@media (prefers-reduced-motion: reduce){.demoSpot::after{animation:none}}
+.demoSpot.on{opacity:1}
+:root{--qs:150px}
+@media (max-width:1024px){:root{--qs:120px}}
+@media (max-width:640px){:root{--qs:64px}.demoBar{left:8px;width:calc(100% - 16px)}.demoBar .bub{flex-wrap:wrap}.demoBar .dtx{flex-basis:100%}.demoBar .dctl{margin-left:auto}.demoBar .bub::before{bottom:18px}}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .demoSpot{box-shadow:0 0 0 200vmax rgba(0,0,0,.76)}}
+:root[data-theme="dark"] .demoSpot{box-shadow:0 0 0 200vmax rgba(0,0,0,.76)}
+.demoBar .dtx{flex:1;min-width:0;font-size:14.5px;line-height:1.45;color:var(--ink)}
+.demoBar .dn{font-size:12.5px;color:var(--muted);display:block}
+.demoBar b{display:block;font-size:15.5px;margin:1px 0 2px}
+.demoBar .dctl{display:flex;gap:6px;flex:none}
+.demoBar button{font:inherit;font-size:15px;width:36px;height:34px;border:1px solid var(--line);border-radius:7px;background:transparent;color:var(--ink);cursor:pointer}
+.demoBar button.nx{border-color:var(--accent);background:var(--accent);color:var(--accent-ink,#fff)}
+.demoBar button:disabled{opacity:.4;cursor:default}
+body.demoOn{padding-bottom:150px}
+.demo-hl{outline:2px solid var(--accent)!important;outline-offset:3px;border-radius:6px;animation:demoPulse 1.2s ease-in-out 2}
+@keyframes demoPulse{50%{outline-offset:7px}}
+@media (prefers-reduced-motion: reduce){.demo-hl{animation:none}}
+@media (max-width:560px){.demoBar .bub{padding:9px 10px;gap:8px}.demoBar .dtx{font-size:13.5px}.demoBar button{width:32px}}
+
+/* «Проверьте себя»: answers are chosen (assets/js/try.*.js initSelf) */
+.quiz.mcq input{display:none}
+.quiz.mcq .opts{flex-direction:row;flex-wrap:wrap;gap:5px}
+.quiz.mcq .opt{min-width:54px;text-align:center;font-family:var(--f-mono);padding:5px 9px}
+.quiz.mcq .opt.sel{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.quiz.mcq .opt.sel.ok{border-color:var(--tok);box-shadow:inset 3px 0 0 var(--tok)}
+.quiz.mcq .opt.sel.bad{border-color:var(--tbad);box-shadow:inset 3px 0 0 var(--tbad)}
+
+.toCompass{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:4px}.toCompass .tcL{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;color:var(--muted);font-size:13px;margin-right:2px}.toCompass .tcB{font-family:var(--f-body);font-size:13px;padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--ink);cursor:pointer}.toCompass .tcB:hover{border-color:var(--accent);color:var(--accent)}
+.toCompass .tcL svg{display:inline-block;width:15px;height:15px;flex:none}
+/* Atlas Quill of «Проверьте свои знания» in the new poses (full height): a square box, the figure standing at its
+   bottom */
+.tryQ{aspect-ratio:1/1;object-fit:contain;object-position:center bottom}
+
+/* the blue side of Quill's demonstration bubble, on the side away from her (as the card «Квил знает» and the
+   dialogs of the program) */
+.demoBar .bub{border-right-width:4px}
+.demoBar.qr .bub{border-right-width:1px;border-left-width:4px}
+
+/* smaller controls, a wider text (it read as a narrow column), the bubble at Quill's head (she
+   speaks), the button glows while the demonstration runs and stops it, the flight between the places */
+.demoBar{max-width:min(860px,calc(100% - 24px));align-items:flex-start}
+.demoBar .dq{align-self:flex-start}
+.demoBar .bub{min-width:min(440px,calc(100vw - 200px));transform-origin:left top}
+.demoBar.qr .bub{transform-origin:right top}
+.demoBar .bub::before{bottom:auto;top:calc(var(--qs) * .22)}
+.demoBar .dctl{gap:4px}
+.demoBar button{width:26px;height:24px;font-size:11.5px;border-radius:6px;padding:0;display:inline-flex;align-items:center;justify-content:center}
+.demoBtn.on{background:var(--accent);color:var(--accent-ink,#fff);animation:qcPulse 1.6s ease-in-out infinite}
+@keyframes qcPulse{50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--accent) 25%,transparent)}}
+
+@media (prefers-reduced-motion:reduce){.demoBtn.on{animation:none}}
+@media (max-width:560px){.demoBar .bub{min-width:0}.demoBar .bub::before{top:18px}}
+/* buttons answer the mouse everywhere: a tint on hover; pressed — filled with the accent and a little smaller;
+   released — back (an action button) or staying chosen (a choice button: aria-pressed) */
+.btn,.chip,.tbtn,.opt,.tdot,.demoBtn,.demoBar button{transition:transform .09s ease,background-color .15s ease,border-color .15s ease,color .15s ease,box-shadow .15s ease}
+.btn:not(:disabled):not(.primary):hover,.tbtn:not(:disabled):hover{background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.btn.primary:not(:disabled):hover{background:color-mix(in srgb,var(--accent) 82%,#000)}
+.chip:not([aria-pressed="true"]):not(:disabled):hover{background:color-mix(in srgb,var(--accent) 10%,var(--panel))}
+.btn:not(:disabled):active,.chip:not(:disabled):active,.tbtn:not(:disabled):active,.opt:not(:disabled):active,.demoBtn:active,.demoBar button:not(:disabled):active{transform:scale(.95);background:var(--accent);color:var(--accent-ink,#fff);border-color:var(--accent)}
+@media (prefers-reduced-motion:reduce){.btn:active,.chip:active,.tbtn:active,.opt:active{transform:none}}
+/* every table of the Atlas in the style of the program — the contents of each cell centred,
+   the numbers in the font of the page with figures of one width (they were right-aligned in the monospaced font) */
+main table th,main table td{text-align:center!important;vertical-align:middle}
+main table td:not(.mono):not(.code){font-family:var(--f-body);font-variant-numeric:tabular-nums}
+main table thead th,main table tr:first-child th{font-weight:600;color:var(--muted)}
+
+/* a hint that would hide only a line or two is not folded */
+.fold.nofold{display:block;-webkit-line-clamp:unset;line-clamp:unset;overflow:visible}
+/* the values next to sliders, in the
+   lists of results, in the cards and bars were set in the monospaced font — now in the font of the page with figures of
+   one width (the input fields of files and the code keep the monospaced font) */
+main :is(.val,.kvt b,.card b,.card small,.cnt b,.bar b,.bar .v,.steps b,.ov,.cbl span,td.mono,span.m,b.zero,.vb b,.amp .val){font-family:var(--f-body)!important;font-variant-numeric:tabular-nums}
+
+/* the fields where a molecule is turned in 3D have the background of the field of Compass
+   (#f5f6f8 / #11151c — the background of the page) */
+main .stage,main svg#mv,main .glwrap,main canvas#cloud{background:var(--bg)!important}

@@ -1,0 +1,43 @@
+
+    -----------------------------------------------------------------------
+          Psi4: An Open-Source Ab Initio Electronic Structure Package
+                               Psi4 1.7 release
+
+                         Git: Rev {HEAD} 6ce35a5 
+
+
+    D. G. A. Smith, L. A. Burns, A. C. Simmonett, R. M. Parrish,
+    M. C. Schieber, R. Galvelis, P. Kraus, H. Kruse, R. Di Remigio,
+    A. Alenaizan, A. M. James, S. Lehtola, J. P. Misiewicz, M. Scheurer,
+    R. A. Shaw, J. B. Schriber, Y. Xie, Z. L. Glick, D. A. Sirianni,
+   ...  [lines omitted from the excerpt]
+    Geometry (in Angstrom), charge = 0, multiplicity = 1:
+
+       Center              X                  Y                   Z               Mass       
+    ------------   -----------------  -----------------  -----------------  -----------------
+         O            0.000000000000     0.000000000000    -0.066678531538    15.994914619570
+         H            0.000000000000    -0.790649154947     0.529118341382     1.007825032230
+         H            0.000000000000     0.790649154947     0.529118341382     1.007825032230
+   ...  [lines omitted from the excerpt]
+  @RHF Final Energy:   -74.96432876674535
+   ...  [lines omitted from the excerpt]
+ Multipole Moments:
+
+ ------------------------------------------------------------------------------------
+     Multipole            Electronic (a.u.)      Nuclear  (a.u.)        Total (a.u.)
+ ------------------------------------------------------------------------------------
+
+ L = 1.  Multiply by 2.5417464519 to convert [e a0] to [Debye]
+ Dipole X            :          0.0000000            0.0000000            0.0000000
+ Dipole Y            :          0.0000000           -0.0000000           -0.0000000
+ Dipole Z            :         -0.3333398            0.9917442            0.6584044
+ Magnitude           :                                                    0.6584044
+
+   ...  [lines omitted from the excerpt]
+      * MP2 total energy                      =  -75.002378705145773
+   ...  [lines omitted from the excerpt]
+      * CCSD total energy                     =  -75.017758177656503
+   ...  [lines omitted from the excerpt]
+      * CCSD(T) total energy                  =  -75.017834880709472
+   ...  [lines omitted from the excerpt]
+*** Psi4 exiting successfully. Buy a developer a beer!

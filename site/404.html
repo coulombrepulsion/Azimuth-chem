@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Страница не найдена · Азимут</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/img/azimuth-icon-32.png">
+<!-- the fonts do not hold the first picture of the page back: the text is shown at once in the font of the system -->
+<link rel="stylesheet" href="/atlas/assets/fonts/fonts.css" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="/atlas/assets/fonts/fonts.css"></noscript>
+<script>(function(){try{var t=localStorage.getItem('qc-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}})()</script>
+<style>
+:root{--bg:#f5f6f8;--panel:#fff;--ink:#1b2230;--muted:#5b6474;--line:#d8dce3;--accent:#2a62b8;--accent-ink:#fff;color-scheme:light}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#11151c;--panel:#191f28;--ink:#e7eaf0;--muted:#9aa3b2;--line:#2b333f;--accent:#6ea2f0;--accent-ink:#0d1420;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#11151c;--panel:#191f28;--ink:#e7eaf0;--muted:#9aa3b2;--line:#2b333f;--accent:#6ea2f0;--accent-ink:#0d1420;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font:16px/1.6 "Golos Text","PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif;display:flex;align-items:center;justify-content:center}
+main{max-width:560px;padding:32px 24px;text-align:center}
+.code{font:700 15px/1 "Golos Text",system-ui,sans-serif;letter-spacing:.18em;color:var(--accent)}
+h1{font:700 34px/1.2 "PT Serif",Georgia,serif;margin:14px 0 12px;text-wrap:balance}
+p{color:var(--muted);margin:0 0 8px}
+code{font:14px "JetBrains Mono",ui-monospace,monospace;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:2px 6px;word-break:break-all;color:var(--ink)}
+.btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:24px}
+.btn{display:inline-block;padding:11px 20px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);text-decoration:none;font-weight:600}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+</style>
+</head>
+<body>
+<main>
+  <div class="code">404</div>
+  <h1 data-t="h">Такой страницы нет</h1>
+  <p data-t="p">Проверьте адрес: возможно, в нём опечатка.</p>
+  <p><code id="where"></code></p>
+  <div class="btns"><a class="btn primary" id="toAtlas" href="/atlas/" data-t="atlas">Открыть Атлас</a><a class="btn" id="toHome" href="/" data-t="home">На главную</a></div>
+</main>
+<script src="/rail.js" data-root="/" data-here="lost"></script>
+<script>
+const T = {
+  ru: {title: 'Страница не найдена · Азимут', h: 'Такой страницы нет', p: 'Проверьте адрес: возможно, в нём опечатка.', atlas: 'Открыть Атлас', home: 'На главную'},
+  en: {title: 'Page not found · Azimuth', h: 'There is no such page', p: 'Check the address: there may be a typo in it.', atlas: 'Open the Atlas', home: 'Home page'},
+  zh: {title: '页面未找到 · 方位', h: '没有这个页面', p: '请检查地址：其中可能有拼写错误。', atlas: '打开图谱', home: '返回首页'}
+};
+function apply(lang) {
+  const u = T[lang] || T.ru;
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : lang;
+  document.title = u.title;
+  document.querySelectorAll('[data-t]').forEach(e => { e.textContent = u[e.dataset.t]; });
+  document.getElementById('toAtlas').href = '/atlas/?lang=' + lang;
+  document.getElementById('toHome').href = '/?lang=' + lang;
+}
+document.getElementById('where').textContent = location.pathname;
+apply(window.SiteRail ? window.SiteRail.lang() : 'ru');
+document.addEventListener('rail-lang', e => apply(e.detail));
+</script>
+</body>
+</html>

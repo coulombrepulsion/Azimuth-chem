@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="hf,hcl">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>玻恩–奥本海默近似与振动能级</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/bo.css">
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-bo-g.webp"><!--pose:end-->
+<h1>玻恩–奥本海默近似与振动能级</h1>
+<p class="lead">在玻恩–奥本海默近似中，电子瞬间适应核的位置，对核而言得到势能曲线 U(R)——所有同位素都相同。核在这条曲线上作为量子粒子运动：它们有分立的振动能级和零点振动。模型为氢分子，莫尔斯势按实验的 D<sub>e</sub>、R<sub>e</sub> 和 ω<sub>e</sub> 拟合。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>原子核比电子重数千倍，因此在固定核位置下求解电子问题，得到势能面 U(R)。</li><li>仅靠质量还不够：在电子态彼此接近、非绝热耦合很大的地方（避免交叉和锥形交叉），该近似会失效。</li><li>U(R) 与核质量无关：同位素分子只在振动能级上不同。</li><li>即使在基态，分子也在振动：零点振动能使 D₀ 不同于 D<sub>e</sub>。</li><li>真实（非谐）势阱的能级向解离极限逐渐密集。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>H₂ 的 Morse 模型势</summary><dl><dt>计算的是什么</dt><dd>H₂ 及其同位素在同一条曲线 U(R) 上的振动能级和零点振动。</dd><dt>采用了哪些近似</dt><dd>Born–Oppenheimer 近似；按实验 D<sub>e</sub>、R<sub>e</sub>、ω<sub>e</sub> 拟合的 Morse 势；不考虑转动。</dd><dt>能得出什么结论</dt><dd>能级图和同位素效应定性正确；精确数值是 Morse 模型的性质。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. 势能曲线上的能级</h2>
+  <div class="crow"><span class="l">分子（同位素）</span><span class="row" id="isoG" role="group" aria-label="同位素组成"></span></div>
+  <div class="crow"><span class="l">约化质量 μ</span><input type="range" id="mu" min="0.3" max="4.7" step="0.005" style="width:260px" aria-label="约化质量（对数）"><span class="val" id="muV"></span></div>
+  <div class="crow"><span class="l">势能</span><span class="row" id="potG" role="group" aria-label="势能"></span></div>
+  <div class="crow"><span class="l">所选能级 v</span><button class="btn" id="vDn" type="button" aria-label="下一个较低能级">◀</button><button class="btn" id="vUp" type="button" aria-label="下一个较高能级">▶</button><span class="val" id="vV"></span>
+    <label class="hint" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="prob"> 显示 |ψ|²</label></div>
+  <div class="work">
+    <div class="panel" style="padding:8px 10px">
+      <div class="ptitle">U(R) 与振动能级</div>
+      <svg id="pot" viewBox="0 0 560 380" role="img" aria-label="势能曲线与振动能级"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>莫尔斯势</span><span><i class="sw" style="border-color:var(--warn);border-top-style:dashed"></i>谐振近似</span><span><i class="sw" style="border-color:var(--ok)"></i>所选能级的波函数</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="tablewrap" id="kvTab"></div>
+      <div class="tablewrap" id="lvTab"></div>
+      <div class="status" id="st1"></div>
+    </div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. 为什么可以“固定”原子核</h2>
+  <p class="small">该近似的主要动机是原子核很重：它们的振动比电子运动慢，零点振动振幅比键长小。两者都由质量比 <span class=fr><span>m<sub>e</sub></span><span>μ</span></span> 决定：振动周期 <span class=fr><span>2π</span><span>ω</span></span> 按 μ<sup>1/2</sup> 增长，振幅按 μ<sup>−1/4</sup> 减小。把质量调小——对像电子一样轻的“核”，运动已无法分离。但大质量并不是充分条件：还需要电子态在能量上相距足够远。在电子态相互接近处（避免交叉或锥形交叉），非绝热耦合使它们混合，即使对重核该近似也会失效——参见势能面页面中的避免交叉。</p>
+  <div class="tablewrap" id="tsTab"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">两个原子得到曲线 U(R)。如果有三个原子会得到什么？</span><a class="nqA" href="pes.html" data-goto="pes">势能面 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>把 H₂ 换成 D₂，零点振动能会怎样变化？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">增大到 2 倍</button><button type="button" class="opt" data-ok="1">减小约 √2 倍</button><button type="button" class="opt">不变：势阱相同</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>减小约 √2 倍：ω ∝ <span class=fr><span>1</span><span>√μ</span></span>，而 D₂ 的约化质量是 H₂ 的两倍。H₂ 的 E₀ ≈ 26 kJ/mol，D₂ 约为 18.4 kJ/mol。</div></div>
+<div class="tq"><p class="qt"><span>哪个分子的解离能 D₀ 更大——H₂ 还是 D₂？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">H₂：轻核结合得更牢</button><button type="button" class="opt">相同：U(R) 一样</button><button type="button" class="opt" data-ok="1">D₂：零点振动更小</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>D₂（4.56 eV 对 4.48 eV）：势阱相同，但零点振动更小，因此计算 D₀ 的起点更低。</div></div>
+<div class="tq"><p class="qt"><span>为什么 H₂ 和 D₂ 的 D<sub>e</sub> 相同，而 D₀ 不同？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">D₂ 的势阱更深</button><button type="button" class="opt" data-ok="1">U(R) 与核质量无关；D₂ 的零点振动更小</button><button type="button" class="opt">D₂ 的键更长</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>在玻恩–奥本海默近似中，U(R) 只由电子和核电荷决定，核质量不进入电子问题。质量只影响核的运动：影响频率和零点振动，从而影响 D₀ = D<sub>e</sub> − E₀。</div></div>
+<div class="tq"><p class="qt"><span>从 H₂ 换到 D₂，束缚振动能级的数目如何变化？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">增加约 √2 倍</button><button type="button" class="opt">减少</button><button type="button" class="opt">不变：势阱相同</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>增加约 √2 倍（Morse 模型中 H₂ 有 17 个能级，D₂ 有 25 个；真实分子分别为 15 和 22 个）：较重分子的能级更密，而势阱深度相同。</div></div>
+<div class="tq"><p class="qt"><span>随着 v 增大，相邻振动能级的间距如何变化？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">不变</button><button type="button" class="opt">增大</button><button type="button" class="opt" data-ok="1">减小</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>减小：莫尔斯势中 ΔE<sub>v→v+1</sub> = ω<sub>e</sub> − 2ω<sub>e</sub>x<sub>e</sub>(v + 1)，能级向解离极限聚集。谐振子的间距恒定，等于 ω<sub>e</sub>。</div></div>
+<div class="tq"><p class="qt"><span>用滑块减小质量 μ。为什么对非常轻的“核”，Born–Oppenheimer 近似不再适用？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">曲线 U(R) 本身改变了</button><button type="button" class="opt" data-ok="1">零点振动与势阱深度相当，无法按速度分离运动</button><button type="button" class="opt">原子核变得静止不动</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>零点振动能变得与势阱深度相当，当 μ ≲ 7 m<sub>e</sub> 时阱中剩下不到两个能级：“核”的运动与电子一样快，运动已无法分离。</div></div>
+</div></details></section>
+<script src="js/bo.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="bo";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/bo.js"></script>
+
+</body>
+</html>

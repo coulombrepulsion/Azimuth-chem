@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="ethane,butane,cyclohexane">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Конформеры: какие минимумы искать</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-conf-g.webp"><!--pose:end-->
+<h1>Конформеры: какие минимумы искать</h1>
+<p class="lead">Оптимизация находит ближайший минимум — тот, к которому «скатилась» стартовая структура. Но у гибкой молекулы минимумов много: вращение вокруг каждой одинарной связи даёт свои конформеры, и при комнатной температуре они быстро переходят друг в друга. Здесь видно, откуда берутся минимумы, как распределяются молекулы между ними и почему их ищут метадинамикой, а не перебором.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Энергия вращения вокруг связи периодична: у этана три одинаковых минимума с барьером 12 кДж/моль, у бутана — анти и два гош-конформера на 3–4 кДж/моль выше.</li><li>Доля конформера при температуре T пропорциональна exp(−E/RT): при 298 K разница 5,7 кДж/моль — это соотношение 10 : 1.</li><li>Свойства, которые измеряют в опыте (спектры, дипольный момент, энергия), — средние по конформерам; одного минимума может не хватить.</li><li>С каждой вращаемой связью число комбинаций умножается на число её минимумов: перебор растёт как kⁿ, поэтому CREST исследует поверхность метадинамикой.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> одна торсия, жёсткий остов, энергии вместо энергий Гиббса</summary><dl><dt>Что вычисляется</dt><dd>Профиль энергии вращения вокруг одной связи по трём фурье-членам, его минимумы и барьеры; доли конформеров по Больцману; число стартов и время перебора по сетке.</dd><dt>Какие приближения приняты</dt><dd>Остальная молекула жёсткая; параметры V₁–V₃ модельные (у бутана подобраны под типичные гош +3,6 и барьеры 14 и 21 кДж/моль); доли — по электронным энергиям, без нулевых колебаний и энтропии, каждый минимум считается отдельно.</dd><dt>Какой вывод можно сделать</dt><dd>Откуда берутся конформеры, как их доли зависят от энергий и температуры и почему нужен умный поиск — да; точные доли требуют энергий Гиббса конформеров из расчёта (CREST + DFT).</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Вращение вокруг связи</h2>
+  <div class="crow"><span class="l">Молекула</span><span class="grp" id="pG" role="group" aria-label="Молекула"></span></div>
+  <div class="crow"><span class="l">V₁ (кДж/моль)</span><input type="range" id="V1" min="-20" max="30" step="0.1" value="7.2" aria-label="V1"><span class="val" id="V1v"></span></div>
+  <div class="crow"><span class="l">V₂ (кДж/моль)</span><input type="range" id="V2" min="-20" max="30" step="0.1" value="-2.1" aria-label="V2"><span class="val" id="V2v"></span></div>
+  <div class="crow"><span class="l">V₃ (кДж/моль)</span><input type="range" id="V3" min="-20" max="30" step="0.1" value="13.8" aria-label="V3"><span class="val" id="V3v"></span></div>
+  <svg id="pchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Энергия вращения"></svg>
+  <p class="hint">V(φ) = ½V₁(1 + cos φ) + ½V₂(1 − cos 2φ) + ½V₃(1 + cos 3φ); φ = 180° — анти. Числа над максимумами — барьеры.</p>
+  <p class="status" id="pNote"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Заселённости при температуре</h2>
+  <div class="crow"><span class="l">Температура T</span><input type="range" id="T" min="100" max="1000" step="1" value="298" aria-label="Температура"><span class="val" id="Tv"></span></div>
+  <div class="bars" id="bars"></div>
+  <p class="status" id="popNote"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Почему перебор не работает</h2>
+  <div class="crow"><span class="l">Вращаемых связей n</span><input type="range" id="n" min="1" max="20" step="1" value="10" aria-label="Число связей"><span class="val" id="nv"></span></div>
+  <div class="crow"><span class="l">Минимумов на связь k</span><input type="range" id="k" min="2" max="6" step="1" value="3" aria-label="Минимумов на связь"><span class="val" id="kv"></span></div>
+  <div class="crow"><span class="l">Оптимизация одной структуры</span><input type="range" id="mn" min="0.1" max="60" step="0.1" value="1" aria-label="Время оптимизации"><span class="val" id="mnv"></span></div>
+  <div class="cards" id="ccards"></div>
+  <p class="status" id="cNote"></p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Найдены конформеры. Как из их частот получить энтальпию, энтропию и энергию Гиббса?</span><a class="nqA" href="thermochemistry.html" data-goto="thermo">Термохимия из частот →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Бутан при 298 K: какая доля молекул в анти-конформации?</span></p>
+<p class="olab">Доля анти</p><div class="opts" role="group"><button type="button" class="opt">0,33</button><button type="button" class="opt">0,50</button><button type="button" class="opt" data-ok="1">0,68</button><button type="button" class="opt">0,95</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Около 0,68: два гош-конформера лежат на 3,6 кДж/моль выше, exp(−3,6/2,48) ≈ 0,23 каждый, 1/(1 + 2·0,23) ≈ 0,68. Остальные 32 % — гош.</div></div>
+<div class="tq"><p class="qt"><span>Этан: сколько минимумов и как распределены молекулы?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">1 минимум, 100 %</button><button type="button" class="opt">2 минимума по 50 %</button><button type="button" class="opt" data-ok="1">3 минимума по 1/3</button><button type="button" class="opt">6 минимумов</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Три одинаковых заторможенных минимума через 120°: доли по 1/3 при любой температуре. Барьер V₃ = 12 кДж/моль — заслонённая форма.</div></div>
+<div class="tq"><p class="qt"><span>10 вращаемых связей по 3 минимума: сколько стартовых структур у полного перебора?</span></p>
+<p class="olab">Стартов</p><div class="opts" role="group"><button type="button" class="opt">30</button><button type="button" class="opt">1000</button><button type="button" class="opt" data-ok="1">59 049</button><button type="button" class="opt">3¹⁰⁰</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>3¹⁰ = 59 049. При минуте на оптимизацию это 41 сутки, а 20 связей дали бы 3,5·10⁹ структур — поэтому перебор не применяют.</div></div>
+<div class="tq"><p class="qt"><span>Какое энергетическое окно оставляет CREST (CREGEN) по умолчанию?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">0,05 ккал/моль</button><button type="button" class="opt">1 ккал/моль</button><button type="button" class="opt" data-ok="1">6 ккал/моль</button><button type="button" class="opt">50 ккал/моль</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>6 ккал/моль (25 кДж/моль) над самым низким конформером; 0,05 ккал/моль — порог энергии, ниже которого два конформера считаются одинаковыми (вместе с RMSD 0,125 Å).</div></div>
+</div></details></section>
+<script src="js/conformers.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="conf";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/conformers.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Crystals: lattice and cell</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>Crystals: lattice and cell</h1>
+<p class="lead">A crystal is one and the same cell repeated in three directions. Six numbers — the edge lengths a, b, c and the angles α, β, γ — together with the contents of the cell fix everything: the density, the distances between planes of atoms and the angles at which the crystal reflects X-rays. A solid-state calculation starts from the cell, and so does the work of Compass with CIF files.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>The cell volume V = abc·√(1 − cos²α − cos²β − cos²γ + 2cosα·cosβ·cosγ); for a cube a³, for a hexagonal cell a²c·√3/2.</li><li>The density ρ = Z·M/(N_A·V) with Z formula units in the cell; it is used to check a solved structure.</li><li>The planes (hkl) are d apart (for a cube d = a/√(h² + k² + l²)) and reflect rays at the Bragg angle: λ = 2d·sin θ.</li><li>Centred lattices extinguish whole series of reflections: I keeps h + k + l even, F keeps h, k, l of one parity; the extinctions tell the lattice type.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> a perfect rigid lattice, line positions without intensities</summary><dl><dt>What is computed</dt><dd>Volume and density from the cell parameters; interplanar distances, Bragg angles and multiplicities of the allowed reflections; atoms per cell, coordination and space filling of cubic packings.</dd><dt>Which approximations are made</dt><dd>A lattice without defects and thermal motion; intensities are not computed (a line’s height is its multiplicity); extinctions come only from the centring (and the diamond and hcp bases), without the screw axes and glide planes of other groups.</dd><dt>What can be concluded</dt><dd>How the cell fixes the density and the line positions of a pattern and how the extinctions reveal the lattice — yes; full intensities need the structure factor, and energies a periodic quantum-chemical calculation.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Cell, volume and density</h2>
+  <div class="crow"><span class="l">Substance</span><span class="grp" id="pG" role="group" aria-label="Substance"></span></div>
+  <div class="cin">
+    <label>a, Å<input id="ca" inputmode="decimal"></label><label>b, Å<input id="cb" inputmode="decimal"></label><label>c, Å<input id="cc" inputmode="decimal"></label>
+    <label>α, °<input id="cal" inputmode="decimal"></label><label>β, °<input id="cbe" inputmode="decimal"></label><label>γ, °<input id="cga" inputmode="decimal"></label>
+    <label>Z, formula units<input id="cZ" inputmode="numeric"></label><label>M, g/mol<input id="cM" inputmode="decimal"></label>
+  </div>
+  <div class="cards" id="ccards"></div>
+  <p class="hint" id="cNote"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Planes and a powder pattern</h2>
+  <div class="crow"><span class="l">Lattice type</span><select id="cent" class="chip" aria-label="Lattice type"><option value="P">primitive P</option><option value="I">body-centred I</option><option value="F">face-centred F</option><option value="D">diamond</option><option value="H">hexagonal close packing (hcp)</option></select></div>
+  <div class="crow"><span class="l">Radiation</span><span class="grp" id="lG" role="group" aria-label="Radiation"></span></div>
+  <svg id="xchart" class="ch" viewBox="0 0 960 240" role="img" aria-label="Powder pattern"></svg>
+  <div class="tablewrap"><table class="tbl" id="ptab"></table></div>
+  <p class="hint" id="pNote"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Cubic packings</h2>
+  <div class="crow"><span class="l">Packing</span><span class="grp" id="kG" role="group" aria-label="Packing"></span></div>
+  <div class="two"><svg id="kcube" viewBox="0 0 300 260" role="img" aria-label="Cubic cell"></svg><div><div class="cards" id="kcards"></div><p class="status" id="kNote" style="margin-top:10px"></p></div></div>
+  <p class="hint">An atom at a corner belongs to the cell by 1/8, on a face by 1/2, inside entirely: 8·1/8 = 1 (sc), +1 (bcc), +6·1/2 (fcc), +4 inside (diamond). A crystal from a CIF file opens in Compass: “File → Open…”, the section “Compass · Crystal”.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">The cell repeats by translations, and inside it rotations and reflections act. How is the symmetry of molecules described?</span><a class="nqA" href="symmetry.html" data-goto="sym">Point groups →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Choose NaCl: a = 5.640 Å, Z = 4. What is the density?</span></p>
+<p class="olab">ρ, g/cm³</p><div class="opts" role="group"><button type="button" class="opt">1.08</button><button type="button" class="opt" data-ok="1">2.16</button><button type="button" class="opt">4.33</button><button type="button" class="opt">8.65</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>2.16 g/cm³: V = 5.640³ = 179.4 Å³, ρ = 4·58.44/(6.022·10²³·179.4·10⁻²⁴) = 2.16 — as in the tables (2.165).</div></div>
+<div class="tq"><p class="qt"><span>Copper (fcc, a = 3.615 Å), Cu Kα radiation. Where is the first line of the pattern?</span></p>
+<p class="olab">2θ, °</p><div class="opts" role="group"><button type="button" class="opt">25.0 (100)</button><button type="button" class="opt">35.1 (110)</button><button type="button" class="opt" data-ok="1">43.3 (111)</button><button type="button" class="opt">50.4 (200)</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>43.3° — the (111) reflection: in fcc (100) and (110) are extinct (indices of mixed parity), the first allowed plane is (111), d = 3.615/√3 = 2.087 Å.</div></div>
+<div class="tq"><p class="qt"><span>Silicon (diamond lattice): is there a (200) line in the pattern?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Yes, the strongest</button><button type="button" class="opt">Yes, a weak one</button><button type="button" class="opt" data-ok="1">No — it is extinct</button><button type="button" class="opt">Only with Mo Kα</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>No: for diamond with all-even h, k, l one also needs h + k + l = 4n, and (200) sums to 2. So (220) follows (111) directly.</div></div>
+<div class="tq"><p class="qt"><span>What fraction of the volume do the spheres fill in a face-centred cubic packing?</span></p>
+<p class="olab">Filling</p><div class="opts" role="group"><button type="button" class="opt">34 %</button><button type="button" class="opt">52 %</button><button type="button" class="opt">68 %</button><button type="button" class="opt" data-ok="1">74 %</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>74 % = π/(3√2): the closest packing, like the hexagonal one. bcc fills 68 %, simple cubic 52 %, diamond 34 %.</div></div>
+</div></details></section>
+<script src="js/crystals.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="cryst";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/crystals.js"></script>
+
+</body>
+</html>

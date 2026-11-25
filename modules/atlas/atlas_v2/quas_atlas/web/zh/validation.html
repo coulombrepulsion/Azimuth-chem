@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,ammonia,hf">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>计算验证</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/val.css">
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+
+
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-validation-g.webp"><!--pose:end-->
+<h1>计算验证</h1>
+<p class="lead">关于巴德理论、分子间相互作用和几何优化的页面进行的是真正的计算：高斯函数积分、Hartree–Fock、MP2。但练习的答案也是用同一个程序得到的，因此它们检验的是学生，而不是程序。程序要用独立的基准来检验——即其他程序对相同分子、几何构型和基组发表的结果。下面汇集了这样的检验点；每一个都可以直接在浏览器中重新计算。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>用同一个程序对练习进行自检，并不能检验程序本身：为此需要独立的基准。</li><li>与独立基准一致，证实了所检验计算的正确性——在给定精度内、且仅限于检验过的情况；它对方法本身的精度不作任何说明。</li><li>与实验的差别来自方法、基组和模型（例如谐振近似）的误差。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>检验的是程序，而不是方法</summary><dl><dt>计算的是什么</dt><dd>RHF 能量、MP2、偶极矩和电荷——与已发表结果比较；几何构型和频率——只是一致性检验。</dd><dt>采用了哪些近似</dt><dd>几何构型、基组和方法与基准相同。</dd><dt>能得出什么结论</dt><dd>一致证实了所检验计算的正确性；它可能发现不了其他情况下的错误，也不消除方法和基组的误差。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Hartree–Fock 能量</h2>
+  <p class="small">基准是 Szabo 和 Ostlund 的教科书《Modern Quantum Chemistry》（第 3 章）中的表格：在相同几何构型和相同基组下的 RHF 能量，精确到 0.001 E<sub>h</sub>。与表格最后一位一致，证实在这些计算中基组、积分和 SCF 过程工作正确。</p>
+  <div class="crow"><span class="row"><button class="btn primary" type="button" id="bRun">在浏览器中重新计算</button><span class="val" id="runV"></span></span></div>
+  <div class="tablewrap" id="tE"></div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. 详细的检验点：STO-3G 基组中的 H₂O</h2>
+  <p class="small">基准是 Crawford 课题组的量子化学编程教学习题集（Virginia Tech，“Programming Projects”，第 3 和第 4 项）：相同的几何构型，结果印有 12 位数字。比较能量、MP2 校正、偶极矩（密度的一阶矩）和马利肯电荷。</p>
+  <div class="tablewrap" id="tC"></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">3. H₂O 的几何构型和频率，HF/6-31G*</h2>
+  <p class="small">极小值由本程序按键长和键角（C<sub>2v</sub> 对称性）求得，频率由完整的笛卡尔黑塞矩阵（能量的数值二阶导数，9 × 9）在分离平动和转动后得到。三个振动频率全是实数，包括反对称伸缩振动——因此这是对所有坐标的极小值。计算耗时较长（约 200 次 SCF 计算），因此给出的是现成结果。与第 1、2 节不同，这是一致性检验，而不是与外部基准的比对。</p>
+  <div class="tablewrap" id="tF"></div>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">4. 各页面上的其他程序</h2>
+  <p class="small">关于 H₂、SCF 和氦的页面使用各自独立的、更简单的程序。它们的检验点是精确或解析已知的。</p>
+  <div class="tablewrap" id="tO"></div>
+</section>
+<section class="panel" aria-labelledby="h5s">
+  <h2 id="h5s">5. 这种检验能证实什么、不能证实什么</h2>
+  <p class="small">在独立基准的精度范围内一致（Szabo–Ostlund 表格为 0.001 E<sub>h</sub>，Crawford 数据集为 10⁻⁵ E<sub>h</sub> 或更好），证实了所检验计算的正确性：对这些分子、几何构型和基组，基函数、积分、SCF 迭代和 MP2 公式工作正确。这并不证明整个程序正确：检验点可能发现不了另一类基函数、未检验的几何构型或困难收敛情况下的错误。一致也不说明方程本身有多好。HF/6-31G* 能量被准确重现，但它与分子的精确能量相差约 1100 kJ/mol（约 0.43 哈特里：相关和基组不完备），而 HF 频率约高估 10 %。程序误差、方法误差和基组误差必须加以区分——参见“H₂ 的解离”页面上的“三种误差”练习。</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">程序计算正确。那么与实验和精确能量的差异从何而来？</span><a class="nqA" href="h2.html" data-goto="h2">H₂ 的解离 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>第 1 节：N₂ 和 CO 在 6-31G* 和 6-31G** 基组中的能量相同。为什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">N₂ 和 CO 中没有氢，而 6-31G** 只在 H 上增加函数</button><button type="button" class="opt">这是程序错误</button><button type="button" class="opt">能量与基组无关</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>6-31G** 与 6-31G* 的区别只在于氢原子上的 p 函数。N₂ 和 CO 中没有氢，因此对它们来说这是同一个基组。</div></div>
+<div class="tq"><p class="qt"><span>第 3 节：程序给出 4189 cm⁻¹，而实验值为 3756 cm⁻¹（谐振值 3943）。能否根据这一比较判断程序是否有错？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">不能：差异中包含方法、基组和非谐性的误差</button><button type="button" class="opt">是：程序高估了频率</button><button type="button" class="opt">实验不准确</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>不能，根据这一比较无法判断。与实验的差异包含 HF 方法的误差（没有相关）、基组的不完备和非谐性；它无法把程序误差与这些分开。要检验程序，需要在相同条件（几何构型、d 函数、质量）下用同一方法的另一个计算——这里频率的这种比对尚未完成。</div></div>
+<div class="tq"><p class="qt"><span>各页面上练习的答案由进行计算的同一个程序检查。这种自检能保证什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">只保证答案与程序一致</button><button type="button" class="opt">程序的正确性</button><button type="button" class="opt">方法的正确性</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>只保证学生的答案与程序一致。它察觉不到程序本身的错误：为此需要独立的基准，如第 1–4 节所示。</div></div>
+</div></details></section>
+<script>window.DEMO=[{t:'能量',d:"用已知结果检验程序。七个分子在三个基组中的哈特里–福克能量与萨博和奥斯特伦德教科书中的表在舍入范围内一致。例外是 6-31G* 和 6-31G** 中的 N₂，但独立程序 PySCF 给出的结果与本程序相同——错误似乎出在表本身。",a:[['scroll','#h1s']]},{t:'重新计算',d:"“重新计算”按钮会立即重新计算所有这些能量——可以确认数字不是事先写好的。",a:[['click','#bRun']]},{t:'频率',d:"HF/6-31G* 水平下水的几何结构与频率。计算频率比实验谐振频率高 6–11%——这是哈特里–福克的典型误差。与其他程序的频率核对尚未完成。",a:[['scroll','#h3s']]}];</script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="val";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/validation.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,ethanol,benzene">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>NMR: from shielding to chemical shift</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-nmr-g.webp"><!--pose:end-->
+<h1>NMR: from shielding to chemical shift</h1>
+<p class="lead">A nucleus with a magnetic moment precesses in a field B₀ at the Larmor frequency. The electrons around it weaken the field slightly — they shield it — so different atoms of one molecule resonate at slightly different frequencies. A program computes the shielding σ (the GIAO method), and the chemical shift δ is obtained by subtracting the σ of the reference — tetramethylsilane computed with the same method.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>The Larmor frequency ν₀ = γB₀/2π: for ¹H it is 42.58 MHz per tesla, a “400 MHz” spectrometer has a field of 9.4 T.</li><li>The shift δ = σ(TMS) − σ in parts per million (ppm) does not depend on the field; the reference must be computed with the same method and basis as the molecule.</li><li>n equivalent spin-½ neighbours give n + 1 lines with intensities from Pascal’s triangle; the splitting J in hertz does not depend on the field.</li><li>A good DFT calculation is accurate to 0.1–0.3 ppm for ¹H and 2–5 ppm for ¹³C; the solvent and the conformers change shifts by a comparable amount.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> an isolated molecule, a first-order spectrum</summary><dl><dt>What is computed</dt><dd>Larmor frequencies of nuclei in a given field; shifts δ from computed shieldings σ and a reference (or a linear scale); first-order multiplets and the look of the spectrum.</dd><dt>Which approximations are made</dt><dd>First-order splitting (J much smaller than the frequency difference); all neighbours equivalent with one J; Lorentzian line shape; the shieldings are taken from your calculation as they are.</dd><dt>What can be concluded</dt><dd>How σ, δ, the field and J are related and how to read a computed spectrum — yes; second-order spectra, exchange, conformer averaging and solvent effects are not modelled here.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Larmor frequency</h2>
+  <div class="crow"><span class="l">Spectrometer, ¹H frequency</span><span class="grp" id="fG" role="group" aria-label="Spectrometer frequency"></span></div>
+  <div class="crow"><span class="l">Field B₀, T</span><input type="range" id="B" min="1" max="28.2" step="0.01" value="9.39" aria-label="Field"><span class="val" id="Bv"></span></div>
+  <div class="cards" id="lcards"></div>
+  <p class="hint" id="lNote"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Multiplet: neighbours, J and the field</h2>
+  <div class="crow"><span class="l">Equivalent neighbours n</span><input type="range" id="n" min="0" max="6" step="1" value="2" aria-label="Number of neighbours"><span class="val" id="nv"></span></div>
+  <div class="crow"><span class="l">Coupling constant J</span><input type="range" id="J" min="0" max="20" step="0.1" value="7" aria-label="Coupling constant J"><span class="val" id="Jv"></span></div>
+  <div class="crow"><span class="l">Spectrometer</span><span class="grp" id="mfG" role="group" aria-label="Spectrometer frequency"></span></div>
+  <svg id="mchart" class="ch" viewBox="0 0 960 240" role="img" aria-label="Lines of the multiplet"></svg>
+  <p class="status" id="mNote"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Your calculation: σ → δ and the spectrum</h2>
+  <p class="hint">One line per group of equivalent nuclei: the shielding σ (ppm) from the output file (ORCA prints it in “CHEMICAL SHIELDING SUMMARY”, Gaussian as “Isotropic”), the number of nuclei, the number of equivalent neighbours and J (Hz). The reference is σ of the nucleus in TMS computed with the same method and basis.</p>
+  <div class="cin">
+    <label class="wide">σ, nuclei, neighbours, J<textarea id="cRows" spellcheck="false">30.66 3 2 7.0
+28.19 2 3 7.0
+29.27 1 0 0</textarea></label>
+    <label>σ of the reference (TMS), ppm<input id="cRef" inputmode="decimal" value="31.88"></label>
+    <label>Spectrometer frequency, MHz<input id="cF" inputmode="decimal" value="400"></label>
+    <label class="chk"><input type="checkbox" id="cScale"> a linear scale instead of the reference</label>
+    <label>slope m (usually about −1)<input id="cM" inputmode="decimal" value="-1.05"></label>
+    <label>intercept b, ppm<input id="cB" inputmode="decimal" value="31.9"></label>
+  </div>
+  <div class="row"><button type="button" class="btn" id="bEx">Example: ethanol</button><button type="button" class="btn primary" id="bCalc">Calculate</button></div>
+  <div class="status" id="cMsg" role="status"></div>
+  <svg id="schart" class="ch" viewBox="0 0 960 260" role="img" aria-label="NMR spectrum" hidden></svg>
+  <p class="hint">The example is a teaching one: the σ of ethanol are chosen so that the shifts match the experimental ones in CDCl₃ (CH₃ 1.22, CH₂ 3.69, OH about 2.6 ppm; the OH shift depends on concentration and exchange). The δ axis of NMR grows from right to left.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">The shift depends on the method and the basis. How do you check that a calculation reproduces experiment?</span><a class="nqA" href="validation.html" data-goto="val">Checking the calculations →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">EPR: the Fermi contact and the basis at the nucleus</h2>
+  <div class="crow"><span class="l">The hydrogen 1s function</span><span class="grp" id="fG" role="group" aria-label="The hydrogen 1s function"></span></div>
+  <svg id="fchart" class="ch" viewBox="0 0 960 280" role="img" aria-label="The hydrogen 1s function: exact and Gaussian"></svg>
+  <div class="legend" id="fleg"></div>
+  <div class="cards" id="fcards"></div>
+  <p class="status" id="fNote"></p>
+  <p class="hint">A<sub>iso</sub> = (2μ₀/3h)·g<sub>e</sub>μ<sub>B</sub>g<sub>N</sub>μ<sub>N</sub>·|ψ(0)|²; for the hydrogen 1s |ψ(0)|² = 1/(πa₀³). One Gaussian is the optimal one (α = 8/(9π)), STO-3G and STO-6G are the standard contractions for ζ = 1. Lecture 5, derivation 6.</p>
+</section>
+<section class="panel" aria-labelledby="h5s">
+  <h2 id="h5s">NICS: the ring current and aromaticity</h2>
+  <div class="crow"><span class="l">Ring</span><span class="grp" id="rG" role="group" aria-label="Ring"></span></div>
+  <div class="crow"><span class="l">NICS(0) of the π current, ppm</span><input type="range" id="ni" min="-30" max="30" step="0.5" value="-10" aria-label="NICS0"><span class="val" id="niv"></span></div>
+  <div class="crow"><span class="l">Ring radius, Å</span><input type="range" id="rr" min="0.8" max="2" step="0.01" value="1.39" aria-label="R"><span class="val" id="rrv"></span></div>
+  <svg id="rchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="NICS along the axis of the ring and in its plane"></svg>
+  <div class="legend" id="rleg"></div>
+  <div class="cards" id="rcards"></div>
+  <p class="status" id="rNote"></p>
+  <p class="hint">The model is a current loop of radius R (the Biot–Savart law) scaled to the given NICS(0) at the centre; only the π current, no σ contribution. The lecture's landmarks: benzene about −10, cyclobutadiene about +27 ppm (Schleyer et al., JACS 118, 6317 (1996)). A ring proton is 1.09 Å outside.</p>
+</section>
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Set the field to 14.1 T. At what frequency do protons resonate?</span></p>
+<p class="olab">¹H frequency, MHz</p><div class="opts" role="group"><button type="button" class="opt">400</button><button type="button" class="opt" data-ok="1">600</button><button type="button" class="opt">900</button><button type="button" class="opt">150</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>600 MHz: ν = 42.577·14.1 = 600 MHz. Spectrometers are named by the proton frequency: a “600 MHz” one has 14.1 T.</div></div>
+<div class="tq"><p class="qt"><span>The CH₃ multiplet of ethanol: the methyl group has the two CH₂ neighbours. What are the line intensities?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">1:1</button><button type="button" class="opt" data-ok="1">1:2:1</button><button type="button" class="opt">1:3:3:1</button><button type="button" class="opt">1:4:6:4:1</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>A 1:2:1 triplet: n = 2 neighbours give n + 1 = 3 lines with the coefficients of a row of Pascal’s triangle.</div></div>
+<div class="tq"><p class="qt"><span>J = 7 Hz, n = 2, a 300 MHz spectrometer: how wide is the triplet in ppm?</span></p>
+<p class="olab">Width, ppm</p><div class="opts" role="group"><button type="button" class="opt">0.023</button><button type="button" class="opt" data-ok="1">0.047</button><button type="button" class="opt">7</button><button type="button" class="opt">14</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>0.047 ppm: the width is 2J = 14 Hz, 14/300 = 0.047 ppm. At 600 MHz the same width takes half as much, 0.023 ppm, so multiplets do not overlap in a strong field.</div></div>
+<div class="tq"><p class="qt"><span>“Your calculation”: σ(TMS) = 31.9 ppm, a proton has σ = 24.6 ppm. Which proton is it?</span></p>
+<p class="olab">δ, ppm</p><div class="opts" role="group"><button type="button" class="opt">1.3 — alkyl</button><button type="button" class="opt">3.5 — next to oxygen</button><button type="button" class="opt" data-ok="1">7.3 — aromatic</button><button type="button" class="opt">9.8 — aldehyde</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>δ = 31.9 − 24.6 = 7.3 ppm — the region of aromatic protons (benzene 7.3 ppm): the ring current of the π electrons deshields the protons outside the ring.</div></div>
+</div></details></section>
+<script src="js/nmr.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="nmr";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/nmr.js"></script>
+
+</body>
+</html>

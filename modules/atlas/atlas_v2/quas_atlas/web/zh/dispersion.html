@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="benzene,methane">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>分子间相互作用</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/disp.css">
+
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-disp-g.webp"><!--pose:end-->
+<h1>分子间相互作用：氢键与色散</h1>
+<p class="lead">两个氦原子相互吸引，尽管它们既没有电荷，也没有偶极矩，而且电子壳层是闭合的。这就是色散相互作用：一个原子电子密度的瞬时涨落在另一个原子上诱导出协同的涨落。Hartree–Fock 方法无法描述这种协同——其中每个电子都在平均场中运动。因此色散完全包含在相关能中。本页比较两个体系：仅靠色散结合的氦二聚体，以及以氢键静电作用为主的水二聚体。所有曲线都用与巴德理论页面相同的 HF 和 MP2 程序在高斯基组中计算。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>相互作用能是大能量之间的小差值：ΔE = E(AB) − E(A) − E(B)。</li><li>色散是相关效应：HF 中没有色散，He₂ 在 HF 中不成键；在远距离处它按 −C₆/R⁶ 衰减。</li><li>氢键能量的主要部分（静电、极化、电荷转移）在 HF 中就已描述，但相关能所占份额取决于基组：在本计算中约为 2 kJ/mol，在完备基组极限下约占结合能的四分之一。</li><li>基组重叠误差产生虚假吸引；平衡校正（counterpoise）可消除它，否则可能因错误的原因得到正确答案。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>小基组中的 HF 和 MP2</summary><dl><dt>计算的是什么</dt><dd>He₂ 和 (H₂O)₂ 的相互作用曲线、均衡校正、R<sup>−6</sup> 规律。</dd><dt>采用了哪些近似</dt><dd>用 MP2 代替精确方法；基组 aug-cc-pVDZ 和 6-31G*；单体刚性；能量事先计算。 这里的 6-31G* 基组使用笛卡尔 d 函数，与图谱的计算一致（“基组重叠误差”页面使用球谐 d 函数）。水二聚体的参考值 21.0 kJ/mol（5.02 kcal/mol）与该页面的 −4.86 kcal/mol 是不同的估计。</dd><dt>能得出什么结论</dt><dd>定性地：色散是相关效应，BSSE 会歪曲结果。定量地：答案取决于基组。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. 相互作用能：HF 与 MP2</h2>
+  <div class="formula2">ΔE(R) = E(AB) − E(A) − E(B)</div>
+  <p class="small">相互作用能是大数之间的小差值：水二聚体的总能量约为 −152 E<sub>h</sub>，而 ΔE 约为 −0.008 E<sub>h</sub>。因此即使很小的系统误差在这里也很重要。其中最著名的是基组重叠误差（BSSE）：在二聚体中每个单体都“借用”了邻居的基函数，降低了自身能量，从而产生虚假吸引。平衡校正（counterpoise，Boys 与 Bernardi）在二聚体的完整基组中计算 E(A) 和 E(B)：在伙伴的位置上只保留其基函数，没有原子核和电子（“鬼原子”）。</p>
+  <div class="crow"><span class="l">体系</span><span class="grp" id="sysG" role="group" aria-label="体系"></span></div>
+  <div class="crow"><span class="l">方法</span><span class="grp" id="metG" role="group" aria-label="方法"></span></div>
+  <div class="crow"><span class="l">平衡校正</span><span class="grp" id="cpG" role="group" aria-label="平衡校正"></span></div>
+  <div class="crow"><span class="l">距离 R</span><input type="range" id="R" min="0" max="1" step="1" style="width:260px" aria-label="单体之间的距离"><span class="val" id="RV"></span></div>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle" id="ttl1"></div>
+      <svg id="cSvg" viewBox="0 0 540 330" role="img" aria-label="相互作用能随距离的变化"></svg>
+      <div class="legend" id="lg1"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <svg id="mSvg" viewBox="0 0 520 170" role="img" aria-label="二聚体的几何结构"></svg>
+      <div class="tablewrap" id="tab1"></div>
+    </div>
+  </div>
+  <div class="status" id="st1"></div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. 色散按 R<sup>−6</sup> 衰减</h2>
+  <p class="small">在远距离处 He₂ 的色散能趋于 −C₆/R⁶（London 渐近式；对氦 C₆ = 1.46 a.u.）。在双对数坐标中幂律变成斜率为 −6 的直线。这里显示的是经平衡校正的 MP2 相关贡献：ΔE(MP2) − ΔE(HF)。它几乎不依赖于密度重叠，因此最纯粹地体现了色散。</p>
+  <div class="two">
+    <svg id="lSvg" viewBox="0 0 540 320" role="img" aria-label="双对数坐标中的相关贡献"></svg>
+    <div class="status" id="st2"></div>
+  </div>
+  <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>MP2 − HF，经平衡校正</span><span><i class="sw" style="border-color:var(--ok);border-top-style:dashed"></i>−C₆/R⁶，C₆ = 1.46（精确值）</span></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">能否更廉价地考虑电子相关——通过密度泛函？</span><a class="nqA" href="dft.html" data-goto="dft">密度泛函 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>He₂，经平衡校正的 HF：曲线上有极小值吗？为什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">没有：色散是相关效应，而 HF 中没有相关</button><button type="button" class="opt">有，但很浅</button><button type="button" class="opt">有，而且比 MP2 更深</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>没有：在所有 R 处曲线都是排斥的。色散是不同原子电子的协调运动，即相关；在 HF 中每个电子都在平均场中运动，没有这种协调。未校正 HF 的小凹陷（约 −0.3 cm⁻¹）是基组重叠误差造成的假象。</div></div>
+<div class="tq"><p class="qt"><span>He₂：经平衡校正的 MP2 给出精确势阱深度（7.65 cm⁻¹）的多少？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">约三分之一</button><button type="button" class="opt">几乎全部</button><button type="button" class="opt">超过 100%</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>约三分之一：在 6.2 bohr 处为 −2.78 cm⁻¹。aug-cc-pVDZ 基组对色散来说太小——需要具有高角动量的弥散函数，而且 MP2 本身对色散的描述也只是近似的。</div></div>
+<div class="tq"><p class="qt"><span>去掉平衡校正：MP2 给出几乎精确的 He₂ 势阱深度。这是好结果吗？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">不是：这是误差的偶然抵消</button><button type="button" class="opt">是：不需要平衡校正</button><button type="button" class="opt">是，因为基组含有弥散函数</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>不是。吻合是偶然的：基组重叠误差（极小值处约 5 cm⁻¹）抵消了基组的不足。在更大的基组中 BSSE 会减小，这个“好”结果就会消失——这是因错误的原因得到的正确答案。</div></div>
+<div class="tq"><p class="qt"><span>第 2 节：色散能如何随距离衰减？为什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">按 R⁻⁶——瞬时偶极与诱导偶极的相互作用</button><button type="button" class="opt">按 R⁻¹，与库仑作用相同</button><button type="button" class="opt">指数衰减，与重叠相同</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>按 R⁻⁶：在双对数坐标中斜率 ≈ −6。一个原子的瞬时偶极在另一个原子上诱导出偶极，而偶极与诱导偶极的相互作用能与 R⁻⁶ 成正比（London 公式）。</div></div>
+<div class="tq"><p class="qt"><span>(H₂O)₂，6-31G* 基组：在本计算中，二聚体结合能有多少已在 HF 中得到？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">在此基组中几乎全部：静电、极化和电荷转移由平均场描述</button><button type="button" class="opt">几乎没有：氢键是相关效应</button><button type="button" class="opt">正好一半</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>在本计算中几乎全部：带校正的 HF 给出约 −19.9 kJ/mol，MP2 约 −21.8。静电、极化和电荷转移由平均场描述，而相关能在这里只增加约 2 kJ/mol。但这是小基组的结果：完备基组极限下的 HF 约为 −15 kJ/mol，而精确能量约为 −21，即约四分之一的结合能来自相关。不能把“2 kJ/mol”推广到所有氢键。</div></div>
+<div class="tq"><p class="qt"><span>(H₂O)₂：为什么 MP2 的基组重叠误差比 HF 大？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">相关更依赖于基组的完整性</button><button type="button" class="opt">MP2 中电子更多</button><button type="button" class="opt">BSSE 与方法无关</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>相关能随基组的收敛比 HF 能量慢得多，因此单体从邻居的基函数中获益更多。在 6-31G* 基组中 MP2 的 BSSE 约为 8 kJ/mol，HF 约为 4。</div></div>
+</div></details></section>
+<script src="js/dispersion.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="disp";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/dispersion.js"></script>
+
+</body>
+</html>

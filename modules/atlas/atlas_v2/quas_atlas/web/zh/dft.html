@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>密度泛函方法</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/dft.css">
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-dft-g.webp"><!--pose:end-->
+<h1>密度泛函方法</h1>
+<p class="lead">在科恩–沈方法中，能量 E = T<sub>s</sub> + V<sub>ne</sub> + J[ρ] + E<sub>xc</sub>[ρ]，其中 J 是电子云自身的经典排斥，而 E<sub>xc</sub> 要修正其余一切。精确的 E<sub>xc</sub> 是未知的。这里有三个已知精确答案的问题——从中可以看出近似泛函错在哪里，以及为什么需要杂化泛函。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>在 DFT 中能量是密度的泛函；各种近似（LDA、GGA、杂化泛函）的区别在于交换相关部分。</li><li>自相互作用误差：在 LDA 中电子部分地排斥自身。</li><li>精确的 E(N) 是分段线性的，斜率跳变就是基本能隙 I − A = (ε<sub>LUMO</sub> − ε<sub>HOMO</sub>) + Δ<sub>xc</sub>；LDA 和 GGA 的 E(N) 是凸的（离域误差），且没有 Δ<sub>xc</sub>。</li><li>精确交换的比例能减小这一误差，但不能完全消除。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>答案已知的模型问题</summary><dl><dt>计算的是什么</dt><dd>H 和 H₂⁺ 的自相互作用误差、分数 N 下的 E(N)、离域误差。</dd><dt>采用了哪些近似</dt><dd>用一个 e<sup>−ζr</sup> 函数（ζ 取最优）代替完整的自洽解；LSDA、Hartree–Fock 及其混合泛函。</dd><dt>能得出什么结论</dt><dd>泛函误差的符号和特点展示得正确；数值依赖于简化的函数形式。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. 氢原子：自相互作用误差</h2>
+  <p class="small">单个电子没有电子间排斥，因此应有 E<sub>x</sub> = −J 且 E<sub>c</sub> = 0。对精确密度 ρ = <span class=fr><span>e<sup>−2r</sup></span><span>π</span></span>：J = <span class=fr><span>5</span><span>16</span></span> = 0.3125。在哈特里–福克方法中交换恰好抵消 J。近似泛函只能部分抵消它——剩余部分就是<b>自相互作用误差</b>。</p>
+  <div class="two">
+    <svg id="sieBar" viewBox="0 0 540 300" role="img" aria-label="不同泛函下 H 原子的库仑能、交换能和相关能"></svg>
+    <div class="status" id="t1"></div>
+  </div>
+  <div class="tablewrap" id="sieTab"></div>
+  <div class="legend"><span><i class="box" style="background:var(--muted)"></i>J（电子与自身电子云的排斥）</span><span><i class="box" style="background:var(--accent)"></i>E<sub>x</sub></span><span><i class="box" style="background:var(--rho-l)"></i>E<sub>c</sub></span><span>◆ J + E<sub>x</sub> + E<sub>c</sub>——应为 0</span></div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. 分数电子数：E(N) 应为折线</h2>
+  <p class="small">分数 N（H⁺、H 和 H⁻ 的统计混合）下的精确能量在整数 N 之间是线性的，斜率 <span class=fr><span>dE</span><span>dN</span></span> 等于最高占据轨道的能量。N = 1 左侧斜率应为 −I = −0.5，右侧为 −A = −0.0277：N = 1 处的跳跃就是基本带隙。不要把它与轨道带隙混淆：在精确的 Kohn–Sham 理论中 I − A = (ε<sub>LUMO</sub> − ε<sub>HOMO</sub>) + Δ<sub>xc</sub>，其中 Δ<sub>xc</sub> 是交换相关能对电子数导数的不连续（N 越过整数时，势 v<sub>xc</sub> 本身突然平移 Δ<sub>xc</sub>），因此即使精确的 KS 带隙通常也小于 I − A。计算：H 原子的 1s 上有 N 个电子，在每个 N 下优化指数 ζ。</p>
+  <div class="crow"><span class="l">精确交换比例 a</span><input type="range" class="aS" min="0" max="20" step="1" style="width:280px" aria-label="精确交换比例"><span class="val aV"></span><span class="hint">E<sub>xc</sub> = a·E<sub>x</sub><sup>HF</sup> + (1 − a)·E<sub>x</sub><sup>LSDA</sup> + E<sub>c</sub><sup>LSDA</sup>; a = 0 — LSDA</span></div>
+  <div class="two">
+    <div><div class="ptitle">E(N)，原子单位</div><svg id="enChart" viewBox="0 0 540 300" role="img" aria-label="能量随电子数的变化"></svg></div>
+    <div><div class="ptitle">相对于整数 N 间直线的偏差，原子单位</div><svg id="devChart" viewBox="0 0 540 300" role="img" aria-label="E(N) 偏离线性"></svg></div>
+  </div>
+  <div class="legend"><span><i class="sw" style="border-color:var(--ink)"></i>精确</span><span><i class="sw" style="border-color:var(--muted);border-top-style:dashed"></i>哈特里–福克</span><span><i class="sw" style="border-color:var(--accent)"></i>所选 a 下的泛函</span><span><i class="sw" style="border-color:var(--rho-l);border-top-style:dotted"></i>N = 1 处的切线（斜率 = ε<sub>HOMO</sub>）</span></div>
+  <div class="kvt" id="enKv"></div>
+  <div class="status" id="t2"></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">3. H₂⁺：离域误差</h2>
+  <p class="small">H₂⁺ 只有一个电子，因此 Hartree–Fock 在这里是精确的（在最优 ζ 的 STO-3G 基组内）。核间距拉开时，精确能量趋于 E(H) = −0.5。对称的离域密度本身是允许的：在极限下，“电子在一个原子上”与“每个原子上各半个电子”两种描述应当简并。具有凸 E(N) 的泛函的错误在于另一点：两个半电子给出 2·E(½)——低于正确极限，即泛函人为地偏好分数电荷。</p>
+  <div class="crow"><span class="l">精确交换比例 a</span><input type="range" class="aS" min="0" max="20" step="1" style="width:280px" aria-label="精确交换比例"><span class="val aV"></span></div>
+  <div class="two">
+    <div><svg id="h2Chart" viewBox="0 0 540 320" role="img" aria-label="H2+ 的能量曲线"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--ink)"></i>哈特里–福克 = 单电子精确解</span><span><i class="sw" style="border-color:var(--accent)"></i>泛函：电子在 σ<sub>g</sub> 上（在两个原子上均分）</span><span><i class="sw" style="border-color:var(--rho-l);border-top-style:dashed"></i>泛函：电子在一个原子上</span></div></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><div class="crow"><span class="l" style="min-width:auto">R</span><input type="range" id="Rs" min="0" max="94" step="1" style="width:220px" aria-label="核间距"><span class="val" id="Rv"></span></div><div class="kvt" id="h2Kv"></div><div class="status" id="t3"></div></div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">如何由原子轨道构建分子轨道并预测键级？</span><a class="nqA" href="diatomics.html" data-goto="mo">双原子分子的分子轨道 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>LSDA 中的 H 原子：相关能应该是多少，实际得到多少？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">负值，LSDA 给出正确结果</button><button type="button" class="opt" data-ok="1">零，而 LSDA 给出虚假的负值</button><button type="button" class="opt">正值</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>单个电子没有相关，精确值 E<sub>c</sub> = 0。LSDA 给出 E<sub>c</sub> = −0.022，而交换 E<sub>x</sub> = −0.268，而不是 −0.3125：电子“排斥自身”约 58 kJ/mol。</div></div>
+<div class="tq"><p class="qt"><span>为什么对于 H 原子，“不考虑自旋的 LDA”比 LSDA 更差？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">LDA 不考虑相关</button><button type="button" class="opt" data-ok="1">该公式把密度在两种自旋间平分——自相互作用误差更大</button><button type="button" class="opt">LDA 高估了交换</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>单个电子的 ρ<sub>β</sub> = 0，体系完全自旋极化。非极化电子气的公式把密度在两种自旋间平分，给出 E<sub>x</sub> = −0.213——自相互作用误差几乎大三倍。</div></div>
+<div class="tq"><p class="qt"><span>LSDA，a = 0：H 原子的 ε<sub>HOMO</sub> 与电离能相比如何？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">绝对值几乎只有 I 的一半</button><button type="button" class="opt">与 I 相同</button><button type="button" class="opt">绝对值大于 I</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>ε<sub>HOMO</sub> ≈ −0.27，而 I = 0.5：Koopmans 定理对 LDA 不成立。原因是 E(N) 向下凸：N → 1⁻ 时的斜率绝对值小于割线斜率。因此 LDA 和 GGA 的轨道能不能用作电离势。</div></div>
+<div class="tq"><p class="qt"><span>N = 1 处 E(N) 的精确斜率跳变就是基本能隙 I − A。它与 Kohn–Sham 轨道能隙有什么关系？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">I − A = KS 能隙 + Δ<sub>xc</sub></button><button type="button" class="opt">精确的 KS 能隙总是等于 I − A</button><button type="button" class="opt">两者毫无关系</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>在精确理论中 I − A = (ε<sub>LUMO</sub> − ε<sub>HOMO</sub>) + Δ<sub>xc</sub>：即使精确的 KS 带隙也比 I − A 小一个 E<sub>xc</sub> 对电子数导数的不连续 Δ<sub>xc</sub>（势 v<sub>xc</sub> 也突然平移同样的量）。对于光滑的近似泛函（LDA、GGA），Δ<sub>xc</sub> = 0，E(N) 斜率的跳跃就等于其轨道带隙（这里 LSDA 为 0.17，精确值为 0.472）。</div></div>
+<div class="tq"><p class="qt"><span>R = 10 bohr 的 H₂⁺：LSDA 认为哪种描述更有利，为什么这是错误？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">定域的：电子在一个原子上</button><button type="button" class="opt">两者相同，本应如此</button><button type="button" class="opt" data-ok="1">离域的：分数电荷的能量被人为压低</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>离域的：σ<sub>g</sub> 为 −0.549，而在一个原子上为 −0.473，尽管在此基组中精确极限为 −0.495。在精确理论中两种描述在该极限下是简并的，而 LSDA 人为地压低了分数电荷的能量：2·E(½) &lt; E(1)。误差约 140 kJ/mol。</div></div>
+<div class="tq"><p class="qt"><span>拖动精确交换比例 a。E(N) 的曲率和 H₂⁺ 的误差如何变化？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">增大</button><button type="button" class="opt">不变</button><button type="button" class="opt" data-ok="1">减小</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>曲率和离域误差减小：精确交换使 E(N) 向上凸，LSDA 则向下凸。当 a = 0.25（25 % 精确交换，与 PBE0 相同；这里与 LSDA 而非 PBE 混合）时 E(½) − ½E(1) = −0.037 而不是 −0.050，H₂⁺ 在 R = 10 bohr 处的误差为 118 kJ/mol。即使 a = 1 仍残留 LSDA 相关的自相互作用。</div></div>
+</div></details></section>
+<script src="js/dft.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="dft";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/dft.js"></script>
+
+</body>
+</html>

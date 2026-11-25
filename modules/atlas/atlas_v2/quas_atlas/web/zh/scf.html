@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>SCF 迭代</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/scf.css">
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/addon.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-scf-g.webp"><!--pose:end-->
+<h1>SCF 迭代</h1>
+<p class="lead">对双原子分子在 STO-3G 基组下进行真正的哈特里–福克–罗特汉计算——每个原子一个 1s 函数，与经典的 H₂ 分析相同。逐步执行自洽循环，观察矩阵、轨道和能量如何变化。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>Fock 算符依赖于轨道本身，因此 Hartree–Fock–Roothaan 方程 FC = SCε 要迭代求解直至自洽。</li><li>收敛取决于初始猜测；DIIS 通过对迭代历史外推来加速收敛。</li><li>RHF 不能正确描述键的断裂；UHF 以自旋污染为代价给出正确极限。</li><li>马利肯和勒夫丁电荷是对密度的约定划分：依赖于方案和基组。</li><li>根据库普曼斯定理，占据轨道的 −ε 估计垂直电离能：轨道弛豫和电子相关的修正符号相反、部分抵消；用空轨道的 −ε 作电子亲和能并不可靠。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>最小基组中的 Hartree–Fock</summary><dl><dt>计算的是什么</dt><dd>STO-3G 基组中 H₂ 和 HeH⁺ 的 RHF 与 UHF 迭代、能量曲线、布居。</dd><dt>采用了哪些近似</dt><dd>HF 方法（无相关）；最小基组——每个原子一个 1s 函数。</dd><dt>能得出什么结论</dt><dd>SCF 的机制展示得很准确；收敛的能量是该基组中 HF 方程的解，而不是分子的精确能量。</dd></dl></details><!--lim:end-->
+<section class="controls" aria-label="计算参数">
+  <div class="crow"><span class="l">分子</span><span id="mol" role="group" aria-label="分子"></span></div>
+  <div class="crow"><span class="l">距离 R</span><input type="range" id="R" min="0.8" max="4" step="0.01"><span class="val" id="Rv"></span></div>
+  <div class="crow"><span class="l">初始猜测 P⁽⁰⁾</span><span id="guess" role="group" aria-label="初始猜测"></span></div>
+  <div class="crow"><span class="l">收敛加速</span><span id="acc" role="group" aria-label="加速"></span><span class="hint" id="accHint"></span></div>
+  <div class="crow" id="dampRow"><span class="l">阻尼 α</span><input type="range" id="damp" min="0" max="0.95" step="0.05"><span class="val" id="dampv"></span><span class="hint">P = (1 − α)·P<sub>新</sub> + α·P<sub>旧</sub></span></div>
+</section>
+<div class="work">
+  <div class="panel">
+    <div class="ptitle">自洽循环</div>
+    <svg id="flow" viewBox="0 0 480 470" role="img" aria-label="SCF 循环示意图"></svg>
+    <div class="row"><button class="btn primary" id="bRun" type="button">▶ 开始</button><button class="btn" id="bStep" type="button">单步</button><button class="btn" id="bIter" type="button">一次迭代</button><button class="btn" id="bReset" type="button">重新开始</button></div>
+    <div class="row" style="gap:8px"><span class="hint">速度</span><input type="range" id="spd" min="150" max="1500" step="50" style="width:180px" aria-label="自动运行速度"><span class="val" id="spdv"></span></div>
+    <p class="hint" style="margin:0">“开始”——循环自动逐步进行；当前步骤在流程图上高亮显示。“单步”和“一次迭代”——手动执行。更改参数后计算重新开始。</p>
+    <div class="status" id="status" aria-live="polite"></div>
+  </div>
+  <div class="panel">
+    <div class="ptitle" id="matTitle">当前步骤的矩阵（原子单位）</div>
+    <div class="mats" id="mats"></div>
+    <div class="kv" id="kv"></div>
+    <div class="ptitle" style="margin-top:4px">能级图：F 的对角元（基函数）与轨道 ε</div>
+    <svg id="mo" viewBox="0 0 460 200" role="img" aria-label="MO 能级图"></svg>
+    <details><summary>积分：S, h, (μν|λσ)</summary><div class="mats" id="ints" style="margin-top:8px"></div></details>
+  </div>
+</div>
+<div class="two">
+  <div class="panel">
+    <div class="ptitle">沿分子轴的轨道与密度</div>
+    <svg id="orb" viewBox="0 0 540 280" role="img" aria-label="轴上的轨道"></svg>
+    <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>φ₁ — 占据轨道（σ）</span><span><i class="sw" style="border-color:var(--virt);border-top-style:dashed"></i>φ₂ — 空轨道（σ*）</span><span><i class="box" style="background:var(--rho);border:1px solid var(--rho-l)"></i>电子密度 ρ</span></div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">收敛</div>
+    <svg id="conv" viewBox="0 0 540 280" role="img" aria-label="各次迭代的能量与密度矩阵变化"></svg>
+    <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>各次迭代的 E（左轴）</span><span><i class="sw" style="border-color:var(--warn)"></i>lg ‖ΔP‖（右轴）</span><span><i class="sw" style="border-color:var(--muted);border-top-style:dashed"></i>阈值 δ = 10⁻⁶</span><span><i class="sw" style="border-color:var(--warn);border-top-style:dotted;opacity:.6"></i><span id="ghostLab"></span></span></div>
+  </div>
+</div>
+<section class="panel" aria-labelledby="hT">
+  <h2 id="hT">迭代</h2>
+  <div class="tablewrap"><table><thead><tr><th>k</th><th>总 E</th><th>E − E<sub>收敛</sub></th><th>ε₁</th><th>ε₂</th><th id="thq">电荷</th><th>‖ΔP‖</th></tr></thead><tbody id="tab"></tbody></table></div>
+  <p class="hint" id="note"></p>
+  <details open><summary>量子化学程序输出格式中的相同数据</summary>
+    <p class="hint" style="margin:6px 0">仿照 ORCA 程序输出的简化示例：SCF 迭代表、最终能量、轨道能和电荷。</p>
+    <pre id="log" style="font-family:var(--f-mono);font-size:12.5px;line-height:1.45;background:var(--soft);border-radius:8px;padding:10px 12px;overflow-x:auto;margin:0"></pre></details>
+</section>
+<section class="panel" aria-labelledby="hS">
+  <h2 id="hS">势能曲线：RHF 与 UHF</h2>
+  <p class="hint" style="font-size:14px" id="scanIntro"></p>
+  <div class="two">
+    <div><svg id="scan" viewBox="0 0 540 300" role="img" aria-label="能量随距离的变化" style="cursor:pointer"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>RHF</span><span><i class="sw" style="border-color:var(--rho-l)"></i>UHF</span><span><i class="sw" style="border-color:var(--muted);border-top-style:dashed"></i>R → ∞ 的极限（分离的原子）</span><span>● — 当前 R；点击图表可改变 R</span></div></div>
+    <div style="display:flex;flex-direction:column;gap:10px"><svg id="s2" viewBox="0 0 540 170" role="img" aria-label="UHF 自旋污染"></svg><div class="kv" id="scanKv"></div><div class="status" id="scanText"></div></div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="hZ">
+  <h2 id="hZ">变分原理：基函数的指数 ζ</h2>
+  <p class="hint" style="font-size:14px">1s 基函数 ~ e<sup>−ζr</sup>（这里用 STO-3G 的三个高斯函数来近似）。ζ 越大，函数越“紧缩”。根据变分原理，最好的函数是给出最低能量的那个：我们要找的正是它。</p>
+  <div class="crow"><span class="l">改变 ζ</span><span id="zwho" role="group" aria-label="谁的指数"></span></div>
+  <div class="crow"><span class="l">ζ</span><input type="range" id="zeta" min="0.6" max="3.6" step="0.01"><span class="val" id="zetav"></span><button class="btn" id="zStd" type="button">标准 STO-3G</button><button class="btn" id="zMin" type="button">寻找极小值</button></div>
+  <div class="two"><svg id="zchart" viewBox="0 0 540 240" role="img" aria-label="能量随 ζ 的变化"></svg><div class="status" id="zText"></div></div>
+</section>
+<section class="panel" aria-labelledby="hPop">
+  <h2 id="hPop">布居分析：马利肯与勒夫丁</h2>
+  <p class="hint" style="font-size:14px">电子数 N = Σ<sub>μν</sub>P<sub>μν</sub>S<sub>νμ</sub> = Tr(PS)。对角项 P<sub>μμ</sub> 很容易归属于原子，而重叠布居 2P<sub>12</sub>S<sub>12</sub> 属于化学键。<b>马利肯</b>将其在两个原子间平分：N<sub>A</sub> = (PS)<sub>AA</sub>。<b>勒夫丁</b>先对基组做对称正交化（χ′ = S<sup>−1/2</sup>χ），此时不存在重叠：N<sub>A</sub> = (S<sup>1/2</sup>PS<sup>1/2</sup>)<sub>AA</sub>。电荷 q<sub>A</sub> = Z<sub>A</sub> − N<sub>A</sub>。计算基于当前 R 和 ζ 下已收敛的 RHF。</p>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:10px"><svg id="popBars" viewBox="0 0 540 210" role="img" aria-label="电子在原子间的划分"></svg><div class="tablewrap" id="popTab"></div></div>
+    <div style="display:flex;flex-direction:column;gap:10px"><svg id="popR" viewBox="0 0 540 260" role="img" aria-label="电荷与键级随 R 的变化"></svg><div class="legend" id="popLeg"></div><div class="status" id="popText"></div></div>
+  </div>
+</section>
+<section class="panel addon" aria-labelledby="hKoop">
+  <h2 id="hKoop">轨道能与库普曼斯定理</h2>
+  <p class="hint">在同一 STO-3G 基组中用三种方式求电离能：由轨道能（库普曼斯）、由阳离子与分子的哈特里–福克能量之差（ΔSCF），以及用中性分子的完全组态相互作用。阳离子只有一个电子，因此其能量在该基组内是精确的。</p>
+  <div class="crow"><span class="l">分子</span><span class="grp" id="kG" role="group" aria-label="分子"></span></div>
+  <div class="crow"><span class="l">距离 R</span><input type="range" id="kR" min="0.8" max="4" step="0.01" value="1.4" aria-label="距离"><span class="val" id="kRv"></span></div>
+  <div class="tablewrap"><table class="tbl" id="kTab"></table></div>
+  <p class="status note" id="kNote"></p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">能量收敛了——这是否意味着答案正确？</span><a class="nqA" href="h2.html" data-goto="h2">H₂ 的解离 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>标准参数下的 HeH⁺：不用 DIIS 和使用 DIIS 各需要多少次迭代？R = 3.5 玻尔时呢？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">7 和 6；R = 3.5 玻尔时为 7 和 6</button><button type="button" class="opt" data-ok="1">7 和 6；R = 3.5 玻尔时为 13 和 7</button><button type="button" class="opt">13 和 7；R = 3.5 玻尔时为 7 和 6</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>R = 1.4632 玻尔时分别为 7 和 6，R = 3.5 玻尔时为 13 和 7。键被拉长时，简单迭代收敛更慢，而 DIIS 的优势更明显。</div></div>
+<div class="tq"><p class="qt"><span>逐步进行 HeH⁺ 的迭代，观察 H 上的电荷。它如何变化？为什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">从 ≈ +0.53 增大到 ≈ +0.84</button><button type="button" class="opt">不变</button><button type="button" class="opt" data-ok="1">从 ≈ +0.84 减小到 ≈ +0.53</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>从第一次迭代的 +0.84（F = h：没有排斥，电子几乎全部在 He 上）变为收敛后的 +0.53：电子间的排斥把一部分密度推向氢。</div></div>
+<div class="tq"><p class="qt"><span>H₂，初始猜测为“两个电子都在 H(1) 上”。计算收敛到哪里？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">收敛到 H⁻H⁺ 解</button><button type="button" class="opt" data-ok="1">收敛到电荷为零的对称解</button><button type="button" class="opt">计算不收敛</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>收敛到原子电荷为零的对称解——共 7 次迭代。计算自己恢复了分子的对称性。</div></div>
+<div class="tq"><p class="qt"><span>H₂ 的 E(R) 曲线：R = 6 bohr 时 UHF 的 ⟨S²⟩ ≈ 1 意味着什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">这是纯三重态</button><button type="button" class="opt" data-ok="1">该函数是单重态和三重态的混合</button><button type="button" class="opt">这是计算错误</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>UHF 函数是单重态（⟨S²⟩ = 0）和三重态（⟨S²⟩ = 2）的混合，即自旋污染。UHF 大约在 2.2 bohr 处与 RHF 分开，以破坏自旋对称性为代价正确描述解离极限；但在有限 R 下其能量仍高于 CI（在 4 bohr 时约高 21 kJ/mol）。</div></div>
+<div class="tq"><p class="qt"><span>变分原理：把 H₂ 从 1.4 bohr 压缩到 0.8 bohr，最优 ζ 如何变化？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">减小</button><button type="button" class="opt">不变</button><button type="button" class="opt" data-ok="1">增大：函数向原子核收缩</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>增大：1.4 bohr 时约 1.19，0.8 bohr 时约 1.37。压缩时函数向原子核“收缩”；在 R → 0 的极限得到 ζ ≈ 1.69 的 He 原子。</div></div>
+<div class="tq"><p class="qt"><span>布居分析，R = 1.4632 玻尔的 HeH⁺：按马利肯哪个原子更正？按勒夫丁呢？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">马利肯——H，勒夫丁——He</button><button type="button" class="opt">两种方案都是 H</button><button type="button" class="opt">两种方案都是 He</button><button type="button" class="opt">马利肯——He，勒夫丁——H</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>按马利肯是 H（+0.530，He 为 +0.470），按勒夫丁是 He（+0.527，H 为 +0.473）。两种方案甚至连差值的符号都不同：原子电荷不是可观测量，而是人为划分的结果。</div></div>
+<div class="tq"><p class="qt"><span>在变分原理一节中设 ζ(H) = 1.6。H 的马利肯电荷怎样了，这说明什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">没变：电荷是分子的性质</button><button type="button" class="opt" data-ok="1">明显改变：马利肯电荷依赖于基组</button><button type="button" class="opt">改变了符号</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>从 +0.530 增大到 +0.597（勒夫丁电荷为 +0.545），尽管分子相同：马利肯电荷强烈依赖于基组。</div></div>
+<div class="tq"><p class="qt"><span>H₂：为什么迈耶键级在任何 R 下都等于 1，尽管重叠布居降到零？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">RHF 总是把两个电子放在同一个成键 MO 上</button><button type="button" class="opt">迈耶键级按定义与距离无关</button><button type="button" class="opt">重叠布居实际上并没有下降</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>RHF 总是把两个电子放在同一个成键 MO 上，即使原子相距很远也描述的是一个双电子键。这也正是 RHF 无法正确描述 H₂ 解离的原因。</div></div>
+<div class="tq"><p class="qt"><span>SCF 已收敛：能量在第十位小数上不再变化。能否据此说出它与分子精确能量有多接近？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">根据这些数据无法判断：收敛并不说明方法和基组的误差</button><button type="button" class="opt">能：精确到 10⁻¹⁰ E<sub>h</sub></button><button type="button" class="opt">能：精确到约 1 kJ/mol</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>根据这些数据无法判断。收敛只说明该基组中的 Hartree–Fock 方程已经解出。方法误差（没有相关）和基组误差依然存在：对于 1.4 bohr 处的 H₂，在 6-31G** 基组中收敛的 RHF 比精确能量高 43 mE<sub>h</sub>（约 113 kJ/mol）。</div></div>
+<div class="tq"><p class="qt"><span>“库普曼斯定理”：R = 1.46 bohr 的 HeH⁺。库普曼斯电离能和 ΔSCF 电离能哪个大？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">ΔSCF，大一个相关能</button><button type="button" class="opt" data-ok="1">库普曼斯，大一个弛豫能（约 1.2 eV）</button><button type="button" class="opt">由对称性两者相等</button><button type="button" class="opt">ΔSCF，大 1.2 eV</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>库普曼斯电离能更大：−ε₁ = 43.5 eV，ΔSCF = 42.3 eV。阳离子轨道重排降低了其能量——这就是弛豫；最小基下的 H₂ 没有弛豫，轨道由对称性决定。</div></div>
+</div></details></section>
+<script src="js/scf.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="scf";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/scf.js"></script>
+
+<script src="js/koop.js"></script>
+</body>
+</html>

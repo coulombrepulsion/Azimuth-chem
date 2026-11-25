@@ -1,0 +1,17 @@
+start formaldehyde_tz_nwchem
+title "Formaldehyde, B3LYP/cc-pVTZ, spherical d and f, no symmetry (Azimuth: the order of the pure functions)"
+geometry units angstrom noautosym noautoz nocenter
+  C     0.210000    -0.130000     0.080000
+  O     0.669265    -1.125763     0.579557
+  H     0.800180     0.806532    -0.011722
+  H    -0.827630    -0.096387    -0.314984
+end
+basis spherical
+  * library cc-pvtz
+end
+dft
+  xc b3lyp
+  mulliken
+  print "final vectors" "final vectors analysis"
+end
+task dft energy

@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,ethanol,benzene">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>ЯМР: от экранирования к химическому сдвигу</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-nmr-g.webp"><!--pose:end-->
+<h1>ЯМР: от экранирования к химическому сдвигу</h1>
+<p class="lead">Ядро с магнитным моментом в поле B₀ прецессирует с частотой Лармора. Электроны вокруг ядра немного ослабляют поле — экранируют его, и разные атомы одной молекулы резонируют на чуть разных частотах. Программа считает экранирование σ (метод GIAO), а химический сдвиг δ получают вычитанием σ эталона — тетраметилсилана, рассчитанного тем же методом.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Частота Лармора ν₀ = γB₀/2π: для ¹H это 42,58 МГц на тесла, прибор «на 400 МГц» имеет поле 9,4 Т.</li><li>Сдвиг δ = σ(TMS) − σ в миллионных долях (ppm) от поля не зависит; эталон надо считать тем же методом и базисом, что и молекулу.</li><li>n эквивалентных соседей со спином ½ дают n + 1 линию с интенсивностями из треугольника Паскаля; расщепление J в герцах от поля не зависит.</li><li>Точность хорошего DFT-расчёта — 0,1–0,3 ppm для ¹H и 2–5 ppm для ¹³C; растворитель и конформеры меняют сдвиги на сравнимую величину.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> изолированная молекула, спектр первого порядка</summary><dl><dt>Что вычисляется</dt><dd>Частоты Лармора ядер в заданном поле; сдвиги δ из рассчитанных экранирований σ и эталона (или линейной шкалы); мультиплеты первого порядка и вид спектра.</dd><dt>Какие приближения приняты</dt><dd>Расщепление первого порядка (J много меньше разности частот); все соседи эквивалентны и с одним J; форма линии — лоренциан; экранирования берутся из вашего расчёта как есть.</dd><dt>Какой вывод можно сделать</dt><dd>Как связаны σ, δ, поле и J и как читать спектр расчёта — да; спектры второго порядка, обмен, усреднение по конформерам и влияние растворителя здесь не моделируются.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Частота Лармора</h2>
+  <div class="crow"><span class="l">Прибор, частота ¹H</span><span class="grp" id="fG" role="group" aria-label="Частота прибора"></span></div>
+  <div class="crow"><span class="l">Поле B₀, Т</span><input type="range" id="B" min="1" max="28.2" step="0.01" value="9.39" aria-label="Поле"><span class="val" id="Bv"></span></div>
+  <div class="cards" id="lcards"></div>
+  <p class="hint" id="lNote"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Мультиплет: соседи, J и поле</h2>
+  <div class="crow"><span class="l">Эквивалентных соседей n</span><input type="range" id="n" min="0" max="6" step="1" value="2" aria-label="Число соседей"><span class="val" id="nv"></span></div>
+  <div class="crow"><span class="l">Константа J</span><input type="range" id="J" min="0" max="20" step="0.1" value="7" aria-label="Константа J"><span class="val" id="Jv"></span></div>
+  <div class="crow"><span class="l">Прибор</span><span class="grp" id="mfG" role="group" aria-label="Частота прибора"></span></div>
+  <svg id="mchart" class="ch" viewBox="0 0 960 240" role="img" aria-label="Линии мультиплета"></svg>
+  <p class="status" id="mNote"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Свой расчёт: σ → δ и спектр</h2>
+  <p class="hint">По строке на группу эквивалентных ядер: экранирование σ (ppm) из выходного файла (ORCA печатает его в блоке «CHEMICAL SHIELDING SUMMARY», Gaussian — «Isotropic»), число ядер, число эквивалентных соседей и J (Гц). Эталон — σ ядра в TMS, рассчитанном тем же методом и базисом.</p>
+  <div class="cin">
+    <label class="wide">σ, ядер, соседей, J<textarea id="cRows" spellcheck="false">30.66 3 2 7.0
+28.19 2 3 7.0
+29.27 1 0 0</textarea></label>
+    <label>σ эталона (TMS), ppm<input id="cRef" inputmode="decimal" value="31.88"></label>
+    <label>Частота прибора, МГц<input id="cF" inputmode="decimal" value="400"></label>
+    <label class="chk"><input type="checkbox" id="cScale"> линейная шкала вместо эталона</label>
+    <label>наклон m (обычно около −1)<input id="cM" inputmode="decimal" value="-1.05"></label>
+    <label>отрезок b, ppm<input id="cB" inputmode="decimal" value="31.9"></label>
+  </div>
+  <div class="row"><button type="button" class="btn" id="bEx">Пример: этанол</button><button type="button" class="btn primary" id="bCalc">Рассчитать</button></div>
+  <div class="status" id="cMsg" role="status"></div>
+  <svg id="schart" class="ch" viewBox="0 0 960 260" role="img" aria-label="Спектр ЯМР" hidden></svg>
+  <p class="hint">Пример — учебный: σ этанола подобраны так, чтобы сдвиги совпали с опытными в CDCl₃ (CH₃ 1,22, CH₂ 3,69, OH около 2,6 ppm; сдвиг OH зависит от концентрации и обмена). Ось δ в ЯМР растёт справа налево.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Сдвиг зависит от метода и базиса. Как проверить, что расчёт воспроизводит опыт?</span><a class="nqA" href="validation.html" data-goto="val">Проверка расчётов →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">ЭПР: контакт Ферми и базис у ядра</h2>
+  <div class="crow"><span class="l">Функция 1s водорода</span><span class="grp" id="fG" role="group" aria-label="Функция 1s водорода"></span></div>
+  <svg id="fchart" class="ch" viewBox="0 0 960 280" role="img" aria-label="Функция 1s водорода: точная и гауссова"></svg>
+  <div class="legend" id="fleg"></div>
+  <div class="cards" id="fcards"></div>
+  <p class="status" id="fNote"></p>
+  <p class="hint">A<sub>iso</sub> = (2μ₀/3h)·g<sub>e</sub>μ<sub>B</sub>g<sub>N</sub>μ<sub>N</sub>·|ψ(0)|²; для 1s водорода |ψ(0)|² = 1/(πa₀³). Одна гауссиана — оптимальная (α = 8/(9π)), STO-3G и STO-6G — стандартные сжатия для ζ = 1. Лекция 5, вывод 6.</p>
+</section>
+<section class="panel" aria-labelledby="h5s">
+  <h2 id="h5s">NICS: кольцевой ток и ароматичность</h2>
+  <div class="crow"><span class="l">Кольцо</span><span class="grp" id="rG" role="group" aria-label="Кольцо"></span></div>
+  <div class="crow"><span class="l">NICS(0) от π-тока, ppm</span><input type="range" id="ni" min="-30" max="30" step="0.5" value="-10" aria-label="NICS0"><span class="val" id="niv"></span></div>
+  <div class="crow"><span class="l">Радиус кольца, Å</span><input type="range" id="rr" min="0.8" max="2" step="0.01" value="1.39" aria-label="R"><span class="val" id="rrv"></span></div>
+  <svg id="rchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="NICS вдоль оси кольца и в его плоскости"></svg>
+  <div class="legend" id="rleg"></div>
+  <div class="cards" id="rcards"></div>
+  <p class="status" id="rNote"></p>
+  <p class="hint">Модель — виток тока радиуса R (закон Био–Савара), масштабированный так, чтобы в центре было заданное NICS(0); учтён только π-ток, без вклада σ-связей. Ориентиры лекции: бензол около −10, циклобутадиен около +27 ppm (Schleyer et al., JACS 118, 6317 (1996)). Протон кольца — в 1,09 Å снаружи.</p>
+</section>
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Поставьте поле 14,1 Т. На какой частоте резонируют протоны?</span></p>
+<p class="olab">Частота ¹H, МГц</p><div class="opts" role="group"><button type="button" class="opt">400</button><button type="button" class="opt" data-ok="1">600</button><button type="button" class="opt">900</button><button type="button" class="opt">150</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>600 МГц: ν = 42,577·14,1 = 600 МГц. Приборы называют по частоте протонов: «600-мегагерцовый» значит 14,1 Т.</div></div>
+<div class="tq"><p class="qt"><span>Мультиплет CH₃ в этаноле: у метильной группы два соседа CH₂. Каковы интенсивности линий?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">1:1</button><button type="button" class="opt" data-ok="1">1:2:1</button><button type="button" class="opt">1:3:3:1</button><button type="button" class="opt">1:4:6:4:1</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Триплет 1:2:1: n = 2 соседа дают n + 1 = 3 линии с коэффициентами строки треугольника Паскаля.</div></div>
+<div class="tq"><p class="qt"><span>J = 7 Гц, n = 2, прибор 300 МГц: какова ширина триплета в ppm?</span></p>
+<p class="olab">Ширина, ppm</p><div class="opts" role="group"><button type="button" class="opt">0,023</button><button type="button" class="opt" data-ok="1">0,047</button><button type="button" class="opt">7</button><button type="button" class="opt">14</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>0,047 ppm: ширина 2J = 14 Гц, 14/300 = 0,047 ppm. На 600 МГц та же ширина займёт вдвое меньше — 0,023 ppm, поэтому мультиплеты в сильном поле не перекрываются.</div></div>
+<div class="tq"><p class="qt"><span>Блок «Свой расчёт»: σ(TMS) = 31,9 ppm, у протона σ = 24,6 ppm. Какой это протон?</span></p>
+<p class="olab">δ, ppm</p><div class="opts" role="group"><button type="button" class="opt">1,3 — алкильный</button><button type="button" class="opt">3,5 — у кислорода</button><button type="button" class="opt" data-ok="1">7,3 — ароматический</button><button type="button" class="opt">9,8 — альдегидный</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>δ = 31,9 − 24,6 = 7,3 ppm — область ароматических протонов (бензол 7,3 ppm): кольцевой ток π-электронов дезэкранирует протоны снаружи кольца.</div></div>
+</div></details></section>
+<script src="js/nmr.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="nmr";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/nmr.js"></script>
+
+</body>
+</html>

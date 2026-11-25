@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Свойства как производные энергии</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>Свойства как производные энергии</h1>
+<p class="lead">Дипольный момент, поляризуемость, силы на ядрах, частоты — это производные энергии по полю или по координатам. Если программа не умеет считать их аналитически, их получают конечными разностями — и тут начинаются тонкости: какой взять шаг, с какой точностью нужна энергия, почему поляризуемости нужны диффузные функции.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Свойство — коэффициент ряда энергии по возмущению: E(F) = E₀ − μF − ½αF² − …, μ = −∂E/∂F, α = −∂²E/∂F². Теорема Гельмана–Фейнмана: dE/dλ = ⟨Ψ|∂Ĥ/∂λ|Ψ⟩ для точной или полностью вариационной функции (ХФ, DFT, CASSCF), но не для MP2 и CC.</li><li>Конечные разности: вперёд — ошибка ∝ h, центральная — ∝ h², вторая производная по трём точкам — ∝ h². Шум энергии δE даёт ошибку δE/h (первая производная) и δE/h² (вторая): слишком малый шаг так же плох, как слишком большой.</li><li>Оптимальный шаг центральной разности h ≈ (3δE/|f‴|)^⅓: при δE = 10⁻⁶ хартри — около 0,01 ангстрема. Численная производная стоит 2 расчёта на координату — 6N для градиента, поэтому оптимизация идёт на аналитических силах.</li><li>Метод конечного поля: α по энергиям требует SCF до 10⁻⁹–10⁻¹⁰ (шум делится на F²); по диполям в поле шум делится на F. Диполь иона зависит от начала координат: Δμ = Q·d, 4,8 Д на ангстрем.</li><li>Поляризуемость = 2Σ|⟨n|μ̂|0⟩|²/(E_n − E₀). Поле тянет плотность наружу: без диффузных функций поляризуемость воды занижена почти вдвое (def2-SVP 5,3, def2-SVPD 9,8 при опыте 9,8 а.е.).</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Конечные разности: какой шаг взять</h2>
+  <div class="crow"><span class="l">Энергия известна до 10<sup>−n</sup> хартри, n</span><input type="range" id="dg" min="4" max="14" step="1" value="6" aria-label="n"><span class="val" id="dgv"></span></div>
+  <svg id="schart" class="ch" viewBox="0 0 960 320" role="img" aria-label="Ошибка производной в зависимости от шага"></svg>
+  <div class="legend" id="sleg"></div>
+  <div class="cards" id="scards"></div>
+  <p class="status" id="sNote"></p>
+  <p class="hint">Пример лекции 1: E(R) = D<sub>e</sub>(1 − e<sup>−a(R−R<sub>e</sub>)</sup>)², D<sub>e</sub> = 0,17, a = 1,0, R<sub>e</sub> = 1,4 (ат. ед.); производная при R = 1,6 бора, E′ = 0,050460. Энергии округлены до 10<sup>−n</sup>, как будто SCF сошёлся до n-го знака. Вперёд: [E(R+h) − E(R)]/h; центральная: [E(R+h) − E(R−h)]/(2h); вторая: [E(R+h) + E(R−h) − 2E(R)]/h².</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Конечное поле: дипольный момент и поляризуемость</h2>
+  <div class="crow"><span class="l">lg F (поле, а.е.)</span><input type="range" id="lf" min="-5" max="-1" step="0.05" value="-2.7" aria-label="lgF"><span class="val" id="lfv"></span></div>
+  <div class="crow"><span class="l">lg δE (сходимость SCF, хартри)</span><input type="range" id="ld" min="-12" max="-4" step="0.5" value="-8" aria-label="lgδE"><span class="val" id="ldv"></span></div>
+  <svg id="fchart" class="ch" viewBox="0 0 960 320" role="img" aria-label="Ошибки μ и α в зависимости от поля"></svg>
+  <div class="legend" id="fleg"></div>
+  <div class="cards" id="fcards"></div>
+  <p class="status" id="fNote"></p>
+  <p class="hint">Модельная вода: E(F) = E₀ − μF − ½αF² − βF³/6 − γF⁴/24, μ = 0,728 а.е. (1,85 Д), α = 9,8 а.е.; β и γ — порядки величины. Каждая энергия сдвинута на случайное число до ±δE, диполь — до ±δE (печать с тем же числом знаков). 1 а.е. поля = 5,14·10<sup>11</sup> В/м.</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Поляризуемость: два уровня и диффузные функции</h2>
+  <div class="crow"><span class="l">Переходный диполь |μ₀₁|, а.е.</span><input type="range" id="m1" min="0.1" max="3" step="0.05" value="1.2" aria-label="μ01"><span class="val" id="m1v"></span></div>
+  <div class="crow"><span class="l">Энергия возбуждения ΔE, хартри</span><input type="range" id="ge" min="0.05" max="1" step="0.01" value="0.3" aria-label="ΔE"><span class="val" id="gev"></span></div>
+  <svg id="tchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Поляризуемость воды в разных базисах и в модели двух уровней"></svg>
+  <div class="legend" id="tleg"></div>
+  <div class="cards" id="tcards"></div>
+  <p class="status" id="tNote"></p>
+  <p class="hint">Базисы: B3LYP, вода (r = 0,969 Å, 104,0°), ORCA 6.0.1, расчёт к лекции 5 (23.11.2026). Опыт — 9,8 а.е. Модель двух уровней: α = 2|μ₀₁|²/ΔE; при ΔE ≈ 0,3 хартри опытной α соответствует эффективный |μ₀₁| ≈ 1,2 а.е.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Химический сдвиг ЯМР — тоже производная энергии: вторая, по магнитному полю и по моменту ядра. Почему для неё нужны орбитали GIAO?</span><a class="nqA" href="nmr.html" data-goto="nmr">ЯМР: от экранирования к химическому сдвигу →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Энергии известны до 10⁻⁶ хартри (пример лекции 1). С каким шагом центральная разность даёт лучшую производную?</span></p>
+<p class="olab">h, бор</p><div class="opts" role="group"><button type="button" class="opt">0,1</button><button type="button" class="opt" data-ok="1">0,01</button><button type="button" class="opt">10⁻⁴</button><button type="button" class="opt">10⁻⁵</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>0,01 бора: ошибка −9,6·10⁻⁶. При 0,1 мешает ошибка формулы (h²), при 10⁻⁴ и меньше — округление (δE/h). Формула h<sub>опт</sub> = (3δE/|E‴|)<sup>⅓</sup> даёт 0,017.</div></div>
+<div class="tq"><p class="qt"><span>Шаг центральной разности уменьшили в 10 раз (энергии точные). Во сколько раз упадёт ошибка?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">в 10</button><button type="button" class="opt" data-ok="1">в 100</button><button type="button" class="opt">в 1000</button><button type="button" class="opt">не изменится</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>В 100: ошибка центральной разности ∝ h²·f‴/6. У разности вперёд ошибка ∝ h и упала бы в 10 раз.</div></div>
+<div class="tq"><p class="qt"><span>Поляризуемость по энергиям в поле F = 10⁻⁴ а.е., SCF сошёлся до 10⁻⁸. Какая ошибка α?</span></p>
+<p class="olab">δα, а.е.</p><div class="opts" role="group"><button type="button" class="opt">0,02</button><button type="button" class="opt" data-ok="1">2</button><button type="button" class="opt">2·10⁻⁴</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>≈ 2 а.е.: δα ~ 2δE/F² = 2·10⁻⁸/10⁻⁸. При F = 10⁻³ — 0,02, при 2·10⁻³ — 0,005. Отсюда выбор F ≈ 10⁻³ и строгая сходимость SCF.</div></div>
+<div class="tq"><p class="qt"><span>Что сильнее всего исправит поляризуемость воды в B3LYP/def2-SVP (5,3 а.е. при опыте 9,8)?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Добавить диффузную оболочку (def2-SVPD)</button><button type="button" class="opt">Перейти к def2-TZVP</button><button type="button" class="opt">Взять MP2 вместо B3LYP</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Диффузная оболочка: def2-SVPD даёт 9,8. def2-TZVP без диффузных — только 6,8: рост ζ добавляет жёсткие функции у ядер, а поле тянет плотность наружу.</div></div>
+</div></details></section>
+<script src="js/derivatives.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="derivatives";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/derivatives.js"></script>
+
+</body>
+</html>

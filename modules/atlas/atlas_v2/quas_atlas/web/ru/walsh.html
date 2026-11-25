@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Диаграммы Уолша: форма молекулы из орбиталей</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-walsh-g.webp"><!--pose:end-->
+<h1>Диаграммы Уолша: форма молекулы из орбиталей</h1>
+<p class="lead">Почему вода изогнута, а BeH₂ — линейна, хотя в обеих молекулах по две связи A–H? Уолш предложил ответ, который не требует расчёта полной энергии: проследить, как энергия каждой валентной орбитали меняется при изгибе, и сложить энергии занятых. Форму определяет число валентных электронов — и то, на какие орбитали они попадают.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>При изгибе AH₂ симметрия понижается с D∞h до C₂ᵥ: σg → 1a₁, σᵤ → 1b₂, а пара πᵤ расщепляется на 2a₁ и 1b₁.</li><li>2a₁ при изгибе сильно опускается — к ней подмешивается s-орбиталь центрального атома; 1b₁ (p перпендикулярно плоскости) от угла не зависит, 1b₂ слегка поднимается.</li><li>Четыре валентных электрона (BeH₂) занимают только 1a₁ и 1b₂ — молекула линейна; начиная с пяти (BH₂) занята 2a₁, и молекула изогнута.</li><li>Правило Уолша — качественное: сумма орбитальных энергий не равна полной энергии, но тенденции по ряду BeH₂ → H₂O передаёт верно.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> одноэлектронная модель, жёсткие связи</summary><dl><dt>Что вычисляется</dt><dd>Энергии шести валентных орбиталей AH₂ при углах от 80° до 180°, сумма энергий занятых орбиталей и угол её минимума для 4–8 валентных электронов.</dd><dt>Какие приближения приняты</dt><dd>Гамильтониан хюккелевского типа: α для s и p центрального атома и 1s водорода, β пропорционально направляющим косинусам; длина связи постоянна; межэлектронного отталкивания нет; параметры подобраны качественно, одинаковые для всех AH₂.</dd><dt>Какой вывод можно сделать</dt><dd>Почему форма зависит от числа электронов и какие орбитали её определяют — да; точные углы и барьеры инверсии дают только расчёты с полной энергией (HF, DFT).</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Орбитали AH₂ от угла</h2>
+  <div class="crow"><span class="l">Молекула (валентных электронов)</span><span class="grp" id="mG" role="group" aria-label="Молекула"></span></div>
+  <svg id="wchart" class="ch" viewBox="0 0 960 380" role="img" aria-label="Диаграмма Уолша"></svg>
+  <p class="hint">Сплошные линии — занятые орбитали (в скобках — число электронов), штриховые — вакантные. Вертикальная пунктирная линия — угол по модели.</p>
+  <div class="cards" id="wcards"></div>
+  <p class="status" id="wNote"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Энергия Уолша</h2>
+  <svg id="echart" class="ch" viewBox="0 0 960 200" role="img" aria-label="Сумма энергий занятых орбиталей"></svg>
+  <p class="hint">Σ nε по занятым орбиталям; минимум — предсказанный угол. У CH₂ модель заполняет орбитали по порядку и даёт синглет 2a₁²; основное состояние метилена — триплет 2a₁¹1b₁¹ с углом 134°, синглет на 38 кДж/моль выше.</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Откуда берутся кривые</h2>
+  <table class="tbl"><tr><th>D∞h (180°)</th><th>C₂ᵥ (изогнутая)</th><th>из чего</th><th>при изгибе</th></tr>
+  <tr><td>σg</td><td>1a₁</td><td>s(A) + (H₁ + H₂)</td><td>немного ниже: атомы H сближаются</td></tr>
+  <tr><td>σᵤ</td><td>1b₂</td><td>p<sub>y</sub>(A) + (H₁ − H₂)</td><td>выше: p<sub>y</sub> хуже смотрит на атомы H</td></tr>
+  <tr><td>πᵤ</td><td>2a₁</td><td>p<sub>z</sub>(A) + s(A) + (H₁ + H₂)</td><td>сильно ниже: появляется перекрывание с H и подмешивается s</td></tr>
+  <tr><td>πᵤ</td><td>1b₁</td><td>p<sub>x</sub>(A), перпендикулярно плоскости</td><td>не меняется: несвязывающая</td></tr></table>
+  <p class="hint">Ось z — биссектриса угла, молекула в плоскости yz. Те же рассуждения объясняют пирамидальность NH₃ (8 электронов) и плоский CH₃⁺ (6 электронов) — диаграммы Уолша для AH₃.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Уолш рассуждает о форме по орбитальным энергиям. Как это делает простейшая модель π-систем?</span><a class="nqA" href="huckel.html" data-goto="huckel">Метод Хюккеля →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Выберите BeH₂. Почему молекула линейна?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">2a₁ занята и при изгибе опускается</button><button type="button" class="opt" data-ok="1">Заняты только 1a₁ и 1b₂, а 1b₂ при изгибе поднимается</button><button type="button" class="opt">1b₁ при изгибе поднимается</button><button type="button" class="opt">У бериллия нет p-орбиталей</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Четыре валентных электрона заполняют 1a₁ и 1b₂. 1b₂ (из σᵤ) при изгибе дестабилизируется, а орбиталь 2a₁, которая выигрывала бы от изгиба, пуста.</div></div>
+<div class="tq"><p class="qt"><span>Какая орбиталь сильнее всех опускается при изгибе AH₂?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">1a₁</button><button type="button" class="opt">1b₂</button><button type="button" class="opt" data-ok="1">2a₁</button><button type="button" class="opt">1b₁</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>2a₁: в линейной молекуле это одна из πᵤ, без перекрывания с атомами H; при изгибе она начинает связывать с H и к ней подмешивается s центрального атома.</div></div>
+<div class="tq"><p class="qt"><span>Почему углы NH₂ и H₂O почти одинаковы (103° и 104,5°)?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Седьмой и восьмой электроны идут на 1b₁, энергия которой от угла не зависит</button><button type="button" class="opt">У N и O одинаковая электроотрицательность</button><button type="button" class="opt">Обе молекулы линейны</button><button type="button" class="opt">Их 2a₁ пуста</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Седьмой и восьмой валентные электроны попадают на 1b₁ — p-орбиталь, перпендикулярную плоскости молекулы: она несвязывающая и от угла не зависит, поэтому угол почти не меняется.</div></div>
+<div class="tq"><p class="qt"><span>Сколько валентных электронов нужно AH₂, чтобы модель дала изогнутую молекулу?</span></p>
+<p class="olab">Валентных электронов</p><div class="opts" role="group"><button type="button" class="opt">3</button><button type="button" class="opt">4</button><button type="button" class="opt" data-ok="1">5 и больше</button><button type="button" class="opt">только 8</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>С пяти (BH₂, 131°): пятый электрон попадает на 2a₁, которая стабилизируется при изгибе. При 4 электронах (BeH₂) молекула линейна.</div></div>
+</div></details></section>
+<script src="js/walsh.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="walsh";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/walsh.js"></script>
+
+</body>
+</html>

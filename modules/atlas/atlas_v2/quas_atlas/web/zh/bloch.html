@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>布洛赫定理与 k 点</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>布洛赫定理与 k 点</h1>
+<p class="lead">在晶体中，势场以晶格周期重复，电子的每个状态都用波矢 k 标记。晶体计算就是在一组 k 点（k 点网格）上、用平面波基组进行的计算。这里可以看到 k 从何而来、为什么金属需要更密的网格，以及 E<sub>cut</sub> 决定了什么。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>布洛赫定理：ψ<sub>k</sub>(x + a) = e<sup>ika</sup>ψ<sub>k</sub>(x)。波矢 k 与 k + 2π/a 给出同一个状态，因此 k 取在第一布里渊区（−π/a…π/a）内。</li><li>晶体的能量是对布里渊区的积分，计算中是对 k 点求和。绝缘体收敛快，金属收敛慢：费米能级切断了能带。</li><li>晶格的对称性把 k 点网格约化为少数几个带权重的不等价点（Quantum ESPRESSO 输出中的 “number of k points”）。</li><li>平面波基组：包含 |k + G|² ≤ E<sub>cut</sub> 的平面波，其数目随 V·E<sub>cut</sub><sup>3/2</sup> 增长。电荷密度需要 4·E<sub>cut</sub>（超软赝势需要 8–12 倍）。</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">原子链上的布洛赫波</h2>
+  <div class="crow"><span class="l">波矢 k（π/a）</span><input type="range" id="kk" min="-1" max="1" step="0.01" value="0.3" aria-label="k"><span class="val" id="kkv"></span></div>
+  <div class="crow"><span class="l">同一个波写成</span><span class="grp" id="mG" role="group" aria-label="同一个波写成"></span></div>
+  <div class="two"><svg id="bchart" class="ch" viewBox="0 0 420 260" role="img" aria-label="能带 E(k)"></svg><svg id="wchart" class="ch" viewBox="0 0 540 260" role="img" aria-label="原子链上的波"></svg></div>
+  <div class="cards" id="wcards"></div>
+  <p class="status" id="wNote"></p>
+  <p class="hint">每个原子一个轨道、相邻原子间跃迁积分为 β 的原子链：E(k) = 2β cos ka。能带上的点即所选的 k。</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">k 点网格：金属与绝缘体</h2>
+  <div class="crow"><span class="l">绝缘体带隙 Δ（|β|）</span><input type="range" id="dl" min="0.2" max="4" step="0.1" value="1" aria-label="Δ"><span class="val" id="dlv"></span></div>
+  <svg id="mchart" class="ch" viewBox="0 0 960 280" role="img" aria-label="能量误差随 k 点数的变化"></svg>
+  <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>金属（原子链，每个原子一个电子）</span><span><i class="sw" style="border-color:var(--warn)"></i>绝缘体（每个晶胞两个原子，下能带全满）</span></div>
+  <div class="cards" id="mcards"></div>
+  <p class="status" id="mNote"></p>
+  <div class="crow"><span class="l">正方晶格的网格</span><span class="grp" id="nG" role="group" aria-label="正方晶格的网格"></span></div>
+  <div class="crow"><span class="l">网格</span><span class="grp" id="shG" role="group" aria-label="网格"></span></div>
+  <div class="two"><svg id="zchart" viewBox="0 0 300 300" role="img" aria-label="布里渊区中的 k 点网格"></svg><div><div class="cards" id="zcards"></div><p class="status" id="zNote" style="margin-top:10px"></p><p class="hint">着色的楔形是布里渊区的不可约部分：其余部分由它经旋转和反射得到。</p></div></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">平面波与 E<sub>cut</sub></h2>
+  <div class="crow"><span class="l">晶体</span><span class="grp" id="cG" role="group" aria-label="晶体"></span></div>
+  <div class="crow"><span class="l">E<sub>cut</sub>（Ry）</span><input type="range" id="ec" min="10" max="100" step="5" value="30" aria-label="Ecut"><span class="val" id="ecv"></span></div>
+  <div class="cards" id="pcards"></div>
+  <svg id="pchart" class="ch" viewBox="0 0 960 240" role="img" aria-label="平面波数随 Ecut 的变化"></svg>
+  <p class="status" id="pNote"></p>
+  <p class="hint">曲线为估计值 V·G<sub>max</sub>³/(6π²)，圆点为 Γ 点倒格矢的精确计数。计算时间随平面波数 N 增长，每个轨道约为 N·log N。</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">每个 k 点都有自己的一组能级。它们如何构成能带？带隙又从何而来？</span><a class="nqA" href="bands.html" data-goto="bands">能带结构与态密度 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>原子链：k = 0.3 π/a 与 k = 2.3 π/a（选择 “k + 2π/a”）。这两个状态在原子上是否相同？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">相同：在原子上 e<sup>i(k+2π/a)na</sup> = e<sup>ikna</sup></button><button type="button" class="opt">不同，第二个波长更短</button><button type="button" class="opt">只有 k = 0 时相同</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>相同。两个波在原子之间不同，但电子由晶格上的值描述，而在那里因子 e<sup>i2πn</sup> = 1。因此所有 k 都可约化到第一布里渊区。</div></div>
+<div class="tq"><p class="qt"><span>平移 ½ 的 4 × 4 网格。需要计算多少个点？</span></p>
+<p class="olab">点数</p><div class="opts" role="group"><button type="button" class="opt">16</button><button type="button" class="opt">6</button><button type="button" class="opt" data-ok="1">3</button><button type="button" class="opt">4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>3 个：(1/8, 1/8)、(3/8, 1/8)、(3/8, 3/8)，权重分别为 4、8、4。含 Γ 点的网格会给出 6 个不同的点。</div></div>
+<div class="tq"><p class="qt"><span>每个晶胞的能量随 k 点数在哪种情况下收敛更快？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">金属</button><button type="button" class="opt" data-ok="1">绝缘体</button><button type="button" class="opt">一样快</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>绝缘体：被积函数光滑，网格求和呈指数收敛。金属的函数在费米能级处中断——误差下降缓慢且跳动。</div></div>
+<div class="tq"><p class="qt"><span>硅，E<sub>cut</sub> = 30 Ry。Γ 点处一个轨道有多少个平面波？</span></p>
+<p class="olab">平面波数</p><div class="opts" role="group"><button type="button" class="opt">190</button><button type="button" class="opt" data-ok="1">749</button><button type="button" class="opt">5985</button><button type="button" class="opt">16889</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>749 个：|G|² ≤ 30 bohr⁻² 的矢量。5985 和 16889 是 120 和 240 Ry 时的密度矢量：Quantum ESPRESSO 将其输出为 “Smooth grid” 和 “Dense grid”。</div></div>
+</div></details></section>
+<script src="js/bloch.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="bloch";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/bloch.js"></script>
+
+</body>
+</html>

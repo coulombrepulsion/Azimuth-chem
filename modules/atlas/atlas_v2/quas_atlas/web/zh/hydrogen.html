@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>氢原子与原子轨道</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/hat.css">
+
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-hat-g.webp"><!--pose:end-->
+<h1>氢原子与原子轨道</h1>
+<p class="lead">氢原子是唯一能精确求解薛定谔方程的原子。波函数分解为径向部分 R<sub>nl</sub>(r) 和角向部分 Y<sub>lm</sub>(θ, φ)；能量只取决于 n：E<sub>n</sub> = −<span class=fr><span>Z²</span><span>2n²</span></span> 哈特里。这里显示的是实轨道（p<sub>x</sub>、d<sub>xy</sub>、…）——教科书中画的、量子化学中用的正是它们。它们由复球谐函数 Y<sub>lm</sub> 的线性组合得到：例如 p<sub>x</sub> ∝ (Y<sub>1,−1</sub> − Y<sub>1,1</sub>)/√2。量子数 m 是轨道角动量在 z 轴上的投影，p<sub>x</sub>、p<sub>y</sub> 没有确定的 m；m = 0 对应 p<sub>z</sub>。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>氢原子中电子的状态由量子数确定：n 决定能量，l 决定轨道角动量和形状，m 决定角动量在所选 z 轴上的投影。实轨道 p<sub>x</sub>、p<sub>y</sub> 是 m = +1 和 m = −1 态的线性组合，因此没有单一的 m 值。</li><li>节面总数为 n − 1：径向 n − l − 1 个，角向 l 个。</li><li>能量只取决于 n（简并度 n²）；在多电子原子中按 l 的简并被解除。</li><li>能级间跃迁给出线状光谱：ν̃ ∝ <span class=fr><span>1</span><span>n₁²</span></span> − <span class=fr><span>1</span><span>n₂²</span></span>。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>类氢原子的精确解</summary><dl><dt>计算的是什么</dt><dd>轨道、径向函数、能级和光谱线系。</dd><dt>采用了哪些近似</dt><dd>非相对论哈密顿量，点状原子核；不考虑精细结构和自旋。显示的是实轨道——+m 和 −m 态的组合。 能级能量和谱线波长都使用相应原子核的里德伯常数（计入约化质量）：氢的线系极限为 13.598 eV（无限重原子核为 13.6057 eV）；波长为真空波长。</dd><dt>能得出什么结论</dt><dd>在此模型中能量和节点是精确的；对多电子原子只能定性推广。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. 轨道：截面与径向函数</h2>
+  <div class="crow"><span class="l">主量子数 n</span><span class="row" id="nG" role="group" aria-label="主量子数"></span></div>
+  <div class="crow"><span class="l">轨道</span><span class="row" id="oG" role="group" aria-label="轨道"></span></div>
+  <div class="crow"><span class="l">原子核</span><span class="row" id="zG" role="group" aria-label="核电荷"></span></div>
+  <div class="crow"><span class="l">截面</span><span class="row" id="pG" role="group" aria-label="截面"></span>
+    <span class="row" id="vG" role="group" aria-label="显示内容"></span></div>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle" id="mapT"></div>
+      <canvas id="map" width="420" height="420" role="img" aria-label="轨道截面"></canvas>
+      <div class="legend"><span><i class="box" style="background:var(--lp)"></i>ψ &gt; 0</span><span><i class="box" style="background:var(--ln)"></i>ψ &lt; 0</span><span>细线——ψ 的节面</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="ptitle">径向函数 R(r) 与径向密度 r²R²</div>
+      <svg id="rad" viewBox="0 0 520 300" role="img" aria-label="径向函数"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>R(r)</span><span><i class="sw" style="border-color:var(--warn)"></i>r²R²(r)</span><span><i class="sw" style="border-color:var(--muted);border-top-style:dashed"></i>⟨r⟩</span></div>
+      <div class="tablewrap" id="infoTab"></div>
+    </div>
+  </div>
+  <div class="status" id="st1"></div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. 电子云</h2>
+  <p class="small">每个点都是电子的一个可能位置：点按 |ψ|² 的密度分布，颜色表示 ψ 的符号。拖动电子云可以旋转它。</p>
+  <div class="two">
+    <canvas id="cloud" width="460" height="400" role="img" aria-label="电子云"></canvas>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="row"><button class="btn" id="bNew" type="button">重新采样</button><span class="hint" id="cloudN"></span></div>
+      <div class="status" id="st2"></div>
+      <div class="ptitle">点到核的距离分布与径向密度 r²R²</div>
+      <svg id="cHist" viewBox="0 0 520 300" role="img" aria-label="点到核距离的直方图"></svg>
+      <div class="legend"><span><i class="box" style="background:var(--lp);opacity:.35"></i>点的比例</span><span><i class="sw" style="border-color:var(--warn)"></i>r²R²(r)</span></div>
+    </div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">3. 能级与光谱</h2>
+  <p class="small">电子从能级 n₂ 跃迁到能级 n₁ 时，发射波数为 ν̃ = R<sub>H</sub>Z²(<span class=fr><span>1</span><span>n₁²</span></span> − <span class=fr><span>1</span><span>n₂²</span></span>) 的光子。选择一个线系——跃迁会显示在能级图上，巴耳末系的谱线落在可见区。</p>
+  <div class="crow"><span class="l">线系</span><span class="row" id="sG" role="group" aria-label="线系"></span></div>
+  <div class="two">
+    <svg id="lev" viewBox="0 0 520 360" role="img" aria-label="能级"></svg>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="tablewrap" id="serTab"></div>
+      <div class="specw" id="specW"><div class="spec"></div></div>
+      <div class="status" id="st3" style="margin-top:18px"></div>
+    </div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">只有氢原子能精确求解。其余体系如何得到近似解？这种解有多可信？</span><a class="nqA" href="variational.html" data-goto="var">变分法与微扰理论 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面探索练习与训练器。在页面上完成操作并作答——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>4s 轨道有几个径向节面？</span></p>
+<p class="olab">径向节面数</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">3</button><button type="button" class="opt">2</button><button type="button" class="opt">4</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>三个：n − l − 1 = 4 − 0 − 1 = 3。R(r) 图上有三个变号点；在电子云中它们是空的球壳层。</div></div>
+<div class="tq"><p class="qt"><span>氢原子 1s 的平均半径 ⟨r⟩ 是多少（以 a₀ 为单位）？</span></p>
+<p class="olab">⟨r⟩, a₀</p><div class="opts" role="group"><button type="button" class="opt">3</button><button type="button" class="opt">0.5</button><button type="button" class="opt" data-ok="1">1.5</button><button type="button" class="opt">1</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>⟨r⟩ = <span class=fr><span>3n² − l(l + 1)</span><span>2Z</span></span> = 1.5 a₀ ≈ 0.79 Å。它大于最可几距离，因为分布在大 r 处有很长的“尾巴”。</div></div>
+<div class="tq"><p class="qt"><span>1s 的径向密度 r²R² 的极大值在哪里（以 a₀ 为单位）？</span></p>
+<p class="olab">r, a₀</p><div class="opts" role="group"><button type="button" class="opt">1.5</button><button type="button" class="opt" data-ok="1">1</button><button type="button" class="opt">2</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>在 r = a₀ = 0.529 Å 处——这就是玻尔半径。密度 |ψ|² 本身在核处最大，但薄球壳的体积 4πr²dr 在那里趋于零。</div></div>
+<div class="tq"><p class="qt"><span>巴耳末系：H<sub>α</sub> 线（跃迁 3 → 2）的波长是多少 nm？</span></p>
+<p class="olab">λ，nm</p><div class="opts" role="group"><button type="button" class="opt">122</button><button type="button" class="opt">365</button><button type="button" class="opt">486</button><button type="button" class="opt" data-ok="1">656</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>ν̃ = R<sub>H</sub>(<span class=fr><span>1</span><span>2²</span></span> − <span class=fr><span>1</span><span>3²</span></span>) ≈ 15233 cm⁻¹，λ = <span class=fr><span>1</span><span>ν̃</span></span> ≈ 656 nm——氢的红线。该线系的其余谱线：486、434、410 nm。</div></div>
+<div class="tq"><p class="qt"><span>He⁺ 从基态电离的能量是多少 eV？</span></p>
+<p class="olab">E，eV</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">54.4</button><button type="button" class="opt">13.6</button><button type="button" class="opt">27.2</button><button type="button" class="opt">24.6</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>E = Z² · 13.6 eV = 4 · 13.6 ≈ 54.4 eV。选择 He⁺ 核：所有能级降低 Z² = 4 倍，轨道收缩 2 倍。</div></div>
+<div class="tq"><p class="qt"><span>为什么在氢原子中 2s 和 2p 的能量相同？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">在单个核的库仑场中能量只依赖于 n</button><button type="button" class="opt">2s 和 2p 是同一个轨道</button><button type="button" class="opt">由于电子自旋</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>在单个核的纯库仑场中能量只依赖于 n（“偶然”简并）。在多电子原子中 2s 比 2p 更深地钻穿到核附近，受屏蔽较少，能量较低——对 l 的简并被消除。</div></div>
+<!--self:start--><div class="selfBox"><h3 id="h4s">自我检测</h3>
+  <p class="small">对下面的轨道，求出径向节面数、角节面数以及能级能量（对氢原子，以 eV 为单位）。</p>
+  <div class="row"><b id="qOrb" style="font-family:var(--f-display);font-size:19px"></b><button class="btn" id="qNew" type="button">换一个轨道</button></div>
+  <div class="quiz">
+    <label><span>径向节面</span><input id="q0" inputmode="numeric" autocomplete="off"></label>
+    <label><span>角节面</span><input id="q1" inputmode="numeric" autocomplete="off"></label>
+    <label><span>E，eV</span><input id="q2" inputmode="decimal" autocomplete="off"></label>
+  </div>
+  <div class="row"><button class="btn primary" id="qChk" type="button">检查</button><button class="btn" id="qShow" type="button">显示解答</button></div>
+  <div class="status" id="qRes">输入答案并点击“检查”。</div>
+</div><!--self:end--></div></details></section>
+<script src="js/hydrogen.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="hat";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/hydrogen.js"></script>
+
+</body>
+</html>

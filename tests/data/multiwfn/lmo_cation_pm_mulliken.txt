@@ -1,0 +1,269 @@
+answers: 19 | -9 | 1 | 1 | 0 | q
+
+ WARNING: "settings.ini" was found neither in current folder nor in the path defined by "Multiwfnpath" environment variable. Now using default settings instead, and all your modifications (if any) on settings.ini will not take effect!
+
+[95m Multiwfn -- A Multifunctional Wavefunction Analyzer
+[0m[32m Version 2026.7.15 (release date is the same as version name)
+[0m Developer: Tian Lu (Beijing Kein Research Center for Natural Sciences)
+ Multiwfn official website: http://sobereva.com/multiwfn
+ Multiwfn English forum: http://sobereva.com/wfnbbs
+ Multiwfn Chinese forum: http://bbs.keinsci.com/wfn
+ ( Number of parallel threads:   4  Current date: 2026-11-02  Time: 14:09:12 )
+
+ Both following papers ***MUST BE CITED IN MAIN TEXT*** if Multiwfn is used:
+[36m  Tian Lu, Feiwu Chen, J. Comput. Chem., 33, 580 (2012) DOI: 10.1002/jcc.22885
+  Tian Lu, J. Chem. Phys., 161, 082503 (2024) DOI: 10.1063/5.0216272
+[0m See "How to cite Multiwfn.pdf" in Multiwfn binary package for more information
+
+ Warning: You should set OMP_STACKSIZE environment variable as mentioned in Section 2.1.2 of Multiwfn manual!
+
+ Please wait...
+ Loading various information of the wavefunction
+ Loading basis set definition...
+ The highest angular moment basis functions is P
+ All basis functions are Cartesian type
+ Loading orbitals...
+ The actual number of Alpha/Beta orbitals read:        60  /        60
+ Converting basis function information to GTF information...
+ Generating density matrix...
+ Generating overlap matrix...
+
+ Total/Alpha/Beta electrons:     69.0000     35.0000     34.0000
+ Net charge:     1.00000      Expected multiplicity:    2
+ Atoms:     20,  Basis functions:     60,  GTFs:    180
+ This is an unrestricted single-determinant wavefunction
+ Orbitals from      1 to    60 are alpha, from     1 to    35 are occupied
+ Orbitals from     61 to   120 are beta,  from    61 to    94 are occupied
+
+ Loaded input.molden successfully!
+
+ Formula: H10 C10      Total atoms:      20
+ Molecule weight:       130.18677 Da
+ Point group: C2h
+
+ "q": Exit program gracefully          "r": Load a new file
+                    ************ Main function menu ************
+ 0 Show molecular structure and view orbitals
+ 1 Output all properties at a point       2 Topology analysis
+ 3 Output and plot specific property in a line
+ 4 Output and plot specific property in a plane
+ 5 Output and plot specific property within a spatial region (calc. grid data)
+ 6 Check & modify wavefunction
+ 7 Population analysis and calculation of atomic charges
+ 8 Orbital composition analysis           9 Bond order analysis
+ 10 Plot total DOS, PDOS, OPDOS, local DOS, COHP and photoelectron spectrum
+ 11 Plot IR/Raman/UV-Vis/ECD/VCD/ROA/NMR spectrum
+ 12 Quantitative analysis of molecular surface
+ 13 Process grid data (No grid data is presented currently)
+ 14 Adaptive natural density partitioning (AdNDP) analysis
+ 15 Fuzzy atomic space analysis
+ 16 Charge decomposition analysis (CDA) and plot orbital interaction diagram
+ 17 Basin analysis                       18 Electron excitation analysis
+ 19 Orbital localization analysis        20 Visual study of weak interaction
+ 21 Energy decomposition analysis        22 Conceptual DFT (CDFT) analysis
+ 23 ETS-NOCV analysis                    24 (Hyper)polarizability analysis
+ 25 Electron delocalization and aromaticity analyses
+ 26 Structure and geometry related analyses
+ 100 Other functions (Part 1)            200 Other functions (Part 2)
+ 300 Other functions (Part 3)
+
+                 ======== Orbital localization analysis ========
+ -10 Set threshold for determining one- and two-center LMO, current:  85  80 %
+ -9 Set the method for calculating orbital composition, current: Hirshfeld
+ -8 If calculating center position and dipole moment of LMOs, current: No
+ -6 Set localization method, current: Pipek-Mezey with Mulliken population
+ -5 If also localizing core orbitals, current: Yes
+ -4 If calculating and printing orbital energies, current: No
+ -3 If reloading newly generated .fch file, current: Yes
+ -2 Set criterion of convergence, current:  0.00010000
+ -1 Set maximum cycles, current:  80
+ 0 Return
+ 1 Localizing occupied orbitals only
+ 2 Localizing both occupied and unoccupied orbitals separately
+ 3 Localizing specific set of orbitals
+ Hint: Option 1 is very fast, however the method is not robust, and it is even useless when diffuse functions are employed. Options 2 and 3 usually give similar result, they are more expensive, but fully compatible with diffuse functions
+
+ 0 Do not calculate orbital compositions
+ 1 Mulliken method for occupied LMOs and SCPA method for unoccupied LMOs
+ 2 Hirshfeld method
+ 3 Becke method
+
+                 ======== Orbital localization analysis ========
+ -10 Set threshold for determining one- and two-center LMO, current:  85  80 %
+ -9 Set the method for calculating orbital composition, current: Mulliken+SCPA
+ -8 If calculating center position and dipole moment of LMOs, current: No
+ -6 Set localization method, current: Pipek-Mezey with Mulliken population
+ -5 If also localizing core orbitals, current: Yes
+ -4 If calculating and printing orbital energies, current: No
+ -3 If reloading newly generated .fch file, current: Yes
+ -2 Set criterion of convergence, current:  0.00010000
+ -1 Set maximum cycles, current:  80
+ 0 Return
+ 1 Localizing occupied orbitals only
+ 2 Localizing both occupied and unoccupied orbitals separately
+ 3 Localizing specific set of orbitals
+
+ Calculating intermediate matrix, please wait...
+
+ Localizing alpha occupied orbitals...
+ Cycle:    1  P:     19.06730611  Delta P:     19.06730611
+ Cycle:    2  P:     21.99352721  Delta P:      2.92622110
+ Cycle:    3  P:     22.38903395  Delta P:      0.39550674
+ Cycle:    4  P:     22.39189873  Delta P:      0.00286478
+ Cycle:    5  P:     22.39190570  Delta P:      0.00000697
+ Successfully converged!
+
+ Calculating intermediate matrix, please wait...
+
+ Localizing beta occupied orbitals...
+ Cycle:    1  P:     18.42842190  Delta P:     18.42842190
+ Cycle:    2  P:     21.28153230  Delta P:      2.85311041
+ Cycle:    3  P:     21.77986126  Delta P:      0.49832896
+ Cycle:    4  P:     21.78530469  Delta P:      0.00544343
+ Cycle:    5  P:     21.78530620  Delta P:      0.00000151
+ Successfully converged!
+
+ Orbital localization took up wall clock time         0 s
+ Calculating orbital compositions...
+
+ Hint: If you hope to print the LMOs in the order of atoms and atomic pairs, set "iprintLMOorder" in settings.ini to 1 prior to the analysis
+
+ **** Major character of alpha occupied LMOs:
+ Almost single center LMOs: (An atom has contribution > 85.0%)
+    1:   1(C )100.3%        2:   2(C )100.3%        3:   6(C )100.3%    
+    4:   5(C )100.3%        5:   3(C )100.3%        6:   4(C )100.3%    
+    7:  12(C )100.3%        8:  11(C )100.3%        9:  16(C )100.3%    
+   10:  15(C )100.3%    
+
+ Almost two-center LMOs: (Sum of two largest contributions > 80.0%)
+   11:   6(C ) 56.4%  10(H ) 44.5%        12:   2(C ) 52.2%   5(C ) 49.4%     
+   13:  16(C ) 57.8%  20(H ) 43.1%        14:   5(C ) 56.4%   9(H ) 44.5%     
+   15:  15(C ) 57.8%  19(H ) 43.1%        16:   1(C ) 52.3%   3(C ) 49.4%     
+   17:   2(C ) 52.3%   4(C ) 49.4%        18:  11(C ) 56.2%  13(H ) 44.8%     
+   19:  12(C ) 56.2%  14(H ) 44.8%        20:   5(C ) 51.0%   3(C ) 50.7%     
+   21:   1(C ) 52.8%  12(C ) 48.7%        22:   3(C ) 56.6%   7(H ) 44.3%     
+   23:   1(C ) 52.2%   6(C ) 49.4%        24:  15(C ) 51.2%  11(C ) 50.4%     
+   25:   4(C ) 56.6%   8(H ) 44.3%        26:  16(C ) 51.2%  12(C ) 50.4%     
+   27:  15(C ) 56.9%  17(H ) 44.0%        29:  16(C ) 56.9%  18(H ) 44.0%     
+   30:   6(C ) 51.0%   4(C ) 50.7%        31:   2(C ) 52.8%  11(C ) 48.7%     
+   33:  16(C ) 53.6%  12(C ) 44.0%        35:  15(C ) 54.6%  11(C ) 42.8%     
+
+ More delocalized LMOs: (Three largest contributions are printed)
+   28:    3(C ) 46.3%    1(C ) 30.1%    5(C ) 17.6%
+   32:    2(C ) 52.0%    5(C ) 24.4%    4(C ) 14.2%
+   34:    6(C ) 47.7%    4(C ) 29.1%    1(C ) 16.1%
+ Calculating orbital compositions...
+
+ **** Major character of beta occupied LMOs:
+ Almost single center LMOs: (An atom has contribution > 85.0%)
+    1:   1(C )100.3%        2:   2(C )100.3%        3:   6(C )100.3%    
+    4:   5(C )100.3%        5:  12(C )100.3%        6:  11(C )100.3%    
+    7:   3(C )100.3%        8:   4(C )100.3%        9:  16(C )100.3%    
+   10:  15(C )100.3%    
+
+ Almost two-center LMOs: (Sum of two largest contributions > 80.0%)
+   11:   6(C ) 56.2%  10(H ) 44.7%        12:   4(C ) 56.5%   8(H ) 44.5%     
+   13:  16(C ) 56.3%  20(H ) 44.6%        14:   5(C ) 50.9%   3(C ) 50.7%     
+   15:  15(C ) 55.4%  17(H ) 45.4%        16:   1(C ) 51.5%   3(C ) 50.2%     
+   17:   2(C ) 51.5%   5(C ) 50.1%        18:  11(C ) 56.4%  13(H ) 44.6%     
+   19:  12(C ) 56.4%  14(H ) 44.6%        20:   5(C ) 56.2%   9(H ) 44.7%     
+   21:   1(C ) 51.7%  12(C ) 49.7%        22:   2(C ) 51.7%  11(C ) 49.7%     
+   23:   1(C ) 51.5%   6(C ) 50.1%        24:  11(C ) 51.7%  15(C ) 49.9%     
+   25:   6(C ) 50.9%   4(C ) 50.7%        26:  12(C ) 51.7%  16(C ) 49.9%     
+   27:  16(C ) 55.4%  18(H ) 45.4%        28:   3(C ) 43.0%   5(C ) 42.6%     
+   29:  15(C ) 56.3%  19(H ) 44.6%        30:   2(C ) 51.5%   4(C ) 50.2%     
+   31:   3(C ) 56.5%   7(H ) 44.5%        33:   4(C ) 43.0%   6(C ) 42.6%     
+
+ More delocalized LMOs: (Three largest contributions are printed)
+   32:   11(C ) 48.0%   15(C ) 24.4%    2(C ) 19.5%
+   34:   12(C ) 48.0%   16(C ) 24.4%    1(C ) 19.5%
+
+ Exporting localized orbitals to new.fch in current folder...
+ Exporting .fch file finished! The "Total SCF Density" and "Spin SCF Density" fields in this file correspond to total density matrix and difference between alpha and beta density matrices at current level, respectively
+ Loading new.fch...
+ Loading finished!
+
+ "q": Exit program gracefully          "r": Load a new file
+                    ************ Main function menu ************
+ 0 Show molecular structure and view orbitals
+ 1 Output all properties at a point       2 Topology analysis
+ 3 Output and plot specific property in a line
+ 4 Output and plot specific property in a plane
+ 5 Output and plot specific property within a spatial region (calc. grid data)
+ 6 Check & modify wavefunction
+ 7 Population analysis and calculation of atomic charges
+ 8 Orbital composition analysis           9 Bond order analysis
+ 10 Plot total DOS, PDOS, OPDOS, local DOS, COHP and photoelectron spectrum
+ 11 Plot IR/Raman/UV-Vis/ECD/VCD/ROA/NMR spectrum
+ 12 Quantitative analysis of molecular surface
+ 13 Process grid data (No grid data is presented currently)
+ 14 Adaptive natural density partitioning (AdNDP) analysis
+ 15 Fuzzy atomic space analysis
+ 16 Charge decomposition analysis (CDA) and plot orbital interaction diagram
+ 17 Basin analysis                       18 Electron excitation analysis
+ 19 Orbital localization analysis        20 Visual study of weak interaction
+ 21 Energy decomposition analysis        22 Conceptual DFT (CDFT) analysis
+ 23 ETS-NOCV analysis                    24 (Hyper)polarizability analysis
+ 25 Electron delocalization and aromaticity analyses
+ 26 Structure and geometry related analyses
+ 100 Other functions (Part 1)            200 Other functions (Part 2)
+ 300 Other functions (Part 3)
+ Atom list:
+    1(C ) --> Charge:  6.000000  x,y,z(Bohr):  -2.674441   0.435055   0.000000
+    2(C ) --> Charge:  6.000000  x,y,z(Bohr):   2.674441  -0.435055   0.000000
+    3(C ) --> Charge:  6.000000  x,y,z(Bohr):  -0.935666   2.483969   0.000000
+    4(C ) --> Charge:  6.000000  x,y,z(Bohr):   0.935666  -2.483969   0.000000
+    5(C ) --> Charge:  6.000000  x,y,z(Bohr):   1.680739   2.061595   0.000000
+    6(C ) --> Charge:  6.000000  x,y,z(Bohr):  -1.680739  -2.061595   0.000000
+    7(H ) --> Charge:  1.000000  x,y,z(Bohr):  -1.662111   4.429015   0.000000
+    8(H ) --> Charge:  1.000000  x,y,z(Bohr):   1.662111  -4.429015   0.000000
+    9(H ) --> Charge:  1.000000  x,y,z(Bohr):   2.981806   3.675527   0.000000
+   10(H ) --> Charge:  1.000000  x,y,z(Bohr):  -2.981806  -3.675527   0.000000
+   11(C ) --> Charge:  6.000000  x,y,z(Bohr):   5.451074  -0.984715   0.000000
+   12(C ) --> Charge:  6.000000  x,y,z(Bohr):  -5.451074   0.984715   0.000000
+   13(H ) --> Charge:  1.000000  x,y,z(Bohr):   5.934373  -3.008368   0.000000
+   14(H ) --> Charge:  1.000000  x,y,z(Bohr):  -5.934373   3.008368   0.000000
+   15(C ) --> Charge:  6.000000  x,y,z(Bohr):   7.332217   0.722353   0.000000
+   16(C ) --> Charge:  6.000000  x,y,z(Bohr):  -7.332217  -0.722353   0.000000
+   17(H ) --> Charge:  1.000000  x,y,z(Bohr):   6.981926   2.763609   0.000000
+   18(H ) --> Charge:  1.000000  x,y,z(Bohr):  -6.981926  -2.763609   0.000000
+   19(H ) --> Charge:  1.000000  x,y,z(Bohr):   9.319456   0.134367   0.000000
+   20(H ) --> Charge:  1.000000  x,y,z(Bohr):  -9.319456  -0.134367   0.000000
+ Range of alpha orbitals:    1 -   60      Range of beta orbitals:   61 -  120
+ Note: Orbital    35 is alpha-HOMO, energy:   -0.366200 a.u.   -9.964809 eV
+       Orbital    94 is beta-HOMO, energy:    -0.385100 a.u.  -10.479104 eV
+       Orbital    36 is alpha-LUMO, energy:   -0.173900 a.u.   -4.732060 eV
+       Orbital    95 is beta-LUMO, energy:    -0.296800 a.u.   -8.076339 eV
+       HOMO-LUMO gap of alpha orbitals:    0.192300 a.u.    5.232749 eV
+       HOMO-LUMO gap of beta orbitals:     0.088300 a.u.    2.402765 eV
+
+ "q": Exit program gracefully          "r": Load a new file
+                    ************ Main function menu ************
+ 0 Show molecular structure and view orbitals
+ 1 Output all properties at a point       2 Topology analysis
+ 3 Output and plot specific property in a line
+ 4 Output and plot specific property in a plane
+ 5 Output and plot specific property within a spatial region (calc. grid data)
+ 6 Check & modify wavefunction
+ 7 Population analysis and calculation of atomic charges
+ 8 Orbital composition analysis           9 Bond order analysis
+ 10 Plot total DOS, PDOS, OPDOS, local DOS, COHP and photoelectron spectrum
+ 11 Plot IR/Raman/UV-Vis/ECD/VCD/ROA/NMR spectrum
+ 12 Quantitative analysis of molecular surface
+ 13 Process grid data (No grid data is presented currently)
+ 14 Adaptive natural density partitioning (AdNDP) analysis
+ 15 Fuzzy atomic space analysis
+ 16 Charge decomposition analysis (CDA) and plot orbital interaction diagram
+ 17 Basin analysis                       18 Electron excitation analysis
+ 19 Orbital localization analysis        20 Visual study of weak interaction
+ 21 Energy decomposition analysis        22 Conceptual DFT (CDFT) analysis
+ 23 ETS-NOCV analysis                    24 (Hyper)polarizability analysis
+ 25 Electron delocalization and aromaticity analyses
+ 26 Structure and geometry related analyses
+ 100 Other functions (Part 1)            200 Other functions (Part 2)
+ 300 Other functions (Part 3)
+
+--- stderr ---
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_UNDERFLOW_FLAG
+
+--- files written: new.fch (188815 bytes)

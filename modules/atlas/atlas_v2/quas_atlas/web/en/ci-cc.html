@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Configuration interaction and coupled clusters</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/cicc.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-ci-cc-g.webp"><!--pose:end-->
+<h1>Configuration interaction and coupled clusters</h1>
+<p class="lead">The exact wavefunction in a given basis is a combination of all determinants that can be built from the orbitals: this is full CI. Their number grows so fast that an exact calculation is feasible only for tiny systems. Here you can see why truncated CI (CISD) unexpectedly spoils the energy of large systems and how the exponential form of the coupled-cluster method fixes it. The H₂ model in a minimal basis is solved right on the page; the (H₂)<sub>n</sub> series in the 6-31G basis was computed with PySCF.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>Full CI is the exact solution in a given basis, but the number of determinants grows factorially: even in STO-3G benzene has about 3·10¹⁹ of them.</li><li>CISD includes only single and double excitations and is therefore not size-consistent: for n non-interacting molecules its correlation energy grows only as √n.</li><li>In the coupled-cluster method Ψ = exp(T)·Φ₀; the exponential itself generates products of amplitudes (½T₂² and so on), so CCSD is size-consistent.</li><li>CISD and CCSD cost the same (N⁶); the (T) correction adds triple excitations by perturbation theory at N⁷.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> model systems: H₂ and non-interacting (H₂)ₙ</summary><dl><dt>What is computed</dt><dd>Numbers of determinants by excitation level; 2 × 2 CI for H₂ in the STO-3G basis at any R; HF, CISD, CCSD, CCSD(T) and full CI energies for (H₂)ₙ in the 6-31G basis, n = 1…4; configuration weights of the dimer in full CI, CISD and CCSD.</dd><dt>Which approximations are made</dt><dd>Minimal basis for H₂; the molecules in (H₂)ₙ do not interact (10 Å); determinants are counted without symmetry or a frozen core.</dd><dt>What can be concluded</dt><dd>Why truncated CI is not size-consistent and how the exponential ansatz fixes it — yes; the accuracy of the methods for real molecules — no: that is shown on the “Hierarchy of methods” and “Basis set convergence” pages.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">How many determinants are there</h2>
+  <p class="hint">A determinant is obtained by choosing which spin orbitals are occupied. An excitation of level k replaces k occupied spin orbitals by k empty ones. Full CI includes all levels, CISD only single and double excitations.</p>
+  <div class="crow"><span class="l">Molecule</span><span class="grp" id="molG" role="group" aria-label="Molecule"></span></div>
+  <div class="crow"><span class="l">Basis set</span><span class="grp" id="basG" role="group" aria-label="Basis set"></span></div>
+  <svg id="detC" viewBox="0 0 960 300" role="img" aria-label="Number of determinants by excitation level"></svg>
+  <div class="tablewrap" id="detT"></div>
+  <p class="hint" id="detN"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">H₂ in a minimal basis: two configurations</h2>
+  <p class="hint">From the two orbitals σ<sub>g</sub> and σ<sub>u</sub> two configurations fit the ground state: σ<sub>g</sub>² (Hartree–Fock) and σ<sub>u</sub>². The 2 × 2 CI matrix couples them through the exchange integral K = (σ<sub>g</sub>σ<sub>u</sub>|σ<sub>g</sub>σ<sub>u</sub>). For two electrons CISD here coincides with full CI.</p>
+  <div class="crow"><span class="l">Distance R</span><input type="range" id="R" min="0" max="72" step="1" value="7" aria-label="Distance R"><span class="val" id="Rv"></span></div>
+  <div class="two">
+    <svg id="h2C" viewBox="0 0 560 330" role="img" aria-label="Energy of H₂: Hartree–Fock and CI"></svg>
+    <div><div class="mbox" id="h2M"></div><div id="h2W"></div></div>
+  </div>
+  <p class="hint" id="h2N"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Size consistency: n molecules that do not see each other</h2>
+  <p class="hint">The energy of n non-interacting molecules must be exactly n times the energy of one. Full CI and coupled clusters satisfy this, CISD does not: the total wavefunction has no configurations in which two molecules are excited at once (that is already a quadruple excitation).</p>
+  <div class="crow"><span class="l">Model</span><span class="grp" id="szG" role="group" aria-label="Model"></span></div>
+  <svg id="szC" viewBox="0 0 960 300" role="img" aria-label="Share of the correlation energy per molecule"></svg>
+  <div class="tablewrap" id="szT"></div>
+  <p class="hint" id="szN"></p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">The exponential ansatz</h2>
+  <p class="hint">In the coupled-cluster method Ψ = e<sup>T</sup>Φ<sub>0</sub>, where T = T₁ + T₂ + … are excitation operators. For two distant molecules T = T<sub>A</sub> + T<sub>B</sub>, and e<sup>T<sub>A</sub>+T<sub>B</sub></sup> = e<sup>T<sub>A</sub></sup>·e<sup>T<sub>B</sub></sup>: the wavefunction factorizes into a product by itself. The ½T₂² term gives simultaneous excitations of both molecules, although T contains none.</p>
+  <svg id="ampC" viewBox="0 0 960 260" role="img" aria-label="Configuration weights of the (H₂)₂ dimer"></svg>
+  <p class="hint" id="ampN"></p>
+  <div class="eq">
+    <div class="eqb"><div class="t">Why CISD “loses” energy</div>In CISD n molecules have only configurations with one excited molecule. Their contribution to the second-order correction grows as n, and so does the normalization of the function; as a result the correlation energy grows only as √n, and less and less of it falls on each molecule.</div>
+    <div class="eqb"><div class="t">Coupled clusters</div>CCSD has the same parameters as CISD (the amplitudes t₁, t₂), but the exponential adds their products “for free”: disconnected quadruple, sextuple excitations. So the method is size-consistent, and for two-electron fragments CCSD is exact.</div>
+    <div class="eqb"><div class="t">Cost</div>CISD and CCSD cost the same — N⁶, but the CCSD equations are nonlinear and are solved iteratively. The (T) correction for triple excitations costs N⁷ and gives the “gold standard” CCSD(T).</div>
+    <div class="eqb"><div class="t">Where CC breaks down too</div>Coupled clusters are built from a single determinant. If several configurations matter at once (bond breaking, biradicals), the amplitudes become large and CCSD(T) drops below the exact energy — see the page “Hierarchy of methods and Jacob’s ladder”.</div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">Can most of the correlation be obtained more cheaply than with CCSD?</span><a class="nqA" href="mp2.html" data-goto="mp2">Perturbation theory and MP2 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Water in the 6-31G* basis with spherical d functions (18 orbitals, 10 electrons): how many determinants are there in full CI? Answer in millions.</span></p>
+<p class="olab">Determinants, millions</p><div class="opts" role="group"><button type="button" class="opt">135</button><button type="button" class="opt">0.04</button><button type="button" class="opt">8.6</button><button type="button" class="opt" data-ok="1">73.4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>C(18, 5)² = 8568² ≈ 73.4 million: five α electrons and five β electrons are distributed independently over 18 orbitals. With six Cartesian d functions (the convention of the “Basis sets” page) there are 19 orbitals and ≈ 135 million determinants. In cc-pVDZ (24 orbitals) it is already 1.8 billion; with symmetry and a frozen core it is fewer, but the growth is of the same order.</div></div>
+<div class="tq"><p class="qt"><span>H₂ in STO-3G, R = 0.75 Å: what is the weight (in percent) of the σu² configuration in the CI function?</span></p>
+<p class="olab">Weight of σu², %</p><div class="opts" role="group"><button type="button" class="opt">13</button><button type="button" class="opt">0.1</button><button type="button" class="opt">46</button><button type="button" class="opt" data-ok="1">1.3</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>About 1.3 %: near equilibrium Hartree–Fock is almost exact in the composition of the function, but the correlation energy is already 21 mEₕ (13 kcal/mol).</div></div>
+<div class="tq"><p class="qt"><span>Stretch the bond to 3 Å. What is the weight of σu² now?</span></p>
+<p class="olab">Weight of σu², %</p><div class="opts" role="group"><button type="button" class="opt">25</button><button type="button" class="opt">1.3</button><button type="button" class="opt">100</button><button type="button" class="opt" data-ok="1">46</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>About 46 %: the configurations are almost equally important. At full dissociation their weights become equal, and the function describes one electron on each atom. A single configuration σg² is already qualitatively wrong here.</div></div>
+<div class="tq"><p class="qt"><span>The “H₂/STO-3G” model in the section on size consistency, R = 0.75 Å: what share of the correlation energy does CISD recover for 10 non-interacting molecules, %?</span></p>
+<p class="olab">Share of correlation, %</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">90</button><button type="button" class="opt">57</button><button type="button" class="opt">100</button><button type="button" class="opt">98.7</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>About 90 %: for one molecule CISD is exact, for two it gives 98.7 %, for ten 90 %, for a hundred 57 %. The CISD correlation energy grows as √n, while it should grow as n.</div></div>
+<div class="tq"><p class="qt"><span>Why is CCSD size-consistent while CISD is not?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">e^(T_A+T_B) = e^(T_A)·e^(T_B): products of amplitudes give simultaneous excitations of both fragments</button><button type="button" class="opt">CCSD includes triple excitations</button><button type="button" class="opt">CCSD works in a larger basis</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>For distant fragments T = T_A + T_B, and e^(T_A+T_B) = e^(T_A)·e^(T_B): the wavefunction factorizes into a product by itself. Products of amplitudes give simultaneous excitations of both fragments without new parameters, while the linear CISD function does not contain them.</div></div>
+</div></details></section>
+<script src="js/ci-cc.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="cicc";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/ci-cc.js"></script>
+
+</body>
+</html>

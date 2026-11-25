@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Searching for a transition state and the reaction path</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>Searching for a transition state and the reaction path</h1>
+<p class="lead">A minimizer finds a minimum by itself: it rolls down and stops. A transition state is a pass between pits, and one cannot roll down to it. Here, on model surfaces, you see how the saddle is reached by eigenvector following, how an elastic band finds the reaction path, why a scan can mislead and how to prove that the right saddle was found.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>A transition state is a first-order saddle point: zero gradient, exactly one negative eigenvalue of the Hessian (one imaginary frequency). BFGS keeps its Hessian positive and rolls down from near a saddle into a minimum.</li><li>Eigenvector following: in the basis of the modes the step goes up along the reaction coordinate and down along the others; the step is limited by a trust radius. A good start is needed: the region of convergence to a saddle is narrower than the bowl of a minimum.</li><li>The nudged elastic band (NEB): a chain of images between the reactant and the product; of the true force the part across the path is taken, of the springs the part along it. The climbing image (CI-NEB) has no spring, climbs up along the path and converges to the saddle.</li><li>A relaxed scan needs a chosen coordinate. If the reaction runs along two coordinates at once, the profile breaks, and the scans forward and backward diverge. The maximum of a scan is a start, not a transition state.</li><li>Three checks of the point found: one imaginary frequency; its mode is the motion of the reaction; the IRC from the saddle reaches the reactant and the product.</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">The saddle and eigenvector following</h2>
+  <div class="crow"><span class="l">Start x</span><input type="range" id="fx" min="-1.5" max="1.5" step="0.01" value="0.8" aria-label="x"><span class="val" id="fxv"></span></div>
+  <div class="crow"><span class="l">Start y</span><input type="range" id="fy" min="-1.1" max="1.1" step="0.01" value="0.3" aria-label="y"><span class="val" id="fyv"></span></div>
+  <div class="crow"><span class="l">Trust radius</span><input type="range" id="rr" min="0.05" max="1" step="0.01" value="0.3" aria-label="radius"><span class="val" id="rrv"></span></div>
+  <div class="crow"><span class="l">Up along the mode</span><span class="grp" id="mG" role="group" aria-label="Up along the mode"></span></div>
+  <div class="two" style="grid-template-columns:minmax(0,1.55fr) minmax(0,1fr)"><svg id="fchart" class="ch" viewBox="0 0 560 440" role="img" aria-label="The surface (x² − 1)² + y² and the steps"></svg><svg id="feprof" class="ch" viewBox="0 0 360 440" role="img" aria-label="Energy by step"></svg></div>
+  <div class="legend" id="fleg"></div>
+  <div class="cards" id="fcards"></div>
+  <p class="status" id="fNote"></p>
+  <p class="hint">The surface of the lecture E = (x² − 1)² + y²: minima (±1, 0), the saddle (0, 0) with E = 1, the Hessian diag(12x² − 4, 2). The step in the basis of the modes: along the chosen one +g/|λ|, along the others −g/|λ|, each part not more than the radius. Newton: −g/λ along all the modes. The IRC is a descent along the gradient from the saddle shifted by 0.02 along the negative mode.</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">The elastic band: NEB and the climbing image</h2>
+  <div class="crow"><span class="l">Forces on the images</span><span class="grp" id="kG" role="group" aria-label="Forces on the images"></span></div>
+  <div class="crow"><span class="l">Images (with the ends)</span><input type="range" id="ni" min="3" max="21" step="2" value="9" aria-label="n"><span class="val" id="niv"></span></div>
+  <div class="crow"><span class="l">Stiffness of the springs k</span><input type="range" id="ks" min="1" max="300" step="1" value="50" aria-label="k"><span class="val" id="ksv"></span></div>
+  <div class="two" style="grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)"><svg id="nchart" class="ch" viewBox="0 0 480 440" role="img" aria-label="The Müller–Brown surface and the band"></svg><svg id="nprof" class="ch" viewBox="0 0 440 440" role="img" aria-label="Energy of the images"></svg></div>
+  <div class="legend" id="nleg"></div>
+  <div class="cards" id="ncards"></div>
+  <p class="status" id="nNote"></p>
+  <p class="hint">The Müller–Brown surface (1979): the reactant A (−0.56, 1.44), the product C (−0.05, 0.47), the saddle between them (−0.82, 0.62), a barrier of 106.0 in its units. F<sub>i</sub> = −∇E + (∇E·τ)τ + k(|R<sub>i+1</sub> − R<sub>i</sub>| − |R<sub>i</sub> − R<sub>i−1</sub>|)τ; the climbing image: F = −∇E + 2(∇E·τ)τ. 1500 steps of steepest descent; the ends are fixed.</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">A relaxed scan against the saddle</h2>
+  <div class="crow"><span class="l">Coordinate</span><span class="grp" id="cG" role="group" aria-label="Coordinate"></span></div>
+  <div class="two" style="grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)"><svg id="schart" class="ch" viewBox="0 0 480 440" role="img" aria-label="The path of the scan on the surface"></svg><svg id="sprof" class="ch" viewBox="0 0 440 440" role="img" aria-label="The profile of the scan"></svg></div>
+  <div class="legend" id="sleg"></div>
+  <div class="cards" id="scards"></div>
+  <p class="status" id="sNote"></p>
+  <p class="hint">41 values of the coordinate from A to C; at each the other coordinate is optimized from the previous point. «Forward» is from A, «backward» from C. The circle is the true saddle.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">The saddle is found and checked. How does the height of the barrier give the rate constant?</span><a class="nqA" href="kinetics.html" data-goto="kin">Reaction rate: the transition state →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>E = (x² − 1)² + y². What are the eigenvalues of the Hessian at the saddle (0, 0)?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">−4 and 2</button><button type="button" class="opt">4 and 2</button><button type="button" class="opt">−4 and −2</button><button type="button" class="opt">0 and 2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>−4 and 2: the Hessian is diag(12x² − 4, 2), at x = 0 it is (−4, 2). One negative — a first-order saddle; two negative would be a summit.</div></div>
+<div class="tq"><p class="qt"><span>Why does BFGS started near a saddle not find the transition state?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">It keeps its Hessian positive and always goes down</button><button type="button" class="opt">Its trust radius is too small</button><button type="button" class="opt">The gradient at a saddle is not zero</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>BFGS «believes» it is in a pit and goes down — into the reactant or the product. A saddle search needs a Hessian with one negative value and the knowledge of which mode is the reaction coordinate.</div></div>
+<div class="tq"><p class="qt"><span>A band was optimized without projections: the true force and the springs added whole. What barrier came out?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Too low: the path cuts the corner, the images slide to the ends</button><button type="button" class="opt">Exact</button><button type="button" class="opt">Too high</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Too low: the springs across the path pull the images off the valley floor, and the true force along the path drags them to the ends — no one is at the top. On the page 68 instead of 106.</div></div>
+<div class="tq"><p class="qt"><span>What proves that the right transition state was found?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">One imaginary frequency, its mode is the motion of the reaction, the IRC reaches the reactant and the product</button><button type="button" class="opt">The gradient is zero</button><button type="button" class="opt">It is the maximum of a relaxed scan</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>All three checks: a zero gradient is found at a minimum and at a higher-order saddle too; the maximum of a scan was not checked by the Hessian. Only the IRC ties the saddle to the right reactant and product.</div></div>
+</div></details></section>
+<script src="js/tsneb.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="tsneb";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/tsneb.js"></script>
+
+</body>
+</html>

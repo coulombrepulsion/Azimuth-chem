@@ -1,0 +1,14 @@
+.demoBar .dq{width:var(--qs);height:calc(var(--qs)*1.1);object-fit:contain;object-position:center bottom;flex:none;align-self:flex-end;filter:drop-shadow(0 3px 6px rgba(0,0,0,.35));pointer-events:none}
+.try{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.try h2{font-family:var(--f-display);font-size:19px;margin:0}
+.try details{border-top:1px solid var(--line);padding:7px 0 2px}
+.try summary{cursor:pointer;font-size:14.5px;list-style:none;display:flex;gap:8px}
+.try summary::-webkit-details-marker{display:none}
+.try summary::before{content:"▸";color:var(--accent);flex:none}
+.try details[open] summary::before{content:"▾"}
+.try .ans{font-size:14px;color:var(--ink);background:var(--soft);border-radius:7px;padding:8px 11px;margin:6px 0 4px 18px}
+.try .ans::before{content:"Ответ. ";font-weight:600}
+:root.proj body{zoom:1.12}
+:root.proj{--muted:#3a424e;--line:#b4bcc8}
+@media (prefers-color-scheme: dark){:root.proj:not([data-theme="light"]){--muted:#c8cfda;--line:#4a5463}}
+:root.proj[data-theme="dark"]{--muted:#c8cfda;--line:#4a5463}

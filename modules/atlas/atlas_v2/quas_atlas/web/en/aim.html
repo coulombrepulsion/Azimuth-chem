@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,ammonia,benzene">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Atoms in molecules: Bader theory</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/aim.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-aim-g.webp"><!--pose:end-->
+<h1>Atoms in molecules: Bader theory</h1>
+<p class="lead">Where does one atom end and another begin in a molecule? Bader theory (QTAIM) answers this from the electron density ρ(r) alone — a quantity that can be both calculated and measured by X-ray structure analysis. An atom is the region around a nucleus bounded by a zero-flux surface: no gradient path of ∇ρ crosses it. Here the density is computed right in the browser by the Hartree–Fock method in a Gaussian basis — from the minimal STO-3G up to 6-31G**.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>An atom in a molecule is the region around a nucleus bounded by a zero-flux surface of ∇ρ; the partition is set by the density itself, not by the basis.</li><li>Critical points (∇ρ = 0) come in four types; bond critical points and bond paths form the molecular graph, and the numbers of points obey n − b + r − c = 1.</li><li>The sign of ∇²ρ shows where density is concentrated (∇²ρ &lt; 0) and where it is depleted (∇²ρ &gt; 0); together with ρ<sub>b</sub> and H<sub>b</sub> it helps tell a covalent bond from a closed-shell interaction.</li><li>Bader charges are integrals of the density over atomic basins and converge as the basis grows; Mulliken charges depend on how the basis is distributed over the atoms.</li><li>The electrostatic potential on the ρ = 0.001 surface shows where the charges and dipoles of a neighbour will approach: a σ-hole is a positive region on the extension of a bond (halogen bonding), a π-hole lies over an empty or depleted p orbital (BF₃, CO₂, C₆F₆).</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> HF density; the topology is more robust than the numbers</summary><dl><dt>What is computed</dt><dd>The HF density computed right in the browser, critical points, basins and Bader charges, isosurfaces, ESP.</dd><dt>Which approximations are made</dt><dd>The HF method (no correlation), basis sets from STO-3G to 6-31G**; numerical integration of the basins.</dd><dt>What can be concluded</dt><dd>The molecular graph is usually robust to method and basis; charges and critical-point properties describe the density, not the bond energy.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Density, gradient paths and the molecular graph</h2>
+  <p class="small">The ∇ρ trajectories (thin lines) come in from infinity and usually end at the nuclei: in the typical case the attractors, the maxima of the density, sit at the nuclei, and all trajectories that reach an attractor form the basin of an atom. There are exceptions: non-nuclear attractors (for example in some metals and electrides) and artefacts of an approximate density, as for HF in the STO-3G basis (question 5 below). Trajectories that end not at a nucleus but at a bond critical point form the interatomic surface, the boundary between basins (thick lines). From the same critical point a bond path leads to the two nuclei: the line along which the density is higher than along any neighbouring line.</p>
+  <div class="crow"><span class="l">Molecule</span><span class="row" id="mG" role="group" aria-label="Molecule"></span></div>
+  <div class="crow"><span class="l">Basis</span><span class="row" id="bG" role="group" aria-label="Basis"></span></div>
+  <div class="crow"><span class="l">Map</span><span class="row" id="fG" role="group" aria-label="What to show"></span><span class="row" id="lG" role="group" aria-label="Layers"></span></div>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle" id="mapT"></div>
+      <canvas id="map" width="640" height="520" role="img" aria-label="Electron density map in the molecular plane"></canvas>
+      <div class="legend lg" id="mapL"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="tablewrap" id="infoTab"></div>
+      <div class="status" id="pt">Click the map to see ρ and ∇²ρ at a point.</div>
+      <div class="status" id="st1"></div>
+    </div>
+  </div>
+</section>
+
+<section class="panel" aria-labelledby="h1bs">
+  <h2 id="h1bs">2. Functions in 3D and the electrostatic potential</h2>
+  <p class="small">An isosurface is a surface on which a function has one and the same value. The surface ρ = 0.001 a.u. encloses more than 95 % of the electrons and is taken as the “outer boundary” of the molecule. The molecular electrostatic potential V(r) = Σ Z<sub>A</sub>/|r − R<sub>A</sub>| − ∫ρ(r′)/|r − r′| dr′, the interaction energy with a unit positive charge, is mapped onto it. Red regions (V &lt; 0) attract cations and hydrogen-bond donors, blue regions (V &gt; 0) attract anions and lone pairs. A positive region on the extension of a covalent bond of a halogen atom is called a <b>σ-hole</b> (F₂ has one, although fluorine is the most electronegative atom); a positive region above the plane of a π system or above an atom with a vacant p orbital is a <b>π-hole</b> (CO₂, BF₃, F₂CO, C₆F₆). Drag the image to rotate it.</p>
+  <div class="crow"><span class="l">Surface</span><span class="row" id="fnG" role="group" aria-label="Function"></span></div>
+  <div class="crow" id="valRow"><span class="l" id="valL">Value</span><span class="row" id="valG" role="group" aria-label="Value"></span></div>
+  <div class="crow" id="espRow"><span class="l">ESP scale</span><input type="range" id="espR" min="20" max="300" step="5" style="width:220px" aria-label="Limit of the potential scale"><span class="val" id="espV"></span></div>
+  <div class="crow"><span class="l">Show</span><span class="row" id="shG" role="group" aria-label="What to show"></span><span class="row" id="vwG" role="group" aria-label="View"></span></div>
+  <div class="glwrap"><canvas id="gl" role="img" aria-label="3D view of the molecule and the isosurface"></canvas><canvas id="glo" aria-hidden="true"></canvas></div>
+  <div class="legend lg" id="glL"></div>
+  <div class="status" id="st5"></div>
+  <h3 class="ptitle">One-dimensional profiles along the bond line</h3>
+  <p class="small">A cut of the same functions along the straight line through two nuclei. The ρ plot shows sharp maxima at the nuclei and a minimum between them — the bond critical point. The ∇²ρ plot shows the shell structure of the atoms: regions of electron concentration (∇²ρ &lt; 0) and depletion (∇²ρ &gt; 0) alternate around a heavy nucleus; the sign of ∇²ρ at the bond critical point is one of the characteristics of the bond type.</p>
+  <div class="crow"><span class="l">Bond</span><span class="row" id="pbG" role="group" aria-label="Bond"></span></div>
+  <svg id="pRho" viewBox="0 0 960 250" role="img" aria-label="Electron density along the bond line"></svg>
+  <svg id="pLap" viewBox="0 0 960 250" role="img" aria-label="Laplacian of the density along the bond line"></svg>
+  <div class="status" id="pSt"></div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">3. Critical points</h2>
+  <p class="small">At a critical point ∇ρ = 0. The type of the point is set by the signs of the three eigenvalues of the Hessian of ρ (curvatures λ₁ ≤ λ₂ ≤ λ₃): a maximum (3, −3), usually at a nucleus; a bond critical point (3, −1), a minimum along the bond path and a maximum across it; a ring point (3, +1) inside a ring; a cage point (3, +3) inside a polyhedron. The numbers of points always obey the Poincaré–Hopf relation n − b + r − c = 1. The character of a bond is judged from the density at the bond point ρ<sub>b</sub>, the Laplacian ∇²ρ<sub>b</sub> = λ₁ + λ₂ + λ₃, the ellipticity ε = <span class=fr><span>λ₁</span><span>λ₂</span></span> − 1 and the energy density H<sub>b</sub> = G<sub>b</sub> + V<sub>b</sub>.</p>
+  <div class="tablewrap" id="cpTab"></div>
+  <div class="status" id="st2"></div>
+</section>
+
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">4. Atomic charges: Bader, Mulliken, Löwdin</h2>
+  <p class="small">The Bader charge of an atom is the nuclear charge minus the number of electrons in its basin, that is, the integral of the density over the atomic volume. Mulliken and Löwdin charges are obtained differently: the density matrix is split among basis functions “assigned” to atoms. So they depend on which functions sit on which atoms. Switch the basis or compute all bases at once — the table rows accumulate.</p>
+  <div class="row"><button class="btn" id="allB" type="button">Compute in all bases</button><span class="hint" id="allSt"></span></div>
+  <div class="tablewrap" id="qTab"></div>
+  <div class="status" id="st3"></div>
+</section>
+
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">5. Bond types from the critical point</h2>
+  <p class="small">All bond critical points for twelve molecules in the 6-31G* basis. If ∇²ρ<sub>b</sub> &lt; 0, density is concentrated between the nuclei — a shared (covalent) interaction. If ∇²ρ<sub>b</sub> &gt; 0, density is pulled from the bond region toward the nuclei; then the sign of H<sub>b</sub> separates closed-shell interactions (ionic bonds, H<sub>b</sub> &gt; 0) from strongly polar or “strained” bonds that still have a large covalent contribution (H<sub>b</sub> &lt; 0). Hover over a point to see its label.</p>
+  <div class="two">
+    <svg id="sc" viewBox="0 0 560 380" role="img" aria-label="Laplacian of the density versus the density at bond critical points"></svg>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="legend lg"><span><i class="dt" style="background:var(--accent)"></i>H<sub>b</sub> &lt; 0</span><span><i class="dt" style="background:var(--warn)"></i>H<sub>b</sub> &gt; 0</span></div>
+      <div class="status" id="st4"></div>
+    </div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">If everything is determined by the density, can the energy be obtained from it directly?</span><a class="nqA" href="dft.html" data-goto="dft">Density functional →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Choose C₆H₆ (STO-3G). How many bond critical points were found in total?</span></p>
+<p class="olab">Bond points</p><div class="opts" role="group"><button type="button" class="opt">18</button><button type="button" class="opt">13</button><button type="button" class="opt" data-ok="1">12</button><button type="button" class="opt">6</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>12: six C–C bonds and six C–H bonds. There is also one ring point (3, +1) at the ring center, and the Poincaré–Hopf relation holds: 12 − 12 + 1 − 0 = 1.</div></div>
+<div class="tq"><p class="qt"><span>Compare ∇²ρ at the bond point in N₂ and in LiF. What does it say about the bonds?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">N₂ — covalent (∇²ρ &lt; 0), LiF — closed shells (∇²ρ &gt; 0, H &gt; 0)</button><button type="button" class="opt">Both covalent</button><button type="button" class="opt">Both ionic</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>For N₂ ∇²ρ<sub>b</sub> ≈ −2.5 &lt; 0: density is concentrated between the nuclei — a covalent bond. For LiF ∇²ρ<sub>b</sub> ≈ +0.8 &gt; 0, while ρ<sub>b</sub> is small (0.07) and H<sub>b</sub> &gt; 0: density is drawn toward the nuclei, an interaction of the closed shells of Li⁺ and F⁻.</div></div>
+<div class="tq"><p class="qt"><span>C₂H₄: why is the ellipticity of the C=C bond about 0.45, while for C–H bonds it is almost zero?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">The π bond stretches the density in one direction across the bond</button><button type="button" class="opt">The C=C bond is shorter</button><button type="button" class="opt">The C atoms are more charged</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The π bond adds density above and below the molecular plane, so at the C=C bond point the density is stretched more in one direction across the bond: λ₁ and λ₂ differ noticeably. For single bonds the density cross-section is almost circular, ε ≈ 0; for a triple bond it is circular too, because two π bonds together have cylindrical symmetry.</div></div>
+<div class="tq"><p class="qt"><span>H₂O, 6-31G**: which charge of the O atom is larger in magnitude — Mulliken or Bader? Why?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Bader: the atomic boundary passes close to H</button><button type="button" class="opt">Mulliken: it accounts for overlap</button><button type="button" class="opt">They are the same</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Bader: about −1.2 versus −0.67 by Mulliken. The O–H interatomic surface passes close to the H atom (the bond point is 0.2 Å from it), so almost all of the bond density falls into the oxygen basin. Mulliken splits the overlap equally between atoms regardless of their electronegativity.</div></div>
+<div class="tq"><p class="qt"><span>Choose HF in the STO-3G basis. Why was no bond critical point found?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">In this basis H has no density maximum of its own</button><button type="button" class="opt">The H–F bond is ionic</button><button type="button" class="opt">The bond point could not be found numerically</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>In the minimal basis the H atom has no density maximum of its own: along the axis the density decreases monotonically from F through H outward. Without an attractor there is no H basin, and the whole electron “belongs” to fluorine (H charge = +1). This is an artifact of a Gaussian basis without a cusp at the nucleus: already in 6-31G the maximum at H appears together with the bond point.</div></div>
+<div class="tq"><p class="qt"><span>For CO ∇²ρ<sub>b</sub> &gt; 0. Does this mean the bond in CO is ionic?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">No: ρ is large and H &lt; 0, the bond point falls into the depletion region near C</button><button type="button" class="opt">Yes: a positive Laplacian means an ionic bond</button><button type="button" class="opt">Yes, because O is more electronegative than C</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>No. The density at the bond point is large (ρ<sub>b</sub> ≈ 0.48), and H<sub>b</sub> ≈ −0.8 is clearly negative, as for covalent bonds. The positive Laplacian arises because the bond point is shifted toward the C atom and falls into a region where the carbon density is depleted. The sign of ∇²ρ<sub>b</sub> is only one of the criteria, and for polar bonds it is read together with ρ<sub>b</sub> and H<sub>b</sub>.</div></div>
+<div class="tq"><p class="qt"><span>Section 2, ESP, F₂: where on the ρ = 0.001 surface is the potential positive? How does this fit with fluorine being the most electronegative element?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Along the bond axis the density beyond the nucleus is depleted and the nucleus is less screened</button><button type="button" class="opt">Fluorine is positively charged</button><button type="button" class="opt">It is a basis-set error</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>On the extension of the F–F bond, at the “cap” of each atom: about +56 kJ/mol, while the belt around the atom is negative (about −13). The electron taking part in the σ bond is concentrated between the nuclei; beyond the nucleus along the axis the density is depleted, and the nucleus is less screened there. The lone pairs lie in the belt. This is a σ-hole; for Cl, Br and I it is much stronger, and halogen bonding R–X···B rests on it.</div></div>
+<div class="tq"><p class="qt"><span>Compare CO₂ and BF₃. Where are their positive regions, and how does a π-hole differ from a σ-hole?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">A σ-hole lies on the extension of a σ bond, a π-hole perpendicular to the plane or axis of the molecule</button><button type="button" class="opt">They are the same thing</button><button type="button" class="opt">A π-hole is always negative</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>In CO₂ the belt around carbon is positive (about +150 kJ/mol) and the ends of the molecule (O) are negative (about −67). In BF₃ the maximum, about +185, lies above and below boron, with about −66 on the F atoms. A σ-hole lies on the extension of a σ bond, a π-hole perpendicular to the plane (or axis) of the molecule, where the central atom has an empty or depleted p orbital. Lewis bases approach CO₂ and BF₃ from exactly this side.</div></div>
+<div class="tq"><p class="qt"><span>C₆H₆ and C₆F₆ (STO-3G): what is the sign of the potential above the centre of the ring? What follows from it?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Negative above C₆H₆, positive above C₆F₆</button><button type="button" class="opt">Negative above both</button><button type="button" class="opt">Positive above both</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Above the benzene ring the potential is negative (about −44 kJ/mol, the π cloud), and the H atoms are positive. Hexafluorobenzene is the opposite: about +91 above the ring, negative on the fluorines. The quadrupole moments of the two molecules have opposite signs, so a mixture of C₆H₆ and C₆F₆ forms a crystal in which the rings are stacked face to face, and anions bind to C₆F₆ above the centre of the ring (anion–π interaction).</div></div>
+<div class="tq"><p class="qt"><span>At the bond point ρ<sub>b</sub> is large and ∇²ρ<sub>b</sub> &lt; 0. Can one claim from this critical point alone that the molecule is energetically stable, i.e. will not fall apart into fragments releasing energy?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">It cannot be determined from these data: the energies of the molecule and the fragments are needed</button><button type="button" class="opt">Yes: ∇²ρ<sub>b</sub> &lt; 0 means a stable covalent bond</button><button type="button" class="opt">No: a large ρ<sub>b</sub> means repulsion</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>It cannot be determined from these data. A critical point describes the density at a given geometry, while stability is a question of energies: the energy of the molecule compared with the fragments, and a minimum on the potential energy surface. Bond paths and bond points also occur in strained and metastable structures.</div></div>
+</div></details></section>
+<script src="js/aim.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="aim";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/aim.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>斯莱特–康登规则</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/sc.css">
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-sc-g.webp"><!--pose:end-->
+<h1>斯莱特–康登规则</h1>
+<p class="lead">两个斯莱特行列式之间的哈密顿矩阵元 ⟨Ψ|Ĥ|Ψ′⟩ 可化为若干单电子和双电子积分。用自旋轨道组装两个行列式——程序会将它们化为最大重合，判断属于哪种情况，并用 h<sub>ij</sub>、J<sub>ij</sub> 和 K<sub>ij</sub> 写出结果。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>Slater 行列式之间的矩阵元按 Slater–Condon 规则化为单电子和双电子积分。</li><li>先把行列式调整到最大重合；每次交换两列都会改变符号。</li><li>只有当两个行列式至多相差两个自旋轨道且 M<sub>S</sub> 相同时，矩阵元才可能非零。</li><li>交换积分只出现在自旋相同的自旋轨道之间。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>行列式的精确规则</summary><dl><dt>计算的是什么</dt><dd>两个 Slater 行列式之间哈密顿量的矩阵元，用 h<sub>ij</sub>、J<sub>ij</sub>、K<sub>ij</sub> 表示。</dd><dt>采用了哪些近似</dt><dd>正交归一的自旋轨道；不计算积分的数值。</dd><dt>能得出什么结论</dt><dd>公式是精确的；只有代入具体计算的积分后才能得到能量。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">两个行列式</h2>
+  <div class="crow"><span class="l">示例</span><span class="grp" id="preG"></span></div>
+  <div class="two" id="dets"></div>
+  <p class="hint">箭头 ↑ 和 ↓ 表示自旋轨道 φ<sub>k</sub>α 和 φ<sub>k</sub>β。列的顺序即添加的顺序；点击某列可将其左移。轨道 φ₁…φ₄ 为实函数且正交归一。</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">分步求解</h2>
+  <div id="sol"></div>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">速查表</h2>
+  <div class="tablewrap"><table class="mtab bt"><thead><tr><th class="n">行列式的差别</th><th class="n">⟨Ψ|Ĥ|Ψ′⟩</th></tr></thead><tbody>
+  <tr><td class="n">无差别（Ψ′ = Ψ）</td><td class="n">Σ<sub>i</sub> h<sub>ii</sub> + ½ Σ<sub>i,j</sub> (⟨ij|ij⟩ − ⟨ij|ji⟩)</td></tr>
+  <tr><td class="n">一个自旋轨道 χ<sub>m</sub> → χ<sub>p</sub></td><td class="n">h<sub>mp</sub> + Σ<sub>n</sub> (⟨mn|pn⟩ − ⟨mn|np⟩)</td></tr>
+  <tr><td class="n">两个：χ<sub>m</sub> → χ<sub>p</sub>，χ<sub>n</sub> → χ<sub>q</sub></td><td class="n">⟨mn|pq⟩ − ⟨mn|qp⟩</td></tr>
+  <tr><td class="n">三个及以上</td><td class="n">0</td></tr></tbody></table></div>
+  <p class="hint">应用规则之前先将行列式化为最大重合；每交换一次列，符号改变一次。记号之间的关系：⟨ij|kl⟩ = (ik|jl)，J<sub>ij</sub> = ⟨ij|ij⟩ = (ii|jj)，K<sub>ij</sub> = ⟨ij|ji⟩ = (ij|ji)。凡电子“进入”和“离开”时自旋不同的项，对自旋积分后均为零。</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">一个组态对应若干个状态。如何找到它们？</span><a class="nqA" href="terms.html" data-goto="terms">原子光谱项 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面探索练习与训练器。在页面上完成操作并作答——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>He，⟨1s²|Ĥ|1s²⟩：为什么结果中没有交换积分 K？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">K 与 h₁₁ 抵消</button><button type="button" class="opt" data-ok="1">只有自旋相同的自旋轨道之间才有 K</button><button type="button" class="opt">K₁₁ 已包含在 J₁₁ 中</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>答案为 2h₁₁ + J₁₁。交换项只存在于自旋相同的自旋轨道之间，而 1sα 与 1sβ 自旋不同——对自旋积分使其为零。</div></div>
+<div class="tq"><p class="qt"><span>H₂：⟨σ<sub>g</sub>²|Ĥ|σ<sub>u</sub>²⟩ 等于多少？它起什么作用？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">J₁₂——排斥能</button><button type="button" class="opt">按布里渊定理为零</button><button type="button" class="opt" data-ok="1">K₁₂ = (12|12)：在 CI 中混合 σ<sub>g</sub>² 与 σ<sub>u</sub>²</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>两个自旋轨道不同，答案为 K₁₂ = (12|12)——σ<sub>g</sub> 与 σ<sub>u</sub> 之间的交换积分。这是 CI 矩阵的非对角元，它使 σ<sub>g</sub>² 与 σ<sub>u</sub>² 混合，从而修正解离行为。</div></div>
+<div class="tq"><p class="qt"><span>从闭壳层 1s² 出发的单激发 1β → 2β：矩阵元等于多少？为什么对 HF 轨道它为零？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">这是矩阵元 F₁₂，而 HF 轨道使 F 对角化</button><button type="button" class="opt">自旋不同</button><button type="button" class="opt">积分 (11|12) 总是为零</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>h₁₂ + (11|12)——这是 Fock 算符的矩阵元 F₁₂。哈特里–福克轨道使 F 对角化，因此 F₁₂ = 0：布里渊定理。</div></div>
+<div class="tq"><p class="qt"><span>|1α 2α 3β| 和 |3β 1α 4α|：需要几次对换？符号如何？</span></p>
+<p class="olab">对换次数</p><div class="opts" role="group"><button type="button" class="opt">0</button><button type="button" class="opt">1</button><button type="button" class="opt">3</button><button type="button" class="opt" data-ok="1">2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>将 3β 从第一位移到第三位——两次对换，符号为 +。之后只有一个自旋轨道不同：2α → 4α。</div></div>
+<div class="tq"><p class="qt"><span>|1α 1β 2α| 和 |1β 1α 2α| 是同一个行列式吗？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">是，完全相同</button><button type="button" class="opt" data-ok="1">是，相差一个因子 −1</button><button type="button" class="opt">不是，它们是不同的函数</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>在相差一个符号的意义下是同一个函数：一次对换给出因子 −1，矩阵元等于 −E。因此在计算 CI 矩阵之前必须固定列的顺序。</div></div>
+<div class="tq"><p class="qt"><span>为什么 ⟨|1α1β||Ĥ||1α2α|⟩ = 0，尽管只有一个自旋轨道不同？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Ĥ 改变自旋</button><button type="button" class="opt">有两个自旋轨道不同</button><button type="button" class="opt" data-ok="1">自旋改变了，而 ⟨β|α⟩ = 0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>替换 1β → 2α 改变了自旋。Ĥ 不作用于自旋，自旋积分 ⟨β|α⟩ = 0。只有 M<sub>S</sub> 相同的行列式才会混合。</div></div>
+<!--self:start--><div class="selfBox"><h3 id="h3s">自我检测</h3>
+  <p class="small">程序随机给出两个行列式（它们会出现在上方编辑器中，解答隐藏）。回答两个问题后解答将显示。</p>
+  <div class="row"><button class="btn primary" type="button" id="qNew">新题目</button><span class="hint" id="qScore"></span></div>
+  <div id="quiz" style="display:flex;flex-direction:column;gap:10px"></div>
+</div><!--self:end--></div></details></section>
+<script src="js/slater.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="sc";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/slater.js"></script>
+
+</body>
+</html>

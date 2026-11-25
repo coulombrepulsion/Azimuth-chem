@@ -1,0 +1,30 @@
+&CONTROL
+  calculation = 'scf'
+  prefix = 'azimuth'
+  pseudo_dir = '/home/azimuth/.tools/qe/pseudo/SSSP_1.3.0_PBE_efficiency'
+  outdir = './out'
+  tprnfor = .true.
+  tstress = .true.
+/
+&SYSTEM
+  ibrav = 0
+  nat = 2
+  ntyp = 2
+  ecutwfc = 40
+  ecutrho = 320
+/
+&ELECTRONS
+  conv_thr = 2.0e-08
+/
+ATOMIC_SPECIES
+  Na 22.9900 na_pbe_v1.5.uspp.F.UPF
+  Cl 35.4500 cl_pbe_v1.4.uspp.F.UPF
+CELL_PARAMETERS angstrom
+      3.98810000     0.00000000     0.00000000
+      1.99405000     3.45379591     0.00000000
+      1.99405000     1.15126530     3.25627001
+ATOMIC_POSITIONS crystal
+  Na 0.00000000 0.00000000 0.00000000
+  Cl 0.50000000 0.50000000 0.50000000
+K_POINTS automatic
+  8 8 8 0 0 0

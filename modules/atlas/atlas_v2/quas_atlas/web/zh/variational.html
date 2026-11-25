@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>变分法与微扰理论</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/var.css">
+
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-var-g.webp"><!--pose:end-->
+<h1>变分法与微扰理论</h1>
+<p class="lead">薛定谔方程只对少数体系能精确求解，因此量子化学依靠两种近似方法。变分法给出的能量永远不会低于精确值：E[φ] = <span class=fr><span>⟨φ|Ĥ|φ⟩</span><span>⟨φ|φ⟩</span></span> ≥ E₀。Hartree–Fock 方法和 CI 都建立在它之上。微扰理论把能量按小微扰展开成级数；MP2 方法就基于它。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>变分原理：任何试探函数的能量都不低于精确的基态能量，因此两个函数中能量较低的一个按这一标准更好。但这并不意味着它的密度、偶极矩或核附近的行为更准确。</li><li>线性变分法（久期方程）是 Hartree–Fock–Roothaan 方法和 CI 的基础；如果新基组包含旧基组且哈密顿量不变，能量只能降低。换用另一个基组或对于非变分方法（例如 MP2），则没有这种保证。</li><li>微扰理论按阶展开能量：E<sup>(1)</sup> 是微扰的平均值，基态的 E<sup>(2)</sup> 为负。</li><li>微扰级数在微扰小时效果好，微扰大时可能发散；MP2 是相关能的二阶微扰。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>能量的上界，而不是所有性质的精度</summary><dl><dt>计算的是什么</dt><dd>氢原子试探函数和高斯基组的变分能量；非谐振子的微扰级数。</dd><dt>采用了哪些近似</dt><dd>受限的试探函数或有限基组；微扰级数截断到二阶。</dd><dt>能得出什么结论</dt><dd>变分能量不低于精确能量，但它对函数的密度和其他性质不作任何保证；微扰级数可能发散。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. 氢原子的试探函数</h2>
+  <div class="crow"><span class="l">试探函数</span><span class="row" id="tG" role="group" aria-label="试探函数"></span></div>
+  <div class="crow"><span class="l" id="parL"></span><input type="range" id="par" min="-3" max="1" step="0.01" style="width:260px" aria-label="试探函数的参数"><span class="val" id="parV"></span>
+    <button class="btn" id="bOpt" type="button">寻找极小值</button></div>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle">能量 E(参数) 与精确值 E₀ = −0.5 E<sub>h</sub></div>
+      <svg id="eSvg" viewBox="0 0 520 300" role="img" aria-label="能量随参数的变化"></svg>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle">径向密度 r²φ²：试探函数与精确 1s</div>
+      <svg id="fSvg" viewBox="0 0 520 300" role="img" aria-label="试探函数与精确函数"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>试探</span><span><i class="sw" style="border-color:var(--ok);border-top-style:dashed"></i>精确 1s</span></div>
+    </div>
+  </div>
+  <div class="status" id="st1"></div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. 线性变分法：高斯函数基组</h2>
+  <p class="small">函数取为 φ = Σ c<sub>k</sub>g<sub>k</sub>，其中 g<sub>k</sub> = e<sup>−α<sub>k</sub>r²</sup>，指数构成等比数列 α<sub>k</sub> = α₀β<sup>k</sup>。对系数的极小化归结为久期方程 det(H − ES) = 0。每增加一个函数（旧基组仍是新基组的一部分）能量只能降低，并且所有根都从上方逼近精确能级（Hylleraas–Undheim 定理）。</p>
+  <div class="crow"><span class="l">函数个数 N</span><span class="row" id="nG" role="group" aria-label="基函数个数"></span></div>
+  <div class="crow"><span class="l">α₀（最弥散）</span><input type="range" id="a0" min="-3" max="0" step="0.01" style="width:220px" aria-label="最小指数（对数）"><span class="val" id="a0V"></span></div>
+  <div class="crow"><span class="l">β（级数公比）</span><input type="range" id="be" min="1.5" max="8" step="0.05" style="width:220px" aria-label="级数公比"><span class="val" id="beV"></span>
+    <button class="btn" id="bOpt2" type="button">优化 α₀ 和 β</button></div>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle">基态能量误差 E − E₀ 随 N 的变化（对数坐标）</div>
+      <svg id="nSvg" viewBox="0 0 520 280" role="img" aria-label="随基组大小的收敛"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>当前 α₀ 和 β</span><span><i class="sw" style="border-color:var(--ok);border-top-style:dashed"></i>对每个 N 优化的 α₀ 和 β</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle">所选基组中的函数 φ(r) 与精确 1s（核附近）</div>
+      <svg id="wSvg" viewBox="0 0 520 280" role="img" aria-label="基组中的波函数"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>基组得到的 φ(r)</span><span><i class="sw" style="border-color:var(--ok);border-top-style:dashed"></i>精确 e<sup>−r</sup>/√π</span></div>
+    </div>
+  </div>
+  <div class="tablewrap" id="rootTab"></div>
+  <div class="status" id="st2"></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">3. 微扰理论：非谐振子</h2>
+  <p class="small">Ĥ = Ĥ₀ + λV̂，其中 Ĥ₀ = p²/2 + x²/2 是能级为 n + ½ 的谐振子，微扰 V̂ = x⁴。一阶和二阶修正有显式表达式；“精确”能量由 40 个振子函数基组中的对角化求得。</p>
+  <div class="formula2" id="ptF"></div>
+  <div class="crow"><span class="l">能级 n</span><span class="row" id="lvG" role="group" aria-label="能级"></span></div>
+  <div class="crow"><span class="l">微扰强度 λ</span><input type="range" id="lam" min="0" max="0.5" step="0.005" style="width:260px" aria-label="微扰强度"><span class="val" id="lamV"></span></div>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle">E<sub>n</sub>(λ)：精确解与微扰级数</div>
+      <svg id="ptSvg" viewBox="0 0 520 300" role="img" aria-label="能量随 λ 的变化"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--ink)"></i>精确</span><span><i class="sw" style="border-color:var(--accent);border-top-style:dashed"></i>E⁽⁰⁾ + E⁽¹⁾</span><span><i class="sw" style="border-color:var(--warn)"></i>E⁽⁰⁾ + E⁽¹⁾ + E⁽²⁾</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle">势能 x²/2 + λx⁴ 与能级</div>
+      <svg id="vSvg" viewBox="0 0 520 300" role="img" aria-label="势能与能级"></svg>
+    </div>
+  </div>
+  <div class="tablewrap" id="ptTab"></div>
+  <div class="status" id="st3"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">变分法应用于哈密顿量。真实分子的哈密顿量是什么样的？</span><a class="nqA" href="hamiltonian.html" data-goto="ham">分子哈密顿量 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>找出高斯试探函数的极小。能量是多少 E<sub>h</sub>？</span></p>
+<p class="olab">E, Eₕ</p><div class="opts" role="group"><button type="button" class="opt">-0.5000</button><button type="button" class="opt">-0.3333</button><button type="button" class="opt">-0.2830</button><button type="button" class="opt" data-ok="1">-0.4244</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>E<sub>min</sub> = −<span class=fr><span>4</span><span>3π</span></span> ≈ −0.4244 E<sub>h</sub>，此时 α = <span class=fr><span>8</span><span>9π</span></span> ≈ 0.283。比精确能量高 0.076 E<sub>h</sub>（约 47 kcal/mol）。</div></div>
+<div class="tq"><p class="qt"><span>变分能量可能低于精确基态能量 −0.5 E<sub>h</sub> 吗？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">不可能——变分原理禁止这样</button><button type="button" class="opt">可以，只要取非常多的函数</button><button type="button" class="opt">可以，对高斯函数而言</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>不能：对于任何容许的试探函数 E[φ] ≥ E₀——这就是变分原理。因此，在同一哈密顿量下的两个变分计算中，能量较低的那个更好地逼近基态能量。但其密度或偶极矩不一定更准确。</div></div>
+<div class="tq"><p class="qt"><span>第 2 节绿色曲线：向基组中添加函数时误差如何变化？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">可能变为负值</button><button type="button" class="opt" data-ok="1">减小，但始终为正</button><button type="button" class="opt">N = 2 之后不再变化</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>减小，但始终为正：能量从上方逼近精确值。N = 4 时误差小于 1 kcal/mol；之后每增加一个函数带来的改进越来越小。</div></div>
+<div class="tq"><p class="qt"><span>非谐振子，n = 0，λ = 0.1：微扰理论效果如何？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">两阶都接近精确能量</button><button type="button" class="opt">只有一阶合理</button><button type="button" class="opt">两个修正都没用</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>很好：精确能量 0.5591，一阶给出 0.575，二阶给出 0.5488。两者都接近，二阶略好。</div></div>
+<div class="tq"><p class="qt"><span>λ = 0.2 时 n = 0 的一阶修正 E<sup>(1)</sup> 是多少？</span></p>
+<p class="olab">E⁽¹⁾</p><div class="opts" role="group"><button type="button" class="opt">0.05</button><button type="button" class="opt">0.2</button><button type="button" class="opt">0.6</button><button type="button" class="opt" data-ok="1">0.15</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>E<sup>(1)</sup> = λ⟨0|x⁴|0⟩ = <span class=fr><span>3λ</span><span>4</span></span> = 0.15。这就是微扰在未微扰基态中的平均值。</div></div>
+<div class="tq"><p class="qt"><span>对 n = 0 增大 λ。微扰级数会怎样？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">级数收敛得越来越快</button><button type="button" class="opt" data-ok="1">修正变得不小：二阶比一阶更差</button><button type="button" class="opt">修正消失</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>大约从 λ ≈ 0.16 起，二阶的误差已经比一阶大：修正 E<sup>(2)</sup> ∝ −λ² 的增长快于一阶误差的减小。x⁴ 的级数是渐近级数——对任何 λ &gt; 0 最终都会发散。</div></div>
+<div class="tq"><p class="qt"><span>试探函数 A 的能量低于函数 B。哪一个给出的偶极矩更接近精确值？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">根据这些数据无法判断</button><button type="button" class="opt">函数 A</button><button type="button" class="opt">函数 B</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>根据这些数据无法判断。变分原理只限制能量：函数的一阶误差只带来二阶的能量误差，而偶极矩对函数的误差是一阶敏感的。能量较低的函数可能对其他性质描述得更差。</div></div>
+</div></details></section>
+<script src="js/variational.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="var";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/variational.js"></script>
+
+</body>
+</html>

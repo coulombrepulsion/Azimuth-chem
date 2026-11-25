@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="formaldehyde,benzene,butadiene">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>激发态与光谱</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/exc.css">
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-exc-g.webp"><!--pose:end-->
+<h1>激发态与光谱</h1>
+<p class="lead">吸收光时，电子跃迁到更高的轨道，这比原子核移动快得多。因此跃迁是垂直的，光谱中的谱带不是一条线，而是一组振动跃迁。这里可以看到谱带形状和斯托克斯位移从何而来，单重态与三重态有何区别，以及如何把计算得到的激发能和振子强度变成光谱。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>电子跃迁比原子核运动快：跃迁是垂直的（弗兰克–康登原理），振动谱线的强度由振动波函数的重叠决定。</li><li>激发态平衡构型的位移（黄–里斯因子 S）决定谱带形状和斯托克斯位移 2Sħω。</li><li>计算给出垂直激发能和振子强度；应将其与谱带最大值比较，而不是与 0–0 跃迁比较。</li><li>同一组态的单重态和三重态相差 2K；它们之间的跃迁是自旋禁阻的。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>位移谐振子</summary><dl><dt>计算的是什么</dt><dd>吸收和发射振动谱带的形状、斯托克斯位移、单重态–三重态分裂；由计算得到的激发能和振子强度绘制光谱。</dd><dt>采用了哪些近似</dt><dd>一个振动模式，两个态频率相同；只考虑平衡位置的位移；从 v = 0 能级吸收（低温）；宽度相同的高斯展宽。</dd><dt>能得出什么结论</dt><dd>谱带为何宽、振动级数和斯托克斯位移从何而来、如何把计算与实验比较——可以；真实光谱的准确形状——不行。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">弗兰克–康登原理</h2>
+  <div class="crow"><span class="l">平衡位移，黄–里斯因子 S</span><input type="range" id="S" min="0" max="5" step="0.05" value="1.5" aria-label="黄–里斯因子"><span class="val" id="Sv"></span></div>
+  <div class="crow"><span class="l">振动频率 ħω，cm⁻¹</span><input type="range" id="w" min="300" max="3000" step="10" value="1400" aria-label="振动频率"><span class="val" id="wv"></span></div>
+  <div class="crow"><span class="l">0–0 跃迁能量 E₀₀，eV</span><input type="range" id="E00" min="1.5" max="5.5" step="0.01" value="3" aria-label="0–0 跃迁能量"><span class="val" id="E00v"></span></div>
+  <div class="crow"><span class="l">谱线宽度（FWHM），cm⁻¹</span><input type="range" id="fw" min="50" max="3000" step="10" value="700" aria-label="谱线宽度"><span class="val" id="fwv"></span></div>
+  <div class="two">
+    <svg id="pot" viewBox="0 0 460 360" role="img" aria-label="基态和激发态的势能曲线"></svg>
+    <svg id="spec" viewBox="0 0 560 360" role="img" aria-label="吸收和发射光谱"></svg>
+  </div>
+  <div class="legend" id="leg"></div>
+  <div class="cards" id="cards"></div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">单重态与三重态</h2>
+  <p class="hint">有两个未成对电子的激发组态给出单重态和三重态。轨道相同时，它们的能量相差 2K，K 为两个轨道的交换积分（见“泡利原理”页面）。S₀ → T₁ 跃迁是自旋禁阻的，因此三重态主要通过从 S₁ 的系间窜越而布居，其发射——磷光——很慢。</p>
+  <div class="crow"><span class="l">交换积分 K，eV</span><input type="range" id="K" min="0" max="1.5" step="0.01" value="0.4" aria-label="交换积分"><span class="val" id="Kv"></span></div>
+  <svg id="jab" viewBox="0 0 960 300" role="img" aria-label="雅布隆斯基图"></svg>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">来自输出文件的光谱</h2>
+  <p class="hint">程序（TDDFT、CIS、ADC、EOM-CC）会输出垂直激发能和振子强度 f。请按“能量 f”成对输入——每个跃迁一行；能量以 eV 或 nm 为单位。每条谱线采用给定宽度的高斯线形。框中为假设示例。</p>
+  <div class="cin">
+    <label class="wide">跃迁：能量与振子强度<textarea id="cIn">4.20 0.020
+5.10 0.450
+5.60 0.080
+6.30 0.900</textarea></label>
+    <label>能量单位<select id="cU"><option value="eV">eV</option><option value="nm">nm</option></select></label>
+    <label>宽度（FWHM），eV<input id="cW" inputmode="decimal" value="0.30"></label>
+    <label>光谱横轴<select id="cX"><option value="nm">波长，nm</option><option value="eV">能量，eV</option></select></label>
+  </div>
+  <div class="row"><button type="button" class="btn primary" id="bCalc">绘制光谱</button></div>
+  <svg id="spec2" viewBox="0 0 960 320" role="img" aria-label="由计算数据得到的光谱"></svg>
+  <p class="status" id="cMsg" role="status"></p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">激发改变了前线轨道的占据。这如何改变周环反应的进程？</span><a class="nqA" href="wh.html" data-goto="wh">π 轨道与反应 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>令 S = 0。吸收和发射光谱是什么样子？为什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">一条 0–0 谱线，吸收和发射共有</button><button type="button" class="opt">没有结构的宽谱带</button><button type="button" class="opt">两端各有一个峰</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>只剩下一条 0–0 谱线，吸收和发射共有，没有斯托克斯位移。S = 0 时激发态的平衡构型与基态相同，v = 0 振动波函数相同，与其他能级的重叠为零。</div></div>
+<div class="tq"><p class="qt"><span>S = 2.5：吸收中哪个振动跃迁 0 → v 最强？</span></p>
+<p class="olab">最强跃迁的 v</p><div class="opts" role="group"><button type="button" class="opt">1</button><button type="button" class="opt">3</button><button type="button" class="opt" data-ok="1">2</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>v = 2：弗兰克–康登因子服从泊松分布 e<sup>−S</sup>S<sup>v</sup>/v!，S = 2.5 时在 v = 2 处最大（0.257），v = 3 为 0.214。因此谱带最大值位于 0–0 跃迁之上。</div></div>
+<div class="tq"><p class="qt"><span>S = 1，ħω = 1500 cm⁻¹：吸收和发射最大值之间的斯托克斯位移是多少？</span></p>
+<p class="olab">斯托克斯位移，cm⁻¹</p><div class="opts" role="group"><button type="button" class="opt">750</button><button type="button" class="opt">0</button><button type="button" class="opt">1500</button><button type="button" class="opt" data-ok="1">3000</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>2Sħω = 3000 cm⁻¹（0.37 eV）。吸收垂直到达激发态曲线的高处，发射在振动弛豫之后垂直到达基态曲线的高处；两次各损失 Sħω。</div></div>
+<div class="tq"><p class="qt"><span>为什么荧光光谱看起来像吸收光谱的镜像？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">发射从 v = 0 开始，且频率相同</button><button type="button" class="opt">这是能量守恒的要求</button><button type="button" class="opt">这是巧合</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>发射从激发态的 v = 0 能级开始，吸收从基态的 v = 0 能级开始；频率相同时弗兰克–康登因子相同，振动级数相对于 0–0 跃迁对称。镜像对称被破坏，说明频率不同或势能形状发生了变化。</div></div>
+<div class="tq"><p class="qt"><span>S₁ 位于 3.0 eV，交换积分 K = 0.5 eV。T₁ 在哪里？磷光的波长是多少？</span></p>
+<p class="olab">磷光波长，nm</p><div class="opts" role="group"><button type="button" class="opt">310</button><button type="button" class="opt">827</button><button type="button" class="opt" data-ok="1">620</button><button type="button" class="opt">413</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>T₁ = 3.0 − 2·0.5 = 2.0 eV，磷光约 620 nm——明显比荧光（413 nm）更红。2K 的估计针对的是同一组态、轨道相同的情况。</div></div>
+<div class="tq"><p class="qt"><span>“来自输出文件的光谱”部分：在假设示例中，最低的跃迁是 4.20 eV（295 nm）。它能作为包络线的最大值看到吗？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">看不到：f 很小，只形成一个肩峰</button><button type="button" class="opt">能，这是主要的最大值</button><button type="button" class="opt">它根本不显示</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>看不到：它的振子强度为 0.02——比 5.10 eV 的跃迁小 20 多倍，只形成一个肩峰。长波谱带不是由能量最低的跃迁决定，而是由强度最大的跃迁决定；禁阻跃迁在光谱中几乎看不见。</div></div>
+</div></details></section>
+<script src="js/excited.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="exc";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/excited.js"></script>
+
+</body>
+</html>

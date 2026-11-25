@@ -1,0 +1,11 @@
+# formaldehyde: B3LYP/6-31G(d), tight optimization, numerical frequencies (ORCA 6.0.1: Raman only with NumFreq) and Raman activities (0.90 reference)
+! B3LYP 6-31G(d) TightSCF TightOpt NumFreq
+%elprop
+  Polar 1
+end
+* xyz 0 1
+C   0.000000   0.000000  -0.529000
+O   0.000000   0.000000   0.677000
+H   0.000000   0.937000  -1.115000
+H   0.000000  -0.937000  -1.115000
+*

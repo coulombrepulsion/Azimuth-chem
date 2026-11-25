@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,ammonia,benzene">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>分子中的原子：巴德理论</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/aim.css">
+
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-aim-g.webp"><!--pose:end-->
+<h1>分子中的原子：巴德理论</h1>
+<p class="lead">分子中一个原子在哪里结束、另一个原子从哪里开始？巴德理论（QTAIM）仅凭电子密度 ρ(r) 回答这个问题——这个量既可以计算，也可以通过 X 射线结构分析测量。原子是围绕原子核、由零通量面所包围的区域：没有任何一条梯度 ∇ρ 轨迹穿过这个面。这里的密度直接在浏览器中用高斯基组的 Hartree–Fock 方法计算——从最小基组 STO-3G 到 6-31G**。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>分子中的原子是围绕原子核、由 ∇ρ 零通量面所包围的区域；划分由密度本身决定，而不是由基组决定。</li><li>临界点（∇ρ = 0）有四种类型；键临界点和键径构成分子图，各类点的数目满足关系 n − b + r − c = 1。</li><li>∇²ρ 的符号表明密度在哪里集中（∇²ρ &lt; 0）、在哪里亏损（∇²ρ &gt; 0）；结合 ρ<sub>b</sub> 和 H<sub>b</sub>，它有助于区分共价键与闭壳层相互作用。</li><li>巴德电荷是密度在原子盆上的积分，随基组增大而收敛；马利肯电荷则取决于基函数在各原子上的分布方式。</li><li>ρ = 0.001 表面上的静电势表明邻近分子的电荷和偶极会从哪里靠近：σ-空穴是键延长线上的正区（卤键），π-空穴位于空的或电子贫乏的 p 轨道上方（BF₃、CO₂、C₆F₆）。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>HF 密度；拓扑比数值更稳定</summary><dl><dt>计算的是什么</dt><dd>在浏览器中直接计算的 HF 密度、临界点、盆与巴德电荷、等值面、静电势。</dd><dt>采用了哪些近似</dt><dd>HF 方法（无电子相关），基组从 STO-3G 到 6-31G**；盆的数值积分。</dd><dt>能得出什么结论</dt><dd>分子图通常对方法和基组不敏感；电荷和临界点性质描述的是密度，而不是键能。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. 密度、梯度轨迹与分子图</h2>
+  <p class="small">∇ρ 轨迹（细线）来自无穷远，通常终止于原子核：在一般情况下，吸引子——密度的极大值——位于原子核处，所有到达某个吸引子的轨迹构成原子的盆。也有例外：非核吸引子（例如在某些金属和电子化合物中）以及近似密度的假象，如 STO-3G 基组中的 HF（见下方第 5 题）。不终止于原子核、而终止于键临界点的轨迹构成原子间表面——盆之间的边界（粗线）。从同一个临界点出发，有一条键径通向两个原子核——沿这条线的密度比任何相邻线上都大。</p>
+  <div class="crow"><span class="l">分子</span><span class="row" id="mG" role="group" aria-label="分子"></span></div>
+  <div class="crow"><span class="l">基组</span><span class="row" id="bG" role="group" aria-label="基组"></span></div>
+  <div class="crow"><span class="l">图</span><span class="row" id="fG" role="group" aria-label="显示内容"></span><span class="row" id="lG" role="group" aria-label="图层"></span></div>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle" id="mapT"></div>
+      <canvas id="map" width="640" height="520" role="img" aria-label="分子平面内的电子密度图"></canvas>
+      <div class="legend lg" id="mapL"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="tablewrap" id="infoTab"></div>
+      <div class="status" id="pt">点击图中任意一点，查看该处的 ρ 和 ∇²ρ。</div>
+      <div class="status" id="st1"></div>
+    </div>
+  </div>
+</section>
+
+<section class="panel" aria-labelledby="h1bs">
+  <h2 id="h1bs">2. 三维函数与静电势</h2>
+  <p class="small">等值面是函数取同一数值的曲面。ρ = 0.001 原子单位的表面包含分子 95 % 以上的电子，通常被看作分子的“外边界”。在其上绘制分子静电势 V(r) = Σ Z<sub>A</sub>/|r − R<sub>A</sub>| − ∫ρ(r′)/|r − r′| dr′，即与单位正电荷的相互作用能。红色区域（V &lt; 0）吸引阳离子和氢键给体，蓝色区域（V &gt; 0）吸引阴离子和孤对电子。卤素原子共价键延长线上的正区称为<b>σ-空穴</b>（F₂ 也有，尽管氟是电负性最大的原子），π 体系平面上方或具有空 p 轨道的原子上方的正区称为<b>π-空穴</b>（CO₂、BF₃、F₂CO、C₆F₆）。拖动图像即可旋转。</p>
+  <div class="crow"><span class="l">曲面</span><span class="row" id="fnG" role="group" aria-label="函数"></span></div>
+  <div class="crow" id="valRow"><span class="l" id="valL">数值</span><span class="row" id="valG" role="group" aria-label="数值"></span></div>
+  <div class="crow" id="espRow"><span class="l">静电势标尺</span><input type="range" id="espR" min="20" max="300" step="5" style="width:220px" aria-label="势能标尺的上限"><span class="val" id="espV"></span></div>
+  <div class="crow"><span class="l">显示</span><span class="row" id="shG" role="group" aria-label="显示内容"></span><span class="row" id="vwG" role="group" aria-label="视图"></span></div>
+  <div class="glwrap"><canvas id="gl" role="img" aria-label="分子与等值面的三维图像"></canvas><canvas id="glo" aria-hidden="true"></canvas></div>
+  <div class="legend lg" id="glL"></div>
+  <div class="status" id="st5"></div>
+  <h3 class="ptitle">沿键线的一维剖面</h3>
+  <p class="small">同样的函数沿穿过两个原子核的直线截取。在 ρ 图上可以看到原子核处尖锐的极大值以及两核之间的极小值——这就是键临界点。在 ∇²ρ 图上可以看到原子的壳层结构：在重原子核周围，电子聚集区（∇²ρ &lt; 0）和电子稀疏区（∇²ρ &gt; 0）交替出现；键临界点处 ∇²ρ 的符号是判断键类型的特征之一。</p>
+  <div class="crow"><span class="l">键</span><span class="row" id="pbG" role="group" aria-label="键"></span></div>
+  <svg id="pRho" viewBox="0 0 960 250" role="img" aria-label="沿键线的电子密度"></svg>
+  <svg id="pLap" viewBox="0 0 960 250" role="img" aria-label="沿键线的密度拉普拉斯量"></svg>
+  <div class="status" id="pSt"></div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">3. 临界点</h2>
+  <p class="small">在临界点处 ∇ρ = 0。点的类型由 ρ 的黑塞矩阵三个本征值（曲率 λ₁ ≤ λ₂ ≤ λ₃）的符号决定：极大值 (3, −3)，通常位于原子核处；键临界点 (3, −1)——沿键径为极小、垂直于键径为极大；环临界点 (3, +1) 位于环内；笼临界点 (3, +3) 位于多面体内。各类点的数目总满足 Poincaré–Hopf 关系 n − b + r − c = 1。根据键临界点处的密度 ρ<sub>b</sub>、拉普拉斯量 ∇²ρ<sub>b</sub> = λ₁ + λ₂ + λ₃、椭圆度 ε = <span class=fr><span>λ₁</span><span>λ₂</span></span> − 1 和能量密度 H<sub>b</sub> = G<sub>b</sub> + V<sub>b</sub> 判断键的性质。</p>
+  <div class="tablewrap" id="cpTab"></div>
+  <div class="status" id="st2"></div>
+</section>
+
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">4. 原子电荷：巴德、马利肯、勒夫丁</h2>
+  <p class="small">巴德原子电荷等于核电荷减去其原子盆中的电子数，即密度在原子体积上的积分。马利肯和勒夫丁电荷的求法不同：把密度矩阵分配给“归属”于各原子的基函数。因此它们取决于基组中有哪些函数、位于哪些原子上。切换基组或一次计算所有基组——表格各行会累积。</p>
+  <div class="row"><button class="btn" id="allB" type="button">在所有基组中计算</button><span class="hint" id="allSt"></span></div>
+  <div class="tablewrap" id="qTab"></div>
+  <div class="status" id="st3"></div>
+</section>
+
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">5. 按临界点划分的键类型</h2>
+  <p class="small">十二个分子在 6-31G* 基组下的全部键临界点。若 ∇²ρ<sub>b</sub> &lt; 0，密度集中在两核之间——这是共享（共价）相互作用。若 ∇²ρ<sub>b</sub> &gt; 0，键区的密度被拉向原子核；此时 H<sub>b</sub> 的符号区分闭壳层相互作用（离子键，H<sub>b</sub> &gt; 0）与仍有较大共价贡献的强极性或“受张”的键（H<sub>b</sub> &lt; 0）。将鼠标悬停在点上可显示标注。</p>
+  <div class="two">
+    <svg id="sc" viewBox="0 0 560 380" role="img" aria-label="键临界点处密度的拉普拉斯量与密度的关系"></svg>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="legend lg"><span><i class="dt" style="background:var(--accent)"></i>H<sub>b</sub> &lt; 0</span><span><i class="dt" style="background:var(--warn)"></i>H<sub>b</sub> &gt; 0</span></div>
+      <div class="status" id="st4"></div>
+    </div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">如果一切都由密度决定，能否直接由密度得到能量？</span><a class="nqA" href="dft.html" data-goto="dft">密度泛函 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>选择 C₆H₆（STO-3G）。一共找到多少个键临界点？</span></p>
+<p class="olab">键临界点数</p><div class="opts" role="group"><button type="button" class="opt">18</button><button type="button" class="opt">13</button><button type="button" class="opt" data-ok="1">12</button><button type="button" class="opt">6</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>12 个：六个 C–C 键和六个 C–H 键。此外环中心还有一个环临界点 (3, +1)，Poincaré–Hopf 关系成立：12 − 12 + 1 − 0 = 1。</div></div>
+<div class="tq"><p class="qt"><span>比较 N₂ 与 LiF 键临界点处的 ∇²ρ。这说明了什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">N₂——共价键（∇²ρ &lt; 0），LiF——闭壳层（∇²ρ &gt; 0，H &gt; 0）</button><button type="button" class="opt">两者都是共价键</button><button type="button" class="opt">两者都是离子键</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>N₂ 的 ∇²ρ<sub>b</sub> ≈ −2.5 &lt; 0：密度集中在两核之间——共价键。LiF 的 ∇²ρ<sub>b</sub> ≈ +0.8 &gt; 0，且 ρ<sub>b</sub> 很小（0.07）、H<sub>b</sub> &gt; 0：密度被拉向原子核，这是 Li⁺ 与 F⁻ 闭壳层之间的相互作用。</div></div>
+<div class="tq"><p class="qt"><span>C₂H₄：为什么 C=C 键的椭圆率约为 0.45，而 C–H 键几乎为零？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">π 键使密度在垂直于键的一个方向上被拉长</button><button type="button" class="opt">C=C 键更短</button><button type="button" class="opt">C 原子带电更多</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>π 键在分子平面上下增加了密度，因此在 C=C 键临界点处，密度在垂直于键的一个方向上被明显拉长：λ₁ 与 λ₂ 差别明显。单键的密度截面几乎是圆形，ε ≈ 0；三键的截面也是圆形，因为两个 π 键合起来具有柱对称性。</div></div>
+<div class="tq"><p class="qt"><span>H₂O，6-31G**：O 原子的电荷按马利肯还是按巴德绝对值更大？为什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">按巴德：原子边界离 H 很近</button><button type="button" class="opt">按马利肯：它考虑了重叠</button><button type="button" class="opt">两者相同</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>按巴德：约 −1.2，而马利肯为 −0.67。O–H 原子间面离 H 原子很近（键临界点距它 0.2 Å），因此几乎全部成键密度都落入氧的原子盆。马利肯方法则不论电负性如何，都把重叠部分平分给两个原子。</div></div>
+<div class="tq"><p class="qt"><span>在 STO-3G 基组中选择 HF。为什么一个键临界点也没有找到？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">在该基组中 H 没有自己的密度极大值</button><button type="button" class="opt">H–F 键是离子键</button><button type="button" class="opt">数值上没能找到键临界点</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>在最小基组中 H 原子没有自己的密度极大值：沿轴方向密度从 F 经过 H 向外单调下降。没有吸引子就没有 H 的原子盆，整个电子都“属于”氟（H 的电荷 = +1）。这是在原子核处没有尖点的高斯基组造成的假象：到了 6-31G，H 处的极大值连同键临界点一起出现。</div></div>
+<div class="tq"><p class="qt"><span>CO 的 ∇²ρ<sub>b</sub> &gt; 0。这是否意味着 CO 中的键是离子键？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">不是：ρ 很大且 H &lt; 0，键临界点落在 C 附近的密度亏损区</button><button type="button" class="opt">是：正的拉普拉斯量意味着离子键</button><button type="button" class="opt">是，因为 O 的电负性比 C 大</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>不是。键临界点处的密度很大（ρ<sub>b</sub> ≈ 0.48），而 H<sub>b</sub> ≈ −0.8——明显为负，与共价键一样。拉普拉斯量为正，是因为键临界点偏向 C 原子，落入了碳密度亏损的区域。∇²ρ<sub>b</sub> 的符号只是判据之一，对极性键要结合 ρ<sub>b</sub> 和 H<sub>b</sub> 一起看。</div></div>
+<div class="tq"><p class="qt"><span>第 2 节，静电势，F₂：在 ρ = 0.001 表面上哪里的势为正？这与氟是电负性最大的元素如何相容？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">沿键轴方向，核外侧的密度减少，核受到的屏蔽较弱</button><button type="button" class="opt">氟带正电</button><button type="button" class="opt">这是基组误差</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>在 F–F 键的延长线上，每个原子的“顶端”：约 +56 kJ/mol，而原子周围的环带为负（约 −13）。参与 σ 键的电子集中在两核之间；沿轴在核外侧密度减少，那里的核屏蔽较弱。孤对电子位于环带中。这就是 σ-空穴；Cl、Br 和 I 的 σ-空穴明显更强，卤键 R–X···B 正是依靠它。</div></div>
+<div class="tq"><p class="qt"><span>比较 CO₂ 和 BF₃。它们的正区在哪里？π-空穴与 σ-空穴有何不同？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">σ-空穴在 σ 键的延长线上，π-空穴垂直于分子平面或分子轴</button><button type="button" class="opt">两者是一回事</button><button type="button" class="opt">π-空穴总是负的</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>CO₂ 中碳原子周围的环带为正（约 +150 kJ/mol），分子两端（O）为负（约 −67）。BF₃ 的最大值约 +185，位于硼的上方和下方，F 原子上约 −66。σ-空穴位于 σ 键的延长线上，π-空穴垂直于分子平面（或轴），在中心原子具有空的或电子贫乏的 p 轨道之处。路易斯碱正是从这一侧接近 CO₂ 和 BF₃。</div></div>
+<div class="tq"><p class="qt"><span>C₆H₆ 和 C₆F₆（STO-3G）：环中心上方的势是什么符号？由此能得出什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">C₆H₆ 上方的势为负，C₆F₆ 上方为正</button><button type="button" class="opt">两者上方都为负</button><button type="button" class="opt">两者上方都为正</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>苯环上方为负（约 −44 kJ/mol，π 电子云），H 原子为正。六氟苯正相反：环上方约 +91，氟原子上为负。两种分子的四极矩符号相反，因此 C₆H₆ 与 C₆F₆ 的混合物形成环面对面堆叠的晶体，而阴离子会结合在 C₆F₆ 环中心的上方（阴离子–π 相互作用）。</div></div>
+<div class="tq"><p class="qt"><span>键临界点处 ρ<sub>b</sub> 很大，而 ∇²ρ<sub>b</sub> &lt; 0。仅凭这一个临界点，能否断定分子在能量上是稳定的——不会放热分解为碎片？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">根据这些数据无法判断：需要分子和碎片的能量</button><button type="button" class="opt">能：∇²ρ<sub>b</sub> &lt; 0 表示稳定的共价键</button><button type="button" class="opt">不能：ρ<sub>b</sub> 大表示排斥</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>根据这些数据无法判断。临界点描述的是给定几何构型下的密度，而稳定性是能量问题：分子与碎片的能量比较以及势能面上的极小值。在张力结构和亚稳结构中也存在键径和键临界点。</div></div>
+</div></details></section>
+<script src="js/aim.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="aim";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/aim.js"></script>
+
+</body>
+</html>

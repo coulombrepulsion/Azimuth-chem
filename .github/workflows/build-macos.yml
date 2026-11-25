@@ -1,0 +1,65 @@
+name: macOS disk image
+# 0.166.0: «Азимут» for macOS (Apple silicon) — Azimuth.app and Azimuth-<version>-macOS-arm64.dmg, made by
+# packaging/build_macos.sh. Started by hand (Actions → macOS disk image → Run workflow) or by a tag v*; the result is
+# the artifact «Azimuth-macOS-<version>» of the run.
+# Unsigned while the secrets below are not set; with them the application is signed and the image notarized:
+#   MACOS_CERT_P12 (the certificate «Developer ID Application» with its key, .p12 in base64), MACOS_CERT_PASSWORD,
+#   MACOS_IDENTITY («Developer ID Application: Имя (TEAMID)»), APPLE_ID, APPLE_TEAM_ID, APPLE_APP_PASSWORD
+#   (a password of an application from account.apple.com).
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+jobs:
+  build:
+    runs-on: macos-14
+    timeout-minutes: 60
+    env:
+      PYTHONIOENCODING: utf-8
+      MACOS_CERT_P12: ${{ secrets.MACOS_CERT_P12 }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Libraries
+        run: |
+          python -m venv .venv
+          .venv/bin/python -m pip install --upgrade pip
+          .venv/bin/python -m pip install -r requirements.txt pyinstaller==6.16.0
+      - name: Certificate (only when the secrets are set)
+        if: env.MACOS_CERT_P12 != ''
+        env:
+          MACOS_CERT_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+        run: |
+          KEYCHAIN=$RUNNER_TEMP/azimuth.keychain-db
+          security create-keychain -p ci "$KEYCHAIN"
+          security set-keychain-settings -lut 3600 "$KEYCHAIN"
+          security unlock-keychain -p ci "$KEYCHAIN"
+          echo "$MACOS_CERT_P12" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security import "$RUNNER_TEMP/cert.p12" -k "$KEYCHAIN" -P "$MACOS_CERT_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k ci "$KEYCHAIN"
+          security list-keychains -d user -s "$KEYCHAIN" $(security list-keychains -d user | tr -d '"')
+          xcrun notarytool store-credentials azimuth --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" \
+            --password "$APPLE_APP_PASSWORD" --keychain "$KEYCHAIN"
+          echo "AZIMUTH_CODESIGN_IDENTITY=${{ secrets.MACOS_IDENTITY }}" >> "$GITHUB_ENV"
+          echo "AZIMUTH_NOTARY_PROFILE=azimuth" >> "$GITHUB_ENV"
+      - name: Build, check the start, make the image
+        run: zsh packaging/build_macos.sh
+      - name: What was not checked
+        run: |
+          echo "Not checked by this build: the VTK view of Compass (the start was checked with AZIMUTH_NO_VTK), an installation on a clean machine, calculations by external programs." >> "$GITHUB_STEP_SUMMARY"
+          if [ -z "$MACOS_CERT_P12" ]; then echo "The image is NOT signed: the first start goes through «Конфиденциальность и безопасность → Всё равно открыть»." >> "$GITHUB_STEP_SUMMARY"; fi
+      - name: Version
+        id: version
+        run: echo "version=$(.venv/bin/python -c 'import azimuth; print(azimuth.__version__)')" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Azimuth-macOS-${{ steps.version.outputs.version }}
+          path: |
+            dist/installer/*.dmg
+            dist/installer/*.sha256
+          retention-days: 30

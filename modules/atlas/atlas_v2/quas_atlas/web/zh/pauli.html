@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>泡利原理与交换空穴</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/pauli.css">
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-pauli-g.webp"><!--pose:end-->
+<h1>泡利原理与交换空穴</h1>
+<p class="lead">一维箱中的两个电子，各自处于自己的轨道 φ<sub>n</sub>(x) = √2·sin(nπx)。左图：第一个电子在 x₁ 处、第二个电子在 x₂ 处的概率分布图。右图：当第一个电子固定在 x₁ 时，第二个电子会出现在哪里（可在图上或用滑块移动 x₁）。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>电子波函数对交换是反对称的：Ψ(1, 2) = −Ψ(2, 1)。</li><li>由此得到 Pauli 不相容原理：两个自旋相同的电子不能占据同一轨道。</li><li>自旋相同的电子即使没有排斥也相互回避——这就是交换（费米）空穴。</li><li>因此同一组态中三重态通常低于单重态（Hund 规则）；两者之差由交换积分 K 决定。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>一维势箱中的两个电子</summary><dl><dt>计算的是什么</dt><dd>对称与反对称函数的概率图、库仑积分与交换积分、组态混合。</dd><dt>采用了哪些近似</dt><dd>一维；平滑化的库仑排斥；少数几个组态。</dd><dt>能得出什么结论</dt><dd>交换空穴、2K 的符号和洪特规则在定性上是正确的；数值属于该模型。</dd></dl></details><!--lim:end-->
+<section class="controls" aria-label="参数">
+  <div class="crow"><span class="l">波函数</span><span id="modes" role="group" aria-label="波函数"></span></div>
+  <div class="crow" id="msRow"><span class="l">自旋投影 M<sub>S</sub></span><span id="ms" role="group" aria-label="自旋投影"></span><span class="hint">三个分量的空间部分完全相同</span></div>
+  <div class="crow"><span class="l">轨道 φ<sub>a</sub></span><span id="oa" role="group" aria-label="轨道 a"></span><span class="l" style="min-width:auto;margin-left:14px">轨道 φ<sub>b</sub></span><span id="ob" role="group" aria-label="轨道 b"></span></div>
+  <div class="crow"><span class="l">图中显示</span><span id="views" role="group" aria-label="显示内容"></span></div>
+</section>
+<div class="det" id="formula"></div>
+<div class="work">
+  <div class="panel">
+    <div class="ptitle" id="mapTitle"></div>
+    <div class="mapwrap"><svg id="map" viewBox="0 0 400 400" role="img" aria-label="双电子函数分布图"></svg></div>
+    <div class="row" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="btn" id="bFlip" type="button">P₁₂：交换两个电子</button><span class="hint" id="flipMsg" style="font-size:13.5px"></span></div>
+    <label class="hint" for="x1">第一个电子的位置 x₁ = <b id="x1v" style="font-family:var(--f-mono)"></b></label>
+    <input type="range" id="x1" min="0.01" max="0.99" step="0.005" value="0.3">
+    <div class="legend" id="mapLegend"></div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">第一个电子位于 x₁ 时第二个电子的条件密度</div>
+    <svg id="cond" viewBox="0 0 560 300" role="img" aria-label="条件密度与空穴"></svg>
+    <div class="legend" id="condLegend"></div>
+    <div class="nums" id="nums"></div>
+    <div class="ptitle" style="margin-top:4px">轨道本身</div>
+    <svg id="orbs" viewBox="0 0 560 120" role="img" aria-label="轨道"></svg>
+  </div>
+</div>
+<div class="explain" id="explain"></div>
+<section class="panel" aria-labelledby="hE" style="gap:10px">
+  <h2 id="hE">电子排斥能：J 与 K</h2>
+  <p class="hint" style="font-size:14px">J 是库仑积分：电子云 φ<sub>a</sub>² 与 φ<sub>b</sub>² 之间的排斥。K 是交换积分，它没有经典对应，源于反对称性。这里的排斥是一维的且经过平滑处理，因此数值本身只是示意性的；重要的是它们之间的相对关系。</p>
+  <div class="nums" id="jk"></div>
+  <div class="bars" id="bars"></div>
+  <p class="hint" style="font-size:14px" id="hund"></p>
+</section>
+<section class="panel" aria-labelledby="hC" style="gap:12px">
+  <h2 id="hC">库仑空穴：组态混合</h2>
+  <p style="font-size:14.5px">φ₁ 上两个电子组成的单重态是一个行列式 |φ₁φ̄₁|，与 Hartree–Fock 中相同。其中两个电子自旋相反，该函数中它们的瞬时位置没有关联：没有库仑空穴。但平均库仑排斥是计入的——它包含在平均场中并决定轨道形状。再加入第二个组态：</p>
+  <div class="det"><span>Ψ = c₁·φ₁(1)φ₁(2) + c₂·φ₂(1)φ₂(2), &nbsp; c₁ = cos θ, c₂ = sin θ &nbsp; （自旋部分为单重态）</span></div>
+  <div class="crow"><span class="l">第二组态的比重 θ</span><input type="range" id="th" min="-45" max="45" step="0.5" style="width:260px"><b class="val" id="thv" style="font-family:var(--f-mono)"></b>
+    <button class="btn" id="bMin" type="button">能量最低（CI）</button><button class="btn" id="bZero" type="button">单个行列式（θ = 0）</button></div>
+  <div class="crow"><span class="l">排斥强度 λ</span><input type="range" id="lam" min="0.5" max="8" step="0.1" style="width:260px"><b class="val" id="lamv" style="font-family:var(--f-mono)"></b><span class="hint">λ 越大，相当于箱子越宽：排斥比动能更重要</span></div>
+  <div class="work">
+    <div class="panel" style="border:none;padding:0">
+      <div class="ptitle">|Ψ(x₁, x₂)|²（对自旋求和）</div>
+      <svg id="ciMap" viewBox="0 0 400 400" role="img" aria-label="混合函数的密度分布图"></svg>
+      <div class="hint">第一个电子的位置 x₁ 与上方相同；也可以在此图上移动它。</div>
+    </div>
+    <div class="panel" style="border:none;padding:0">
+      <div class="ptitle">第一个电子（↑）位于 x₁ 时，第二个电子（自旋 ↓）在哪里</div>
+      <svg id="ciCond" viewBox="0 0 560 250" role="img" aria-label="条件密度与库仑空穴"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>c(x₂)</span><span><i class="sw" style="border-color:var(--ref);border-top-style:dashed"></i>不考虑相关的 ↓ 电子密度</span><span><i class="box" style="background:var(--hole);border:1px solid var(--neg)"></i>库仑空穴</span></div>
+      <div class="ptitle" style="margin-top:6px">能量 E(θ)，任意单位</div>
+      <svg id="ciE" viewBox="0 0 560 170" role="img" aria-label="能量随第二组态比重的变化"></svg>
+      <div class="nums" id="ciNums"></div>
+    </div>
+  </div>
+  <div class="explain" id="ciText"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">不展开行列式，如何计算 Slater 行列式的能量？</span><a class="nqA" href="slater.html" data-goto="sc">斯莱特–康登规则 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>选择“三重态”并令 φ<sub>a</sub> = φ<sub>b</sub>。看到了什么？为什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Ψ ≡ 0——泡利不相容原理</button><button type="button" class="opt">Ψ 在 x₁ = x₂ 处最大</button><button type="button" class="opt">图像与单重态相同</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>Ψ ≡ 0：三重态的空间部分是反对称的，当两个轨道相同时恒等于零。同一轨道上两个自旋相同的电子——这是泡利原理所禁止的。</div></div>
+<div class="tq"><p class="qt"><span>M<sub>S</sub> = 0 的三重态：两个电子自旋不同。在 x₂ = x₁ 处是否有凹陷？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">没有：自旋不同时没有凹陷</button><button type="button" class="opt" data-ok="1">有：c(x₁) = 0，与三重态的其他分量相同</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>有，c(x₁) = 0。凹陷由反对称的空间部分决定，而三重态的三个分量的空间部分完全相同。</div></div>
+<div class="tq"><p class="qt"><span>对 φ₁ 和 φ₂ 比较单重态与三重态的排斥能。为什么三重态更低？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">三重态中自旋相同的电子相互回避</button><button type="button" class="opt">单重态总是更低</button><button type="button" class="opt">两者能量相同</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>三重态低 2K：自旋相同时空间函数是反对称的，电子相互回避（交换空穴），排斥更小。这是 Hund 规则的基础。</div></div>
+<div class="tq"><p class="qt"><span>打开“带符号的 Ψ”，分别对三重态和单重态按 P₁₂。结果有何不同？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">单重态的 Ψ 变号，三重态不变</button><button type="button" class="opt">两者的 Ψ 都变号</button><button type="button" class="opt" data-ok="1">三重态的 Ψ 变号，单重态不变</button><button type="button" class="opt">两者都没有变化</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>三重态的所有颜色都变为相反：P₁₂Ψ = −Ψ。单重态的图像不变：空间部分是对称的，反对称性由自旋因子提供。</div></div>
+<div class="tq"><p class="qt"><span>CI 模块：在 λ = 3 和 λ = 8 时分别按“能量最低”。c₂ 和密度凹陷如何变化？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">|c₂| 增大，凹陷加深</button><button type="button" class="opt">|c₂| 减小，凹陷消失</button><button type="button" class="opt">没有变化</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>λ = 3 时 c₂ ≈ −0.27，凹陷 ≈ 68 %；λ = 8 时 c₂ ≈ −0.52，凹陷 ≈ 99 %。排斥越强，第二组态的权重越大，库仑空穴越深。</div></div>
+</div></details></section>
+<script src="js/pauli.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="pauli";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+<script src="js/pauli.js"></script>
+
+</body>
+</html>

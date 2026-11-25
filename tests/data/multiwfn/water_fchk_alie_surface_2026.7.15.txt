@@ -1,0 +1,284 @@
+ WARNING: "settings.ini" was found neither in current folder nor in the path defined by "Multiwfnpath" environment variable. Now using default settings instead, and all your modifications (if any) on settings.ini will not take effect!
+
+ Multiwfn -- A Multifunctional Wavefunction Analyzer
+ Version 2026.7.15 (release date is the same as version name)
+ Developer: Tian Lu (Beijing Kein Research Center for Natural Sciences)
+ Multiwfn official website: http://sobereva.com/multiwfn
+ Multiwfn English forum: http://sobereva.com/wfnbbs
+ Multiwfn Chinese forum: http://bbs.keinsci.com/wfn
+ ( Number of parallel threads:   4  Current date: 2026-10-28  Time: 12:54:20 )
+
+ Both following papers ***MUST BE CITED IN MAIN TEXT*** if Multiwfn is used:
+  Tian Lu, Feiwu Chen, J. Comput. Chem., 33, 580 (2012) DOI: 10.1002/jcc.22885
+  Tian Lu, J. Chem. Phys., 161, 082503 (2024) DOI: 10.1063/5.0216272
+ See "How to cite Multiwfn.pdf" in Multiwfn binary package for more information
+
+ Warning: You should set OMP_STACKSIZE environment variable as mentioned in Section 2.1.2 of Multiwfn manual!
+
+ Please wait...
+ Loading various information of the wavefunction
+ The highest angular moment basis functions is P
+ Loading basis set definition...
+ Loading orbitals...
+ Converting basis function information to GTF information...
+ Generating density matrix based on SCF orbitals...
+ Generating overlap matrix...
+
+ Total/Alpha/Beta electrons:     10.0000      5.0000      5.0000
+ Net charge:     0.00000      Expected multiplicity:    1
+ Atoms:      3,  Basis functions:      7,  GTFs:     21
+ Total energy:     -75.002282127454 Hartree,   Virial ratio:  2.00600493
+ This is a restricted single-determinant wavefunction
+ Orbitals from 1 to     5 are occupied
+ Title line of this file: Water
+
+ Loaded water.fchk successfully!
+
+ Formula: H2 O1      Total atoms:       3
+ Molecule weight:        18.01529 Da
+ Point group: C2v
+
+ "q": Exit program gracefully          "r": Load a new file
+                    ************ Main function menu ************
+ 0 Show molecular structure and view orbitals
+ 1 Output all properties at a point       2 Topology analysis
+ 3 Output and plot specific property in a line
+ 4 Output and plot specific property in a plane
+ 5 Output and plot specific property within a spatial region (calc. grid data)
+ 6 Check & modify wavefunction
+ 7 Population analysis and calculation of atomic charges
+ 8 Orbital composition analysis           9 Bond order analysis
+ 10 Plot total DOS, PDOS, OPDOS, local DOS, COHP and photoelectron spectrum
+ 11 Plot IR/Raman/UV-Vis/ECD/VCD/ROA/NMR spectrum
+ 12 Quantitative analysis of molecular surface
+ 13 Process grid data (No grid data is presented currently)
+ 14 Adaptive natural density partitioning (AdNDP) analysis
+ 15 Fuzzy atomic space analysis
+ 16 Charge decomposition analysis (CDA) and plot orbital interaction diagram
+ 17 Basin analysis                       18 Electron excitation analysis
+ 19 Orbital localization analysis        20 Visual study of weak interaction
+ 21 Energy decomposition analysis        22 Conceptual DFT (CDFT) analysis
+ 23 ETS-NOCV analysis                    24 (Hyper)polarizability analysis
+ 25 Electron delocalization and aromaticity analyses
+ 26 Structure and geometry related analyses
+ 100 Other functions (Part 1)            200 Other functions (Part 2)
+ 300 Other functions (Part 3)
+
+ NOTE: If this module is used in your research, please cite both the Multiwfn original papers (those shown when Multiwfn boots up) and the following paper, the latter detailedly described the underlying algorithm employed in this module
+ Tian Lu, Feiwu Chen, Quantitative analysis of molecular surface based on improved Marching Tetrahedra algorithm, J. Mol. Graph. Model., 38, 314-323 (2012)
+
+      ============= Quantitative Molecular Surface Analysis =============
+ -1 Return to main menu
+ 0 Start analysis now!
+ 1 Select the way to define surface, current: Electron density, iso:  0.00100
+ 2 Select mapped function, current: Electrostatic potential (ESP)
+ 3 Spacing of grid points for generating molecular surface:  0.250000
+ 4 Advanced options
+ 5 Loading mapped function values from external file, current: No
+ 6 Start analysis without considering mapped function
+ Select to real space function to be mapped on the molecular surface
+-1 User-defined real space function, iuserfunc=   0
+ 0 Function from external file
+ 1 Electrostatic potential (ESP)
+ 2 Average local ionization energy (ALIE)
+ 3 Electrostatic potential from atomic charges in a .chg file
+ 4 Local electron affinity (LEA)
+ -4 Local electron attachment energy (LEAE)
+ 5 Electron delocalization range function EDR(r;d)
+ 6 Orbital overlap length function D(r) which maximizes EDR(r;d)
+ 11 Electron density
+ 12 Sign(lambda2)*rho
+
+ NOTE: If this module is used in your research, please cite both the Multiwfn original papers (those shown when Multiwfn boots up) and the following paper, the latter detailedly described the underlying algorithm employed in this module
+ Tian Lu, Feiwu Chen, Quantitative analysis of molecular surface based on improved Marching Tetrahedra algorithm, J. Mol. Graph. Model., 38, 314-323 (2012)
+
+      ============= Quantitative Molecular Surface Analysis =============
+ -1 Return to main menu
+ 0 Start analysis now!
+ 1 Select the way to define surface, current: Electron density, iso:  0.00100
+ 2 Select mapped function, current: Average local ionization energy (ALIE)
+ 3 Spacing of grid points for generating molecular surface:  0.200000
+ 4 Advanced options
+ 5 Loading mapped function values from external file, current: No
+ 6 Start analysis without considering mapped function
+ Unique GTFs have been constructed. Number of unique GTFs:      21
+ Spatial range of grid data:
+ X is from   -4.8831  to    4.8831 Bohr
+ Y is from   -5.3492  to    5.3492 Bohr
+ Z is from   -4.7558  to    5.1082 Bohr
+ The number of point in x,y,z:    50    54    50  Total:    135000
+
+ Calculating grid data of electron density...
+ Note: All exponential functions exp(x) with x< -40.000 will be ignored 
+ Unique GTFs have been constructed. Number of unique GTFs:      21
+
+ Calculation of grid data took up wall clock time         0 s
+
+ The number of boundary cubes:              5192
+ The number of corners of boundary cubes:     10392
+ Generating isosurface by Marching Tetrahedra algorithm, please wait...
+ The number of surface vertices (V):      15674
+ The number of surface edges (E):         47016
+ The number of triangular facets (F):     31344
+ V+F-E-2=         0
+ Volume enclosed by the isosurface:   150.18453 Bohr^3  (  22.25505 Angstrom^3)
+ Among all surface vertices:
+ Min-X:     -1.5466  Max-X:    1.5464 Angstrom
+ Min-Y:     -2.0583  Max-Y:    2.0579 Angstrom
+ Min-Z:     -1.7471  Max-Z:    1.6214 Angstrom
+
+ Eliminating redundant surface vertices...
+ After elimination, V=     4722,  E=    14160,  F=     9440,  V+F-E-2=     0
+ Isosurface area:   139.84714 Bohr^2  (  39.16119 Angstrom^2)
+ Sphericity:  0.9770
+
+ Calculating average local ionization energy at surface vertices...
+
+
+ Calculation of mapped function took up wall clock time         0 s
+
+ Global surface minimum:  0.547622 a.u. at  -0.996468   0.010736   1.260952 Ang
+ Global surface maximum:  0.737655 a.u. at  -0.030472  -1.356484   0.895602 Ang
+
+ The number of surface minima:     4
+   #       a.u.         eV      kcal/mol           X/Y/Z coordinate(Angstrom)
+*    1  0.54762208   14.901555  343.638334      -0.996468   0.010736   1.260952
+     2  0.61684220   16.785130  387.074650       0.048001  -1.778467  -1.258068
+     3  0.61684027   16.785077  387.073436       0.043040   1.787603  -1.246612
+     4  0.54765579   14.902472  343.659487       0.998193   0.017703   1.259259
+
+ The number of surface maxima:     4
+   #       a.u.         eV      kcal/mol           X/Y/Z coordinate(Angstrom)
+     1  0.69317030   18.862123  434.971295      -1.249691   0.015865  -0.950159
+*    2  0.73765487   20.072610  462.885809      -0.030472  -1.356484   0.895602
+     3  0.73725931   20.061846  462.637590       0.043435   1.393343   0.855323
+     4  0.69303517   18.858446  434.886499       1.262849   0.045306  -0.929106
+
+       ================= Summary of surface analysis =================
+
+ Volume:   150.18453 Bohr^3  (  22.25505 Angstrom^3)
+ Estimated density according to mass and volume (M/V):    1.3442 g/cm^3
+ Minimal value:     14.90155 eV,   Maximal value:     20.07261 eV
+ Overall surface area:         139.84714 Bohr^2  (  39.16119 Angstrom^2)
+ Positive surface area:        139.84714 Bohr^2  (  39.16119 Angstrom^2)
+ Negative surface area:          0.00000 Bohr^2  (   0.00000 Angstrom^2)
+ Average value:    0.63947198 a.u. (     17.40092 eV,    401.27506 kcal/mol)
+ Variance:     0.00154727 a.u.^2  (      1.14569 eV^2,  0.60927E+03 kcal/mol^2)
+ Overall skewness:        -0.1481648923
+ Positive skewness:       -0.1481648923
+
+ Surface analysis finished!
+ Total wall clock time passed during this task:     0 s
+
+                    ---------- Post-processing menu ----------
+ -3 Visualize the surface
+ -2 Export the grid data to surf.cub in current folder
+ -1 Return to upper level menu
+ 0 View molecular structure, surface minima and maxima
+ 1 Export surface extrema as surfanalysis.txt in current folder
+ 2 Export surface extrema as surfanalysis.pdb in current folder
+ 3 Discard surface minima in certain value range
+ 4 Discard surface maxima in certain value range
+ 5 Export molecule as pdb format file
+ 6 Export all surface vertices to vtx.pdb in current folder
+ 7 Export all surface vertices to vtx.txt in current folder
+ 8 Export all surface vertices and surface extrema as vtx.pqr and extrema.pqr
+ 9 Output surface area in specific value range of mapped function
+ 10 Output the closest and farthest distance between the surface and a point
+ 11 Output surface properties of each atom
+ 12 Output surface properties of specific fragment
+ 13 Calculate grid data of mapped function and export it to mapfunc.cub
+ 14 Calculate area and function average in a region around a surface extreme
+ 15 Basin-like partition of surface and calculate areas
+ 18 Discard some surface extrema by inputting their indices
+ 19 Merge some surface extrema and take their average position
+ Results have been outputted to surfanalysis.txt in current folder
+
+                    ---------- Post-processing menu ----------
+ -3 Visualize the surface
+ -2 Export the grid data to surf.cub in current folder
+ -1 Return to upper level menu
+ 0 View molecular structure, surface minima and maxima
+ 1 Export surface extrema as surfanalysis.txt in current folder
+ 2 Export surface extrema as surfanalysis.pdb in current folder
+ 3 Discard surface minima in certain value range
+ 4 Discard surface maxima in certain value range
+ 5 Export molecule as pdb format file
+ 6 Export all surface vertices to vtx.pdb in current folder
+ 7 Export all surface vertices to vtx.txt in current folder
+ 8 Export all surface vertices and surface extrema as vtx.pqr and extrema.pqr
+ 9 Output surface area in specific value range of mapped function
+ 10 Output the closest and farthest distance between the surface and a point
+ 11 Output surface properties of each atom
+ 12 Output surface properties of specific fragment
+ 13 Calculate grid data of mapped function and export it to mapfunc.cub
+ 14 Calculate area and function average in a region around a surface extreme
+ 15 Basin-like partition of surface and calculate areas
+ 18 Discard some surface extrema by inputting their indices
+ 19 Merge some surface extrema and take their average position
+ Done, all surface vertices (not including the ones have been eliminated) have been outputted to vtx.txt in current folder
+ The first line is the number of points. Column 1,2,3,4,5,6 respectively correspond to coordinate of X/Y/Z in Bohr, mapped function in a.u., eV and kcal/mol
+
+                    ---------- Post-processing menu ----------
+ -3 Visualize the surface
+ -2 Export the grid data to surf.cub in current folder
+ -1 Return to upper level menu
+ 0 View molecular structure, surface minima and maxima
+ 1 Export surface extrema as surfanalysis.txt in current folder
+ 2 Export surface extrema as surfanalysis.pdb in current folder
+ 3 Discard surface minima in certain value range
+ 4 Discard surface maxima in certain value range
+ 5 Export molecule as pdb format file
+ 6 Export all surface vertices to vtx.pdb in current folder
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG
+ 7 Export all surface vertices to vtx.txt in current folder
+ 8 Export all surface vertices and surface extrema as vtx.pqr and extrema.pqr
+ 9 Output surface area in specific value range of mapped function
+ 10 Output the closest and farthest distance between the surface and a point
+ 11 Output surface properties of each atom
+ 12 Output surface properties of specific fragment
+ 13 Calculate grid data of mapped function and export it to mapfunc.cub
+ 14 Calculate area and function average in a region around a surface extreme
+ 15 Basin-like partition of surface and calculate areas
+ 18 Discard some surface extrema by inputting their indices
+ 19 Merge some surface extrema and take their average position
+
+ NOTE: If this module is used in your research, please cite both the Multiwfn original papers (those shown when Multiwfn boots up) and the following paper, the latter detailedly described the underlying algorithm employed in this module
+ Tian Lu, Feiwu Chen, Quantitative analysis of molecular surface based on improved Marching Tetrahedra algorithm, J. Mol. Graph. Model., 38, 314-323 (2012)
+
+      ============= Quantitative Molecular Surface Analysis =============
+ -1 Return to main menu
+ 0 Start analysis now!
+ 1 Select the way to define surface, current: Electron density, iso:  0.00100
+ 2 Select mapped function, current: Average local ionization energy (ALIE)
+ 3 Spacing of grid points for generating molecular surface:  0.200000
+ 4 Advanced options
+ 5 Loading mapped function values from external file, current: No
+ 6 Start analysis without considering mapped function
+
+ Note: A set of grid data is presented in memory
+ "q": Exit program gracefully          "r": Load a new file
+                    ************ Main function menu ************
+ 0 Show molecular structure and view orbitals
+ 1 Output all properties at a point       2 Topology analysis
+ 3 Output and plot specific property in a line
+ 4 Output and plot specific property in a plane
+ 5 Output and plot specific property within a spatial region (calc. grid data)
+ 6 Check & modify wavefunction
+ 7 Population analysis and calculation of atomic charges
+ 8 Orbital composition analysis           9 Bond order analysis
+ 10 Plot total DOS, PDOS, OPDOS, local DOS, COHP and photoelectron spectrum
+ 11 Plot IR/Raman/UV-Vis/ECD/VCD/ROA/NMR spectrum
+ 12 Quantitative analysis of molecular surface
+ 13 Process grid data
+ 14 Adaptive natural density partitioning (AdNDP) analysis
+ 15 Fuzzy atomic space analysis
+ 16 Charge decomposition analysis (CDA) and plot orbital interaction diagram
+ 17 Basin analysis                       18 Electron excitation analysis
+ 19 Orbital localization analysis        20 Visual study of weak interaction
+ 21 Energy decomposition analysis        22 Conceptual DFT (CDFT) analysis
+ 23 ETS-NOCV analysis                    24 (Hyper)polarizability analysis
+ 25 Electron delocalization and aromaticity analyses
+ 26 Structure and geometry related analyses
+ 100 Other functions (Part 1)            200 Other functions (Part 2)
+ 300 Other functions (Part 3)

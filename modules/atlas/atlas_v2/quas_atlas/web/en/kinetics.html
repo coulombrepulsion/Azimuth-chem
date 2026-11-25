@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Reaction rate: transition state</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/kin.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-kin-g.webp"><!--pose:end-->
+<h1>Reaction rate: transition state</h1>
+<p class="lead">Transition state theory links the rate constant to the Gibbs energy of activation — the energy difference between the transition state and the reactants: k = (k<sub>B</sub>T/h)·exp(−ΔG<sup>‡</sup>/RT). The transition state is found by calculation as a saddle point with one imaginary frequency. Here you can see which barriers give reactions over seconds, hours and years, and where the isotope effect and the tunneling correction come from.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>In transition state theory k = (k<sub>B</sub>T/h)·exp(−ΔG<sup>‡</sup>/RT): the rate is set by the Gibbs energy of the transition state relative to the reactants.</li><li>At 298 K every 5.7 kJ/mol of barrier changes the rate tenfold; a barrier of about 90–100 kJ/mol means minutes to hours.</li><li>The entropy of activation matters as much as the enthalpy: ordered transition states slow the reaction down.</li><li>The isotope effect and tunneling are consequences of the quantum nature of nuclei: zero-point vibrations and barrier penetration.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> transition state theory</summary><dl><dt>What is computed</dt><dd>The rate constant and half-life from ΔH‡ and ΔS‡; the isotope effect from the zero-point vibration of a C–H bond; the Wigner tunneling correction.</dd><dt>Which approximations are made</dt><dd>The Eyring equation with a transmission coefficient of 1; a single stretching mode in the isotope effect; the Wigner correction is valid only when κ is close to 1.</dd><dt>What can be concluded</dt><dd>Orders of magnitude of rates, the role of ΔS‡, the sensitivity of k to barrier errors — yes; an accurate rate constant requires an accurate barrier and treatment of tunneling and dynamics.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Eyring equation</h2>
+  <div class="crow"><span class="l">Enthalpy of activation ΔH<sup>‡</sup></span><input type="range" id="dH" min="20" max="160" step="0.5" value="90" aria-label="Enthalpy of activation"><span class="val" id="dHv"></span></div>
+  <div class="crow"><span class="l">Entropy of activation ΔS<sup>‡</sup></span><input type="range" id="dS" min="-150" max="60" step="1" value="0" aria-label="Entropy of activation"><span class="val" id="dSv"></span></div>
+  <div class="crow"><span class="l">Temperature T</span><input type="range" id="T" min="200" max="700" step="1" value="298" aria-label="Temperature"><span class="val" id="Tv"></span><button type="button" class="chip" id="bT298">298,15 K</button></div>
+  <div class="crow"><span class="l">Molecularity</span><span class="grp" id="mG" role="group" aria-label="Molecularity"></span></div>
+  <div class="cards" id="cards"></div>
+  <p class="hint" id="eyNote"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Barrier and reaction time</h2>
+  <svg id="chart" viewBox="0 0 960 300" role="img" aria-label="Half-life versus barrier"></svg>
+  <p class="hint">The time scale is logarithmic. At 298 K every 5.7 kJ/mol of barrier slows the reaction tenfold.</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Kinetic isotope effect</h2>
+  <p class="hint">If a C–H bond breaks in the transition state, its stretching vibration ceases to be a vibration — and its zero-point energy is lost. The zero-point energy of C–D is smaller, so the barrier for deuterium is higher. The simplest estimate is k<sub>H</sub>/k<sub>D</sub> = exp[hc(ν<sub>H</sub> − ν<sub>D</sub>)/(2k<sub>B</sub>T)].</p>
+  <div class="crow"><span class="l">C–H frequency, cm⁻¹</span><input type="range" id="nu" min="2700" max="3200" step="10" value="2900" aria-label="C–H frequency"><span class="val" id="nuv"></span></div>
+  <p class="status" id="kie"></p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">Tunneling: the Wigner correction</h2>
+  <p class="hint">Light particles (an H atom, a proton) can pass through the barrier. The simplest correction uses the imaginary frequency of the transition state: κ = 1 + (1/24)(hcν<sup>‡</sup>/k<sub>B</sub>T)². It is valid only while κ is close to one.</p>
+  <div class="crow"><span class="l">Imaginary frequency ν<sup>‡</sup>, cm⁻¹</span><input type="range" id="im" min="100" max="2500" step="10" value="1500" aria-label="Imaginary frequency"><span class="val" id="imv"></span></div>
+  <p class="status" id="tun"></p>
+</section>
+<section class="panel" aria-labelledby="h5s">
+  <h2 id="h5s">Your own reaction: energies from output files</h2>
+  <p class="hint">Enter the total Gibbs energies (electronic energy plus G correction) of the reactants and the transition state in hartree — programs print them after a frequency calculation. For a bimolecular reaction, add the energies of the reactants.</p>
+  <div class="cin">
+    <label><span>G of the reactants (sum), E<sub>h</sub></span><input id="cGr" inputmode="decimal" value="-154.520000"></label>
+    <label><span>G of the transition state, E<sub>h</sub></span><input id="cGt" inputmode="decimal" value="-154.485000"></label>
+    <label><span>Temperature, K</span><input id="cT" inputmode="decimal" value="298.15"></label>
+    <label><span>Imaginary frequency, cm⁻¹ (optional)</span><input id="cIm" inputmode="decimal" value=""></label>
+    <label><span>Molecularity</span><select id="cN"><option value="1">1 — unimolecular</option><option value="2">2 — bimolecular</option></select></label>
+    <label><span>Standard state of the energies</span><select id="cSS"><option value="gas">gas, 1 bar (as in the output file)</option><option value="sol">1 mol/L</option></select></label>
+  </div>
+  <div class="row"><button type="button" class="btn primary" id="bCalc">Calculate</button></div>
+  <p class="status" id="cMsg" role="status"></p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">A transition state is a saddle point of the surface. How does a program find stationary points and tell a minimum from a saddle?</span><a class="nqA" href="optimization.html" data-goto="opt">Geometry optimization →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>A unimolecular reaction at 298 K, ΔS‡ = 0. Adjust ΔH‡ so that the half-life is about an hour. What is the barrier?</span></p>
+<p class="olab">ΔH‡, kJ/mol</p><div class="opts" role="group"><button type="button" class="opt">80</button><button type="button" class="opt">110</button><button type="button" class="opt">60</button><button type="button" class="opt" data-ok="1">94</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>About 94 kJ/mol (22.5 kcal/mol). A useful guide: at room temperature a barrier of 80 kJ/mol means seconds, 95 about an hour, 110 weeks.</div></div>
+<div class="tq"><p class="qt"><span>A calculation is off by 4 kJ/mol in the barrier. By what factor will the rate constant be wrong at 298 K?</span></p>
+<p class="olab">Factor by which k is wrong</p><div class="opts" role="group"><button type="button" class="opt">4</button><button type="button" class="opt" data-ok="1">5.0</button><button type="button" class="opt">50</button><button type="button" class="opt">1.6</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>By a factor of 5.0: exp(4000/RT). A tenfold change corresponds to 5.7 kJ/mol. That is why even accurate methods predict absolute rates only to within an order of magnitude, while relative rates (between similar reactions) are better, thanks to error cancellation.</div></div>
+<div class="tq"><p class="qt"><span>Compare ΔS‡ = 0 and ΔS‡ = −50 J/(mol·K) at the same ΔH‡. How many times slower is the second reaction?</span></p>
+<p class="olab">Times slower</p><div class="opts" role="group"><button type="button" class="opt">50</button><button type="button" class="opt" data-ok="1">410</button><button type="button" class="opt">1.0</button><button type="button" class="opt">6</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>exp(50/8.314) ≈ 410 times slower — the same as raising the barrier by 15 kJ/mol at 298 K. A negative entropy of activation is typical of bimolecular and cyclic transition states (for example, the Diels–Alder reaction).</div></div>
+<div class="tq"><p class="qt"><span>The isotope effect for a C–H bond with a frequency of 2900 cm⁻¹: what is it at 298 K, and why does it decrease on heating?</span></p>
+<p class="olab">k<sub>H</sub>/k<sub>D</sub> at 298 K</p><div class="opts" role="group"><button type="button" class="opt">3.0</button><button type="button" class="opt">1.0</button><button type="button" class="opt" data-ok="1">6.4</button><button type="button" class="opt">1.4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>k<sub>H</sub>/k<sub>D</sub> ≈ 6.4 at 298 K and ≈ 3.0 at 500 K. The effect is exp(ΔZPE/RT): the difference in zero-point energies stays constant while RT grows, so the ratio tends to 1.</div></div>
+<div class="tq"><p class="qt"><span>An imaginary frequency of 1500i cm⁻¹ at 298 K: what is the Wigner correction, and can it be trusted?</span></p>
+<p class="olab">κ</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">3.2</button><button type="button" class="opt">1.0</button><button type="button" class="opt">13</button><button type="button" class="opt">1.2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>κ ≈ 3.2. The Wigner formula is the first term of an expansion and holds only for κ close to 1; for κ > 2 tunneling must be treated with the Eckart model or semiclassically. A large imaginary frequency (a narrow barrier) is a sign of H-atom transfer, where tunneling matters.</div></div>
+<div class="tq"><p class="qt"><span>“Your own reaction” block: for a bimolecular reaction in solution, the energies come from a gas-phase calculation at 1 bar. Why must ΔG‡ be converted to 1 mol/L?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">k in L/(mol·s) refers to 1 mol/L, while the energies refer to the gas at 1 bar</button><button type="button" class="opt">The electronic energy changes in solution</button><button type="button" class="opt">Conversion is needed only for unimolecular reactions</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>A rate constant in L/(mol·s) refers to the 1 mol/L standard state, while the energies in the output file refer to the gas at 1 bar. Converting each participant to 1 mol/L raises its G by RT ln 24.8 = 7.96 kJ/mol at 298 K; a bimolecular reaction has one more reactant molecule, so ΔG‡ decreases by 7.96 kJ/mol and k grows by a factor of about 25.</div></div>
+</div></details></section>
+<script src="js/kinetics.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="kin";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/kinetics.js"></script>
+
+</body>
+</html>

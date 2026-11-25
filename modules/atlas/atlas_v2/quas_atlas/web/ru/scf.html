@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Итерации SCF</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/scf.css">
+<link rel="stylesheet" href="../assets/css/addon.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-scf-g.webp"><!--pose:end-->
+<h1>Итерации SCF</h1>
+<p class="lead">Настоящий расчёт Хартри–Фока–Рутана для двухатомной молекулы в базисе STO-3G — по одной 1s-функции на атом, как в классическом разборе H₂. Проходите цикл самосогласования по шагам и смотрите, как меняются матрицы, орбитали и энергия.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Оператор Фока зависит от самих орбиталей, поэтому уравнения Хартри–Фока–Рутана FC = SCε решают итерациями до самосогласования.</li><li>Сходимость зависит от начального приближения; DIIS ускоряет её, экстраполируя по истории итераций.</li><li>RHF неправильно описывает разрыв связи; UHF даёт правильный предел ценой спинового загрязнения.</li><li>Заряды по Малликену и Лёвдину — условное разбиение плотности: они зависят от схемы и от базиса.</li><li>По теореме Купманса −ε занятой орбитали оценивает вертикальный потенциал ионизации: релаксация орбиталей и корреляция дают поправки разного знака и частично гасят друг друга; −ε вакантной как сродство к электрону ненадёжно.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> Хартри–Фок в минимальном базисе</summary><dl><dt>Что вычисляется</dt><dd>Итерации RHF и UHF для H₂ и HeH⁺ в базисе STO-3G, кривые энергии, заселённости.</dd><dt>Какие приближения приняты</dt><dd>Метод HF (без корреляции); минимальный базис — одна 1s-функция на атом.</dd><dt>Какой вывод можно сделать</dt><dd>Механика SCF видна точно; сошедшаяся энергия — решение уравнений HF в этом базисе, а не точная энергия молекулы.</dd></dl></details><!--lim:end-->
+<section class="controls" aria-label="Параметры расчёта">
+  <div class="crow"><span class="l">Молекула</span><span id="mol" role="group" aria-label="Молекула"></span></div>
+  <div class="crow"><span class="l">Расстояние R</span><input type="range" id="R" min="0.8" max="4" step="0.01"><span class="val" id="Rv"></span></div>
+  <div class="crow"><span class="l">Начальное приближение P⁽⁰⁾</span><span id="guess" role="group" aria-label="Начальное приближение"></span></div>
+  <div class="crow"><span class="l">Ускорение сходимости</span><span id="acc" role="group" aria-label="Ускорение"></span><span class="hint" id="accHint"></span></div>
+  <div class="crow" id="dampRow"><span class="l">Демпфирование α</span><input type="range" id="damp" min="0" max="0.95" step="0.05"><span class="val" id="dampv"></span><span class="hint">P = (1 − α)·P<sub>нов</sub> + α·P<sub>стар</sub></span></div>
+</section>
+<div class="work">
+  <div class="panel">
+    <div class="ptitle">Цикл самосогласования</div>
+    <svg id="flow" viewBox="0 0 480 470" role="img" aria-label="Схема цикла SCF"></svg>
+    <div class="row"><button class="btn primary" id="bRun" type="button">▶ Запустить</button><button class="btn" id="bStep" type="button">Шаг</button><button class="btn" id="bIter" type="button">Итерация</button><button class="btn" id="bReset" type="button">Заново</button></div>
+    <div class="row" style="gap:8px"><span class="hint">Скорость</span><input type="range" id="spd" min="150" max="1500" step="50" style="width:180px" aria-label="Скорость автоматического прохода"><span class="val" id="spdv"></span></div>
+    <p class="hint" style="margin:0">«Запустить» — цикл проходит сам, шаг за шагом; текущий шаг подсвечен на схеме. «Шаг» и «Итерация» — ручной проход. При смене параметров расчёт начинается заново.</p>
+    <div class="status" id="status" aria-live="polite"></div>
+  </div>
+  <div class="panel">
+    <div class="ptitle" id="matTitle">Матрицы текущего шага (ат. ед.)</div>
+    <div class="mats" id="mats"></div>
+    <div class="kv" id="kv"></div>
+    <div class="ptitle" style="margin-top:4px">Диаграмма уровней: диагональ F (базисные функции) и орбитали ε</div>
+    <svg id="mo" viewBox="0 0 460 200" role="img" aria-label="Диаграмма уровней МО"></svg>
+    <details><summary>Интегралы: S, h, (μν|λσ)</summary><div class="mats" id="ints" style="margin-top:8px"></div></details>
+  </div>
+</div>
+<div class="two">
+  <div class="panel">
+    <div class="ptitle">Орбитали и плотность вдоль оси молекулы</div>
+    <svg id="orb" viewBox="0 0 540 280" role="img" aria-label="Орбитали на оси"></svg>
+    <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>φ₁ — занятая (σ)</span><span><i class="sw" style="border-color:var(--virt);border-top-style:dashed"></i>φ₂ — вакантная (σ*)</span><span><i class="box" style="background:var(--rho);border:1px solid var(--rho-l)"></i>электронная плотность ρ</span></div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">Сходимость</div>
+    <svg id="conv" viewBox="0 0 540 280" role="img" aria-label="Энергия и изменение матрицы плотности по итерациям"></svg>
+    <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>E по итерациям (левая шкала)</span><span><i class="sw" style="border-color:var(--warn)"></i>lg ‖ΔP‖ (правая шкала)</span><span><i class="sw" style="border-color:var(--muted);border-top-style:dashed"></i>порог δ = 10⁻⁶</span><span><i class="sw" style="border-color:var(--warn);border-top-style:dotted;opacity:.6"></i><span id="ghostLab"></span></span></div>
+  </div>
+</div>
+<section class="panel" aria-labelledby="hT">
+  <h2 id="hT">Итерации</h2>
+  <div class="tablewrap"><table><thead><tr><th>k</th><th>E полная</th><th>E − E<sub>сход</sub></th><th>ε₁</th><th>ε₂</th><th id="thq">заряд</th><th>‖ΔP‖</th></tr></thead><tbody id="tab"></tbody></table></div>
+  <p class="hint" id="note"></p>
+  <details open><summary>Те же числа в формате вывода квантово-химической программы</summary>
+    <p class="hint" style="margin:6px 0">Упрощённый пример по образцу вывода программы ORCA: таблица итераций SCF, итоговая энергия, орбитальные энергии и заряды.</p>
+    <pre id="log" style="font-family:var(--f-mono);font-size:12.5px;line-height:1.45;background:var(--soft);border-radius:8px;padding:10px 12px;overflow-x:auto;margin:0"></pre></details>
+</section>
+<section class="panel" aria-labelledby="hS">
+  <h2 id="hS">Кривая потенциальной энергии: RHF и UHF</h2>
+  <p class="hint" style="font-size:14px" id="scanIntro"></p>
+  <div class="two">
+    <div><svg id="scan" viewBox="0 0 540 300" role="img" aria-label="Энергия в зависимости от расстояния" style="cursor:pointer"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>RHF</span><span><i class="sw" style="border-color:var(--rho-l)"></i>UHF</span><span><i class="sw" style="border-color:var(--muted);border-top-style:dashed"></i>предел при R → ∞ (атомы по отдельности)</span><span>● — текущее R; щелчок по графику меняет R</span></div></div>
+    <div style="display:flex;flex-direction:column;gap:10px"><svg id="s2" viewBox="0 0 540 170" role="img" aria-label="Спиновое загрязнение UHF"></svg><div class="kv" id="scanKv"></div><div class="status" id="scanText"></div></div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="hZ">
+  <h2 id="hZ">Вариационный принцип: показатель ζ базисной функции</h2>
+  <p class="hint" style="font-size:14px">Базисная 1s-функция ~ e<sup>−ζr</sup> (здесь — её приближение тремя гауссианами STO-3G). Чем больше ζ, тем она «сжатее». По вариационному принципу лучшая функция — та, что даёт наименьшую энергию: её и ищем.</p>
+  <div class="crow"><span class="l">Меняем ζ</span><span id="zwho" role="group" aria-label="Чей показатель"></span></div>
+  <div class="crow"><span class="l">ζ</span><input type="range" id="zeta" min="0.6" max="3.6" step="0.01"><span class="val" id="zetav"></span><button class="btn" id="zStd" type="button">Стандартное STO-3G</button><button class="btn" id="zMin" type="button">Найти минимум</button></div>
+  <div class="two"><svg id="zchart" viewBox="0 0 540 240" role="img" aria-label="Энергия в зависимости от ζ"></svg><div class="status" id="zText"></div></div>
+</section>
+<section class="panel" aria-labelledby="hPop">
+  <h2 id="hPop">Анализ заселённостей: Малликен и Лёвдин</h2>
+  <p class="hint" style="font-size:14px">Число электронов N = Σ<sub>μν</sub>P<sub>μν</sub>S<sub>νμ</sub> = Sp(PS). Диагональные слагаемые P<sub>μμ</sub> легко приписать атомам, а заселённость перекрывания 2P<sub>12</sub>S<sub>12</sub> принадлежит связи. <b>Малликен</b> делит её между атомами поровну: N<sub>A</sub> = (PS)<sub>AA</sub>. <b>Лёвдин</b> сначала симметрично ортогонализует базис (χ′ = S<sup>−1/2</sup>χ), где перекрывания нет: N<sub>A</sub> = (S<sup>1/2</sup>PS<sup>1/2</sup>)<sub>AA</sub>. Заряд q<sub>A</sub> = Z<sub>A</sub> − N<sub>A</sub>. Расчёт — сошедшийся RHF при текущих R и ζ.</p>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:10px"><svg id="popBars" viewBox="0 0 540 210" role="img" aria-label="Разбиение электронов между атомами"></svg><div class="tablewrap" id="popTab"></div></div>
+    <div style="display:flex;flex-direction:column;gap:10px"><svg id="popR" viewBox="0 0 540 260" role="img" aria-label="Заряды и порядок связи в зависимости от R"></svg><div class="legend" id="popLeg"></div><div class="status" id="popText"></div></div>
+  </div>
+</section>
+<section class="panel addon" aria-labelledby="hKoop">
+  <h2 id="hKoop">Орбитальные энергии и теорема Купманса</h2>
+  <p class="hint">Потенциал ионизации тремя способами в том же базисе STO-3G: по орбитальной энергии (Купманс), как разность энергий катиона и молекулы в Хартри–Фоке (ΔSCF) и с полным КВ нейтральной молекулы. У катиона один электрон, поэтому его энергия в базисе точна.</p>
+  <div class="crow"><span class="l">Молекула</span><span class="grp" id="kG" role="group" aria-label="Молекула"></span></div>
+  <div class="crow"><span class="l">Расстояние R</span><input type="range" id="kR" min="0.8" max="4" step="0.01" value="1.4" aria-label="Расстояние"><span class="val" id="kRv"></span></div>
+  <div class="tablewrap"><table class="tbl" id="kTab"></table></div>
+  <p class="status note" id="kNote"></p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Энергия сошлась — значит ли это, что ответ правильный?</span><a class="nqA" href="h2.html" data-goto="h2">Диссоциация H₂ →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>HeH⁺ при стандартных параметрах: сколько итераций нужно без DIIS и с DIIS? А при R = 3,5 бор?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">7 и 6; при R = 3,5 бор — 7 и 6</button><button type="button" class="opt" data-ok="1">7 и 6; при R = 3,5 бор — 13 и 7</button><button type="button" class="opt">13 и 7; при R = 3,5 бор — 7 и 6</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>При R = 1,4632 бор — 7 и 6, при R = 3,5 бор — 13 и 7. При растянутой связи простые итерации сходятся медленнее, а DIIS выигрывает сильнее.</div></div>
+<div class="tq"><p class="qt"><span>Пройдите итерации HeH⁺ и проследите заряд на H. Как он меняется и почему?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Растёт с ≈ +0,53 до ≈ +0,84</button><button type="button" class="opt">Не меняется</button><button type="button" class="opt" data-ok="1">Уменьшается с ≈ +0,84 до ≈ +0,53</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>От +0,84 на первой итерации (F = h: отталкивания нет, электроны почти целиком у He) до +0,53 после сходимости: отталкивание электронов выталкивает часть плотности к водороду.</div></div>
+<div class="tq"><p class="qt"><span>H₂, начальное приближение «оба электрона у H(1)». Куда сходится расчёт?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">К решению H⁻H⁺</button><button type="button" class="opt" data-ok="1">К симметричному решению с нулевыми зарядами</button><button type="button" class="opt">Расчёт не сходится</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>К симметричному решению с нулевыми зарядами на атомах — за 7 итераций. Симметрию молекулы расчёт восстанавливает сам.</div></div>
+<div class="tq"><p class="qt"><span>Кривая E(R) для H₂: что означает ⟨S²⟩ ≈ 1 у UHF при R = 6 бор?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Это чистый триплет</button><button type="button" class="opt" data-ok="1">Функция — смесь синглета и триплета</button><button type="button" class="opt">Это ошибка расчёта</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Функция UHF — смесь синглета (⟨S²⟩ = 0) и триплета (⟨S²⟩ = 2), то есть спиновое загрязнение. UHF отделяется от RHF примерно при 2,2 бор и правильно описывает предел диссоциации ценой нарушения спиновой симметрии; при конечном R его энергия всё же выше КВ (при 4 бор — примерно на 21 кДж/моль).</div></div>
+<div class="tq"><p class="qt"><span>Вариационный принцип: как меняется оптимальное ζ при сжатии H₂ с 1,4 до 0,8 бор?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Уменьшается</button><button type="button" class="opt">Не меняется</button><button type="button" class="opt" data-ok="1">Растёт: функции стягиваются к ядрам</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Растёт: ≈ 1,19 при 1,4 бор и ≈ 1,37 при 0,8 бор. При сжатии функции «стягиваются» к ядрам; в пределе R → 0 получается атом He с ζ ≈ 1,69.</div></div>
+<div class="tq"><p class="qt"><span>Анализ заселённостей, HeH⁺ при R = 1,4632 бор: какой атом положительнее по Малликену и какой по Лёвдину?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Малликен — H, Лёвдин — He</button><button type="button" class="opt">Обе схемы — H</button><button type="button" class="opt">Обе схемы — He</button><button type="button" class="opt">Малликен — He, Лёвдин — H</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>По Малликену H (+0,530 против +0,470 у He), по Лёвдину He (+0,527 против +0,473 у H). Схемы расходятся даже в знаке разности: заряд на атоме — не наблюдаемая величина, а результат условного разбиения.</div></div>
+<div class="tq"><p class="qt"><span>Поставьте ζ(H) = 1,6 в разделе о вариационном принципе. Что стало с зарядом H по Малликену и что это говорит?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Не изменился: заряд — свойство молекулы</button><button type="button" class="opt" data-ok="1">Заметно изменился: заряды по Малликену зависят от базиса</button><button type="button" class="opt">Сменил знак</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Вырос с +0,530 до +0,597 (по Лёвдину — до +0,545), хотя молекула та же: заряды по Малликену сильно зависят от базиса.</div></div>
+<div class="tq"><p class="qt"><span>H₂: почему порядок связи по Майеру равен 1 при любом R, хотя заселённость перекрывания падает до нуля?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">RHF всегда кладёт оба электрона на одну связывающую МО</button><button type="button" class="opt">Индекс Майера не зависит от расстояния по определению</button><button type="button" class="opt">Заселённость перекрывания на самом деле не падает</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>RHF всегда кладёт оба электрона на одну связывающую МО, то есть описывает одну двухэлектронную связь даже при разведённых атомах. Это та же причина, по которой RHF неправильно описывает диссоциацию H₂.</div></div>
+<div class="tq"><p class="qt"><span>SCF сошёлся: энергия перестала меняться в десятом знаке. Можно ли по этому сказать, насколько она близка к точной энергии молекулы?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">По этим данным определить нельзя: сходимость не говорит об ошибках метода и базиса</button><button type="button" class="opt">Да: с точностью 10⁻¹⁰ E<sub>h</sub></button><button type="button" class="opt">Да: с точностью около 1 кДж/моль</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>По этим данным определить нельзя. Сходимость означает только, что уравнения Хартри–Фока в этом базисе решены. Ошибки метода (нет корреляции) и базиса остаются: для H₂ при 1,4 бор в базисе 6-31G** сошедшийся RHF выше точной энергии на 43 мE<sub>h</sub> (около 113 кДж/моль).</div></div>
+<div class="tq"><p class="qt"><span>Блок «Теорема Купманса»: HeH⁺ при R = 1,46 бор. Что больше — ПИ по Купмансу или ΔSCF?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">ΔSCF, на величину корреляции</button><button type="button" class="opt" data-ok="1">Купманс, на величину релаксации (около 1,2 эВ)</button><button type="button" class="opt">Они равны по симметрии</button><button type="button" class="opt">ΔSCF, на 1,2 эВ</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>ПИ по Купмансу больше: −ε₁ = 43,5 эВ, ΔSCF = 42,3 эВ. Орбиталь катиона перестраивается и понижает его энергию — это релаксация; у H₂ в минимальном базисе её нет, орбиталь задана симметрией.</div></div>
+</div></details></section>
+<script src="js/scf.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="scf";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/scf.js"></script>
+
+<script src="js/koop.js"></script>
+</body>
+</html>

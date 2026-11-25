@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Variational method and perturbation theory</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/var.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-var-g.webp"><!--pose:end-->
+<h1>Variational method and perturbation theory</h1>
+<p class="lead">The Schrödinger equation is solved exactly only for a few systems, so quantum chemistry relies on two approximate approaches. The variational method gives an energy that is never below the exact one: E[φ] = <span class=fr><span>⟨φ|Ĥ|φ⟩</span><span>⟨φ|φ⟩</span></span> ≥ E₀. The Hartree–Fock method and CI are built on it. Perturbation theory expands the energy in a series in a small perturbation; the MP2 method is based on it.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>Variational principle: the energy of any trial function is not below the exact ground-state energy, so of two functions the one with the lower energy is better by this criterion. It does not follow that its density, dipole moment or behaviour near the nucleus is more accurate.</li><li>The linear variational method (the secular equation) underlies Hartree–Fock–Roothaan and CI; if the new basis contains the old one and the Hamiltonian is the same, the energy can only go down. When one basis is replaced by another, or for non-variational methods (for example MP2), there is no such guarantee.</li><li>Perturbation theory expands the energy by orders: E<sup>(1)</sup> is the average of the perturbation, and E<sup>(2)</sup> for the ground state is negative.</li><li>The perturbation series works well for a small perturbation and can diverge for a large one; MP2 is its second order for correlation.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> an upper bound to the energy, not the accuracy of all properties</summary><dl><dt>What is computed</dt><dd>Variational energies of the H atom for trial functions and Gaussian basis sets; the perturbation series for the anharmonic oscillator.</dd><dt>Which approximations are made</dt><dd>A restricted trial function or a finite basis; the perturbation series is truncated at second order.</dd><dt>What can be concluded</dt><dd>The variational energy is not below the exact one, but it guarantees nothing about the density or other properties of the function; the perturbation series may diverge.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. A trial function for the hydrogen atom</h2>
+  <div class="crow"><span class="l">Trial function</span><span class="row" id="tG" role="group" aria-label="Trial function"></span></div>
+  <div class="crow"><span class="l" id="parL"></span><input type="range" id="par" min="-3" max="1" step="0.01" style="width:260px" aria-label="Parameter of the trial function"><span class="val" id="parV"></span>
+    <button class="btn" id="bOpt" type="button">Find minimum</button></div>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle">Energy E(parameter) and the exact value E₀ = −0.5 E<sub>h</sub></div>
+      <svg id="eSvg" viewBox="0 0 520 300" role="img" aria-label="Energy as a function of the parameter"></svg>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle">Radial density r²φ²: trial function and exact 1s</div>
+      <svg id="fSvg" viewBox="0 0 520 300" role="img" aria-label="Trial and exact functions"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>trial</span><span><i class="sw" style="border-color:var(--ok);border-top-style:dashed"></i>exact 1s</span></div>
+    </div>
+  </div>
+  <div class="status" id="st1"></div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. The linear variational method: a basis of Gaussians</h2>
+  <p class="small">The function is sought as φ = Σ c<sub>k</sub>g<sub>k</sub>, where g<sub>k</sub> = e<sup>−α<sub>k</sub>r²</sup>, and the exponents form a geometric progression α<sub>k</sub> = α₀β<sup>k</sup>. Minimisation over the coefficients reduces to the secular equation det(H − ES) = 0. Each added function (the old basis remains part of the new one) can only lower the energy, and all roots approach the exact levels from above (Hylleraas–Undheim theorem).</p>
+  <div class="crow"><span class="l">Number of functions N</span><span class="row" id="nG" role="group" aria-label="Number of basis functions"></span></div>
+  <div class="crow"><span class="l">α₀ (most diffuse)</span><input type="range" id="a0" min="-3" max="0" step="0.01" style="width:220px" aria-label="Smallest exponent, logarithmic"><span class="val" id="a0V"></span></div>
+  <div class="crow"><span class="l">β (progression ratio)</span><input type="range" id="be" min="1.5" max="8" step="0.05" style="width:220px" aria-label="Progression ratio"><span class="val" id="beV"></span>
+    <button class="btn" id="bOpt2" type="button">Optimize α₀ and β</button></div>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle">Error of the ground-state energy E − E₀ versus N (logarithmic scale)</div>
+      <svg id="nSvg" viewBox="0 0 520 280" role="img" aria-label="Convergence with basis size"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>current α₀ and β</span><span><i class="sw" style="border-color:var(--ok);border-top-style:dashed"></i>α₀ and β optimal for each N</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle">The function φ(r) in the chosen basis and the exact 1s (near the nucleus)</div>
+      <svg id="wSvg" viewBox="0 0 520 280" role="img" aria-label="Wavefunction in the basis"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>φ(r) from the basis</span><span><i class="sw" style="border-color:var(--ok);border-top-style:dashed"></i>exact e<sup>−r</sup>/√π</span></div>
+    </div>
+  </div>
+  <div class="tablewrap" id="rootTab"></div>
+  <div class="status" id="st2"></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">3. Perturbation theory: the anharmonic oscillator</h2>
+  <p class="small">Ĥ = Ĥ₀ + λV̂, where Ĥ₀ = p²/2 + x²/2 is the harmonic oscillator with levels n + ½ and the perturbation is V̂ = x⁴. The first- and second-order corrections are known in closed form; the “exact” energies come from diagonalization in a basis of 40 oscillator functions.</p>
+  <div class="formula2" id="ptF"></div>
+  <div class="crow"><span class="l">Level n</span><span class="row" id="lvG" role="group" aria-label="Level"></span></div>
+  <div class="crow"><span class="l">Perturbation strength λ</span><input type="range" id="lam" min="0" max="0.5" step="0.005" style="width:260px" aria-label="Perturbation strength"><span class="val" id="lamV"></span></div>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle">E<sub>n</sub>(λ): exact solution and the perturbation series</div>
+      <svg id="ptSvg" viewBox="0 0 520 300" role="img" aria-label="Energy as a function of λ"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--ink)"></i>exact</span><span><i class="sw" style="border-color:var(--accent);border-top-style:dashed"></i>E⁽⁰⁾ + E⁽¹⁾</span><span><i class="sw" style="border-color:var(--warn)"></i>E⁽⁰⁾ + E⁽¹⁾ + E⁽²⁾</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle">Potential x²/2 + λx⁴ and levels</div>
+      <svg id="vSvg" viewBox="0 0 520 300" role="img" aria-label="Potential and levels"></svg>
+    </div>
+  </div>
+  <div class="tablewrap" id="ptTab"></div>
+  <div class="status" id="st3"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">The variational method is applied to a Hamiltonian. What does the Hamiltonian of a real molecule look like?</span><a class="nqA" href="hamiltonian.html" data-goto="ham">Molecular Hamiltonian →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Find the minimum for the Gaussian trial function. What is the energy, E<sub>h</sub>?</span></p>
+<p class="olab">E, Eₕ</p><div class="opts" role="group"><button type="button" class="opt">-0.5000</button><button type="button" class="opt">-0.3333</button><button type="button" class="opt">-0.2830</button><button type="button" class="opt" data-ok="1">-0.4244</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>E<sub>min</sub> = −<span class=fr><span>4</span><span>3π</span></span> ≈ −0.4244 E<sub>h</sub> at α = <span class=fr><span>8</span><span>9π</span></span> ≈ 0.283. This is 0.076 E<sub>h</sub> (about 47 kcal/mol) above the exact energy.</div></div>
+<div class="tq"><p class="qt"><span>Can the variational energy fall below the exact ground-state energy −0.5 E<sub>h</sub>?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">No — the variational principle forbids it</button><button type="button" class="opt">Yes, if you take very many functions</button><button type="button" class="opt">Yes, for Gaussian functions</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>No: for any admissible trial function E[φ] ≥ E₀; this is the variational principle. So of two variational calculations with the same Hamiltonian, the one with the lower energy better approximates the ground-state energy. Its density or dipole moment is not necessarily more accurate.</div></div>
+<div class="tq"><p class="qt"><span>Section 2, green curve: how does the error change as functions are added to the basis?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">It can become negative</button><button type="button" class="opt" data-ok="1">It decreases while staying positive</button><button type="button" class="opt">It stops changing after N = 2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>It decreases but always stays positive: the energy approaches the exact value from above. The error drops below 1 kcal/mol at N = 4; after that each added function brings a smaller and smaller gain.</div></div>
+<div class="tq"><p class="qt"><span>Anharmonic oscillator, n = 0, λ = 0.1: how well does perturbation theory work?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Both orders are close to the exact energy</button><button type="button" class="opt">Only first order is reasonable</button><button type="button" class="opt">Both corrections are useless</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Well: the exact energy is 0.5591, first order gives 0.575, second order 0.5488. Both are close, second order slightly closer.</div></div>
+<div class="tq"><p class="qt"><span>What is the first-order correction E<sup>(1)</sup> for n = 0 at λ = 0.2?</span></p>
+<p class="olab">E⁽¹⁾</p><div class="opts" role="group"><button type="button" class="opt">0.05</button><button type="button" class="opt">0.2</button><button type="button" class="opt">0.6</button><button type="button" class="opt" data-ok="1">0.15</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>E<sup>(1)</sup> = λ⟨0|x⁴|0⟩ = <span class=fr><span>3λ</span><span>4</span></span> = 0.15. It is simply the average of the perturbation in the unperturbed ground state.</div></div>
+<div class="tq"><p class="qt"><span>Increase λ for n = 0. What happens to the perturbation series?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">The series converges faster and faster</button><button type="button" class="opt" data-ok="1">The corrections are no longer small: second order is worse than first</button><button type="button" class="opt">The corrections vanish</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>From about λ ≈ 0.16 second order already has a larger error than first: the correction E<sup>(2)</sup> ∝ −λ² grows faster than the first-order error shrinks. The series for x⁴ is asymptotic — for any λ &gt; 0 it eventually diverges.</div></div>
+<div class="tq"><p class="qt"><span>Trial function A gives a lower energy than function B. Which of them gives a dipole moment closer to the exact one?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">It cannot be determined from these data</button><button type="button" class="opt">Function A</button><button type="button" class="opt">Function B</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>It cannot be determined from these data. The variational principle constrains only the energy: a first-order error in the function gives only a second-order error in the energy, while the dipole moment is sensitive to the error of the function at first order. A function with a lower energy may describe other properties worse.</div></div>
+</div></details></section>
+<script src="js/variational.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="var";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/variational.js"></script>
+
+</body>
+</html>

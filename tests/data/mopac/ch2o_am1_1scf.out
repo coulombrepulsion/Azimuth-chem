@@ -1,0 +1,163 @@
+ *******************************************************************************
+ **                                                                           **
+ **                              MOPAC v23.2.5                                **
+ **                                                                           **
+ *******************************************************************************
+ ** MOPAC's Digital Object Identifier: https://doi.org/10.5281/zenodo.6511958 **
+ **                                                                           **
+ ** Please cite the open-source release paper for use of this MOPAC version:  **
+ ** J. E. Moussa and J. J. P. Stewart (2026)                                  **
+ ** MOPAC: An open-source semiempirical molecular orbital program             **
+ ** J. Open Source Softw., 11(119), 8025, https://doi.org/10.21105/joss.08025 **
+ *******************************************************************************
+
+                              AM1 CALCULATION RESULTS
+
+ *******************************************************************************
+ *  CALCULATION DONE: (MAX THREADS = 1)              Sun Nov  1 17:37:36 2026  *
+ *  AM1        - The AM1 Hamiltonian to be used
+ *  1SCF       - DO 1 SCF AND THEN STOP 
+ *  T=         - A TIME OF 172800.0 SECONDS REQUESTED
+ *  DUMP=N     - RESTART FILE WRITTEN EVERY 7200.0 SECONDS REQUESTED
+ *  AUX        - OUTPUT AUXILIARY INFORMATION
+ *******************************************************************************
+AM1 1SCF AUX
+ formaldehyde, AM1 single point
+ Azimuth reference input (0.91)
+   ATOM   CHEMICAL          X               Y               Z
+  NUMBER   SYMBOL      (ANGSTROMS)     (ANGSTROMS)     (ANGSTROMS)
+
+     1       C          0.00000000  *   0.00000000  *  -0.52900000  *
+     2       O          0.00000000  *   0.00000000  *   0.67700000  *
+     3       H          0.00000000  *   0.93700000  *  -1.11500000  *
+     4       H          0.00000000  *  -0.93700000  *  -1.11500000  *
+
+
+
+          CARTESIAN COORDINATES 
+
+    NO.       ATOM           X           Y           Z
+
+     1         C          0.0000      0.0000     -0.5290
+     2         O          0.0000      0.0000      0.6770
+     3         H          0.0000      0.9370     -1.1150
+     4         H          0.0000     -0.9370     -1.1150
+
+  H: (AM1): M.J.S. DEWAR ET AL, J. AM. CHEM. SOC. 107 3902-3909 (1985)
+  C: (AM1): M.J.S. DEWAR ET AL, J. AM. CHEM. SOC. 107 3902-3909 (1985)
+  O: (AM1): M.J.S. DEWAR ET AL, J. AM. CHEM. SOC. 107 3902-3909 (1985)
+
+           Empirical Formula: C H2 O  =     4 atoms
+
+
+
+      MOLECULAR POINT GROUP   :   C2v 
+
+
+      RHF CALCULATION, NO. OF DOUBLY OCCUPIED LEVELS = 6
+
+
+ -------------------------------------------------------------------------------
+ AM1 1SCF AUX
+ formaldehyde, AM1 single point
+ Azimuth reference input (0.91)
+
+
+     1SCF WAS SPECIFIED, SO BFGS WAS NOT USED                 
+     SCF FIELD WAS ACHIEVED                                   
+
+
+                              AM1 CALCULATION
+                                                       MOPAC v23.2.5 MacOS
+                                                       Sun Nov  1 17:37:36 2026
+
+
+
+
+          FINAL HEAT OF FORMATION =        -30.83261 KCAL/MOL =    -129.00365 KJ/MOL
+
+
+          COSMO AREA              =         60.67 SQUARE ANGSTROMS
+          COSMO VOLUME            =         42.57 CUBIC ANGSTROMS
+
+          IONIZATION POTENTIAL    =         10.746657 EV
+          HOMO LUMO ENERGIES (EV) =        -10.747  0.917
+          NO. OF FILLED LEVELS    =          6
+          MOLECULAR WEIGHT        =         30.0262         POINT GROUP:  C2v 
+
+          MOLECULAR DIMENSIONS (Angstroms)
+
+            Atom       Atom       Distance
+            H     3    O     2     2.02219
+            O     2    H     4     1.66068
+            C     1    O     2     0.00000
+
+
+          SCF CALCULATIONS        =          1
+
+          WALL-CLOCK TIME         =      0.008 SECONDS
+          COMPUTATION TIME        =      0.006 SECONDS
+
+
+
+
+   ATOM   CHEMICAL          X               Y               Z
+  NUMBER   SYMBOL      (ANGSTROMS)     (ANGSTROMS)     (ANGSTROMS)
+
+     1       C          0.00000000  *   0.00000000  *  -0.52900000  *
+     2       O          0.00000000  *   0.00000000  *   0.67700000  *
+     3       H          0.00000000  *   0.93700000  *  -1.11500000  *
+     4       H          0.00000000  *  -0.93700000  *  -1.11500000  *
+
+                             CARTESIAN COORDINATES
+
+   1    C        0.000000000     0.000000000    -0.529000000
+   2    O        0.000000000     0.000000000     0.677000000
+   3    H        0.000000000     0.937000000    -1.115000000
+   4    H        0.000000000    -0.937000000    -1.115000000
+
+
+           Empirical Formula: C H2 O  =     4 atoms
+
+
+
+      MOLECULAR POINT GROUP   :   C2v 
+
+
+                  EIGENVALUES  
+ -39.61436 -25.05156 -17.36679 -16.28883 -14.82130 -10.74666   0.91653   3.23045
+   4.05742   6.13150
+
+
+              NET ATOMIC CHARGES AND DIPOLE CONTRIBUTIONS
+
+  ATOM NO.   TYPE          CHARGE      No. of ELECS.   s-Pop       p-Pop       
+    1          C           0.146990        3.8530     1.27333     2.57968
+    2          O          -0.269948        6.2699     1.90377     4.36618
+    3          H           0.061479        0.9385     0.93852
+    4          H           0.061479        0.9385     0.93852
+ DIPOLE           X         Y         Z       TOTAL
+ POINT-CHG.     0.000    -0.000    -1.910     1.910
+ HYBRID        -0.000     0.000    -0.304     0.304
+ SUM           -0.000    -0.000    -2.214     2.214
+
+
+          ATOMIC ORBITAL ELECTRON POPULATIONS
+
+     Atom    s        px        py        pz   
+    1  C   1.27333   0.70500   0.96698   0.90770
+    2  O   1.90377   1.29500   1.90452   1.16666
+    3  H   0.93852
+    4  H   0.93852
+
+ **********************
+ *                    *
+ * JOB ENDED NORMALLY *
+ *                    *
+ **********************
+
+
+
+ TOTAL JOB TIME:             0.01 SECONDS
+
+ == MOPAC DONE ==

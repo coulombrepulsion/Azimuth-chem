@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,ammonia,methane,bf3,benzene,ethene,co2,h2o2">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Molecular point groups</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/sym.css">
+
+<link rel="stylesheet" href="../assets/css/addon.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-sym-g.webp"><!--pose:end-->
+<h1>Molecular point groups</h1>
+<p class="lead">Choose a group. Rotate the model with the mouse or a finger. On the right: classes of operations with animation, the character table with central-atom orbitals, counting Γ₃N from unshifted atoms, molecular vibrations, and the multiplication table. Below: how the group descends on substitution or distortion and where its classes go.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>A point group is the set of all symmetry operations of a molecule; it is found from the symmetry elements (Schoenflies scheme).</li><li>Conjugate operations form a class; there are as many irreducible representations as classes.</li><li>Characters of irreducible representations show how orbitals, vibrations and the functions x, y, z behave under the group operations.</li><li>The reduction formula answers “how many and of which kind”: vibrations, SALCs, sublevels in a splitting.</li><li>The characters of the representation spanned by the ligand orbitals are the numbers of ligands left in place; the reduction formula splits it into irreducible ones, and the projection operator gives the SALCs.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> exact group theory for a rigid molecule</summary><dl><dt>What is computed</dt><dd>Operations, classes, characters, reduction of Γ<sub>3N</sub>, lowering of symmetry.</dd><dt>Which approximations are made</dt><dd>An ideal equilibrium geometry; the molecule is rigid. The axes are chosen so that H₂O lies in the xz plane; in Mulliken's convention (the yz plane, as on the “Normal modes” page) the labels B₁ and B₂ swap.</dd><dt>What can be concluded</dt><dd>Selection rules answer “yes or no”, but give no intensities.</dd></dl></details><!--lim:end-->
+<details class="sgGuide" id="sgWizard"><summary>Find the point group — step-by-step guide</summary><div class="sgContent"><p class="hint">Consider the entire molecule in a fixed conformation. An operation must map atoms onto atoms of the same type. This guide follows your answers; it does not check the geometry automatically.</p><div id="sgSteps" aria-live="polite"></div></div></details>
+<div class="picker" id="picker" role="group" aria-label="Group selection"></div>
+<details class="mymol" id="myMol">
+  <summary>Your own molecule: find its point group</summary>
+  <div class="mrow"><input id="molQ" aria-autocomplete="list" aria-expanded="false" autocomplete="off" spellcheck="false" placeholder="Name or formula: benzene, SF6, ferrocene…" aria-label="Molecule name or formula"><button class="btn primary" id="molGo" type="button">Show</button><button class="btn" id="pcGo" type="button">Find in PubChem</button></div>
+  <p class="hint" style="font-size:13.5px;margin:0">The page library has more than 350 molecules — see the catalog by point group below. Any other molecule can be found in PubChem by its English name or entered as atomic coordinates.</p>
+  <details class="xyzBox" id="catBox"><summary>Catalog of molecules by point group</summary><div id="molCat" class="molcat"></div></details>
+  <details class="xyzBox"><summary>Paste coordinates (XYZ format, Å)</summary>
+    <textarea id="xyz" rows="6" spellcheck="false" aria-label="Coordinates in XYZ format" placeholder="3&#10;water&#10;O  0.000  0.000  0.117&#10;H  0.000  0.757 -0.469&#10;H  0.000 -0.757 -0.469"></textarea>
+    <div class="mrow"><button class="btn primary" id="xyzGo" type="button">Find the group</button></div>
+    <p class="hint" style="font-size:13.5px;margin:0">Files in .xyz format from Avogadro, ORCA, Gaussian and other programs work: the first line is the number of atoms, the second is a comment, then lines “element x y z”. The first two lines can be omitted.</p>
+  </details>
+  <div class="mrow"><label class="hint" style="font-size:13.5px">Tolerance when searching for symmetry elements <select id="tol"><option value="0.01">0.01 Å — strict</option><option value="0.05">0.05 Å</option><option value="0.1" selected>0.1 Å</option><option value="0.2">0.2 Å — loose</option></select></label></div>
+  <p id="molMsg" class="hint" aria-live="polite" style="font-size:14px;margin:0"></p>
+</details>
+<div class="work">
+  <div class="stage">
+    <svg id="view" viewBox="0 0 460 420" role="img" aria-label="Molecular model with symmetry elements"></svg>
+    <div class="row"><button class="btn" id="play" type="button">Apply operation</button><button class="btn" id="back" type="button">Reset</button><label class="hint" style="display:flex;gap:5px;align-items:center;cursor:pointer"><input type="checkbox" id="nums"> atom numbers</label><span class="hint" id="atomsLegend"></span></div>
+    <div class="msg" id="stageMsg"></div>
+    <div class="legend"><span><i class="dot" style="background:var(--ax-x)"></i><i class="dot" style="background:var(--ax-y)"></i><i class="dot" style="background:var(--ax-z)"></i>coordinate axes x, y, z</span><span><i class="dot" style="background:var(--accent)"></i>axes and planes of the selected operation</span><span>Dashed circles show where the atoms were before the operation</span><span id="lobeLegend" hidden><i class="dot" style="background:var(--lp)"></i>orbital lobe “+” <i class="dot" style="background:var(--lm);margin-left:8px"></i>“−”</span></div>
+  </div>
+  <div class="side">
+    <div class="gname"><b id="gName"></b><span id="gMol"></span></div>
+    <p id="gNote" class="hint" style="font-size:14px"></p>
+    <div class="tabs" role="tablist" aria-label="Sections">
+      <button class="tab" role="tab" data-tab="cls" type="button">Classes</button>
+      <button class="tab" role="tab" data-tab="ct" type="button">Character table</button>
+      <button class="tab" role="tab" data-tab="gam" type="button">Γ counting</button>
+      <button class="tab" role="tab" data-tab="vib" type="button">Vibrations</button>
+      <button class="tab" role="tab" data-tab="mul" type="button">Multiplication</button>
+    </div>
+    <div class="pane" id="pane" role="tabpanel"></div>
+  </div>
+</div>
+<section class="desc" aria-labelledby="hDesc">
+<h2 id="hDesc">Descent in symmetry</h2>
+<p class="hint" style="font-size:14px">An operation remains in the group only if the modified molecule coincides with itself after it. Therefore the new group is always a subgroup of the original one, and each of its classes lies entirely within one of the old classes.</p>
+<div class="dlist" id="dList" role="group" aria-label="Descent options"></div>
+<div class="res" id="res"></div>
+<details class="sgGuide" id="sgCompare" hidden><summary>Compare operations before and after the change</summary><div class="sgContent" id="sgCompareBody"></div></details>
+</section>
+<section class="panel addon" aria-labelledby="hSalc">
+  <h2 id="hSalc">Reducible representation and SALCs</h2>
+  <p class="hint">The ligand orbitals (hydrogen 1s, σ orbitals of halogens) go into each other under the symmetry operations. The character table of the group, the representation Γ on these orbitals, its decomposition by the reduction formula and the symmetry-adapted linear combinations (SALCs) from the projection operator.</p>
+  <div class="crow"><span class="l">Molecule · group</span><span class="grp" id="salcG" role="group" aria-label="Molecule"></span></div>
+  <div class="salcRow"><div class="tablewrap"><table class="ctab salcT" id="salcTab"></table></div><svg id="salcPic" viewBox="0 0 260 200" role="img" aria-label="Numbering of the ligands"></svg></div>
+  <p class="status note" id="salcRed"></p>
+  <p class="status note" id="salcList"></p>
+  <p class="hint" id="salcNote"></p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">How many vibrations of each symmetry type does the molecule have, and which of them are seen in the spectrum?</span><a class="nqA" href="vibrations.html" data-goto="nm">Normal modes →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Open O<sub>h</sub>, the “Classes” tab. Why are 3C₂ (= C₄²) and 6C₂ different classes if they are the same 180° rotations?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">The rotations are conjugate but differ in order</button><button type="button" class="opt" data-ok="1">The axes are not equivalent: no operation of the group takes a coordinate axis into an axis through edge midpoints</button><button type="button" class="opt">It is the same operation; the split is a convention</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>3C₂ are rotations about the coordinate axes (the same ones along which the C₄ lie), while 6C₂ are rotations about axes through the midpoints of opposite edges. No operation of the group takes an axis of the first type into one of the second type, so the rotations are not conjugate and form different classes.</div></div>
+<div class="tq"><p class="qt"><span>O<sub>h</sub> → “elongation along z”. What does the class 3C₂ become?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">It stays one class</button><button type="button" class="opt" data-ok="1">It splits into C₂ (about z) and 2C₂′ (about x and y)</button><button type="button" class="opt">It disappears from the group</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Into C₂ (rotation about z) and 2C₂′ (about x and y). After elongation the z axis is no longer equivalent to x and y, and the former class splits in two.</div></div>
+<div class="tq"><p class="qt"><span>T<sub>d</sub> (CH₄), the “Γ counting” tab. How many bands will the IR spectrum show, and how many lines the Raman spectrum?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">IR — 2, Raman — 4</button><button type="button" class="opt">IR — 4, Raman — 2</button><button type="button" class="opt">IR — 2, Raman — 2</button><button type="button" class="opt">IR — 3, Raman — 4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Γ<sub>vib</sub> = A₁ + E + 2T₂. Only T₂ (like x, y, z) are IR active — 2 bands. A₁, E and both T₂ are Raman active — 4 lines.</div></div>
+<div class="tq"><p class="qt"><span>C<sub>3v</sub>, the “Multiplication” tab. Compare the cells C₃·σ<sub>v</sub> and σ<sub>v</sub>·C₃. What do they show?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">The same reflection: the operations commute</button><button type="button" class="opt" data-ok="1">Reflections in different planes: the group is non-Abelian</button><button type="button" class="opt">A rotation and a reflection</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Both products are reflections, but in different planes: C₃ and σ<sub>v</sub> do not commute, so the group C<sub>3v</sub> is non-Abelian. The order matters: in A·B, B is performed first.</div></div>
+<div class="tq"><p class="qt"><span>D<sub>4h</sub> ([PtCl₄]²⁻), the “Character table”. Which d orbital belongs to b<sub>1g</sub> and which to b<sub>2g</sub>, and what does this depend on?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">b<sub>1g</sub> — d<sub>x²−y²</sub>, b<sub>2g</sub> — d<sub>xy</sub>; depends on the choice of the C₂′ axes</button><button type="button" class="opt">b<sub>1g</sub> — d<sub>xy</sub>, b<sub>2g</sub> — d<sub>x²−y²</sub>; independent of the axes</button><button type="button" class="opt">Both orbitals belong to e<sub>g</sub></button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>d<sub>x²−y²</sub> is b<sub>1g</sub>, d<sub>xy</sub> is b<sub>2g</sub>. This follows from the convention that the C₂′ axes pass through the ligands, i.e., along x and y. If the axes are rotated by 45°, the labels swap.</div></div>
+<div class="tq"><p class="qt"><span>“Reducible representation and SALCs”: into which irreducible representations do the hydrogen 1s orbitals of CH₄ decompose?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">A₁ + E</button><button type="button" class="opt" data-ok="1">A₁ + T₂</button><button type="button" class="opt">T₂</button><button type="button" class="opt">2A₁ + E</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>A₁ + T₂: Γ = (4, 1, 0, 0, 2); the reduction formula gives n(A₁) = (4 + 8 + 12)/24 = 1, n(T₂) = (12 + 12)/24 = 1. They bond with the 2s (A₁) and the three 2p (T₂) of carbon.</div></div>
+</div></details></section>
+<script src="js/symmetry.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="sym";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="../assets/js/ballstick.js"></script><script src="js/symmetry.js"></script>
+
+<script src="js/symmetry.2.js"></script>
+<script src="js/salc.js"></script>
+</body>
+</html>

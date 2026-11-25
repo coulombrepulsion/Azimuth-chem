@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,phenol,methanol">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Solvent models</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/solv.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-solvation-g.webp"><!--pose:end-->
+<h1>Solvent models</h1>
+<p class="lead">Most reactions take place in solution, while a quantum chemical calculation by default describes a molecule in vacuum. The cheapest way to account for the solvent is to replace it with a continuum of dielectric constant ε: the molecule sits in a cavity, polarizes the medium, and the medium responds with a reaction field. Here are the simplest Born model for ions and the polarizable continuum (C-PCM) for neutral molecules, computed with PySCF and compared with experimental hydration free energies.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>An implicit model replaces the solvent with a continuum of dielectric constant ε; the molecule polarizes the medium, and the reaction field polarizes the molecule.</li><li>The Born model gives the ion solvation energy −694.7·z²/a·(1 − 1/ε) kJ/mol; the key parameter is the effective cavity radius.</li><li>PCM describes the electrostatics of polar molecules, but without cavity and dispersion terms it is wrong for nonpolar ones.</li><li>Beyond ε ≈ 20 the solvation energy hardly changes: what matters most is whether the solvent is polar or not.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> continuum: electrostatics only</summary><dl><dt>What is computed</dt><dd>Ion hydration energies from the Born model; the C-PCM electrostatic solvation energy of eleven molecules (B3LYP/6-31+G*, ε = 78.36) and its dependence on ε for water and acetone.</dd><dt>Which approximations are made</dt><dd>No cavity, dispersion or repulsion terms; the HF/6-31G* geometries are not relaxed in solution; cavity radii are the PySCF defaults; the standard state is 1 mol/L in both phases. C-PCM scales the polarization field as (ε−1)/ε by construction, so the similarity of its ε dependence to the Born formula is partly built into the method.</dd><dt>What can be concluded</dt><dd>How a solvent stabilizes polar molecules and ions and why a continuum is not enough — yes; solvation energies to chemical accuracy — no: that needs models with non-electrostatic terms (for example SMD) and explicit solvent molecules.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">The Born model: an ion in a dielectric</h2>
+  <p class="hint">A charged sphere of radius a moved from vacuum into a medium of dielectric constant ε gains the energy ΔG = −(N<sub>A</sub>q²/8πε<sub>0</sub>a)·(1 − 1/ε) = −694.7·z²/a[Å]·(1 − 1/ε) kJ/mol. The main question is what the radius is: crystal ionic radii give too large a gain.</p>
+  <div class="crow"><span class="l">Dielectric constant ε</span><input type="range" id="eps" min="1" max="100" step="0.1" value="78.4" aria-label="Dielectric constant ε"><span class="val" id="epsV"></span></div>
+  <div class="crow"><span class="l">Cation radius increment δ<sub>+</sub></span><input type="range" id="dp" min="0" max="1.2" step="0.01" value="0" aria-label="Cation radius increment"><span class="val" id="dpV"></span></div>
+  <div class="crow"><span class="l">Anion radius increment δ<sub>−</sub></span><input type="range" id="dm" min="0" max="1.2" step="0.01" value="0" aria-label="Anion radius increment"><span class="val" id="dmV"></span></div>
+  <svg id="bornC" viewBox="0 0 960 320" role="img" aria-label="Ion hydration energies: the Born model and experiment"></svg>
+  <div class="legend" id="bornL"></div>
+  <div class="tablewrap" id="bornT"></div>
+  <p class="hint" id="bornN"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">The polarizable continuum for molecules (C-PCM)</h2>
+  <p class="hint">The cavity is built from spheres around the atoms; polarization charges appear on its surface, enter the Hamiltonian of the molecule and are recomputed in every self-consistent-field cycle. Here B3LYP/6-31+G*, water (ε = 78.36), HF/6-31G* geometries. ΔG is the electrostatic contribution only.</p>
+  <svg id="pcmC" viewBox="0 0 960 360" role="img" aria-label="Hydration energy: C-PCM calculation and experiment"></svg>
+  <div class="tablewrap" id="pcmT"></div>
+  <p class="hint" id="pcmN"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">How the answer depends on ε</h2>
+  <p class="hint">The same calculation in solvents of different polarity. The electrostatic solvation energy is roughly proportional to the factor (ε − 1)/ε: it grows fast at small ε and almost stops changing beyond ε ≈ 20.</p>
+  <div class="crow"><span class="l">Molecule</span><span class="grp" id="emG" role="group" aria-label="Molecule"></span></div>
+  <svg id="epsC" viewBox="0 0 960 320" role="img" aria-label="Solvation energy versus ε"></svg>
+  <p class="hint" id="epsN"></p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">What a continuum lacks</h2>
+  <div class="eq">
+    <div class="eqb"><div class="t">Non-electrostatic terms</div>Creating a cavity in water costs energy, and dispersion and repulsion with the solvent molecules partly return it. Models such as SMD add these terms through empirical formulas fitted to experiment; without them nonpolar molecules come out too “hydrophilic”.</div>
+    <div class="eqb"><div class="t">Specific interactions</div>A continuum describes hydrogen bonds with the first water shell only on average. For anions and molecules with strong hydrogen-bond donors a few water molecules are added explicitly, and this cluster is then embedded in the medium (the cluster–continuum model).</div>
+    <div class="eqb"><div class="t">Cavity radii</div>The result depends noticeably on the radii of the atomic spheres: they are the main fitted parameter. That is why solvation models are compared and used together with the radii they were calibrated for.</div>
+    <div class="eqb"><div class="t">Standard states</div>Here the transfers compared are “1 mol/L in the gas → 1 mol/L in solution”. If the gas is taken at 1 bar, RT·ln(24.79) = 7.96 kJ/mol (1.90 kcal/mol) is added — a common source of discrepancies when computing pKₐ values and equilibrium constants in solution.</div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">A solvent redistributes the charge of a molecule. How can a charge be assigned to a single atom at all?</span><a class="nqA" href="charges.html" data-goto="chg">Atomic charges: comparing schemes →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>The Born model, ε = 78.4, zero radius increments: what hydration energy does it give for Na⁺ (kJ/mol)?</span></p>
+<p class="olab">ΔG(Na⁺), kJ/mol</p><div class="opts" role="group"><button type="button" class="opt">-694.7</button><button type="button" class="opt">-365</button><button type="button" class="opt" data-ok="1">-672</button><button type="button" class="opt">-8.9</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>ΔG = −694.7/1.02 · (1 − 1/78.4) ≈ −672 kJ/mol — almost twice the experimental value (−365) in magnitude. The crystal radius is too small for a cavity in a continuum.</div></div>
+<div class="tq"><p class="qt"><span>Choose the increment δ₊ for which the Born model gives −365 kJ/mol for Na⁺.</span></p>
+<p class="olab">δ₊, Å</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">0.86</button><button type="button" class="opt">0</button><button type="button" class="opt">1.88</button><button type="button" class="opt">0.43</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>a = 694.7·(1 − 1/78.4)/365 ≈ 1.88 Å, i.e. δ₊ ≈ 0.86 Å — almost the same increment of 0.85 Å that Latimer, Pitzer and Slansky proposed for all cations in 1939.</div></div>
+<div class="tq"><p class="qt"><span>C-PCM for water: by how many kcal/mol does the calculation differ from experiment (calculation minus experiment)?</span></p>
+<p class="olab">Calculation − experiment, kcal/mol</p><div class="opts" role="group"><button type="button" class="opt">1.3</button><button type="button" class="opt" data-ok="1">-1.3</button><button type="button" class="opt">0</button><button type="button" class="opt">-7.6</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>About −1.3 kcal/mol: −7.6 versus −6.3. Electrostatics without the cavity term overestimates the gain, and for a molecule that forms hydrogen bonds the continuum describes the first hydration shell only on average.</div></div>
+<div class="tq"><p class="qt"><span>Why does C-PCM give a negative solvation energy for ethane while the experimental value is positive (+1.8 kcal/mol)?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">The model has no positive cavity-formation term; electrostatics always gives a gain</button><button type="button" class="opt">The basis is too small</button><button type="button" class="opt">The ethane geometry is wrong</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The electrostatic term is always negative: the medium only stabilizes the charge distribution. The positive part — the cost of forming a cavity in water — is not computed by this model, and for a nonpolar molecule it is exactly the main one.</div></div>
+<div class="tq"><p class="qt"><span>The section on the dependence on ε, acetone: what share of its solvation energy in water does it already get in chloroform (ε = 4.8), %?</span></p>
+<p class="olab">Share, %</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">77</button><button type="button" class="opt">21</button><button type="button" class="opt">99</button><button type="button" class="opt">50</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>About 77 %: the factor (ε − 1)/ε is 0.79 at ε = 4.8 and 0.99 in water. So a calculation “in some polar solvent” differs little from one in water, but going from the gas to chloroform already gives the main part of the effect.</div></div>
+</div></details></section>
+<script src="js/solvation.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="solv";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/solvation.js"></script>
+
+</body>
+</html>

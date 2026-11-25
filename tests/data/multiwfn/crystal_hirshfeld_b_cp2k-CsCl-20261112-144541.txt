@@ -1,0 +1,572 @@
+answers: 7 | 1 | 1 | 0.4 | 1 | n | 0 | q
+
+ WARNING: "settings.ini" was found neither in current folder nor in the path defined by "Multiwfnpath" environment variable. Now using default settings instead, and all your modifications (if any) on settings.ini will not take effect!
+
+[95m Multiwfn -- A Multifunctional Wavefunction Analyzer
+[0m[32m Version 2026.7.15 (release date is the same as version name)
+[0m Developer: Tian Lu (Beijing Kein Research Center for Natural Sciences)
+ Multiwfn official website: http://sobereva.com/multiwfn
+ Multiwfn English forum: http://sobereva.com/wfnbbs
+ Multiwfn Chinese forum: http://bbs.keinsci.com/wfn
+ ( Number of parallel threads:   4  Current date: 2026-11-13  Time: 04:15:56 )
+
+ Both following papers ***MUST BE CITED IN MAIN TEXT*** if Multiwfn is used:
+[36m  Tian Lu, Feiwu Chen, J. Comput. Chem., 33, 580 (2012) DOI: 10.1002/jcc.22885
+  Tian Lu, J. Chem. Phys., 161, 082503 (2024) DOI: 10.1063/5.0216272
+[0m See "How to cite Multiwfn.pdf" in Multiwfn binary package for more information
+
+ Warning: You should set OMP_STACKSIZE environment variable as mentioned in Section 2.1.2 of Multiwfn manual!
+
+ Please wait...
+ Loading various information of the wavefunction
+ Note: Nuclear charge of Cs has been set to   9
+ Note: Nuclear charge of Cl has been set to   7
+ Loading basis set definition...
+ The highest angular moment basis functions is D
+ All D basis functions are spherical harmonic type
+ Loading orbitals...
+ The actual number of orbitals read:       216
+ Converting basis function information to GTF information...
+ Back converting basis function information from Cartesian to spherical type...
+ Generating density matrix...
+
+ Total/Alpha/Beta electrons:    432.0000    216.0000    216.0000
+ Net charge:     0.00000      Expected multiplicity:    1
+ Atoms:     54,  Basis functions:    729,  GTFs:   3942
+ This is a restricted single-determinant wavefunction
+ Orbitals from 1 to   216 are occupied
+ Loading electron density functions (EDF) information from built-in EDF library
+ (The library is available at https://github.com/zorkzou/Molden2AIM)
+ Cs(    1)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(    2)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(    3)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(    4)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(    5)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(    6)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(    7)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(    8)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(    9)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   10)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   11)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   12)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   13)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   14)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   15)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   16)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   17)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   18)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   19)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   20)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   21)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   22)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   23)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   24)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   25)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   26)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   27)      Core electrons: 46     EDF primitive GTFs: 36
+ Cl(   28)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   29)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   30)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   31)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   32)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   33)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   34)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   35)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   36)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   37)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   38)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   39)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   40)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   41)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   42)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   43)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   44)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   45)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   46)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   47)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   48)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   49)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   50)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   51)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   52)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   53)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   54)      Core electrons: 10     EDF primitive GTFs: 25
+ The number of total inner-core electrons:  1512
+ The number of total EDF primitive GTFs:  1647
+ Loading EDF library finished!
+
+ Loaded input.molden successfully!
+
+ Cell information
+ In Bohr:
+ Cell vector 1,  X=   23.48084  Y=    0.00000  Z=    0.00000  Norm:   23.48084
+ Cell vector 2,  X=    0.00000  Y=   23.48084  Z=    0.00000  Norm:   23.48084
+ Cell vector 3,  X=    0.00000  Y=    0.00000  Z=   23.48084  Norm:   23.48084
+ In Angstrom:
+ Cell vector 1,  X=   12.42553  Y=    0.00000  Z=    0.00000  Norm:   12.42553
+ Cell vector 2,  X=    0.00000  Y=   12.42553  Z=    0.00000  Norm:   12.42553
+ Cell vector 3,  X=    0.00000  Y=    0.00000  Z=   12.42553  Norm:   12.42553
+ Reciprocal vectors in Angstrom^-1:
+ Vector 1,  X=    0.50567  Y=   -0.00000  Z=   -0.00000  Norm:    0.50567
+ Vector 2,  X=    0.00000  Y=   -0.50567  Z=    0.00000  Norm:    0.50567
+ Vector 3,  X=    0.00000  Y=   -0.00000  Z=    0.50567  Norm:    0.50567
+ Cell angles:  Alpha=  90.0000  Beta=  90.0000  Gamma=  90.0000 degree
+ Area between a and b:    154.3937 Angstrom^2
+ Area between b and c:    154.3937 Angstrom^2
+ Area between a and c:    154.3937 Angstrom^2
+ Cell volume:      12946.1603 Bohr^3    (       1918.4230 Angstrom^3 )
+ Density:   3.93462 g/cm^3    (  3934.623 kg/m^3 )
+
+ Command of showing box in VMD program: (then run "pbc box")
+ pbc set {  12.42553  12.42553  12.42553  90.000  90.000  90.000 } -all
+
+ Vertex 1 of the cell:    0.0000    0.0000    0.0000 Bohr
+ Vertex 2 of the cell:   23.4808    0.0000    0.0000 Bohr
+ Vertex 3 of the cell:   23.4808   23.4808    0.0000 Bohr
+ Vertex 4 of the cell:    0.0000   23.4808    0.0000 Bohr
+ Vertex 5 of the cell:    0.0000    0.0000   23.4808 Bohr
+ Vertex 6 of the cell:   23.4808    0.0000   23.4808 Bohr
+ Vertex 7 of the cell:   23.4808   23.4808   23.4808 Bohr
+ Vertex 8 of the cell:    0.0000   23.4808   23.4808 Bohr
+
+ Warning: Because size of a axis of the cell is relatively small, in order to guarantee analysis accuracy, it is suggested to increase the first index of "PBCnxnynz" in settings.ini to  2
+
+ Warning: Because size of b axis of the cell is relatively small, in order to guarantee analysis accuracy, it is suggested to increase the second index of "PBCnxnynz" in settings.ini to  2
+
+ Warning: Because size of c axis of the cell is relatively small, in order to guarantee analysis accuracy, it is suggested to increase the third index of "PBCnxnynz" in settings.ini to  2
+
+ Formula: Cl27 Cs27      Total atoms:      54
+ Molecule weight:      4545.67652 Da
+
+ "q": Exit program gracefully          "r": Load a new file
+                    ************ Main function menu ************
+ 0 Show molecular structure and view orbitals
+ 1 Output all properties at a point       2 Topology analysis
+ 3 Output and plot specific property in a line
+ 4 Output and plot specific property in a plane
+ 5 Output and plot specific property within a spatial region (calc. grid data)
+ 6 Check & modify wavefunction
+ 7 Population analysis and calculation of atomic charges
+ 8 Orbital composition analysis           9 Bond order analysis
+ 10 Plot total DOS, PDOS, OPDOS, local DOS, COHP and photoelectron spectrum
+ 11 Plot IR/Raman/UV-Vis/ECD/VCD/ROA/NMR spectrum
+ 12 Quantitative analysis of molecular surface
+ 13 Process grid data (No grid data is presented currently)
+ 14 Adaptive natural density partitioning (AdNDP) analysis
+ 15 Fuzzy atomic space analysis
+ 16 Charge decomposition analysis (CDA) and plot orbital interaction diagram
+ 17 Basin analysis                       18 Electron excitation analysis
+ 19 Orbital localization analysis        20 Visual study of weak interaction
+ 21 Energy decomposition analysis        22 Conceptual DFT (CDFT) analysis
+ 23 ETS-NOCV analysis                    24 (Hyper)polarizability analysis
+ 25 Electron delocalization and aromaticity analyses
+ 26 Structure and geometry related analyses
+ 100 Other functions (Part 1)            200 Other functions (Part 2)
+ 300 Other functions (Part 3)
+ NOTE: There is a review comprehensively introducing various atomic charges:
+ Tian Lu, Qinxue Chen, Partial Charges, In Exploring Chemical Concepts Through Theory and Computation. WILEY-VCH GmbH: Weinheim (2024); pp. 161-187. DOI: 10.1002/9783527843435.ch6
+
+      ============== Population analysis and atomic charges ==============
+ -2 Calculate interaction energy between fragments based on atomic charges
+ -1 Define fragment
+ 0 Return
+ 1 Hirshfeld atomic charge
+ 2 Voronoi deformation density (VDD) atom population
+ 5 Mulliken atom & basis function population analysis
+ 6 Lowdin atom & basis function population analysis
+ 7 Modified Mulliken atom population defined by Ros & Schuit (SCPA)
+ 8 Modified Mulliken atom population defined by Stout & Politzer
+ 9 Modified Mulliken atom population defined by Bickelhaupt
+ 10 Becke atomic charge with atomic dipole moment correction
+ 11 Atomic dipole corrected Hirshfeld atomic charge (ADCH) (recommended)
+ 12 CHELPG ESP fitting atomic charge
+ 13 Merz-Kollmann (MK) ESP fitting atomic charge
+ 14 AIM atomic charge
+ 15 Hirshfeld-I atomic charge
+ 16 CM5 atomic charge    -16 Generate 1.2*CM5 atomic charge
+ 17 Electronegativity Equalization Method (EEM) atomic charge
+ 18 Restrained ElectroStatic Potential (RESP) atomic charge
+ 19 Gasteiger (PEOE) charge
+ 20 Minimal Basis Iterative Stockholder (MBIS) charge
+ Citation of Hirshfeld method: Theor. Chim. Acta. (Berl), 44, 129-138 (1977)
+
+ Choose integration algorithm
+ 1: Evenly distributed grids
+ 2: Atomic center grids
+ NOTE: For periodic wavefunction only representating valence electrons, 1 is the best choice. 2 is also able to deal with core electrons, but significantly slower
+ If directly pressing ENTER button, 1 will be used
+ Now input grid spacing in Bohr, e.g. 0.25
+ The smaller the spacing, the better the result, the more expensive the calculation
+ If directly pressing ENTER button, 0.200 Bohr will be used
+ Note: The grid spacing will be automatically slightly altered so that number of grids in each direction is integer
+ Note: Virtual orbitals higher than LUMO+9 have been temporarily discarded for saving computational time
+
+ Calculating electron density grid data...
+ Note: All exponential functions exp(x) with x< -20.000 will be ignored 
+ Constructing neighbouring list of GTFs at reduced grids...
+ Progress: [--------------------------------------------------]     0.0 %     -
+ Progress: [--------------------------------------------------]     0.0 %     \
+ Progress: [--------------------------------------------------]     1.0 %     |
+ Progress: [#-------------------------------------------------]     2.0 %     /
+ Progress: [#-------------------------------------------------]     3.0 %     -
+ Progress: [##------------------------------------------------]     4.0 %     \
+ Progress: [##------------------------------------------------]     5.0 %     |
+ Progress: [###-----------------------------------------------]     6.0 %     /
+ Progress: [###-----------------------------------------------]     7.0 %     -
+ Progress: [####----------------------------------------------]     8.0 %     \
+ Progress: [####----------------------------------------------]     9.0 %     |
+ Progress: [#####---------------------------------------------]    10.0 %     /
+ Progress: [#####---------------------------------------------]    11.0 %     -
+ Progress: [######--------------------------------------------]    12.0 %     \
+ Progress: [######--------------------------------------------]    13.0 %     |
+ Progress: [#######-------------------------------------------]    14.0 %     /
+ Progress: [#######-------------------------------------------]    15.0 %     -
+ Progress: [########------------------------------------------]    16.0 %     \
+ Progress: [########------------------------------------------]    17.0 %     |
+ Progress: [#########-----------------------------------------]    18.0 %     /
+ Progress: [#########-----------------------------------------]    19.0 %     -
+ Progress: [##########----------------------------------------]    20.0 %     \
+ Progress: [##########----------------------------------------]    21.0 %     |
+ Progress: [###########---------------------------------------]    22.0 %     /
+ Progress: [###########---------------------------------------]    23.0 %     -
+ Progress: [############--------------------------------------]    24.0 %     \
+ Progress: [############--------------------------------------]    25.0 %     |
+ Progress: [#############-------------------------------------]    26.0 %     /
+ Progress: [#############-------------------------------------]    27.0 %     -
+ Progress: [##############------------------------------------]    28.0 %     \
+ Progress: [##############------------------------------------]    29.0 %     |
+ Progress: [###############-----------------------------------]    30.0 %     /
+ Progress: [###############-----------------------------------]    31.0 %     -
+ Progress: [################----------------------------------]    32.0 %     \
+ Progress: [################----------------------------------]    33.0 %     |
+ Progress: [#################---------------------------------]    34.0 %     /
+ Progress: [#################---------------------------------]    35.0 %     -
+ Progress: [##################--------------------------------]    36.0 %     \
+ Progress: [##################--------------------------------]    37.0 %     |
+ Progress: [###################-------------------------------]    38.0 %     /
+ Progress: [###################-------------------------------]    39.0 %     -
+ Progress: [####################------------------------------]    40.0 %     \
+ Progress: [####################------------------------------]    41.0 %     |
+ Progress: [####################------------------------------]    41.0 %     /
+ Progress: [#####################-----------------------------]    42.0 %     -
+ Progress: [#####################-----------------------------]    43.0 %     \
+ Progress: [######################----------------------------]    44.0 %     |
+ Progress: [######################----------------------------]    45.0 %     /
+ Progress: [#######################---------------------------]    46.0 %     -
+ Progress: [#######################---------------------------]    47.0 %     \
+ Progress: [########################--------------------------]    48.0 %     |
+ Progress: [########################--------------------------]    49.0 %     /
+ Progress: [#########################-------------------------]    50.0 %     -
+ Progress: [#########################-------------------------]    51.0 %     \
+ Progress: [##########################------------------------]    52.0 %     |
+ Progress: [##########################------------------------]    53.0 %     /
+ Progress: [###########################-----------------------]    54.0 %     -
+ Progress: [###########################-----------------------]    55.0 %     \
+ Progress: [############################----------------------]    56.0 %     |
+ Progress: [############################----------------------]    57.0 %     /
+ Progress: [############################----------------------]    58.0 %     -
+ Progress: [#############################---------------------]    59.0 %     \
+ Progress: [##############################--------------------]    60.0 %     |
+ Progress: [##############################--------------------]    61.0 %     /
+ Progress: [###############################-------------------]    62.0 %     -
+ Progress: [###############################-------------------]    63.0 %     \
+ Progress: [################################------------------]    64.0 %     |
+ Progress: [################################------------------]    65.0 %     /
+ Progress: [#################################-----------------]    66.0 %     -
+ Progress: [#################################-----------------]    67.0 %     \
+ Progress: [##################################----------------]    68.0 %     |
+ Progress: [##################################----------------]    69.0 %     /
+ Progress: [###################################---------------]    70.0 %     -
+ Progress: [###################################---------------]    71.0 %     \
+ Progress: [####################################--------------]    72.0 %     |
+ Progress: [####################################--------------]    73.0 %     /
+ Progress: [#####################################-------------]    74.0 %     -
+ Progress: [#####################################-------------]    75.0 %     \
+ Progress: [######################################------------]    76.0 %     |
+ Progress: [######################################------------]    77.0 %     /
+ Progress: [#######################################-----------]    78.0 %     -
+ Progress: [#######################################-----------]    79.0 %     \
+ Progress: [########################################----------]    80.0 %     |
+ Progress: [########################################----------]    81.0 %     /
+ Progress: [#########################################---------]    82.0 %     -
+ Progress: [#########################################---------]    83.0 %     \
+ Progress: [#########################################---------]    83.0 %     |
+ Progress: [##########################################--------]    84.0 %     /
+ Progress: [##########################################--------]    85.0 %     -
+ Progress: [###########################################-------]    86.0 %     \
+ Progress: [###########################################-------]    87.0 %     |
+ Progress: [############################################------]    88.0 %     /
+ Progress: [############################################------]    89.0 %     -
+ Progress: [#############################################-----]    90.0 %     \
+ Progress: [#############################################-----]    91.0 %     |
+ Progress: [##############################################----]    92.0 %     /
+ Progress: [##############################################----]    93.0 %     -
+ Progress: [###############################################---]    94.0 %     \
+ Progress: [###############################################---]    95.0 %     |
+ Progress: [################################################--]    96.0 %     /
+ Progress: [################################################--]    97.0 %     -
+ Progress: [#################################################-]    98.0 %     \
+ Progress: [#################################################-]    99.0 %     |
+ Progress: [##################################################]   100.0 %     /
+ Calculation of grid data took up wall clock time        72 s
+ Note: Previous orbital information has been restored
+ Calculating Hirshfeld charges...
+ Progress: [--------------------------------------------------]     0.0 %     -
+ Progress: [--------------------------------------------------]     1.0 %     \
+ Progress: [#-------------------------------------------------]     2.0 %     |
+ Progress: [#-------------------------------------------------]     3.0 %     /
+ Progress: [##------------------------------------------------]     4.0 %     -
+ Progress: [##------------------------------------------------]     5.0 %     \
+ Progress: [###-----------------------------------------------]     6.0 %     |
+ Progress: [###-----------------------------------------------]     7.0 %     /
+ Progress: [####----------------------------------------------]     8.0 %     -
+ Progress: [####----------------------------------------------]     9.0 %     \
+ Progress: [#####---------------------------------------------]    10.0 %     |
+ Progress: [#####---------------------------------------------]    11.0 %     /
+ Progress: [######--------------------------------------------]    12.0 %     -
+ Progress: [######--------------------------------------------]    13.0 %     \
+ Progress: [#######-------------------------------------------]    14.0 %     |
+ Progress: [#######-------------------------------------------]    15.0 %     /
+ Progress: [########------------------------------------------]    16.0 %     -
+ Progress: [########------------------------------------------]    17.0 %     \
+ Progress: [#########-----------------------------------------]    18.0 %     |
+ Progress: [#########-----------------------------------------]    19.0 %     /
+ Progress: [##########----------------------------------------]    20.0 %     -
+ Progress: [##########----------------------------------------]    21.0 %     \
+ Progress: [###########---------------------------------------]    22.0 %     |
+ Progress: [###########---------------------------------------]    23.0 %     /
+ Progress: [############--------------------------------------]    24.0 %     -
+ Progress: [############--------------------------------------]    25.0 %     \
+ Progress: [#############-------------------------------------]    26.0 %     |
+ Progress: [#############-------------------------------------]    27.0 %     /
+ Progress: [##############------------------------------------]    28.0 %     -
+ Progress: [##############------------------------------------]    29.0 %     \
+ Progress: [###############-----------------------------------]    30.0 %     |
+ Progress: [###############-----------------------------------]    31.0 %     /
+ Progress: [################----------------------------------]    32.0 %     -
+ Progress: [################----------------------------------]    33.0 %     \
+ Progress: [#################---------------------------------]    34.0 %     |
+ Progress: [#################---------------------------------]    35.0 %     /
+ Progress: [##################--------------------------------]    36.0 %     -
+ Progress: [##################--------------------------------]    37.0 %     \
+ Progress: [###################-------------------------------]    38.0 %     |
+ Progress: [###################-------------------------------]    39.0 %     /
+ Progress: [####################------------------------------]    40.0 %     -
+ Progress: [####################------------------------------]    41.0 %     \
+ Progress: [####################------------------------------]    41.0 %     |
+ Progress: [#####################-----------------------------]    42.0 %     /
+ Progress: [#####################-----------------------------]    43.0 %     -
+ Progress: [######################----------------------------]    44.0 %     \
+ Progress: [######################----------------------------]    45.0 %     |
+ Progress: [#######################---------------------------]    46.0 %     /
+ Progress: [#######################---------------------------]    47.0 %     -
+ Progress: [########################--------------------------]    48.0 %     \
+ Progress: [########################--------------------------]    49.0 %     |
+ Progress: [#########################-------------------------]    50.0 %     /
+ Progress: [#########################-------------------------]    51.0 %     -
+ Progress: [##########################------------------------]    52.0 %     \
+ Progress: [##########################------------------------]    53.0 %     |
+ Progress: [###########################-----------------------]    54.0 %     /
+ Progress: [###########################-----------------------]    55.0 %     -
+ Progress: [############################----------------------]    56.0 %     \
+ Progress: [############################----------------------]    57.0 %     |
+ Progress: [############################----------------------]    58.0 %     /
+ Progress: [#############################---------------------]    59.0 %     -
+ Progress: [##############################--------------------]    60.0 %     \
+ Progress: [##############################--------------------]    61.0 %     |
+ Progress: [###############################-------------------]    62.0 %     /
+ Progress: [###############################-------------------]    63.0 %     -
+ Progress: [################################------------------]    64.0 %     \
+ Progress: [################################------------------]    65.0 %     |
+ Progress: [#################################-----------------]    66.0 %     /
+ Progress: [#################################-----------------]    67.0 %     -
+ Progress: [##################################----------------]    68.0 %     \
+ Progress: [##################################----------------]    69.0 %     |
+ Progress: [###################################---------------]    70.0 %     /
+ Progress: [###################################---------------]    71.0 %     -
+ Progress: [####################################--------------]    72.0 %     \
+ Progress: [####################################--------------]    73.0 %     |
+ Progress: [#####################################-------------]    74.0 %     /
+ Progress: [#####################################-------------]    75.0 %     -
+ Progress: [######################################------------]    76.0 %     \
+ Progress: [######################################------------]    77.0 %     |
+ Progress: [#######################################-----------]    78.0 %     /
+ Progress: [#######################################-----------]    79.0 %     -
+ Progress: [########################################----------]    80.0 %     \
+ Progress: [########################################----------]    81.0 %     |
+ Progress: [#########################################---------]    82.0 %     /
+ Progress: [#########################################---------]    83.0 %     -
+ Progress: [#########################################---------]    83.0 %     \
+ Progress: [##########################################--------]    84.0 %     |
+ Progress: [##########################################--------]    85.0 %     /
+ Progress: [###########################################-------]    86.0 %     -
+ Progress: [###########################################-------]    87.0 %     \
+ Progress: [############################################------]    88.0 %     |
+ Progress: [############################################------]    89.0 %     /
+ Progress: [#############################################-----]    90.0 %     -
+ Progress: [#############################################-----]    91.0 %     \
+ Progress: [##############################################----]    92.0 %     |
+ Progress: [##############################################----]    93.0 %     /
+ Progress: [###############################################---]    94.0 %     -
+ Progress: [###############################################---]    95.0 %     \
+ Progress: [################################################--]    96.0 %     |
+ Progress: [################################################--]    97.0 %     /
+ Progress: [#################################################-]    98.0 %     -
+ Progress: [#################################################-]    99.0 %     \
+ Progress: [##################################################]   100.0 %     |
+
+ Hirshfeld population of atom     1(Cs) is    8.70052332
+ Hirshfeld population of atom     2(Cs) is    8.70051551
+ Hirshfeld population of atom     3(Cs) is    8.70051548
+ Hirshfeld population of atom     4(Cs) is    8.70051550
+ Hirshfeld population of atom     5(Cs) is    8.70050903
+ Hirshfeld population of atom     6(Cs) is    8.70050905
+ Hirshfeld population of atom     7(Cs) is    8.70051551
+ Hirshfeld population of atom     8(Cs) is    8.70050908
+ Hirshfeld population of atom     9(Cs) is    8.70050905
+ Hirshfeld population of atom    10(Cs) is    8.70051552
+ Hirshfeld population of atom    11(Cs) is    8.70050903
+ Hirshfeld population of atom    12(Cs) is    8.70050905
+ Hirshfeld population of atom    13(Cs) is    8.70050907
+ Hirshfeld population of atom    14(Cs) is    8.70050235
+ Hirshfeld population of atom    15(Cs) is    8.70050236
+ Hirshfeld population of atom    16(Cs) is    8.70050903
+ Hirshfeld population of atom    17(Cs) is    8.70050234
+ Hirshfeld population of atom    18(Cs) is    8.70050231
+ Hirshfeld population of atom    19(Cs) is    8.70051550
+ Hirshfeld population of atom    20(Cs) is    8.70050904
+ Hirshfeld population of atom    21(Cs) is    8.70050902
+ Hirshfeld population of atom    22(Cs) is    8.70050906
+ Hirshfeld population of atom    23(Cs) is    8.70050235
+ Hirshfeld population of atom    24(Cs) is    8.70050234
+ Hirshfeld population of atom    25(Cs) is    8.70050901
+ Hirshfeld population of atom    26(Cs) is    8.70050231
+ Hirshfeld population of atom    27(Cs) is    8.70050230
+ Hirshfeld population of atom    28(Cl) is    7.29946564
+ Hirshfeld population of atom    29(Cl) is    7.29949165
+ Hirshfeld population of atom    30(Cl) is    7.29946564
+ Hirshfeld population of atom    31(Cl) is    7.29949170
+ Hirshfeld population of atom    32(Cl) is    7.29951553
+ Hirshfeld population of atom    33(Cl) is    7.29949167
+ Hirshfeld population of atom    34(Cl) is    7.29946560
+ Hirshfeld population of atom    35(Cl) is    7.29949160
+ Hirshfeld population of atom    36(Cl) is    7.29946556
+ Hirshfeld population of atom    37(Cl) is    7.29949173
+ Hirshfeld population of atom    38(Cl) is    7.29951558
+ Hirshfeld population of atom    39(Cl) is    7.29949168
+ Hirshfeld population of atom    40(Cl) is    7.29951558
+ Hirshfeld population of atom    41(Cl) is    7.29953730
+ Hirshfeld population of atom    42(Cl) is    7.29951553
+ Hirshfeld population of atom    43(Cl) is    7.29949164
+ Hirshfeld population of atom    44(Cl) is    7.29951551
+ Hirshfeld population of atom    45(Cl) is    7.29949162
+ Hirshfeld population of atom    46(Cl) is    7.29946562
+ Hirshfeld population of atom    47(Cl) is    7.29949165
+ Hirshfeld population of atom    48(Cl) is    7.29946557
+ Hirshfeld population of atom    49(Cl) is    7.29949170
+ Hirshfeld population of atom    50(Cl) is    7.29951555
+ Hirshfeld population of atom    51(Cl) is    7.29949166
+ Hirshfeld population of atom    52(Cl) is    7.29946557
+ Hirshfeld population of atom    53(Cl) is    7.29949162
+ Hirshfeld population of atom    54(Cl) is    7.29946565
+ Sum of atomic populations:      431.9999988825
+
+ Normalize sum of atomic populations to actual number of electrons...
+
+ Final atomic charges:
+ Atom    1(Cs):     0.29947666
+ Atom    2(Cs):     0.29948447
+ Atom    3(Cs):     0.29948450
+ Atom    4(Cs):     0.29948448
+ Atom    5(Cs):     0.29949095
+ Atom    6(Cs):     0.29949092
+ Atom    7(Cs):     0.29948447
+ Atom    8(Cs):     0.29949090
+ Atom    9(Cs):     0.29949093
+ Atom   10(Cs):     0.29948446
+ Atom   11(Cs):     0.29949094
+ Atom   12(Cs):     0.29949093
+ Atom   13(Cs):     0.29949090
+ Atom   14(Cs):     0.29949763
+ Atom   15(Cs):     0.29949762
+ Atom   16(Cs):     0.29949095
+ Atom   17(Cs):     0.29949764
+ Atom   18(Cs):     0.29949767
+ Atom   19(Cs):     0.29948448
+ Atom   20(Cs):     0.29949093
+ Atom   21(Cs):     0.29949095
+ Atom   22(Cs):     0.29949091
+ Atom   23(Cs):     0.29949762
+ Atom   24(Cs):     0.29949763
+ Atom   25(Cs):     0.29949097
+ Atom   26(Cs):     0.29949767
+ Atom   27(Cs):     0.29949768
+ Atom   28(Cl):    -0.29946566
+ Atom   29(Cl):    -0.29949167
+ Atom   30(Cl):    -0.29946566
+ Atom   31(Cl):    -0.29949172
+ Atom   32(Cl):    -0.29951555
+ Atom   33(Cl):    -0.29949169
+ Atom   34(Cl):    -0.29946562
+ Atom   35(Cl):    -0.29949162
+ Atom   36(Cl):    -0.29946558
+ Atom   37(Cl):    -0.29949175
+ Atom   38(Cl):    -0.29951560
+ Atom   39(Cl):    -0.29949169
+ Atom   40(Cl):    -0.29951560
+ Atom   41(Cl):    -0.29953731
+ Atom   42(Cl):    -0.29951555
+ Atom   43(Cl):    -0.29949166
+ Atom   44(Cl):    -0.29951553
+ Atom   45(Cl):    -0.29949164
+ Atom   46(Cl):    -0.29946564
+ Atom   47(Cl):    -0.29949167
+ Atom   48(Cl):    -0.29946559
+ Atom   49(Cl):    -0.29949172
+ Atom   50(Cl):    -0.29951557
+ Atom   51(Cl):    -0.29949168
+ Atom   52(Cl):    -0.29946559
+ Atom   53(Cl):    -0.29949164
+ Atom   54(Cl):    -0.29946567
+
+ Calculation took up wall clock time        75 s
+
+ If outputting atom coordinates with charges to input.chg in current folder? (y/n)
+
+      ============== Population analysis and atomic charges ==============
+ -2 Calculate interaction energy between fragments based on atomic charges
+ -1 Define fragment
+ 0 Return
+ 1 Hirshfeld atomic charge
+ 2 Voronoi deformation density (VDD) atom population
+ 5 Mulliken atom & basis function population analysis
+ 6 Lowdin atom & basis function population analysis
+ 7 Modified Mulliken atom population defined by Ros & Schuit (SCPA)
+ 8 Modified Mulliken atom population defined by Stout & Politzer
+ 9 Modified Mulliken atom population defined by Bickelhaupt
+ 10 Becke atomic charge with atomic dipole moment correction
+ 11 Atomic dipole corrected Hirshfeld atomic charge (ADCH) (recommended)
+ 12 CHELPG ESP fitting atomic charge
+ 13 Merz-Kollmann (MK) ESP fitting atomic charge
+ 14 AIM atomic charge
+ 15 Hirshfeld-I atomic charge
+ 16 CM5 atomic charge    -16 Generate 1.2*CM5 atomic charge
+ 17 Electronegativity Equalization Method (EEM) atomic charge
+ 18 Restrained ElectroStatic Potential (RESP) atomic charge
+ 19 Gasteiger (PEOE) charge
+ 20 Minimal Basis Iterative Stockholder (MBIS) charge
+
+--- stderr ---
+At line 65 of file /private/tmp/s-bdSdxxIT/multiwfn-20261028-61253-2d0vhf/population.f90 (unit = 5, file = 'stdin')
+Fortran runtime error: Bad integer for item 1 in list input
+
+Error termination. Backtrace:
+#0  0x131a97323
+#1  0x131a97ef7
+#2  0x131a987cb
+#3  0x131babb23
+#4  0x131bae8ab
+#5  0x131baf3a7
+#6  0x10502b48b
+#7  0x1048dffb7
+#8  0x10513d9ff

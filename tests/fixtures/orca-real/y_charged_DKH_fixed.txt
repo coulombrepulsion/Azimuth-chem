@@ -1,0 +1,2 @@
+serv4:rank10.orca_startup_mpi: Failed to get br-8f68eb3b4286 (unit 1) cpu set
+ORCA finished by error termination in Startup

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>The Bloch theorem and k-points</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>The Bloch theorem and k-points</h1>
+<p class="lead">In a crystal the potential repeats with the period of the lattice, and every state of an electron is labelled by a wave vector k. A calculation of a crystal is a calculation at a set of points k (a k-mesh) in a basis of plane waves. Here you see where k comes from, why metals need a dense mesh and what E<sub>cut</sub> sets.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>The Bloch theorem: ψ<sub>k</sub>(x + a) = e<sup>ika</sup>ψ<sub>k</sub>(x). The vectors k and k + 2π/a give one state, so k is taken in the first Brillouin zone (−π/a…π/a).</li><li>The energy of a crystal is an integral over the zone; in a calculation it is a sum over k-points. For an insulator it converges fast, for a metal slowly: the Fermi level cuts the band.</li><li>The symmetry of the lattice reduces a k-mesh to a few inequivalent points with weights (in the Quantum ESPRESSO output — «number of k points»).</li><li>A plane-wave basis: the waves with |k + G|² ≤ E<sub>cut</sub>; their number grows as V·E<sub>cut</sub><sup>3/2</sup>. The density needs 4·E<sub>cut</sub> (ultrasoft pseudopotentials 8–12).</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">A Bloch wave on a chain</h2>
+  <div class="crow"><span class="l">Wave vector k (π/a)</span><input type="range" id="kk" min="-1" max="1" step="0.01" value="0.3" aria-label="k"><span class="val" id="kkv"></span></div>
+  <div class="crow"><span class="l">The same wave with</span><span class="grp" id="mG" role="group" aria-label="The same wave with"></span></div>
+  <div class="two"><svg id="bchart" class="ch" viewBox="0 0 420 260" role="img" aria-label="Band E(k)"></svg><svg id="wchart" class="ch" viewBox="0 0 540 260" role="img" aria-label="Wave on a chain"></svg></div>
+  <div class="cards" id="wcards"></div>
+  <p class="status" id="wNote"></p>
+  <p class="hint">A chain of atoms with one orbital per atom and a hopping β between neighbours: E(k) = 2β cos ka. The dot on the band is the chosen k.</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">The k-mesh: a metal and an insulator</h2>
+  <div class="crow"><span class="l">Gap of the insulator Δ (|β|)</span><input type="range" id="dl" min="0.2" max="4" step="0.1" value="1" aria-label="Δ"><span class="val" id="dlv"></span></div>
+  <svg id="mchart" class="ch" viewBox="0 0 960 280" role="img" aria-label="Error of the energy against the number of k-points"></svg>
+  <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>metal (a chain, one electron per atom)</span><span><i class="sw" style="border-color:var(--warn)"></i>insulator (two atoms per cell, the lower band full)</span></div>
+  <div class="cards" id="mcards"></div>
+  <p class="status" id="mNote"></p>
+  <div class="crow"><span class="l">Mesh of a square lattice</span><span class="grp" id="nG" role="group" aria-label="Mesh of a square lattice"></span></div>
+  <div class="crow"><span class="l">Mesh</span><span class="grp" id="shG" role="group" aria-label="Mesh"></span></div>
+  <div class="two"><svg id="zchart" viewBox="0 0 300 300" role="img" aria-label="k-mesh in the Brillouin zone"></svg><div><div class="cards" id="zcards"></div><p class="status" id="zNote" style="margin-top:10px"></p><p class="hint">The shaded wedge is the irreducible part of the zone: the rest of the zone is made from it by rotations and reflections.</p></div></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Plane waves and E<sub>cut</sub></h2>
+  <div class="crow"><span class="l">Crystal</span><span class="grp" id="cG" role="group" aria-label="Crystal"></span></div>
+  <div class="crow"><span class="l">E<sub>cut</sub> (Ry)</span><input type="range" id="ec" min="10" max="100" step="5" value="30" aria-label="Ecut"><span class="val" id="ecv"></span></div>
+  <div class="cards" id="pcards"></div>
+  <svg id="pchart" class="ch" viewBox="0 0 960 240" role="img" aria-label="Number of plane waves against Ecut"></svg>
+  <p class="status" id="pNote"></p>
+  <p class="hint">The curve is the estimate V·G<sub>max</sub>³/(6π²), the dot the exact count of the reciprocal lattice vectors at Γ. The time of a calculation grows with the number of waves N roughly as N·log N per orbital.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">Every point k has its own set of levels. How do they make bands, and where does a band gap come from?</span><a class="nqA" href="bands.html" data-goto="bands">Band structure and DOS →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>A chain: k = 0.3 π/a and k = 2.3 π/a (choose «k + 2π/a»). Are the two states the same on the atoms?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Yes: on the atoms e<sup>i(k+2π/a)na</sup> = e<sup>ikna</sup></button><button type="button" class="opt">No, the second has a shorter wavelength</button><button type="button" class="opt">Only at k = 0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Yes. Between the atoms the waves differ, but an electron is described by the values on the lattice, and there the factor e<sup>i2πn</sup> = 1. This is why every k is brought into the first zone.</div></div>
+<div class="tq"><p class="qt"><span>A 4 × 4 mesh shifted by ½. How many points have to be computed?</span></p>
+<p class="olab">Points</p><div class="opts" role="group"><button type="button" class="opt">16</button><button type="button" class="opt">6</button><button type="button" class="opt" data-ok="1">3</button><button type="button" class="opt">4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>3: the points (1/8, 1/8), (3/8, 1/8), (3/8, 3/8) with weights 4, 8, 4. A mesh with the Γ point would give 6 different points.</div></div>
+<div class="tq"><p class="qt"><span>Where does the energy per cell converge faster with the number of k-points?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">In a metal</button><button type="button" class="opt" data-ok="1">In an insulator</button><button type="button" class="opt">Equally</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>In an insulator: the function under the integral is smooth, and the sum over the mesh converges exponentially. In a metal the function breaks off at the Fermi level — the error falls slowly and jumps.</div></div>
+<div class="tq"><p class="qt"><span>Silicon, E<sub>cut</sub> = 30 Ry. How many plane waves does an orbital have at Γ?</span></p>
+<p class="olab">Waves</p><div class="opts" role="group"><button type="button" class="opt">190</button><button type="button" class="opt" data-ok="1">749</button><button type="button" class="opt">5985</button><button type="button" class="opt">16889</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>749: the vectors with |G|² ≤ 30 bohr⁻². 5985 and 16889 are the density vectors at 120 and 240 Ry: Quantum ESPRESSO prints them as «Smooth grid» and «Dense grid».</div></div>
+</div></details></section>
+<script src="js/bloch.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="bloch";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/bloch.js"></script>
+
+</body>
+</html>

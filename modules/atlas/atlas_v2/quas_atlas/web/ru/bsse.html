@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Суперпозиционная ошибка базиса</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/bsse.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-bsse-g.webp"><!--pose:end-->
+<h1>Суперпозиционная ошибка базиса</h1>
+<p class="lead">В расчёте комплекса каждая молекула может «занять» базисные функции соседа и понизить свою энергию — в расчёте отдельной молекулы этих функций нет. Разность выглядит как притяжение, хотя это артефакт неполного базиса: суперпозиционная ошибка базиса (BSSE). Здесь энергия связи димера воды посчитана в одиннадцати базисах (MP2 — в десяти, CCSD(T) — в девяти) без поправки и с поправкой противовеса Бойса–Бернарди и сравнивается с оценкой предела полного базиса.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>В неполном базисе каждая молекула комплекса «занимает» функции соседа; это даёт ложное притяжение — суперпозиционную ошибку базиса.</li><li>Поправка противовеса считает мономеры в базисе всего комплекса, с атомами-призраками на месте партнёра.</li><li>BSSE больше всего в малых базисах и у коррелированных методов; с ростом базиса она быстро убывает.</li><li>Ложное притяжение углубляет потенциальную яму и сдвигает минимум к меньшим расстояниям.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> один комплекс, жёсткие мономеры</summary><dl><dt>Что вычисляется</dt><dd>Энергия связи димера воды без поправки и с поправкой противовеса: HF — в одиннадцати базисах, MP2 — в десяти, CCSD(T) — в девяти; кривые MP2 по расстоянию O···O.</dd><dt>Какие приближения приняты</dt><dd>Мономеры не релаксируют; одна ориентация; предел полного базиса оценён как HF в aug-cc-pVQZ плюс корреляция MP2, экстраполированная по aug-cc-pVDZ/aug-cc-pVTZ (среднее с поправкой и без), плюс разность CCSD(T) − MP2 в aug-cc-pVDZ; неопределённость оценки — около 0,2 ккал/моль. Базис 6-31G* здесь — со сферическими d-функциями (5 на атом), на других страницах Атласа — с декартовыми (6). Эталон −4,86 ккал/моль относится к жёстким мономерам; на странице «Межмолекулярные взаимодействия» приведена другая оценка, 21,0 кДж/моль (5,02 ккал/моль).</dd><dt>Какой вывод можно сделать</dt><dd>Насколько велика BSSE в разных базисах и что даёт поправка противовеса — да; точная энергия связи димера воды — нет: нужна ещё энергия деформации мономеров и оптимизация геометрии.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Энергия связи димера воды в разных базисах</h2>
+  <p class="hint">Жёсткие мономеры (r(OH) = 0,9572 Å, ∠HOH = 104,52°), линейная водородная связь, R(O···O) = 2,91 Å. Энергия взаимодействия ΔE = E(димер) − E(мономер 1) − E(мономер 2); 1s-электроны кислорода заморожены.</p>
+  <div class="crow"><span class="l">Метод</span><span class="grp" id="mG" role="group" aria-label="Метод"></span></div>
+  <svg id="bars" viewBox="0 0 960 360" role="img" aria-label="Энергия связи без поправки и с поправкой противовеса"></svg>
+  <div class="legend" id="barsL"></div>
+  <div class="tablewrap" id="barsT"></div>
+  <p class="hint" id="barsN"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Кривая взаимодействия</h2>
+  <p class="hint">MP2, энергия взаимодействия в зависимости от расстояния O···O. Тонкая линия — aug-cc-pVTZ с поправкой, ближайшая к пределу полного базиса кривая на странице.</p>
+  <div class="crow"><span class="l">Базис</span><span class="grp" id="sG" role="group" aria-label="Базис"></span></div>
+  <svg id="scan" viewBox="0 0 960 330" role="img" aria-label="Энергия взаимодействия в зависимости от расстояния"></svg>
+  <div class="legend" id="scanL"></div>
+  <p class="hint" id="scanN"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Как устроена поправка противовеса</h2>
+  <div class="eq">
+    <div class="eqb"><div class="t">Атомы-призраки</div>Энергии мономеров считают в полном базисе димера: на месте партнёра оставляют его базисные функции, но убирают ядра и электроны. Тогда в ΔE<sub>CP</sub> = E<sub>AB</sub>(AB) − E<sub>A</sub>(AB) − E<sub>B</sub>(AB) все три энергии посчитаны в одном и том же базисе, и «заём» функций сокращается.</div>
+    <div class="eqb"><div class="t">BSSE исчезает в полном базисе</div>Мономеру нечего занимать, если его собственный базис полон. Поэтому ошибка быстро убывает с ростом базиса, а поправка противовеса — способ получить близкий к пределу ответ в базисе поменьше.</div>
+    <div class="eqb"><div class="t">Поправка не всегда улучшает</div>В базисах cc-pVDZ и cc-pVTZ поправка «перебарщивает»: связь выходит слабее предела, а без поправки — сильнее; среднее двух значений ближе к пределу. В базисах с диффузными функциями уже неисправленное значение близко к пределу: ложное притяжение частично компенсирует неполноту базиса. Надёжный путь — большой базис с диффузными функциями и экстраполяция.</div>
+    <div class="eqb"><div class="t">Что ещё учесть</div>При оптимизации геометрии мономеры в комплексе деформируются; энергию деформации считают отдельно. BSSE есть и внутри одной молекулы — между её фрагментами; она искажает, например, относительные энергии конформеров в малых базисах.</div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Когда ошибка базиса убрана, что остаётся от притяжения молекул и почему его не видит Хартри–Фок?</span><a class="nqA" href="dispersion.html" data-goto="disp">Межмолекулярные взаимодействия →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>MP2, cc-pVDZ: насколько велика BSSE в энергии связи димера воды?</span></p>
+<p class="olab">BSSE, ккал/моль</p><div class="opts" role="group"><button type="button" class="opt">1,7</button><button type="button" class="opt" data-ok="1">3,5</button><button type="button" class="opt">0,48</button><button type="button" class="opt">7,3</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Около 3,5 ккал/моль: −7,34 без поправки против −3,85 с поправкой. Это больше половины самой энергии связи.</div></div>
+<div class="tq"><p class="qt"><span>Та же величина в aug-cc-pVTZ?</span></p>
+<p class="olab">BSSE, ккал/моль</p><div class="opts" role="group"><button type="button" class="opt">0,05</button><button type="button" class="opt" data-ok="1">0,48</button><button type="button" class="opt">1,6</button><button type="button" class="opt">3,5</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Около 0,5 ккал/моль (−5,03 против −4,55): с ростом базиса мономеру всё меньше нужно «занимать» функции соседа.</div></div>
+<div class="tq"><p class="qt"><span>Сравните BSSE для HF и MP2 в cc-pVDZ. У какого метода она больше и почему?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">У MP2: корреляции нужно больше функций, и чужие функции понижают её сильнее</button><button type="button" class="opt">У HF: в нём нет корреляции</button><button type="button" class="opt">Одинакова</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>У MP2: 3,5 ккал/моль против 2,1 у HF. Корреляционная энергия требует много функций высокого углового момента, и чужие функции понижают её сильнее, чем энергию Хартри–Фока.</div></div>
+<div class="tq"><p class="qt"><span>Кривая cc-pVDZ: где минимум без поправки и с поправкой?</span></p>
+<p class="olab">R без поправки, Å</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">2,91</button><button type="button" class="opt">3,06</button><button type="button" class="opt">2,70</button><button type="button" class="opt">3,30</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Без поправки — около 2,91 Å и −7,3 ккал/моль; с поправкой — около 3,06 Å и −4,1 ккал/моль. Ложное притяжение углубляет яму и сдвигает её к меньшим расстояниям.</div></div>
+<div class="tq"><p class="qt"><span>Сколько расчётов нужно для энергии связи с поправкой противовеса и в каком базисе каждый?</span></p>
+<p class="olab">Число расчётов</p><div class="opts" role="group"><button type="button" class="opt">2</button><button type="button" class="opt">5</button><button type="button" class="opt" data-ok="1">3</button><button type="button" class="opt">4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Три, все в базисе димера: сам димер и каждый мономер с атомами-призраками партнёра. Если мономеры в комплексе деформированы, отдельно считают ещё энергию деформации — мономеры в своей и в равновесной геометрии.</div></div>
+</div></details></section>
+<script src="js/bsse.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="bsse";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/bsse.js"></script>
+
+</body>
+</html>

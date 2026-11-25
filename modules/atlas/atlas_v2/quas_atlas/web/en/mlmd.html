@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Molecular dynamics and machine-learning potentials</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>Molecular dynamics and machine-learning potentials</h1>
+<p class="lead">Molecular dynamics is hundreds of thousands of steps, and each needs the forces on all atoms. With DFT such a trajectory costs months, with a learned potential minutes. Here you see how to choose the time step, where a learned model can be trusted and what a trajectory is able to see at all.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>A machine-learning potential: the energy is a sum of atomic contributions, each depending on the surroundings within a cutoff sphere; the forces are exact derivatives. The cost grows linearly with the number of atoms, not as N³ like DFT.</li><li>A model interpolates: where there were no training structures it answers anything and will not say so itself. A committee of models (or a Gaussian process) gives a spread; where it is three times the usual, the structure is computed with DFT and the model retrained — active learning.</li><li>Velocity Verlet is reversible in time: the error of the energy does not pile up but oscillates and grows as Δt². The step is a tenth to a twentieth of the period of the fastest vibration: 0.5 fs with hydrogen, 1–2 fs for silicon.</li><li>The instantaneous temperature fluctuates by √(2/(3N)): ±10 % for 64 atoms. It is a property of a small system, not an error of the thermostat (Langevin, Nosé–Hoover).</li><li>Dynamics sees what happens in picoseconds to nanoseconds: vibrations, diffusion, melting. A reaction with a barrier of 80 kJ/mol — once in ten seconds — cannot be seen with any model: it needs a transition state and the Eyring theory.</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">The Verlet integrator and the time step</h2>
+  <div class="crow"><span class="l">The fastest vibration</span><span class="grp" id="sysG" role="group" aria-label="The fastest vibration"></span></div>
+  <div class="crow"><span class="l">Integrator</span><span class="grp" id="intG" role="group" aria-label="Integrator"></span></div>
+  <div class="crow"><span class="l">Step Δt, fs</span><input type="range" id="dt" min="0.05" max="6" step="0.05" value="0.5" aria-label="Δt"><span class="val" id="dtv"></span></div>
+  <div class="crow"><span class="l">Energy of the vibration, eV</span><input type="range" id="e0" min="0.02" max="1.5" step="0.01" value="0.3" aria-label="E"><span class="val" id="e0v"></span></div>
+  <svg id="vchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Deviation of the total energy from the initial one"></svg>
+  <div class="cards" id="vcards"></div>
+  <p class="status" id="vNote"></p>
+  <p class="hint">A Morse bond with the frequency of O–H 3700 cm⁻¹, O–D 2700 cm⁻¹ or the optical phonon of silicon 15.5 THz; 200 fs without a thermostat. Velocity Verlet: v<sub>½</sub> = v + Δt·F/(2m), r′ = r + Δt·v<sub>½</sub>, v′ = v<sub>½</sub> + Δt·F(r′)/(2m). Euler: r′ = r + Δt·v, v′ = v + Δt·F/m.</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">A committee of models: where a learned potential can be trusted</h2>
+  <div class="crow"><span class="l">Training points</span><input type="range" id="nn" min="4" max="40" step="1" value="16" aria-label="n"><span class="val" id="nnv"></span></div>
+  <div class="crow"><span class="l">Training from 2.15 Å up to, Å</span><input type="range" id="hi" min="2.4" max="3.5" step="0.05" value="2.9" aria-label="limit"><span class="val" id="hiv"></span></div>
+  <svg id="cchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Bond energy: «DFT», the models and their spread"></svg>
+  <div class="legend" id="cleg"></div>
+  <div class="cards" id="ccards"></div>
+  <p class="status" id="cNote"></p>
+  <p class="hint">«DFT» is a Morse curve of an Si–Si bond; five kernel-regression models with a Gaussian kernel, each on its own random 70 % of the points. The spread σ² = (1/M)Σ(E<sub>m</sub> − Ē)². Shaded where σ is more than three σ of the training range.</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">What a trajectory will see: fluctuations and rare events</h2>
+  <div class="crow"><span class="l">Atoms in the cell</span><input type="range" id="na" min="0.9" max="5" step="0.001" value="1.806" aria-label="N"><span class="val" id="nav"></span></div>
+  <div class="crow"><span class="l">Temperature, K</span><input type="range" id="tk" min="100" max="2500" step="10" value="300" aria-label="T"><span class="val" id="tkv"></span></div>
+  <div class="crow"><span class="l">Barrier ΔG, eV</span><input type="range" id="bb" min="0.1" max="2" step="0.01" value="0.8" aria-label="ΔG"><span class="val" id="bbv"></span></div>
+  <div class="crow"><span class="l">Length of the trajectory</span><input type="range" id="ll" min="0" max="6" step="0.1" value="2" aria-label="length"><span class="val" id="llv"></span></div>
+  <svg id="echart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Mean time to an event against the barrier"></svg>
+  <div class="legend" id="eleg"></div>
+  <div class="cards" id="ecards"></div>
+  <p class="status" id="eNote"></p>
+  <p class="hint">δT/T = √(2/(3N)); k = (kT/h)·e<sup>−ΔG/kT</sup>, the waiting time is 1/k. 1 eV = 96.5 kJ/mol. The cost: a step of 1 fs, a learned potential 30 ms a step, DFT 3 minutes a step (64 atoms of silicon on a laptop; the orders of magnitude of lecture 16).</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">A model can learn not only forces for dynamics but also the correction to a cheap method and properties from a structure. How is it tested honestly?</span><a class="nqA" href="mlqc.html" data-goto="mlqc">Machine learning in quantum chemistry →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>An O–H bond, 3700 cm⁻¹: the period of the vibration is about 9 fs. Which time step to take?</span></p>
+<p class="olab">Δt, fs</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">0.5</button><button type="button" class="opt">2</button><button type="button" class="opt">5</button><button type="button" class="opt">9</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>0.5 fs — about a twentieth of the period. At 2 fs the energy saws visibly, at 4–5 fs the integration blows up. For silicon without hydrogen (period 64 fs) 1–2 fs is enough.</div></div>
+<div class="tq"><p class="qt"><span>The step of velocity Verlet was doubled. How does the oscillation of the total energy change?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">It grows about fourfold</button><button type="button" class="opt">It doubles</button><button type="button" class="opt">The energy starts to grow without end</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Fourfold: the error ∝ Δt². But it does not pile up — the scheme is reversible in time. The energy grows without end with the Euler method.</div></div>
+<div class="tq"><p class="qt"><span>64 atoms at 300 K. By how much does the instantaneous temperature fluctuate?</span></p>
+<p class="olab">δT</p><div class="opts" role="group"><button type="button" class="opt">±3 K</button><button type="button" class="opt" data-ok="1">±31 K</button><button type="button" class="opt">±100 K</button><button type="button" class="opt">0: the thermostat holds it</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>±31 K: δT/T = √(2/(3·64)) = 0.10. It is a property of a small system: a sum of 192 squares of velocities. A cell of 6400 atoms would give ±3 K.</div></div>
+<div class="tq"><p class="qt"><span>A model was trained on a crystal at 300 K, and the dynamics was run under pressure. The spread of the committee grew tens of times. What to do?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Compute these structures with DFT and retrain the model</button><button type="button" class="opt">Nothing: the mean model is accurate anyway</button><button type="button" class="opt">Make the time step smaller</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Compute with DFT and retrain: outside its training range the model invents forces, and the spread of the committee grows with the error. This is active learning: DFT computes only what the model does not know.</div></div>
+</div></details></section>
+<script src="js/mlmd.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="mlmd";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/mlmd.js"></script>
+
+</body>
+</html>

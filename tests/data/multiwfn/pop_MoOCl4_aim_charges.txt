@@ -1,0 +1,143 @@
+answers: 7 | 14 | 2 | n | 0 | q
+
+ WARNING: "settings.ini" was found neither in current folder nor in the path defined by "Multiwfnpath" environment variable. Now using default settings instead, and all your modifications (if any) on settings.ini will not take effect!
+
+[95m Multiwfn -- A Multifunctional Wavefunction Analyzer
+[0m[32m Version 2026.7.15 (release date is the same as version name)
+[0m Developer: Tian Lu (Beijing Kein Research Center for Natural Sciences)
+ Multiwfn official website: http://sobereva.com/multiwfn
+ Multiwfn English forum: http://sobereva.com/wfnbbs
+ Multiwfn Chinese forum: http://bbs.keinsci.com/wfn
+ ( Number of parallel threads:   4  Current date: 2026-11-02  Time: 13:46:19 )
+
+ Both following papers ***MUST BE CITED IN MAIN TEXT*** if Multiwfn is used:
+[36m  Tian Lu, Feiwu Chen, J. Comput. Chem., 33, 580 (2012) DOI: 10.1002/jcc.22885
+  Tian Lu, J. Chem. Phys., 161, 082503 (2024) DOI: 10.1063/5.0216272
+[0m See "How to cite Multiwfn.pdf" in Multiwfn binary package for more information
+
+ Warning: You should set OMP_STACKSIZE environment variable as mentioned in Section 2.1.2 of Multiwfn manual!
+
+ Please wait...
+ Loading various information of the wavefunction
+ The highest angular moment basis functions is D
+ Loading basis set definition...
+ Loading orbitals...
+ Converting basis function information to GTF information...
+ Back converting basis function information from Cartesian to spherical type...
+ Generating density matrix based on SCF orbitals...
+ Generating overlap matrix...
+
+ Total/Alpha/Beta electrons:     52.0000     26.0000     26.0000
+ Net charge:    -2.00000      Expected multiplicity:    1
+ Atoms:      6,  Basis functions:     43,  GTFs:    125
+ Total energy:    -202.713633575053 Hartree,   Virial ratio:  2.67788281
+ This is a restricted single-determinant wavefunction
+ Orbitals from 1 to    26 are occupied
+ Title line of this file: Mo4OCl4 restricted single point
+ Loading electron density functions (EDF) information from built-in EDF library
+ (The library is available at https://github.com/zorkzou/Molden2AIM)
+ Mo(    1)      Core electrons: 28     EDF primitive GTFs: 32
+ Cl(    3)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(    4)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(    5)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(    6)      Core electrons: 10     EDF primitive GTFs: 25
+ The number of total inner-core electrons:    68
+ The number of total EDF primitive GTFs:   132
+ Loading EDF library finished!
+
+ Loaded input.fchk successfully!
+
+ Formula: O1 Cl4 Mo1      Total atoms:       6
+ Molecule weight:       253.77094 Da
+ Point group: C4v
+
+ "q": Exit program gracefully          "r": Load a new file
+                    ************ Main function menu ************
+ 0 Show molecular structure and view orbitals
+ 1 Output all properties at a point       2 Topology analysis
+ 3 Output and plot specific property in a line
+ 4 Output and plot specific property in a plane
+ 5 Output and plot specific property within a spatial region (calc. grid data)
+ 6 Check & modify wavefunction
+ 7 Population analysis and calculation of atomic charges
+ 8 Orbital composition analysis           9 Bond order analysis
+ 10 Plot total DOS, PDOS, OPDOS, local DOS, COHP and photoelectron spectrum
+ 11 Plot IR/Raman/UV-Vis/ECD/VCD/ROA/NMR spectrum
+ 12 Quantitative analysis of molecular surface
+ 13 Process grid data (No grid data is presented currently)
+ 14 Adaptive natural density partitioning (AdNDP) analysis
+ 15 Fuzzy atomic space analysis
+ 16 Charge decomposition analysis (CDA) and plot orbital interaction diagram
+ 17 Basin analysis                       18 Electron excitation analysis
+ 19 Orbital localization analysis        20 Visual study of weak interaction
+ 21 Energy decomposition analysis        22 Conceptual DFT (CDFT) analysis
+ 23 ETS-NOCV analysis                    24 (Hyper)polarizability analysis
+ 25 Electron delocalization and aromaticity analyses
+ 26 Structure and geometry related analyses
+ 100 Other functions (Part 1)            200 Other functions (Part 2)
+ 300 Other functions (Part 3)
+ NOTE: There is a review comprehensively introducing various atomic charges:
+ Tian Lu, Qinxue Chen, Partial Charges, In Exploring Chemical Concepts Through Theory and Computation. WILEY-VCH GmbH: Weinheim (2024); pp. 161-187. DOI: 10.1002/9783527843435.ch6
+
+      ============== Population analysis and atomic charges ==============
+ -2 Calculate interaction energy between fragments based on atomic charges
+ -1 Define fragment
+ 0 Return
+ 1 Hirshfeld atomic charge
+ 2 Voronoi deformation density (VDD) atom population
+ 5 Mulliken atom & basis function population analysis
+ 6 Lowdin atom & basis function population analysis
+ 7 Modified Mulliken atom population defined by Ros & Schuit (SCPA)
+ 8 Modified Mulliken atom population defined by Stout & Politzer
+ 9 Modified Mulliken atom population defined by Bickelhaupt
+ 10 Becke atomic charge with atomic dipole moment correction
+ 11 Atomic dipole corrected Hirshfeld atomic charge (ADCH) (recommended)
+ 12 CHELPG ESP fitting atomic charge
+ 13 Merz-Kollmann (MK) ESP fitting atomic charge
+ 14 AIM atomic charge
+ 15 Hirshfeld-I atomic charge
+ 16 CM5 atomic charge    -16 Generate 1.2*CM5 atomic charge
+ 17 Electronegativity Equalization Method (EEM) atomic charge
+ 18 Restrained ElectroStatic Potential (RESP) atomic charge
+ 19 Gasteiger (PEOE) charge
+ 20 Minimal Basis Iterative Stockholder (MBIS) charge
+ NOTE: AIM charges cannot be calculated in present module but can be calculated in basin analysis module, please check the example given in Section 4.17.1 of the manual on how to do this
+ Press ENTER button to continue
+
+      ============== Population analysis and atomic charges ==============
+ -2 Calculate interaction energy between fragments based on atomic charges
+ -1 Define fragment
+ 0 Return
+ 1 Hirshfeld atomic charge
+ 2 Voronoi deformation density (VDD) atom population
+ 5 Mulliken atom & basis function population analysis
+ 6 Lowdin atom & basis function population analysis
+ 7 Modified Mulliken atom population defined by Ros & Schuit (SCPA)
+ 8 Modified Mulliken atom population defined by Stout & Politzer
+ 9 Modified Mulliken atom population defined by Bickelhaupt
+ 10 Becke atomic charge with atomic dipole moment correction
+ 11 Atomic dipole corrected Hirshfeld atomic charge (ADCH) (recommended)
+ 12 CHELPG ESP fitting atomic charge
+ 13 Merz-Kollmann (MK) ESP fitting atomic charge
+ 14 AIM atomic charge
+ 15 Hirshfeld-I atomic charge
+ 16 CM5 atomic charge    -16 Generate 1.2*CM5 atomic charge
+ 17 Electronegativity Equalization Method (EEM) atomic charge
+ 18 Restrained ElectroStatic Potential (RESP) atomic charge
+ 19 Gasteiger (PEOE) charge
+ 20 Minimal Basis Iterative Stockholder (MBIS) charge
+
+--- stderr ---
+At line 65 of file /private/tmp/s-bdSdxxIT/multiwfn-20261028-61253-2d0vhf/population.f90 (unit = 5, file = 'stdin')
+Fortran runtime error: Bad integer for item 1 in list input
+
+Error termination. Backtrace:
+#0  0x131f73323
+#1  0x131f73ef7
+#2  0x131f747cb
+#3  0x132087b23
+#4  0x13208a8ab
+#5  0x13208b3a7
+#6  0x1054e348b
+#7  0x104d97fb7
+#8  0x1055f59ff

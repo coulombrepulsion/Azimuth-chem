@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Тяжёлые элементы: релятивизм и псевдопотенциалы</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-rel-g.webp"><!--pose:end-->
+<h1>Тяжёлые элементы: релятивизм и псевдопотенциалы</h1>
+<p class="lead">Уравнение Шрёдингера не знает теории относительности, и для лёгких атомов это незаметно. Но внутренние электроны тяжёлого атома движутся со скоростью, сравнимой со скоростью света: их масса растёт, s-оболочки сжимаются, и это меняет химию — цвет золота, жидкую ртуть, работу свинцового аккумулятора. В расчёте это учитывают двумя путями: псевдопотенциалом вместо внутренних электронов или релятивистским гамильтонианом.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Средняя скорость 1s-электрона водородоподобного атома — Z атомных единиц, то есть v/c = Z/137: у золота 0,58 скорости света.</li><li>Масса растёт в γ = 1/√(1 − v²/c²) раз, и s-орбитали сжимаются: 1s золота меньше на 18 %, валентная 6s тоже сжимается и стабилизируется.</li><li>Псевдопотенциал (ECP) заменяет внутренние электроны потенциалом, подогнанным к релятивистским расчётам атома: в def2 это 28 электронов у Rb–Xe, 46 у Cs–La и 60 у Hf–Rn.</li><li>Без ECP релятивизм вводят гамильтонианом (DKH2, ZORA, X2C) — с особыми всеэлектронными базисами, например DKH-def2 или ZORA-def2 в ORCA.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> водородоподобный 1s-электрон, точечное ядро</summary><dl><dt>Что вычисляется</dt><dd>Скорость, рост массы, сжатие радиуса и уровень Дирака для одного 1s-электрона в поле ядра Z; размер остова псевдопотенциалов def2.</dd><dt>Какие приближения приняты</dt><dd>Один электрон без экранирования другими электронами; точечное ядро; радиус ∝ 1/m (боровская оценка); валентные оболочки многоэлектронного атома описываются только качественно.</dd><dt>Какой вывод можно сделать</dt><dd>Почему релятивизм важен для тяжёлых элементов и что делает псевдопотенциал — да; величины эффектов для валентных оболочек и химических свойств дают только расчёты с ECP или релятивистским гамильтонианом.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Электрон 1s тяжёлого атома</h2>
+  <div class="crow"><span class="l">Элемент</span><span class="grp" id="zG" role="group" aria-label="Элемент"></span></div>
+  <div class="crow"><span class="l">Заряд ядра Z</span><input type="range" id="Z" min="1" max="118" step="1" value="79" aria-label="Заряд ядра"><span class="val" id="Zv"></span></div>
+  <div class="cards" id="acards"></div>
+  <p class="status" id="aNote"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Сжатие по таблице Менделеева</h2>
+  <svg id="rchart" class="ch" viewBox="0 0 960 280" role="img" aria-label="Сжатие 1s от заряда ядра"></svg>
+  <p class="hint">r(реляв.)/r(нерел.) = √(1 − (Z/137)²): до Z ≈ 30 эффект меньше 5 %, в шестом периоде — от 8 % (Cs) до 22 % (Rn). Энергия 1s по Дираку: E = c²(√(1 − (Z/c)²) − 1), по Шрёдингеру −Z²/2 E<sub>h</sub>.</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Псевдопотенциалы def2</h2>
+  <div class="crow"><span class="l">Элемент</span><span class="grp" id="eG" role="group" aria-label="Элемент"></span></div>
+  <div class="cards" id="ecards"></div>
+  <p class="status" id="eNote"></p>
+  <table class="tbl"><tr><th>Подход</th><th>Что делает</th><th>Как задать (ORCA)</th></tr>
+  <tr><td>ECP + def2</td><td>остов — потенциал, валентные электроны — явно; скалярный релятивизм уже учтён</td><td><span class="code">! B3LYP D3BJ def2-TZVP</span></td></tr>
+  <tr><td>DKH2</td><td>все электроны, релятивистский гамильтониан Дугласа–Кролла–Хесса второго порядка</td><td><span class="code">! DKH DKH-def2-TZVP SARC/J</span></td></tr>
+  <tr><td>ZORA</td><td>все электроны, приближение нулевого порядка (регулярное)</td><td><span class="code">! ZORA ZORA-def2-TZVP SARC/J</span></td></tr>
+  <tr><td>X2C</td><td>все электроны, точное двухкомпонентное преобразование</td><td><span class="code">! X2C x2c-TZVPall</span></td></tr></table>
+  <p class="hint">Ключевые слова — по руководству ORCA 6; в Gaussian псевдопотенциал def2 подставляется вместе с базисом Def2TZVP, DKH2 — ключом Int=DKH. Для 4d–5d-металлов и галогенов I, At ECP обычно достаточно; спин-орбитальные эффекты (например, у тяжёлых p-элементов) требуют двухкомпонентных расчётов. Базисы DKH-def2 и ZORA-def2 есть только для H–Kr: тяжёлому атому базис задают отдельно, например для золота — <span class="code">%basis NewGTO Au "SARC-ZORA-TZVP" end end</span> (с DKH — SARC-DKH-TZVP); x2c-TZVPall покрывает H–Rn.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Псевдопотенциал идёт вместе с базисом валентных электронов. Как устроены базисы и сколько функций нужно?</span><a class="nqA" href="basis.html" data-goto="basis">Базисные наборы →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Выберите золото (Z = 79). С какой долей скорости света движется 1s-электрон?</span></p>
+<p class="olab">v/c</p><div class="opts" role="group"><button type="button" class="opt">0,08</button><button type="button" class="opt">0,25</button><button type="button" class="opt" data-ok="1">0,58</button><button type="button" class="opt">0,99</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>0,58: v/c = Z/137 = 79/137. Масса при этом больше в γ = 1,22 раза.</div></div>
+<div class="tq"><p class="qt"><span>На сколько процентов сжат радиус 1s у золота по сравнению с нерелятивистским?</span></p>
+<p class="olab">Сжатие, %</p><div class="opts" role="group"><button type="button" class="opt">2</button><button type="button" class="opt">8</button><button type="button" class="opt" data-ok="1">18</button><button type="button" class="opt">42</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>На 18 %: √(1 − 0,58²) = 0,82. Сжимается и валентная 6s-оболочка — она ближе к ядру и прочнее держит электрон, отсюда благородство золота.</div></div>
+<div class="tq"><p class="qt"><span>Золото в базисе def2: сколько электронов в псевдопотенциале и сколько считается явно?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">28 и 51</button><button type="button" class="opt">46 и 33</button><button type="button" class="opt" data-ok="1">60 и 19</button><button type="button" class="opt">0 и 79</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>60 в остове (1s–4f) и 19 явно (5s, 5p, 5d, 6s): псевдопотенциал Штутгарт–Кёльн для Hf–Rn.</div></div>
+<div class="tq"><p class="qt"><span>Бром (Z = 35) в базисе def2-TZVP — с псевдопотенциалом или без?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">С ECP на 10 электронов</button><button type="button" class="opt">С ECP на 28 электронов</button><button type="button" class="opt" data-ok="1">Без ECP, все электроны</button><button type="button" class="opt">Нужен DKH2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Без ECP: в def2 элементы до Kr всеэлектронные. Псевдопотенциалы начинаются с рубидия (28 электронов в остове).</div></div>
+</div></details></section>
+<script src="js/relativity.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="rel";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/relativity.js"></script>
+
+</body>
+</html>

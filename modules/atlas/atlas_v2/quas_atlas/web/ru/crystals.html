@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Кристаллы: решётка и ячейка</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>Кристаллы: решётка и ячейка</h1>
+<p class="lead">Кристалл — это одна и та же ячейка, повторённая в трёх направлениях. Шесть чисел — длины рёбер a, b, c и углы α, β, γ — вместе с содержимым ячейки задают всё: плотность, расстояния между плоскостями атомов и углы, под которыми кристалл отражает рентгеновские лучи. С ячейки начинается и расчёт твёрдого тела, и работа Компаса с файлами CIF.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Объём ячейки V = abc·√(1 − cos²α − cos²β − cos²γ + 2cosα·cosβ·cosγ); для куба это a³, для гексагональной — a²c·√3/2.</li><li>Плотность ρ = Z·M/(N_A·V): Z формульных единиц в ячейке; по ней проверяют расшифрованную структуру.</li><li>Плоскости (hkl) отстоят на d (для куба d = a/√(h² + k² + l²)) и отражают лучи под углом Брэгга: λ = 2d·sin θ.</li><li>Центрированные решётки гасят целые серии отражений: у I остаются h + k + l чётные, у F — h, k, l одной чётности; по погасаниям определяют тип решётки.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> идеальная жёсткая решётка, положения линий без интенсивностей</summary><dl><dt>Что вычисляется</dt><dd>Объём и плотность по параметрам ячейки; межплоскостные расстояния, углы Брэгга и кратности разрешённых отражений; число атомов, координация и заполнение объёма кубических упаковок.</dd><dt>Какие приближения приняты</dt><dd>Решётка без дефектов и тепловых колебаний; интенсивности не считаются (высота линии — кратность); погасания — только от центрировки (и базиса алмаза, hcp), без винтовых осей и плоскостей скольжения других групп.</dd><dt>Какой вывод можно сделать</dt><dd>Как ячейка задаёт плотность и положения линий дифрактограммы и как по погасаниям узнать решётку — да; полный расчёт интенсивностей требует структурного фактора, а энергий — периодического квантово-химического расчёта.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Ячейка, объём и плотность</h2>
+  <div class="crow"><span class="l">Вещество</span><span class="grp" id="pG" role="group" aria-label="Вещество"></span></div>
+  <div class="cin">
+    <label>a, Å<input id="ca" inputmode="decimal"></label><label>b, Å<input id="cb" inputmode="decimal"></label><label>c, Å<input id="cc" inputmode="decimal"></label>
+    <label>α, °<input id="cal" inputmode="decimal"></label><label>β, °<input id="cbe" inputmode="decimal"></label><label>γ, °<input id="cga" inputmode="decimal"></label>
+    <label>Z, формульных единиц<input id="cZ" inputmode="numeric"></label><label>M, г/моль<input id="cM" inputmode="decimal"></label>
+  </div>
+  <div class="cards" id="ccards"></div>
+  <p class="hint" id="cNote"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Плоскости и порошковая дифрактограмма</h2>
+  <div class="crow"><span class="l">Тип решётки</span><select id="cent" class="chip" aria-label="Тип решётки"><option value="P">примитивная P</option><option value="I">объёмноцентрированная I</option><option value="F">гранецентрированная F</option><option value="D">алмаз</option><option value="H">гексагональная плотнейшая (hcp)</option></select></div>
+  <div class="crow"><span class="l">Излучение</span><span class="grp" id="lG" role="group" aria-label="Излучение"></span></div>
+  <svg id="xchart" class="ch" viewBox="0 0 960 240" role="img" aria-label="Порошковая дифрактограмма"></svg>
+  <div class="tablewrap"><table class="tbl" id="ptab"></table></div>
+  <p class="hint" id="pNote"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Кубические упаковки</h2>
+  <div class="crow"><span class="l">Упаковка</span><span class="grp" id="kG" role="group" aria-label="Упаковка"></span></div>
+  <div class="two"><svg id="kcube" viewBox="0 0 300 260" role="img" aria-label="Кубическая ячейка"></svg><div><div class="cards" id="kcards"></div><p class="status" id="kNote" style="margin-top:10px"></p></div></div>
+  <p class="hint">Атомы в вершинах принадлежат ячейке на 1/8, на гранях — на 1/2, внутри — целиком: 8·1/8 = 1 (sc), +1 (bcc), +6·1/2 (fcc), +4 внутри (алмаз). Кристалл из CIF можно открыть в Компасе: «Файл → Открыть…» — раздел «Компас · Кристалл».</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Ячейка повторяется переносами, а внутри неё действуют повороты и отражения. Как описывают симметрию молекул?</span><a class="nqA" href="symmetry.html" data-goto="sym">Точечные группы →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Выберите NaCl: a = 5,640 Å, Z = 4. Какова плотность?</span></p>
+<p class="olab">ρ, г/см³</p><div class="opts" role="group"><button type="button" class="opt">1,08</button><button type="button" class="opt" data-ok="1">2,16</button><button type="button" class="opt">4,33</button><button type="button" class="opt">8,65</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>2,16 г/см³: V = 5,640³ = 179,4 Å³, ρ = 4·58,44/(6,022·10²³·179,4·10⁻²⁴) = 2,16 — как в справочнике (2,165).</div></div>
+<div class="tq"><p class="qt"><span>Медь (ГЦК, a = 3,615 Å), излучение Cu Kα. Где первая линия дифрактограммы?</span></p>
+<p class="olab">2θ, °</p><div class="opts" role="group"><button type="button" class="opt">25,0 (100)</button><button type="button" class="opt">35,1 (110)</button><button type="button" class="opt" data-ok="1">43,3 (111)</button><button type="button" class="opt">50,4 (200)</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>43,3° — отражение (111): в ГЦК (100) и (110) погашены (индексы разной чётности), первая разрешённая плоскость — (111), d = 3,615/√3 = 2,087 Å.</div></div>
+<div class="tq"><p class="qt"><span>Кремний (решётка алмаза): есть ли на дифрактограмме линия (200)?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Есть, самая сильная</button><button type="button" class="opt">Есть, слабая</button><button type="button" class="opt" data-ok="1">Нет — погашена</button><button type="button" class="opt">Только с Mo Kα</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Нет: у алмаза при чётных h, k, l нужно ещё h + k + l = 4n, а у (200) сумма 2. Поэтому после (111) сразу идёт (220).</div></div>
+<div class="tq"><p class="qt"><span>Какую долю объёма занимают шары в гранецентрированной кубической упаковке?</span></p>
+<p class="olab">Заполнение</p><div class="opts" role="group"><button type="button" class="opt">34 %</button><button type="button" class="opt">52 %</button><button type="button" class="opt">68 %</button><button type="button" class="opt" data-ok="1">74 %</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>74 % = π/(3√2): это плотнейшая упаковка, как и гексагональная. ОЦК — 68 %, простая — 52 %, алмаз — 34 %.</div></div>
+</div></details></section>
+<script src="js/crystals.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="cryst";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/crystals.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+phonons on a grid of q
+&INPUTPH
+  prefix = 'azimuth'
+  outdir = './out'
+  fildyn = 'azimuth.dyn'
+  tr2_ph = 1.0d-14
+  epsil = .true.
+  ldisp = .true.
+  nq1 = 4
+  nq2 = 4
+  nq3 = 4
+/

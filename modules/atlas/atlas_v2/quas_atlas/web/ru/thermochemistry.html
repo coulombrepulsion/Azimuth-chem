@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,ethane">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Термохимия из частот</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/thermo.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-thermo-g.webp"><!--pose:end-->
+<h1>Термохимия из частот</h1>
+<p class="lead">Квантово-химический расчёт даёт электронную энергию неподвижных ядер. Чтобы получить энтальпию, энтропию и энергию Гиббса при температуре опыта, к ней добавляют поправки: нулевые колебания и тепловое движение молекулы — поступательное, вращательное и колебательное. Здесь эти поправки считаются по тем же формулам, что в программах, для готовых молекул или по вашим частотам.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Электронная энергия относится к неподвижным ядрам; энтальпию и энергию Гиббса получают, добавляя нулевые колебания и тепловое движение молекулы.</li><li>Программы считают эти поправки по модели идеального газа: поступательное движение, жёсткий ротатор, гармонический осциллятор.</li><li>Основная часть энтропии газа — поступательная; колебания дают заметный вклад только от мягких мод с частотами порядка kT/hc и ниже.</li><li>Нулевые колебания обычно намного больше тепловой поправки, а энтропия зависит от стандартного состояния и числа симметрии.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> идеальный газ, жёсткий ротатор, гармонический осциллятор</summary><dl><dt>Что вычисляется</dt><dd>Нулевые колебания, энтальпия, энтропия, теплоёмкость и поправка к энергии Гиббса одной молекулы в газовой фазе — по массе, вращательным постоянным и частотам.</dd><dt>Какие приближения приняты</dt><dd>Идеальный газ; классический жёсткий ротатор (без центробежного растяжения и без разделения орто- и пара-форм); гармонические колебания без ангармонизма и без внутренних вращений; одно электронное состояние без низколежащих возбуждённых. Вращение H₂ (вращательная температура около 88 K, не мала по сравнению с T) суммируется квантово, с весами орто- и параводорода (3 : 1); энтропия ядерных спинов не учитывается, как в таблицах.</dd><dt>Какой вывод можно сделать</dt><dd>Для небольших жёстких молекул в газе — энтропия с точностью до десятых долей Дж/(моль·К) при экспериментальных частотах. Для мягких мод, внутренних вращений и растворов — только оценка; точность итоговой G определяют прежде всего электронная энергия и частоты из расчёта.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Молекула и условия</h2>
+  <div class="crow"><span class="l">Молекула</span><span class="grp" id="molG" role="group" aria-label="Молекула"></span></div>
+  <div class="crow"><span class="l">Температура T</span><input type="range" id="T" min="50" max="2000" step="1" value="298" aria-label="Температура"><span class="val" id="Tv"></span><button type="button" class="chip" id="bT298">298,15 K</button></div>
+  <div class="crow"><span class="l">Давление (стандартное состояние)</span><span class="grp" id="pG" role="group" aria-label="Давление"></span></div>
+  <p class="hint" id="molInfo"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Поправки к электронной энергии</h2>
+  <div class="cards" id="cards"></div>
+  <div class="tablewrap" id="tab"></div>
+  <div class="ref" id="refBox"></div>
+  <p class="hint">Энергия Гиббса молекулы: G = E<sub>эл</sub> + G<sub>корр</sub>, энтальпия: H = E<sub>эл</sub> + H<sub>корр</sub>. В выходных файлах программ эти поправки называются «Thermal correction to Enthalpy / Gibbs Free Energy» (Gaussian) или «Thermal Enthalpy correction» и «G-E(el)» (ORCA). Строки ORCA «Total Enthalpy» и «Final Gibbs free energy» — это уже полные H и G, в них E<sub>эл</sub> входит: прибавлять её второй раз не нужно.</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Энтропия и теплоёмкость от температуры</h2>
+  <div class="crow"><span class="l">Показать</span><span class="grp" id="qG" role="group" aria-label="Величина"></span></div>
+  <svg id="chart" viewBox="0 0 960 330" role="img" aria-label="Зависимость от температуры"></svg>
+  <div class="legend" id="leg"></div>
+  <p class="hint" id="chartNote"></p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">Своя молекула: частоты из расчёта</h2>
+  <p class="hint">Вставьте данные из выходного файла: молярную массу, вращательные постоянные (одну для линейной молекулы, три для нелинейной), число симметрии, мультиплетность и частоты. Мнимые частоты вводите со знаком минус — они будут исключены, как для переходного состояния.</p>
+  <div class="cin">
+    <label>Масса, а. е. м.<input id="cM" inputmode="decimal" value="18.015"></label>
+    <label>Вращательные постоянные<input id="cB" value="27.376 14.586 9.516"></label>
+    <label>Единицы постоянных<select id="cBu"><option value="cm">см⁻¹</option><option value="GHz">ГГц</option><option value="MHz">МГц</option></select></label>
+    <label>Число симметрии σ<input id="cSig" inputmode="numeric" value="2"></label>
+    <label>Мультиплетность 2S + 1<input id="cG" inputmode="numeric" value="1"></label>
+    <label>Масштабный множитель частот<input id="cScale" inputmode="decimal" value="1"></label>
+    <label class="wide">Частоты, см⁻¹ (через пробел, запятую или с новой строки)<textarea id="cNu">3657 1595 3756</textarea></label>
+    <label class="chk wide"><input type="checkbox" id="cLow"> Частоты ниже 100 см⁻¹ считать равными 100 см⁻¹ (так делают для мягких мод, где гармоническое приближение завышает энтропию)</label>
+  </div>
+  <div class="row"><button type="button" class="btn" id="bFill">Взять данные выбранной молекулы</button><button type="button" class="btn primary" id="bCalc">Рассчитать</button></div>
+  <p class="status" id="cMsg" role="status"></p>
+</section>
+<section class="panel" aria-labelledby="h5s">
+  <h2 id="h5s">Формулы</h2>
+  <div class="eq">
+    <div class="eqb"><div class="t">поступательное движение (Сакур–Тетроде)</div>S<sub>пост</sub> = R [ln((2πmkT/h²)<sup>3/2</sup>·kT/p) + 5/2], &nbsp; H<sub>пост</sub> = 5/2 RT (с учётом pV = RT)</div>
+    <div class="eqb"><div class="t">вращение (жёсткий ротатор, высокие T)</div>линейная: q<sub>вр</sub> = T/(σΘ), S = R(ln q + 1); нелинейная: q<sub>вр</sub> = √π/σ·(T³/Θ<sub>A</sub>Θ<sub>B</sub>Θ<sub>C</sub>)<sup>1/2</sup>, S = R(ln q + 3/2)</div>
+    <div class="eqb"><div class="t">колебания (гармонический осциллятор), u = hcν/kT</div>ZPE = Σ ½hcν; &nbsp; S = R Σ [u/(e<sup>u</sup> − 1) − ln(1 − e<sup>−u</sup>)]</div>
+    <div class="eqb"><div class="t">электронный вклад и итог</div>S<sub>эл</sub> = R ln(2S + 1); &nbsp; G<sub>корр</sub> = ZPE + H<sub>тепл</sub> − TS</div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Поправки к энергиям участников готовы. Как из них получить константу равновесия реакции?</span><a class="nqA" href="equilibrium.html" data-goto="eqm">Равновесие: от энергии к константе →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Вода при 298,15 K: какая доля энтропии приходится на поступательное движение и почему колебания почти ничего не дают?</span></p>
+<p class="olab">Доля поступательного вклада, %</p><div class="opts" role="group"><button type="button" class="opt">50</button><button type="button" class="opt" data-ok="1">77</button><button type="button" class="opt">99</button><button type="button" class="opt">23</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Около 77 %: 144,9 из 188,7 Дж/(моль·К); вращение даёт 43,7, колебания — 0,03. Самое мягкое колебание воды 1595 см⁻¹ отвечает температуре hcν/k ≈ 2300 K, при 298 K его возбуждённые уровни почти не заселены.</div></div>
+<div class="tq"><p class="qt"><span>Почему у O₂ есть электронный вклад в энтропию, а у N₂ нет?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">O₂ — триплет: R ln 3</button><button type="button" class="opt">У O₂ больше масса</button><button type="button" class="opt">У O₂ ниже частота колебания</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Основное состояние O₂ — триплет: три спиновых подуровня с одной энергией дают R ln 3 = 9,13 Дж/(моль·К). N₂ — синглет, R ln 1 = 0.</div></div>
+<div class="tq"><p class="qt"><span>Метан, σ = 12. Нажмите «Взять данные выбранной молекулы», поставьте σ = 1 и пересчитайте. Насколько завысится энтропия?</span></p>
+<p class="olab">Завышение энтропии, Дж/(моль·К)</p><div class="opts" role="group"><button type="button" class="opt">6,2</button><button type="button" class="opt">0</button><button type="button" class="opt">2,5</button><button type="button" class="opt" data-ok="1">20,7</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>На R ln 12 = 20,7 Дж/(моль·К) — это половина всего вращательного вклада. При 298 K такая ошибка сдвигает G на T·ΔS ≈ 6,2 кДж/моль. Число симметрии программы берут из точечной группы, поэтому геометрию стоит симметризовать.</div></div>
+<div class="tq"><p class="qt"><span>Сравните для воды нулевые колебания и тепловую поправку H(298) − H(0). Что больше и что из этого следует?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">ZPE больше примерно в пять раз</button><button type="button" class="opt">Они примерно равны</button><button type="button" class="opt">Тепловая поправка больше</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>ZPE = 53,9 кДж/моль, тепловая поправка — 9,9 кДж/моль, в пять раз меньше. Нулевые колебания есть и при 0 K, их добавляют к электронной энергии всегда; забытая ZPE — грубая ошибка в энергиях реакций, где рвутся связи X–H.</div></div>
+<div class="tq"><p class="qt"><span>Выберите CO₂ и включите график теплоёмкости. Какой вклад растёт с температурой и почему у CO₂ он заметен уже при 298 K, а у N₂ — нет?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Колебательный</button><button type="button" class="opt">Вращательный</button><button type="button" class="opt">Поступательный</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Колебательный: у CO₂ при 298 K он 8,0 Дж/(моль·К), при 1000 K — 25,1. У CO₂ есть мягкое дважды вырожденное деформационное колебание 667 см⁻¹ (hcν/k ≈ 960 K), у N₂ единственное колебание 2330 см⁻¹ (≈ 3350 K).</div></div>
+<div class="tq"><p class="qt"><span>Переключите давление с 1 бар на 1 атм. Насколько изменилась энтропия? А что будет при переходе к стандартному состоянию 1 моль/л?</span></p>
+<p class="olab">Изменение S при переходе 1 бар → 1 атм, Дж/(моль·К)</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">0,11</button><button type="button" class="opt">0</button><button type="button" class="opt">1,3</button><button type="button" class="opt">26,7</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>На R ln(1,01325) = 0,11 Дж/(моль·К) — пренебрежимо. Газ при 1 моль/л и 298 K соответствует давлению 24,8 бар: энтропия меньше на R ln 24,8 = 26,7 Дж/(моль·К), а G больше на 7,96 кДж/моль. Эту поправку добавляют, когда считают реакции в растворе.</div></div>
+</div></details></section>
+<script src="js/thermochemistry.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="thermo";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/thermochemistry.js"></script>
+
+</body>
+</html>

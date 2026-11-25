@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Машинное обучение в квантовой химии</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>Машинное обучение в квантовой химии</h1>
+<p class="lead">Машинное обучение в квантовой химии — это не только потенциалы для динамики. Модель учит поправку дешёвого метода к дорогому, предсказывает свойства по структуре и отбирает кандидатов из баз в сотни тысяч соединений. Здесь видно, почему поправку выучить проще, как честно проверить модель и как отбирают устойчивые соединения.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Δ-обучение: E<sub>дорогой</sub> = E<sub>дешёвый</sub> + Δ. Поправка меняется по набору меньше самой энергии, и при том же числе данных её ошибка меньше. Дешёвый расчёт делают всегда — модель только добавляет поправку.</li><li>Кривая обучения δ = A·n<sup>−a</sup> — прямая в логарифмических осях. Чтобы ошибка упала вдвое, данных нужно в 2<sup>1/a</sup> раз больше: при a = 0,65 — втрое.</li><li>Ядерная гребневая регрессия: f(x) = Σα<sub>j</sub>k(x, x<sub>j</sub>), (K + λI)α = y. Решение стоит n³: для тысячи молекул мгновенно, для ста тысяч — нет, там берут нейросети.</li><li>MAE на тестовой выборке — среднее, его погрешность σ(|e|)/√n ≈ 0,75·MAE/√n: на двадцати молекулах ±17 %. Тестовые молекулы не должны попадать в обучение.</li><li>Скрининг: соединение устойчиво, если его энергия образования ниже выпуклой оболочки известных фаз. Модели ошибаются на 30–50 мэВ/атом, поэтому кандидатов у оболочки проверяют DFT.</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Δ-обучение: учить энергию или поправку</h2>
+  <div class="crow"><span class="l">Обучающих точек n</span><input type="range" id="nn" min="4" max="128" step="1" value="16" aria-label="n"><span class="val" id="nnv"></span></div>
+  <div class="crow"><span class="l">Ошибка дешёвого метода</span><input type="range" id="cq" min="0" max="1" step="0.01" value="0.5" aria-label="дешёвый"><span class="val" id="cqv"></span></div>
+  <div class="crow"><span class="l">Ширина ядра σ</span><input type="range" id="ks" min="0.1" max="2" step="0.01" value="0.5" aria-label="σ"><span class="val" id="ksv"></span></div>
+  <svg id="fchart" class="ch" viewBox="0 0 960 260" role="img" aria-label="Дорогой и дешёвый методы и две модели"></svg>
+  <div class="legend" id="fleg"></div>
+  <svg id="lchart" class="ch" viewBox="0 0 960 240" role="img" aria-label="Кривые обучения"></svg>
+  <div class="legend" id="lleg"></div>
+  <div class="cards" id="dcards"></div>
+  <p class="status" id="dNote"></p>
+  <p class="hint">«Дорогой метод» — кривая Морзе с небольшой волной, «дешёвый» — та же кривая с другой жёсткостью. Модель — ядерная гребневая регрессия с ядром e<sup>−|x − x′|/σ</sup>; MAE по 200 тестовым точкам; обучающие точки случайны, но одни и те же. Наклон a — по прямой через шесть точек кривой.</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Честная проверка: MAE и его погрешность</h2>
+  <div class="crow"><span class="l">Тестовых молекул</span><input type="range" id="tn" min="5" max="320" step="1" value="20" aria-label="n"><span class="val" id="tnv"></span></div>
+  <div class="crow"><span class="l">Истинная MAE модели A, кДж/моль</span><input type="range" id="ma" min="1" max="30" step="0.5" value="10" aria-label="A"><span class="val" id="mav"></span></div>
+  <div class="crow"><span class="l">Истинная MAE модели B, кДж/моль</span><input type="range" id="mb" min="1" max="30" step="0.5" value="11" aria-label="B"><span class="val" id="mbv"></span></div>
+  <svg id="achart" class="ch" viewBox="0 0 960 280" role="img" aria-label="Измеренная MAE двух моделей в зависимости от размера теста"></svg>
+  <div class="legend" id="mleg"></div>
+  <div class="cards" id="mcards"></div>
+  <p class="status" id="mNote"></p>
+  <p class="hint">Ошибки моделей на тестовых молекулах — нормальные случайные числа (одни и те же при каждом вызове); точки — измеренная MAE, отрезки — ± σ(|e|)/√n. «Различимы», если разница больше двух общих погрешностей.</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Скрининг: выпуклая оболочка</h2>
+  <div class="crow"><span class="l">E фазы AB₂ (x = 1/3), эВ/атом</span><input type="range" id="e3" min="-1" max="0.3" step="0.01" value="-0.4" aria-label="AB2"><span class="val" id="e3v"></span></div>
+  <div class="crow"><span class="l">E фазы AB (x = 1/2), эВ/атом</span><input type="range" id="e2" min="-1" max="0.3" step="0.01" value="-0.5" aria-label="AB"><span class="val" id="e2v"></span></div>
+  <div class="crow"><span class="l">Состав нового соединения x</span><input type="range" id="xx" min="0.05" max="0.95" step="0.01" value="0.4" aria-label="x"><span class="val" id="xxv"></span></div>
+  <div class="crow"><span class="l">Его энергия по модели, эВ/атом</span><input type="range" id="ee" min="-1" max="0.3" step="0.01" value="-0.41" aria-label="E"><span class="val" id="eev"></span></div>
+  <svg id="hchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Энергии образования и выпуклая оболочка"></svg>
+  <div class="legend" id="hleg"></div>
+  <div class="cards" id="hcards"></div>
+  <p class="status" id="hNote"></p>
+  <p class="hint">Энергия образования на атом относительно чистых A и B (x = 0 и 1). Оболочка — нижняя выпуклая огибающая точек; закрашенные точки лежат на ней, пустые — выше и неустойчивы. Пунктир — оболочка с новым соединением, если оно ниже старой.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Все эти модели учатся на расчётах. А сами расчёты — как выбрать метод, чтобы данные были достаточно точны?</span><a class="nqA" href="ladder.html" data-goto="lad">Иерархия методов и лестница Якова →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Почему поправку Δ к дешёвому методу выучить проще, чем саму энергию?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Она меняется по набору структур намного меньше энергии</button><button type="button" class="opt">Её считают в меньшем базисе</button><button type="button" class="opt">Модель для Δ имеет больше параметров</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Ошибка модели при заданном числе данных пропорциональна разбросу того, что она учит. Энергия меняется сильно, поправка — мало и плавно. Поэтому Δ-модель точнее, особенно когда дорогих расчётов мало.</div></div>
+<div class="tq"><p class="qt"><span>Кривая обучения δ = A·n<sup>−0,65</sup>. Во сколько раз нужно увеличить обучающий набор, чтобы ошибка упала вдвое?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">в 2 раза</button><button type="button" class="opt" data-ok="1">в 2,9 раза</button><button type="button" class="opt">в 4 раза</button><button type="button" class="opt">в 5,4 раза</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>В 2<sup>1/0,65</sup> = 2,9 раза. При a = 0,41 (как у Δ-модели на кремнии лекции) — в 5,4 раза: Δ даёт фору в начале, а не быстрый рост.</div></div>
+<div class="tq"><p class="qt"><span>MAE модели на 20 тестовых молекулах — 10 кДж/моль. С какой погрешностью она известна?</span></p>
+<p class="olab">±, кДж/моль</p><div class="opts" role="group"><button type="button" class="opt">0,5</button><button type="button" class="opt" data-ok="1">1,7</button><button type="button" class="opt">3,4</button><button type="button" class="opt">10</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>≈ 1,7: σ(|e|) ≈ 0,75·MAE, δ = 0,75·10/√20 = 1,7. Модели с MAE 10 и 11 на таком тесте не различить.</div></div>
+<div class="tq"><p class="qt"><span>AB₂ (x = 1/3): −0,40, AB (x = 1/2): −0,50 эВ/атом. Новое соединение при x = 0,4 — −0,41 эВ/атом. Где оно?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Выше оболочки на 30 мэВ/атом</button><button type="button" class="opt">Ниже оболочки на 30 мэВ/атом</button><button type="button" class="opt">Ровно на оболочке</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Оболочка при x = 0,4: −0,40 + (0,4 − 1/3)/(1/2 − 1/3)·(−0,10) = −0,44. Соединение на 30 мэВ/атом выше — в пределах ошибки модели: такой кандидат стоит проверить DFT.</div></div>
+</div></details></section>
+<script src="js/mlqc.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="mlqc";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/mlqc.js"></script>
+
+</body>
+</html>

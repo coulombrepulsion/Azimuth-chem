@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,co2,ammonia,methane,formaldehyde">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Нормальные колебания</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/nm.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-nm-g.webp"><!--pose:end-->
+<h1>Нормальные колебания</h1>
+<p class="lead">Молекула из N атомов имеет 3N − 6 колебаний (3N − 5, если она линейная). Каждое нормальное колебание преобразуется по одному неприводимому представлению точечной группы, и именно тип симметрии решает, будет ли полоса в ИК-спектре и линия в спектре комбинационного рассеяния (КР). Формы колебаний рассчитаны по простому валентному силовому полю, частоты — экспериментальные фундаментальные, но сопоставлены им в гармонической модели, без учёта ангармоничности и резонанса Ферми. Например, у CO₂ симметричное валентное колебание в реальном КР-спектре даёт ферми-дублет около 1285 и 1388 см⁻¹; 1333 см⁻¹ — условное значение ν₁ без резонанса.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>У молекулы из N атомов 3N − 6 нормальных колебаний (3N − 5 у линейной).</li><li>Каждое колебание преобразуется по неприводимому представлению; число колебаний каждого типа находят по Γ<sub>3N</sub> и формуле приведения.</li><li>В ИК активны колебания типа x, y, z, в КР — типа квадратичных функций; при центре инверсии действует альтернативный запрет.</li><li>Вырожденное колебание — несколько форм с одной частотой.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> гармоническая модель с простым силовым полем</summary><dl><dt>Что вычисляется</dt><dd>Формы нормальных колебаний, их симметрия, активность в ИК- и КР-спектрах.</dd><dt>Какие приближения приняты</dt><dd>Гармоническое приближение, модельное валентное силовое поле; частоты взяты из опыта; ангармонизм и резонанс Ферми не учтены. Молекула H₂O лежит в плоскости yz (соглашение Малликена); на странице «Точечные группы симметрии» выбрана плоскость xz, поэтому там то же колебание обозначено B₁, а не B₂.</dd><dt>Какой вывод можно сделать</dt><dd>Число и симметрия колебаний и правила отбора надёжны; формы колебаний — качественно; интенсивности не рассчитаны.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Колебания молекулы</h2>
+  <div class="crow"><span class="l">Молекула</span><span class="row" id="molG" role="group" aria-label="Молекула"></span></div>
+  <div class="work">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <svg id="mv" data-no-axis viewBox="0 0 440 340" role="img" aria-label="Анимация колебания"></svg>
+      <div class="row"><button class="btn primary" id="bPlay" type="button">❚❚ Пауза</button>
+        <span class="hint">Амплитуда</span><input type="range" id="amp" min="0.05" max="0.45" step="0.01" style="width:140px" aria-label="Амплитуда">
+        <label class="hint" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="arr" checked> стрелки смещений</label></div>
+      <div class="row" id="cmpRow" hidden><span class="hint">Компонента вырожденного колебания</span><span class="row" id="cmpG" role="group" aria-label="Компонента"></span></div>
+      <p class="hint">Перетащите молекулу, чтобы повернуть её.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="tablewrap" id="modeTab"></div>
+      <div class="status" id="st1"></div>
+    </div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. Сколько колебаний каждого типа симметрии</h2>
+  <p class="small">Метод подсчёта по классам: для каждого класса считаем число атомов, которые операция оставляет на месте, умножаем на вклад одного атома χ = ±1 + 2cos φ (плюс — для поворотов, минус — для зеркальных поворотов и отражений) и получаем Γ<sub>3N</sub>. Вычитаем трансляции (преобразуются как x, y, z) и вращения (как R<sub>x</sub>, R<sub>y</sub>, R<sub>z</sub>) и раскладываем остаток по формуле приведения.</p>
+  <div class="tablewrap" id="g3nTab"></div>
+  <div class="red" id="redBox"></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">3. ИК- и КР-спектры</h2>
+  <p class="small">Колебание активно в ИК, если его тип симметрии совпадает с типом x, y или z: тогда при колебании меняется дипольный момент. В КР активны колебания того же типа, что квадратичные функции x², xy, …: они меняют поляризуемость. У молекул с центром инверсии действует <b>альтернативный запрет</b>: ни одно колебание не активно одновременно в ИК и КР.</p>
+  <svg id="spec" viewBox="0 0 1100 190" role="img" aria-label="Схема ИК- и КР-спектров"></svg>
+  <div class="status" id="st3"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Как симметрия окружения расщепляет d-уровни металла?</span><a class="nqA" href="crystal-field.html" data-goto="cf">Кристаллическое поле →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания на исследование страницы и тренажёр. Выполните действие на странице и ответьте — ответ проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>H₂O: сколько у молекулы колебаний и каких типов симметрии?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">2A₁ + B₂</button><button type="button" class="opt">A₁ + 2B₂</button><button type="button" class="opt">3A₁</button><button type="button" class="opt">A₁ + B₁ + B₂</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>3N − 6 = 3. По таблице раздела 2: Γ<sub>кол</sub> = 2A₁ + B₂ — симметричное валентное (3657 см⁻¹), деформационное (1595 см⁻¹) и антисимметричное валентное (3756 см⁻¹).</div></div>
+<div class="tq"><p class="qt"><span>CO₂: сколько полос в ИК-спектре (фундаментальные колебания)?</span></p>
+<p class="olab">Полос в ИК</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">2</button><button type="button" class="opt">3</button><button type="button" class="opt">4</button><button type="button" class="opt">1</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>2: антисимметричное валентное Σ<sub>u</sub><sup>+</sup> (2349 см⁻¹) и дважды вырожденное деформационное Π<sub>u</sub> (667 см⁻¹). Симметричное валентное Σ<sub>g</sub><sup>+</sup> (1333 см⁻¹ — условное значение без резонанса Ферми) дипольный момент не меняет и видно только в КР; в реальном спектре это ферми-дублет около 1285 и 1388 см⁻¹.</div></div>
+<div class="tq"><p class="qt"><span>CH₄: сколько линий в спектре КР?</span></p>
+<p class="olab">Линий в КР</p><div class="opts" role="group"><button type="button" class="opt">3</button><button type="button" class="opt">9</button><button type="button" class="opt">2</button><button type="button" class="opt" data-ok="1">4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>4: A₁, E и оба T₂ активны в КР. В ИК — только два колебания T₂ (преобразуются как x, y, z).</div></div>
+<div class="tq"><p class="qt"><span>SF₆: сколько колебаний не активны ни в ИК, ни в КР?</span></p>
+<p class="olab">Неактивных колебаний</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">1</button><button type="button" class="opt">2</button><button type="button" class="opt">15</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Одно — T<sub>2u</sub> (347 см⁻¹): u-тип не даёт КР, а в ИК активен только T<sub>1u</sub>. Такие колебания называют «немыми»; их частоты находят по комбинационным полосам или из расчёта.</div></div>
+<div class="tq"><p class="qt"><span>Почему у CO₂ ни одна частота не встречается одновременно в ИК и КР?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Молекула линейная</button><button type="button" class="opt" data-ok="1">У молекулы есть центр инверсии</button><button type="button" class="opt">Все колебания CO₂ вырождены</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>У CO₂ есть центр инверсии. x, y, z меняют знак при инверсии (u-тип), а квадратичные функции — нет (g-тип), поэтому одно колебание не может быть активно и там, и там — это альтернативный запрет. У H₂O центра инверсии нет, и все три колебания видны в обоих спектрах.</div></div>
+<div class="tq"><p class="qt"><span>NH₃: колебаний 3N − 6 = 6. Сколько у молекулы разных частот?</span></p>
+<p class="olab">Разных частот</p><div class="opts" role="group"><button type="button" class="opt">6</button><button type="button" class="opt">2</button><button type="button" class="opt" data-ok="1">4</button><button type="button" class="opt">3</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>4: Γ<sub>кол</sub> = 2A₁ + 2E. Каждое дважды вырожденное колебание E — это две формы с одной частотой.</div></div>
+<!--self:start--><div class="selfBox"><h3 id="h4s">Проверьте себя</h3>
+  <p class="small">Для молекулы ниже определите число колебаний, число разных частот (вырожденное колебание — одна частота) и сколько из них активны в ИК и в КР.</p>
+  <div class="row"><b id="qMol" style="font-family:var(--f-display);font-size:19px"></b><button class="btn" id="qNew" type="button">Другая молекула</button></div>
+  <div class="quiz">
+    <label><span>Число колебаний</span><input id="q0" inputmode="numeric" autocomplete="off"></label>
+    <label><span>Разных частот</span><input id="q1" inputmode="numeric" autocomplete="off"></label>
+    <label><span>Активных в ИК</span><input id="q2" inputmode="numeric" autocomplete="off"></label>
+    <label><span>Активных в КР</span><input id="q3" inputmode="numeric" autocomplete="off"></label>
+  </div>
+  <div class="row"><button class="btn primary" id="qChk" type="button">Проверить</button><button class="btn" id="qShow" type="button">Показать решение</button></div>
+  <div class="status" id="qRes">Введите числа и нажмите «Проверить».</div>
+</div><!--self:end--></div></details></section>
+<script src="js/vibrations.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="nm";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="../assets/js/ballstick.js"></script>
+<script src="js/vibrations.js"></script>
+
+</body>
+</html>

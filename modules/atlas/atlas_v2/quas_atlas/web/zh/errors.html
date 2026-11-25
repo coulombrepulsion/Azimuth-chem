@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>计算误差：从方法误差到结论</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>计算误差：从方法误差到结论</h1>
+<p class="lead">没有误差的计算数值不是结果。这里讲方法、基组和收敛的误差如何相加，如何从测试集上的平均误差得到自己所求量的区间，等键反应和相关体系如何抵消误差，以及为什么构象比例对误差如此敏感。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>独立误差按平方相加：σ = √(σ²_方法 + σ²_基组 + σ²_收敛)。总误差由最大项决定，因此数值误差应比方法误差小数倍——那样它就看不出来。</li><li>方法误差取自测试集（GMTKN55、S66）——取与你的量同类的。MAE = 0.80σ，σ = 1.25·MAE；95 % 的误差在 ±2σ 内：MAE 8 kJ/mol → ±20。此时速率常数的不确定因子为 e^{2σ/RT} ≈ 3000。</li><li>等键反应左右两边每种键的数目相同，按键的系统误差相互抵消。经 C₂H₅OH + CH₄ → CH₃OH + C₂H₆ 得乙醇生成焓：−232.9 kJ/mol，实验 −234 ± 2。</li><li>用相关体系校正：ΔE_校正 = ΔE_目标 + (ΔE_参考^实验 − ΔE_参考^计算)，σ² = 2σ²(1 − ρ)。相似的反应（ρ = 0.8）把误差从 8 降到 5 kJ/mol，不相似的（ρ = 0）则升到 11。</li><li>通向可观测量的最后一环是指数。构象间 ΔG = 2 ± 4 kJ/mol，第二个构象的比例在 8 % 到 69 % 之间：计算无法说明哪个为主。另一常见校正是标准态：1 atm → 1 mol/L 对每个粒子给出 RT ln 24.5 = 7.9 kJ/mol。</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">误差如何相加</h2>
+  <div class="crow"><span class="l">方法误差，kJ/mol</span><input type="range" id="sm" min="0" max="30" step="0.5" value="8" aria-label="method"><span class="val" id="smv"></span></div>
+  <div class="crow"><span class="l">基组误差，kJ/mol</span><input type="range" id="sb" min="0" max="30" step="0.5" value="3" aria-label="basis"><span class="val" id="sbv"></span></div>
+  <div class="crow"><span class="l">未收敛误差，kJ/mol</span><input type="range" id="sc" min="0" max="30" step="0.5" value="1" aria-label="convergence"><span class="val" id="scv"></span></div>
+  <svg id="schart" class="ch" viewBox="0 0 960 280" role="img" aria-label="各项贡献与总误差"></svg>
+  <div class="cards" id="scards"></div>
+  <p class="status" id="sNote"></p>
+  <p class="hint">第 18 讲推导 2：方法 8、基组 3、收敛 1 kJ/mol——总计 8.6；不计收敛 8.5；未收敛 10——总计 13。平方相加适用于独立误差。</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">从平均误差到区间</h2>
+  <div class="crow"><span class="l">同类量上方法的 MAE，kJ/mol</span><input type="range" id="mae" min="0.5" max="30" step="0.5" value="8" aria-label="MAE"><span class="val" id="maev"></span></div>
+  <div class="crow"><span class="l">温度，K</span><input type="range" id="tt" min="200" max="1000" step="10" value="298" aria-label="T"><span class="val" id="ttv"></span></div>
+  <svg id="ichart" class="ch" viewBox="0 0 960 260" role="img" aria-label="σ = 1.25·MAE 的正态误差分布"></svg>
+  <div class="legend" id="ileg"></div>
+  <div class="cards" id="icards"></div>
+  <p class="status" id="iNote"></p>
+  <p class="hint">MAE = σ√(2/π)。速率常数的因子为 e^{2σ/RT}：势垒误差为 2σ 时 k 可能偏离这么多倍。</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">误差抵消：等键反应与相关体系</h2>
+  <div class="crow"><span class="l">每根 C–H 键的误差，kJ/mol</span><input type="range" id="ch" min="0" max="20" step="0.5" value="2" aria-label="CH"><span class="val" id="chv"></span></div>
+  <div class="crow"><span class="l">每根 C–C 键的误差</span><input type="range" id="cc" min="0" max="20" step="0.5" value="5" aria-label="CC"><span class="val" id="ccv"></span></div>
+  <div class="crow"><span class="l">每根 C–O 键的误差</span><input type="range" id="co" min="0" max="20" step="0.5" value="6" aria-label="CO"><span class="val" id="cov"></span></div>
+  <div class="crow"><span class="l">每根 O–H 键的误差</span><input type="range" id="oh" min="0" max="20" step="0.5" value="3" aria-label="OH"><span class="val" id="ohv"></span></div>
+  <svg id="dchart" class="ch" viewBox="0 0 960 280" role="img" aria-label="经原子化与在等键反应中的累积误差"></svg>
+  <div class="legend" id="dleg"></div>
+  <div class="crow"><span class="l">用于校正的方法 σ，kJ/mol</span><input type="range" id="sg" min="0" max="30" step="0.5" value="8" aria-label="sigma"><span class="val" id="sgv"></span></div>
+  <div class="crow"><span class="l">目标与参考误差的相关系数 ρ</span><input type="range" id="rh" min="-1" max="1" step="0.05" value="0.8" aria-label="rho"><span class="val" id="rhv"></span></div>
+  <svg id="rchart" class="ch" viewBox="0 0 960 220" role="img" aria-label="经相关体系校正后的误差"></svg>
+  <div class="cards" id="dcards"></div>
+  <p class="status" id="dNote"></p>
+  <p class="hint">按键误差为约定值（第 18 讲推导 4）。实验 ΔfH(298，气态)——NIST WebBook；ΔrH = 23.0 kJ/mol——B3LYP-D3(BJ)/def2-TZVP，含 298.15 K 频率校正（ORCA 6.0.1）。中间两柱：等键反应的反应物与产物——总和相等，差为零。</p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">构象比例及其误差</h2>
+  <div class="crow"><span class="l">ΔG = G₂ − G₁，kJ/mol</span><input type="range" id="dg" min="-10" max="10" step="0.1" value="2" aria-label="dG"><span class="val" id="dgv"></span></div>
+  <div class="crow"><span class="l">方法误差 σ，kJ/mol</span><input type="range" id="ss" min="0" max="10" step="0.1" value="4" aria-label="sigma"><span class="val" id="ssv"></span></div>
+  <div class="crow"><span class="l">温度，K</span><input type="range" id="t4" min="200" max="1000" step="10" value="298" aria-label="T"><span class="val" id="t4v"></span></div>
+  <svg id="cchart" class="ch" viewBox="0 0 960 280" role="img" aria-label="第二个构象的比例随 ΔG 的变化"></svg>
+  <div class="cards" id="ccards"></div>
+  <p class="status" id="cNote"></p>
+  <p class="hint">两个构象，x₂/x₁ = e^{−ΔG/RT}。绿色带为 ΔG ± σ，橙色带为相应的比例区间。第 18 讲推导 10。</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">构象比例取决于是否找到了所有极小点。如何搜索构象？</span><a class="nqA" href="conformers.html" data-goto="conf">构象：要找哪些极小点 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>方法误差 8、基组 3、收敛 1 kJ/mol。把收敛改进到 0.01，总误差如何变化？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">从 8.6 变为 8.5——几乎不变</button><button type="button" class="opt">从 12 变为 11</button><button type="button" class="opt">减半</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>√(64 + 9 + 1) = 8.6，√(64 + 9) = 8.5。总误差由最大项决定。</div></div>
+<div class="tq"><p class="qt"><span>某泛函对势垒的 MAE 为 8 kJ/mol。你的势垒误差以 95 % 概率落在什么区间？</span></p>
+<p class="olab">kJ/mol</p><div class="opts" role="group"><button type="button" class="opt">±8</button><button type="button" class="opt">±10</button><button type="button" class="opt" data-ok="1">±20</button><button type="button" class="opt">±4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>σ = 1.25·MAE = 10，±2σ = ±20。平均误差不是界限：42 % 的反应误差大于 MAE。</div></div>
+<div class="tq"><p class="qt"><span>为什么经等键反应得到的乙醇生成焓比经原子化更准确？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">两边每种键的数目相同——按键的系统误差抵消</button><button type="button" class="opt">它的原子更少</button><button type="button" class="opt">它用更精确的方法计算</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>经原子化时八根键的误差累加（按讲座约定数值为 24 kJ/mol），在等键反应中则相互抵消。</div></div>
+<div class="tq"><p class="qt"><span>计算给出两个构象间 ΔG = 2 ± 4 kJ/mol。诚实的表述是什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">构象 1 占 69 %</button><button type="button" class="opt" data-ok="1">能量接近，两者都存在（第二个 8–69 %）</button><button type="button" class="opt">构象 2 不存在</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>指数把 ±4 kJ/mol 变成 8–69 % 的区间。对单个能量差用更精确的方法可缩小区间：σ = 1 时为 23–40 %。</div></div>
+</div></details></section>
+<script src="js/errors.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="errors";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/errors.js"></script>
+
+</body>
+</html>

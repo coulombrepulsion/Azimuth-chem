@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Поверхность потенциальной энергии</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/pes.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-pes-g.webp"><!--pose:end-->
+<h1>Поверхность потенциальной энергии</h1>
+<p class="lead">Реакция H<sub>A</sub> + H<sub>B</sub>H<sub>C</sub> → H<sub>A</sub>H<sub>B</sub> + H<sub>C</sub>, атомы на одной прямой. В приближении Борна–Оппенгеймера энергия зависит только от двух расстояний: r₁ = r(H<sub>A</sub>–H<sub>B</sub>) и r₂ = r(H<sub>B</sub>–H<sub>C</sub>). Поверхность — модельная (LEPS), близкая к точной: барьер 0,40 эВ, переходное состояние при r₁ = r₂ = 0,93 Å. Щёлкните по карте, чтобы исследовать точку.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Минимумы ППЭ — устойчивые структуры, седловые точки первого порядка — переходные состояния с одной мнимой частотой.</li><li>Найденную стационарную точку проверяют расчётом частот: оптимизация может остановиться в седле.</li><li>Нулевые колебания меняют эффективный барьер; разница между H и D даёт кинетический изотопный эффект.</li><li>Если два терма сближаются, система может перескочить с одного на другой (модель Ландау–Зинера).</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> модельная поверхность LEPS, классическое движение ядер</summary><dl><dt>Что вычисляется</dt><dd>Коллинеарная реакция H + H₂: переходное состояние, путь реакции, траектории, вероятность перескока между термами.</dd><dt>Какие приближения приняты</dt><dd>Эмпирическая поверхность LEPS: высота барьера близка к точной поверхности H₃, но сам барьер у́же (мнимая частота на седле около 1980i см⁻¹ против примерно 1500i у точной); атомы на прямой; ядра движутся классически, без туннелирования; перескок по формуле Ландау–Зинера.</dd><dt>Какой вывод можно сделать</dt><dd>Качественные закономерности (барьер, изотопный эффект, роль колебаний) верны; константы скорости отсюда не получить.</dd></dl></details><!--lim:end-->
+<div class="crow"><span class="l">Изотопы</span><span id="iso" role="group" aria-label="Изотопы"></span><span class="hint">меняет массы: частоты, нулевые колебания и движение атомов; сама поверхность от масс не зависит</span></div>
+<div class="work">
+  <div class="panel">
+    <div class="ptitle">E(r₁, r₂), эВ относительно H + H₂; изолинии через 0,1–0,5 эВ</div>
+    <svg id="map" viewBox="0 0 470 470" role="img" aria-label="Карта поверхности потенциальной энергии" style="cursor:crosshair;touch-action:none"></svg>
+    <div class="legend" id="mapLeg"><span><i class="box" style="background:linear-gradient(90deg,var(--h0),var(--h1),var(--h2),var(--h3))"></i>0 → 3 эВ</span><span><i class="sw" style="border-color:#888;border-top-width:5px"></i><i class="sw" style="border-color:#fff;margin-left:-23px;border-top-width:2px;vertical-align:1px"></i>путь реакции (IRC)</span><span><i class="sw" style="border-color:var(--traj)"></i>траектория / шаги поиска</span><span>○ — переходное состояние</span></div>
+  </div>
+  <div class="panel">
+    <div class="tabs" role="tablist"><button class="tab" role="tab" data-tab="pt" type="button">Точка на поверхности</button><button class="tab" role="tab" data-tab="dyn" type="button">Столкновение</button></div>
+    <svg id="atoms" viewBox="0 0 520 70" role="img" aria-label="Положение трёх атомов"></svg>
+    <div id="pane" style="display:flex;flex-direction:column;gap:10px"></div>
+  </div>
+</div>
+<section class="panel" aria-labelledby="hP">
+  <h2 id="hP">Профиль реакции — сечение поверхности вдоль пути</h2>
+  <svg id="prof" viewBox="0 0 900 230" role="img" aria-label="Энергия вдоль пути реакции"></svg>
+  <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>энергия на ППЭ вдоль пути</span><span><i class="sw" style="border-color:var(--rho-l);border-top-style:dashed"></i>с нулевыми колебаниями поперёк пути, H</span><span><i class="sw" style="border-color:var(--virt);border-top-style:dashed"></i>то же для D</span></div>
+  <p class="hint" style="font-size:14px">По горизонтали — длина пути s в координатах атомов (Å), путь начинается в переходном состоянии (s = 0) и спускается по самому крутому склону в обе стороны: это внутренняя координата реакции (IRC). Привычная «горка» на схемах реакций — именно это сечение, а не вся поверхность. Ширина долины в каждой точке задаёт частоту колебания поперёк пути.</p>
+  <div class="crow"><span class="l">Температура</span><input type="range" id="Tk" min="200" max="1500" step="50" style="width:240px"><span class="val" id="Tkv"></span></div>
+  <div class="tablewrap" id="zpeTab"></div>
+  <div class="status" id="zpeTxt"></div>
+</section>
+<section class="panel" aria-labelledby="hN">
+  <h2 id="hN">Когда одной поверхности мало: избегаемое пересечение</h2>
+  <p style="font-size:14.5px">Пример — «гарпунный» механизм Na + Cl. Ковалентный терм Na + Cl почти плоский, ионный Na⁺ + Cl⁻ лежит выше на IP(Na) − EA(Cl) = 1,53 эВ, но быстро опускается из-за кулоновского притяжения −<span class=fr><span>14,4</span><span>R</span></span>. Они пересекаются при R<sub>c</sub> ≈ 9,4 Å. Электронное взаимодействие V превращает пересечение в избегаемое: адиабатические термы расходятся на 2V.</p>
+  <div class="crow"><span class="l">Связь термов V</span><input type="range" id="V" min="-3" max="-0.7" step="0.01" style="width:260px"><span class="val" id="Vv"></span></div>
+  <div class="crow"><span class="l">Скорость ядер v</span><input type="range" id="vel" min="100" max="5000" step="50" style="width:260px"><span class="val" id="velv"></span></div>
+  <div class="two">
+    <svg id="lz" viewBox="0 0 540 280" role="img" aria-label="Диабатические и адиабатические термы"></svg>
+    <svg id="lzz" viewBox="0 0 540 280" role="img" aria-label="Увеличенная область пересечения"></svg>
+  </div>
+  <div class="legend"><span><i class="sw" style="border-color:var(--muted);border-top-style:dashed"></i>диабатические термы (ковалентный и ионный)</span><span><i class="sw" style="border-color:var(--accent)"></i>адиабатические (решения при фиксированных ядрах)</span></div>
+  <div class="status" id="lzText"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Как программа находит минимум на поверхности, не строя её целиком?</span><a class="nqA" href="optimization.html" data-goto="opt">Оптимизация геометрии →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Нажмите «В переходное состояние». Как меняется мнимая частота при замене H на D?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Растёт</button><button type="button" class="opt" data-ok="1">Уменьшается примерно в √2 раз</button><button type="button" class="opt">Не меняется</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Уменьшается примерно в √2 раза: ≈ 1977i см⁻¹ для H и ≈ 1398i см⁻¹ для D — частоты обратно пропорциональны √m. Это частоты поверхности LEPS; на точной поверхности H₃ барьер шире, и мнимая частота около 1500i см⁻¹. Сама ППЭ (барьер 0,40 эВ при r₁ = r₂ = 0,93 Å) от изотопа не зависит.</div></div>
+<div class="tq"><p class="qt"><span>Щёлкните в точку r₁ = r₂ ≈ 1,2 Å и запустите спуск по градиенту. Куда он придёт?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">В минимум реагентов</button><button type="button" class="opt" data-ok="1">В переходное состояние</button><button type="button" class="opt">В минимум продуктов</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>В переходное состояние, а не в минимум: на линии r₁ = r₂ градиент направлен вдоль неё, и спуск идёт прямо в седло. Поэтому после оптимизации всегда считают частоты.</div></div>
+<div class="tq"><p class="qt"><span>«Столкновение» с нулевыми колебаниями H₂ (серия фаз): почему реакция идёт уже ниже барьера?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Из-за туннелирования</button><button type="button" class="opt" data-ok="1">Энергия колебаний тоже идёт на преодоление барьера</button><button type="button" class="opt">Барьер понижается</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Часть энергии колебаний H₂ тоже идёт на преодоление барьера: без колебаний реакция начинается около 0,41 эВ, а с нулевыми колебаниями хотя бы одна фаза из 24 реагирует уже примерно с 0,2 эВ. Это и классическая «утечка» нулевой энергии: в классической механике энергия колебания H₂ целиком переходит в движение вдоль пути реакции, чего квантовая молекула сделать не может.</div></div>
+<div class="tq"><p class="qt"><span>Почему с учётом нулевых колебаний эффективный барьер для D выше, чем для H?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">У D другая ППЭ</button><button type="button" class="opt">У D глубже яма реагентов</button><button type="button" class="opt" data-ok="1">У D меньше нулевые энергии, и выигрыш от них меньше</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>В переходном состоянии поперечное колебание мягче, чем колебание H₂, и нулевая энергия «съедает» часть барьера (≈ 0,26 эВ для H). У D все нулевые энергии меньше, выигрыш меньше, барьер выше (≈ 0,30 эВ) — это основа кинетического изотопного эффекта. В этой линейной модели нет двух изгибных колебаний переходного состояния; с их нулевой энергией (≈ 0,1 эВ) эффективный барьер почти равен классическому, ≈ 0,39 эВ, и изотопный эффект меньше.</div></div>
+<div class="tq"><p class="qt"><span>Избегаемое пересечение: что происходит, если уменьшать связь V между термами?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Система всегда идёт по адиабатическому терму</button><button type="button" class="opt" data-ok="1">Растёт вероятность перескока между термами</button><button type="button" class="opt">Ничего не меняется</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Растёт вероятность перескока: система чаще остаётся на диабатическом терме. При v = 1000 м/с P = 0,5 примерно при V ≈ 0,011 эВ; при большей связи система идёт по адиабатическому терму.</div></div>
+</div></details></section>
+<script src="js/pes.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="pes";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/pes.js"></script>
+
+</body>
+</html>

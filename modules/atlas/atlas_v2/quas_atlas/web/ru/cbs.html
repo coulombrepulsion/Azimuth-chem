@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Сходимость по базису и предел полного базиса</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/cbs.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-cbs-g.webp"><!--pose:end-->
+<h1>Сходимость по базису и предел полного базиса</h1>
+<p class="lead">Энергия в конечном базисе — не окончательный ответ, а точка на пути к пределу полного базиса (CBS). Базисы Даннинга cc-pVXZ построены так, чтобы этот путь был предсказуем: энергия Хартри–Фока сходится быстро, корреляционная — медленно, примерно как X⁻³ по кардинальному числу X (D = 2, T = 3, Q = 4, 5). На этом законе построена экстраполяция: два расчёта в соседних базисах дают оценку предела точнее, чем расчёт в большем из них. Все энергии посчитаны в PySCF при экспериментальных геометриях, 1s-электроны тяжёлых атомов заморожены.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Энергия в конечном базисе — точка на пути к пределу полного базиса; базисы cc-pVXZ делают этот путь систематическим.</li><li>Энергия Хартри–Фока сходится быстро, почти экспоненциально; корреляционная — медленно, как X⁻³.</li><li>Двухточечная экстраполяция по закону X⁻³ из TZ и QZ даёт оценку предела точнее, чем расчёт в QZ.</li><li>Энергии атомизации CCSD(T) в cc-pVDZ занижены на 6–33 ккал/моль, в cc-pVTZ — на 1–11: для количественных выводов нужен хотя бы TZ, лучше экстраполяция.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> базисы Даннинга, малые молекулы</summary><dl><dt>Что вычисляется</dt><dd>Энергии Хартри–Фока, корреляционные энергии MP2 и CCSD(T) и энергии атомизации в серии cc-pVDZ … cc-pV5Z; двухточечная экстраполяция X⁻³.</dd><dt>Какие приближения приняты</dt><dd>Замороженный остов; экспериментальные геометрии; энергия Хартри–Фока не экстраполируется, а берётся в большем базисе; расчёт в cc-pV5Z — только для H₂, H₂O, HF и N₂.</dd><dt>Какой вывод можно сделать</dt><dd>Как быстро сходятся разные вклады и насколько экстраполяция лучше одиночного расчёта — да; точные значения предела для сравнения с экспериментом — нет: нужны ещё остовная корреляция и релятивистские поправки.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Энергия в серии cc-pVXZ</h2>
+  <div class="crow"><span class="l">Молекула</span><span class="grp" id="molG" role="group" aria-label="Молекула"></span></div>
+  <div class="crow"><span class="l">Величина</span><span class="grp" id="qG" role="group" aria-label="Величина"></span></div>
+  <div class="crow"><span class="l">Ось абсцисс</span><span class="grp" id="axG" role="group" aria-label="Ось абсцисс"></span></div>
+  <svg id="conv" viewBox="0 0 960 330" role="img" aria-label="Сходимость энергии по базису"></svg>
+  <div class="tablewrap" id="convT"></div>
+  <p class="hint" id="convN"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Экстраполяция к пределу полного базиса</h2>
+  <p class="hint">Если E<sub>X</sub> = E<sub>CBS</sub> + A·X⁻³, то по двум базисам X и Y = X + 1 предел равен E<sub>CBS</sub> = (X³E<sub>X</sub> − Y³E<sub>Y</sub>) / (X³ − Y³). Формулу применяют к корреляционной энергии; энергию Хартри–Фока берут в большем базисе — она уже почти сошлась.</p>
+  <div class="crow"><span class="l">Пара базисов</span><span class="grp" id="pG" role="group" aria-label="Пара базисов"></span></div>
+  <div class="tablewrap" id="xT"></div>
+  <p class="hint" id="xN"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Что это значит для химии: энергия атомизации</h2>
+  <p class="hint">Ошибка энергии атомизации CCSD(T) в базисе cc-pVXZ относительно предела, экстраполированного из cc-pVTZ и cc-pVQZ. В маленьком базисе молекула недополучает корреляционную энергию сильнее, чем атомы, поэтому связь выходит слабее.</p>
+  <svg id="taeC" viewBox="0 0 960 330" role="img" aria-label="Ошибка энергии атомизации в разных базисах"></svg>
+  <div class="legend" id="taeL"></div>
+  <div class="tablewrap" id="taeT"></div>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">Почему корреляция сходится медленно</h2>
+  <div class="eq">
+    <div class="eqb"><div class="t">Электронный касп</div>Точная волновая функция имеет излом там, где два электрона сходятся: при r<sub>12</sub> → 0 она линейна по r<sub>12</sub>. Гладкие гауссовы функции описывают этот излом только суммой всё более высоких угловых моментов — отсюда медленный закон X⁻³.</div>
+    <div class="eqb"><div class="t">Хартри–Фок сходится быстро</div>В методе Хартри–Фока электрон движется в среднем поле, касп не нужен; энергия приближается к пределу примерно экспоненциально. Каждый следующий базис уменьшает её ошибку в несколько раз, и в разностях энергий остаток в основном сокращается.</div>
+    <div class="eqb"><div class="t">Цена каждого шага</div>Число функций растёт примерно как X³: у воды 24, 58, 115 и 201 функция от DZ до 5Z. Время CCSD(T) растёт как N⁷, поэтому шаг от QZ к 5Z стоит в десятки раз дороже, чем весь расчёт в QZ.</div>
+    <div class="eqb"><div class="t">Практические правила</div>Энергии в DZ не годятся для количественных выводов. Разумный минимум — TZ, лучше экстраполяция TZ/QZ. Явно коррелированные методы (F12) добавляют в функцию множитель с r<sub>12</sub> и дают качество QZ в базисе TZ.</div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">В комплексах неполный базис даёт ещё и ложное притяжение. Откуда оно берётся и как его убрать?</span><a class="nqA" href="bsse.html" data-goto="bsse">Суперпозиционная ошибка базиса →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Вода, корреляция CCSD(T): сколько энергии добавляет переход cc-pVTZ → cc-pVQZ?</span></p>
+<p class="olab">Изменение корреляции, мEₕ</p><div class="opts" role="group"><button type="button" class="opt">2,6</button><button type="button" class="opt" data-ok="1">19,9</button><button type="button" class="opt">7,7</button><button type="button" class="opt">275,0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Около 19,9 мEₕ (от −275,0 до −295,0 мEₕ), то есть 12,5 ккал/моль. Для химии это огромная величина: даже QZ ещё далёк от предела по корреляции.</div></div>
+<div class="tq"><p class="qt"><span>Во сколько раз шаг TZ → QZ для корреляционной энергии воды больше, чем для энергии Хартри–Фока?</span></p>
+<p class="olab">Во сколько раз больше</p><div class="opts" role="group"><button type="button" class="opt">10</button><button type="button" class="opt">0,39</button><button type="button" class="opt" data-ok="1">2,6</button><button type="button" class="opt">1,0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Примерно в 2,6 раза: энергия Хартри–Фока меняется на 7,7 мEₕ, корреляционная — на 19,9 мEₕ. Хартри–Фок сходится почти экспоненциально, корреляция — как X⁻³, и с ростом X разрыв только увеличивается.</div></div>
+<div class="tq"><p class="qt"><span>Корреляционная энергия в TZ равна −275,0 мEₕ, в QZ — −295,0 мEₕ. Оцените предел полного базиса по формуле X⁻³.</span></p>
+<p class="olab">E<sub>CBS</sub>, мEₕ</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">-309,6</button><button type="button" class="opt">-295,0</button><button type="button" class="opt">-315,0</button><button type="button" class="opt">-302,3</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>E<sub>CBS</sub> = (4³·E<sub>QZ</sub> − 3³·E<sub>TZ</sub>)/(4³ − 3³) = (64·(−295,0) − 27·(−275,0))/37 ≈ −309,6 мEₕ. Экстраполяция добавляет к QZ ещё почти 15 мEₕ.</div></div>
+<div class="tq"><p class="qt"><span>На сколько энергия атомизации воды CCSD(T)/cc-pVDZ отличается от опорного значения?</span></p>
+<p class="olab">Насколько занижена, ккал/моль</p><div class="opts" role="group"><button type="button" class="opt">50</button><button type="button" class="opt" data-ok="1">24</button><button type="button" class="opt">0</button><button type="button" class="opt">2,4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Занижена примерно на 24 ккал/моль (около 10 %). В молекуле больше электронных пар, чем в атомах, и корреляция в ней сходится медленнее, поэтому малый базис систематически занижает энергию связи.</div></div>
+<div class="tq"><p class="qt"><span>Почему энергию Хартри–Фока не экстраполируют по закону X⁻³?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Она сходится почти экспоненциально, а X⁻³ описывает корреляцию</button><button type="button" class="opt">Она не зависит от базиса</button><button type="button" class="opt">Её нельзя посчитать в QZ</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Она сходится гораздо быстрее, почти экспоненциально; закон X⁻³ описывает корреляционную энергию, которая медленно воспроизводит электрон-электронный касп. Энергию HF обычно просто берут в самом большом базисе.</div></div>
+</div></details></section>
+<script src="js/cbs.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="cbs";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/cbs.js"></script>
+
+</body>
+</html>

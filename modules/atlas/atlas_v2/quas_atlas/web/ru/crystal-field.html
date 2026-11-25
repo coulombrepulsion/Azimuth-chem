@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Кристаллическое поле и поле лигандов</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/cf.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-cf-g.webp"><!--pose:end-->
+<h1>Кристаллическое поле и поле лигандов</h1>
+<p class="lead">В комплексе пять d-орбиталей металла перестают быть вырожденными: орбитали, направленные на лиганды, поднимаются выше, остальные — ниже. Как именно расщепляются уровни, определяет симметрия окружения. Энергии здесь рассчитаны в модели углового перекрывания (AOM): каждый лиганд дестабилизирует d-орбиталь на e<sub>σ</sub>F<sub>σ</sub>² + e<sub>π</sub>F<sub>π</sub>², где F — перекрывание орбитали с лигандом по σ- и π-типу. Параметры e<sub>σ</sub> и e<sub>π</sub> — иллюстративные значения для ионов M³⁺ 3d-ряда.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Лиганды снимают вырождение d-орбиталей металла; картину расщепления определяет симметрия окружения.</li><li>В октаэдре e<sub>g</sub> выше t<sub>2g</sub> на Δ<sub>o</sub>; Δ<sub>o</sub> зависит от лиганда (спектрохимический ряд) и от металла.</li><li>Спиновое состояние определяется конкуренцией расщепления Δ и энергии спаривания P.</li><li>Неравномерно заселённый вырожденный уровень вызывает искажение комплекса (эффект Яна–Теллера).</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> модель углового перекрывания с иллюстративными параметрами</summary><dl><dt>Что вычисляется</dt><dd>Расщепление d-уровней в разных геометриях, спиновое состояние, эффект Яна–Теллера.</dd><dt>Какие приближения приняты</dt><dd>d-орбитали металла и их смешивание с s-орбиталью (e<sub>ds</sub> = 0,25 e<sub>σ</sub>; оно опускает d<sub>z²</sub> в плоском квадрате и линейных комплексах); параметры e<sub>σ</sub>, e<sub>π</sub> и энергия спаривания — иллюстративные, для 3d-металлов, не подобраны к конкретному комплексу.</dd><dt>Какой вывод можно сделать</dt><dd>Порядок и симметрия уровней, тенденции высокого и низкого спина — да; количественные Δ — нет.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Расщепление d-уровней</h2>
+  <div class="crow"><span class="l">Геометрия</span><span class="row" id="gG" role="group" aria-label="Геометрия"></span></div>
+  <div class="crow" id="tRow"><span class="l">Тетрагональное искажение</span><input type="range" id="tet" min="0" max="1.4" step="0.01" style="width:240px" aria-label="Сила аксиальных лигандов"><span class="val" id="tetV"></span></div>
+  <div class="crow"><span class="l">Лиганд</span><span class="row" id="lG" role="group" aria-label="Лиганд"></span></div>
+  <div class="crow"><span class="l">Электронов d</span><span class="row" id="dG" role="group" aria-label="Число d-электронов"></span></div>
+  <div class="crow"><span class="l">Энергия спаривания P</span><input type="range" id="pp" min="8000" max="32000" step="100" style="width:240px" aria-label="Энергия спаривания"><span class="val" id="ppV"></span></div>
+  <div class="work">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="geo"><svg id="geo" viewBox="0 0 150 150" role="img" aria-label="Геометрия комплекса"></svg><div class="hint" id="geoT"></div></div>
+      <svg id="dia" viewBox="0 0 460 380" role="img" aria-label="Диаграмма расщепления d-уровней"></svg>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="tablewrap" id="lvTab"></div>
+      <div class="tablewrap" id="sumTab"></div>
+      <div class="status" id="st1"></div>
+    </div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. Высокий или низкий спин</h2>
+  <p class="small">Для октаэдрических комплексов d⁴–d⁷ возможны две конфигурации. Высокоспиновая выгодна, когда расщепление Δ<sub>o</sub> меньше энергии спаривания P, низкоспиновая — когда больше. Линии показывают энергию d-электронов обеих конфигураций в зависимости от Δ<sub>o</sub>; вертикальная черта — выбранный лиганд.</p>
+  <div class="two">
+    <svg id="hsSvg" viewBox="0 0 520 300" role="img" aria-label="Энергия высоко- и низкоспиновой конфигураций"></svg>
+    <div class="status" id="st2"></div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">3. Эффект Яна–Теллера</h2>
+  <p class="small">Если в октаэдре вырожденный уровень заселён неравномерно, искажение снимает вырождение и понижает энергию электронов — линейно по величине искажения. Упругая энергия растёт квадратично, поэтому минимум оказывается при ненулевом искажении. Сильнее всего эффект при неравномерном заселении e<sub>g</sub>: d⁹ (Cu²⁺), высокоспиновый d⁴ (Cr²⁺, Mn³⁺), низкоспиновый d⁷.</p>
+  <div class="two">
+    <svg id="jtSvg" viewBox="0 0 520 300" role="img" aria-label="Энергия как функция тетрагонального искажения"></svg>
+    <div class="status" id="st3"></div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">4. Симметрия: метки уровней и корреляция</h2>
+  <p class="small">Метки уровней — это неприводимые представления точечной группы, по которым преобразуются d-орбитали (столбец квадратичных функций таблицы характеров). При понижении симметрии O<sub>h</sub> → D<sub>4h</sub> вырожденные уровни расщепляются: e<sub>g</sub> → a<sub>1g</sub> + b<sub>1g</sub>, t<sub>2g</sub> → b<sub>2g</sub> + e<sub>g</sub>.</p>
+  <div class="tablewrap" id="corTab"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Сколько разных состояний даёт одна конфигурация, например d² или p²?</span><a class="nqA" href="terms.html" data-goto="terms">Термы атомов →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания на исследование страницы и тренажёр. Выполните действие на странице и ответьте — ответ проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Чему равна ЭСКП низкоспинового [Fe(CN)₆]⁴⁻ в единицах Δ<sub>o</sub>?</span></p>
+<p class="olab">ЭСКП, Δₒ</p><div class="opts" role="group"><button type="button" class="opt">0</button><button type="button" class="opt">-0,4</button><button type="button" class="opt">-1,6</button><button type="button" class="opt" data-ok="1">-2,4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Fe²⁺ — d⁶, низкий спин: t<sub>2g</sub>⁶e<sub>g</sub>⁰, ЭСКП = 6 · (−0,4Δ<sub>o</sub>) = −2,4Δ<sub>o</sub> (без учёта энергии спаривания). Все электроны спарены — комплекс диамагнитен.</div></div>
+<div class="tq"><p class="qt"><span>Сколько неспаренных электронов у [Fe(H₂O)₆]²⁺?</span></p>
+<p class="olab">Неспаренных электронов</p><div class="opts" role="group"><button type="button" class="opt">0</button><button type="button" class="opt" data-ok="1">4</button><button type="button" class="opt">2</button><button type="button" class="opt">6</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Четыре: H₂O — лиганд слабого поля, Δ<sub>o</sub> &lt; P, конфигурация t<sub>2g</sub>⁴e<sub>g</sub>² (высокий спин). Включите d⁶ и H₂O, затем CN⁻ — увидите переход к низкому спину.</div></div>
+<div class="tq"><p class="qt"><span>Переключитесь на тетраэдр. Почему тетраэдрические комплексы почти всегда высокоспиновые?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Расщепление мало по сравнению с энергией спаривания</button><button type="button" class="opt">В тетраэдре d-орбитали не расщепляются</button><button type="button" class="opt">Лиганды в тетраэдре всегда слабого поля</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Расщепление Δ<sub>t</sub> ≈ <span class=fr><span>4</span><span>9</span></span>Δ<sub>o</sub>: лигандов четыре вместо шести, и ни одна d-орбиталь не направлена прямо на лиганд. Δ<sub>t</sub> почти всегда меньше энергии спаривания P.</div></div>
+<div class="tq"><p class="qt"><span>Какая геометрия делает комплекс d⁸ с сильными лигандами диамагнитным?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Плоский квадрат</button><button type="button" class="opt">Тетраэдр</button><button type="button" class="opt">Октаэдр</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Плоский квадрат: d<sub>x²−y²</sub> поднимается очень высоко, и все восемь электронов спариваются на четырёх нижних орбиталях — как в [Ni(CN)₄]²⁻ и [PtCl₄]²⁻ (у Pt(II), 5d-металла, расщепление гораздо больше, чем при параметрах 3d этой модели: здесь с Cl⁻ электроны спариваются только при P меньше ≈ 12 500 см⁻¹). В октаэдре у d⁸ всегда два неспаренных электрона на e<sub>g</sub>.</div></div>
+<div class="tq"><p class="qt"><span>Почему CO и CN⁻ дают самое большое расщепление?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Они π-акцепторы и понижают t₂g</button><button type="button" class="opt">Они самые электроотрицательные</button><button type="button" class="opt">У них самый большой размер</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Это π-акцепторы (e<sub>π</sub> &lt; 0 в модели): их пустые π*-орбитали понижают t<sub>2g</sub>, и Δ<sub>o</sub> = 3e<sub>σ</sub> − 4e<sub>π</sub> растёт. Галогениды — π-доноры (e<sub>π</sub> &gt; 0), они поднимают t<sub>2g</sub> и уменьшают Δ<sub>o</sub>.</div></div>
+<div class="tq"><p class="qt"><span>Во что переходит уровень e<sub>g</sub> октаэдра при понижении симметрии O<sub>h</sub> → D<sub>4h</sub>?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">a₁g + b₁g</button><button type="button" class="opt">b₂g + eg</button><button type="button" class="opt">a₁g + eg</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>e<sub>g</sub> → a<sub>1g</sub> (d<sub>z²</sub>) + b<sub>1g</sub> (d<sub>x²−y²</sub>), а t<sub>2g</sub> → e<sub>g</sub> (d<sub>xz</sub>, d<sub>yz</sub>) + b<sub>2g</sub> (d<sub>xy</sub>). Это видно по таблице корреляции в разделе 4 и по меткам на диаграмме при включённом искажении.</div></div>
+<!--self:start--><div class="selfBox"><h3 id="h5s">Проверьте себя</h3>
+  <p class="small">Для октаэдрического комплекса ниже определите число d-электронов, число неспаренных электронов и энергию стабилизации кристаллическим полем (ЭСКП) в единицах Δ<sub>o</sub>, без учёта энергии спаривания. Спиновое состояние указано по эксперименту.</p>
+  <div class="row"><b id="qCx" style="font-family:var(--f-display);font-size:19px"></b><button class="btn" id="qNew" type="button">Другой комплекс</button></div>
+  <div class="quiz">
+    <label><span>d-электронов</span><input id="q0" inputmode="numeric" autocomplete="off"></label>
+    <label><span>Неспаренных электронов</span><input id="q1" inputmode="numeric" autocomplete="off"></label>
+    <label><span>ЭСКП, Δ<sub>o</sub></span><input id="q2" inputmode="decimal" autocomplete="off"></label>
+  </div>
+  <div class="row"><button class="btn primary" id="qChk" type="button">Проверить</button><button class="btn" id="qShow" type="button">Показать решение</button></div>
+  <div class="status" id="qRes">Введите ответы и нажмите «Проверить».</div>
+</div><!--self:end--></div></details></section>
+<script src="js/crystal-field.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="cf";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/crystal-field.js"></script>
+
+</body>
+</html>

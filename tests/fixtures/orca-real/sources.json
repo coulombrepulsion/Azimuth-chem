@@ -1,0 +1,17 @@
+{
+  "y_charged_DKH_tightopt_fixed.out": {
+    "sha256": "d9fb2a95184595012cfb8c6908f42bc36c61a83daa4e945b4d0101dcc89592ee"
+  },
+  "pada_Y_neutral_local1_DKH_fixed.out": {
+    "sha256": "045f7e3dc63d5860b74a44c0d4f5ee9bdd26a1305d08d3fa8642cae3031d3550"
+  },
+  "padp_Y_neutral_new_basis_nitrate_v4_no_water_DKH_tightopt_fixed.out": {
+    "sha256": "cff6daadc5ced2ab0ecc31dedd839ded6aac94b11b67383ebbdd4677a87d20f5"
+  },
+  "padpa_Y_new_ver_DKH_neutral_redoing_again_tightopt_fixed.out": {
+    "sha256": "6d501872866bbfe197964c07e58bb1e9c4418cfdb1f315253993c809ed259d5c"
+  },
+  "y_charged_DKH_fixed.out": {
+    "sha256": "44d088f100539bf27a86aa6ea40dc04ad52f25b6c8b5d5d6d495354da8b76a04"
+  }
+}

@@ -1,0 +1,181 @@
+ WARNING: "settings.ini" was found neither in current folder nor in the path defined by "Multiwfnpath" environment variable. Now using default settings instead, and all your modifications (if any) on settings.ini will not take effect!
+
+ Multiwfn -- A Multifunctional Wavefunction Analyzer
+ Version 2026.7.15 (release date is the same as version name)
+ Developer: Tian Lu (Beijing Kein Research Center for Natural Sciences)
+ Multiwfn official website: http://sobereva.com/multiwfn
+ Multiwfn English forum: http://sobereva.com/wfnbbs
+ Multiwfn Chinese forum: http://bbs.keinsci.com/wfn
+ ( Number of parallel threads:   4  Current date: 2026-10-28  Time: 12:34:37 )
+
+ Both following papers ***MUST BE CITED IN MAIN TEXT*** if Multiwfn is used:
+  Tian Lu, Feiwu Chen, J. Comput. Chem., 33, 580 (2012) DOI: 10.1002/jcc.22885
+  Tian Lu, J. Chem. Phys., 161, 082503 (2024) DOI: 10.1063/5.0216272
+ See "How to cite Multiwfn.pdf" in Multiwfn binary package for more information
+
+ Warning: You should set OMP_STACKSIZE environment variable as mentioned in Section 2.1.2 of Multiwfn manual!
+
+ Please wait...
+ Loading various information of the wavefunction
+ The highest angular moment basis functions is P
+ Loading basis set definition...
+ Loading orbitals...
+ Converting basis function information to GTF information...
+ Generating density matrix based on SCF orbitals...
+ Generating overlap matrix...
+
+ Total/Alpha/Beta electrons:     10.0000      5.0000      5.0000
+ Net charge:     0.00000      Expected multiplicity:    1
+ Atoms:      3,  Basis functions:      7,  GTFs:     21
+ Total energy:     -75.002282127454 Hartree,   Virial ratio:  2.00600493
+ This is a restricted single-determinant wavefunction
+ Orbitals from 1 to     5 are occupied
+ Title line of this file: Water
+
+ Loaded water.fchk successfully!
+
+ Formula: H2 O1      Total atoms:       3
+ Molecule weight:        18.01529 Da
+ Point group: C2v
+
+ "q": Exit program gracefully          "r": Load a new file
+                    ************ Main function menu ************
+ 0 Show molecular structure and view orbitals
+ 1 Output all properties at a point       2 Topology analysis
+ 3 Output and plot specific property in a line
+ 4 Output and plot specific property in a plane
+ 5 Output and plot specific property within a spatial region (calc. grid data)
+ 6 Check & modify wavefunction
+ 7 Population analysis and calculation of atomic charges
+ 8 Orbital composition analysis           9 Bond order analysis
+ 10 Plot total DOS, PDOS, OPDOS, local DOS, COHP and photoelectron spectrum
+ 11 Plot IR/Raman/UV-Vis/ECD/VCD/ROA/NMR spectrum
+ 12 Quantitative analysis of molecular surface
+ 13 Process grid data (No grid data is presented currently)
+ 14 Adaptive natural density partitioning (AdNDP) analysis
+ 15 Fuzzy atomic space analysis
+ 16 Charge decomposition analysis (CDA) and plot orbital interaction diagram
+ 17 Basin analysis                       18 Electron excitation analysis
+ 19 Orbital localization analysis        20 Visual study of weak interaction
+ 21 Energy decomposition analysis        22 Conceptual DFT (CDFT) analysis
+ 23 ETS-NOCV analysis                    24 (Hyper)polarizability analysis
+ 25 Electron delocalization and aromaticity analyses
+ 26 Structure and geometry related analyses
+ 100 Other functions (Part 1)            200 Other functions (Part 2)
+ 300 Other functions (Part 3)
+
+ If this module is used in your work, please cite the following paper together with Multiwfn original paper (J. Comput. Chem., 33, 580 (2012) and J. Chem. Phys., 161, 082503 (2024)), as the methods employed in this module are comprehensively described in this paper:
+ Tian Lu, Feiwu Chen, Acta Chimica Sinica, 69, 2393-2406 (2011) http://sioc-journal.cn/Jwk_hxxb/CN/abstract/abstract340458.shtml
+
+        ================ Orbital composition analysis ===============
+ -10 Return
+ -2 Define fragment 2 (for option 4,5)
+ -1 Define fragment 1 (for option 1~6)
+ 1 Orbital composition analysis with Mulliken partition
+ 2 Orbital composition analysis with Stout-Politzer partition
+ 3 Orbital composition analysis with Ros-Schuit (SCPA) partition
+ 4 Print frag. 1 & inter-fragment compositions in all orbitals (Mulliken)
+ 5 Print frag. 1 & inter-fragment compositions in all orbitals (Stout-Politzer)
+ 6 Print frag. 1 compositions in all orbitals (SCPA)
+ 7 Orbital composition analysis by natural atomic orbital (NAO) method
+ 8 Calculate atom and fragment contributions by Hirshfeld method
+ 9 Calculate atom and fragment contributions by Becke method
+ 10 Calculate atom and fragment contributions by Hirshfeld-I method
+ 11 Calculate atom and fragment contributions by AIM method
+ 100 Evaluate oxidation state by LOBA/mLOBA method
+  9060 quadrature points are used for each atom to compute orbital compositions
+ Note: You can manually define the number of radial and angular points by setting "iautointgrid" in settings.ini to 0 and setting "radpot" and "sphpot"
+
+ Hirshfeld analysis requests atomic densities, please select how to obtain them
+ 1 Use build-in sphericalized atomic densities in free-states (recommended)
+ 2 Provide wavefunction file of involved elements by yourself or invoke Gaussian to automatically calculate them
+ Generating Hirshfeld atomic weighting functions at all grids...
+
+ Done! Initialization took up wall clock time         0 s
+
+ Now input the orbital index to print orbital composition, e.g. 5
+ You can also input for example: (quotation marks should not be inputted)
+ "h" for HOMO, "h-5" for HOMO-5, "l" for LUMO, "l+3" for LUMO+3
+ You can also input:
+ -9: Define fragment, current: undefined
+  0: Return
+ -1: Print basic information of all orbitals
+ -2: Print atom contribution to a batch of orbitals
+ -3: Print fragment contribution to a batch of orbitals
+ -4: Export composition of every atom in every orbital to orbcomp.txt
+ -5: Print orbital delocalization index (ODI) for a batch of orbitals
+ Orbital:    5  Energy(a.u.):     -0.388215  Occ:   2.00000  Type: Alpha&Beta
+ Please wait...
+ The sum of contributions before normalization             100.010926 %
+
+ Contributions after normalization:
+ Atom     1(O ) :     93.124 %
+ Atom     2(H ) :      3.438 %
+ Atom     3(H ) :      3.438 %
+
+ Orbital delocalization index:   86.96
+
+ Now input the orbital index to print orbital composition, e.g. 5
+ You can also input for example: (quotation marks should not be inputted)
+ "h" for HOMO, "h-5" for HOMO-5, "l" for LUMO, "l+3" for LUMO+3
+ You can also input:
+ -9: Define fragment, current: undefined
+  0: Return
+ -1: Print basic information of all orbitals
+ -2: Print atom contribution to a batch of orbitals
+ -3: Print fragment contribution to a batch of orbitals
+ -4: Export composition of every atom in every orbital to orbcomp.txt
+ -5: Print orbital delocalization index (ODI) for a batch of orbitals
+
+ If this module is used in your work, please cite the following paper together with Multiwfn original paper (J. Comput. Chem., 33, 580 (2012) and J. Chem. Phys., 161, 082503 (2024)), as the methods employed in this module are comprehensively described in this paper:
+ Tian Lu, Feiwu Chen, Acta Chimica Sinica, 69, 2393-2406 (2011) http://sioc-journal.cn/Jwk_hxxb/CN/abstract/abstract340458.shtml
+
+        ================ Orbital composition analysis ===============
+ -10 Return
+ -2 Define fragment 2 (for option 4,5)
+ -1 Define fragment 1 (for option 1~6)
+ 1 Orbital composition analysis with Mulliken partition
+ 2 Orbital composition analysis with Stout-Politzer partition
+ 3 Orbital composition analysis with Ros-Schuit (SCPA) partition
+ 4 Print frag. 1 & inter-fragment compositions in all orbitals (Mulliken)
+ 5 Print frag. 1 & inter-fragment compositions in all orbitals (Stout-Politzer)
+ 6 Print frag. 1 compositions in all orbitals (SCPA)
+ 7 Orbital composition analysis by natural atomic orbital (NAO) method
+ 8 Calculate atom and fragment contributions by Hirshfeld method
+ 9 Calculate atom and fragment contributions by Becke method
+ 10 Calculate atom and fragment contributions by Hirshfeld-I method
+At line 43 of file /private/tmp/s-bdSdxxIT/multiwfn-20261028-61253-2d0vhf/orbcomp.f90 (unit = 5, file = 'stdin')
+Fortran runtime error: Bad integer for item 1 in list input
+
+Error termination. Backtrace:
+#0  0x12f97b323
+#1  0x12f97bef7
+#2  0x12f97c7cb
+#3  0x12fa8fb23
+#4  0x12fa928ab
+#5  0x12fa933a7
+#6  0x102ee0fc7
+#7  0x102877faf
+#8  0x1030d59ff
+ 11 Calculate atom and fragment contributions by AIM method
+ 100 Evaluate oxidation state by LOBA/mLOBA method
+
+ If this module is used in your work, please cite the following paper together with Multiwfn original paper (J. Comput. Chem., 33, 580 (2012) and J. Chem. Phys., 161, 082503 (2024)), as the methods employed in this module are comprehensively described in this paper:
+ Tian Lu, Feiwu Chen, Acta Chimica Sinica, 69, 2393-2406 (2011) http://sioc-journal.cn/Jwk_hxxb/CN/abstract/abstract340458.shtml
+
+        ================ Orbital composition analysis ===============
+ -10 Return
+ -2 Define fragment 2 (for option 4,5)
+ -1 Define fragment 1 (for option 1~6)
+ 1 Orbital composition analysis with Mulliken partition
+ 2 Orbital composition analysis with Stout-Politzer partition
+ 3 Orbital composition analysis with Ros-Schuit (SCPA) partition
+ 4 Print frag. 1 & inter-fragment compositions in all orbitals (Mulliken)
+ 5 Print frag. 1 & inter-fragment compositions in all orbitals (Stout-Politzer)
+ 6 Print frag. 1 compositions in all orbitals (SCPA)
+ 7 Orbital composition analysis by natural atomic orbital (NAO) method
+ 8 Calculate atom and fragment contributions by Hirshfeld method
+ 9 Calculate atom and fragment contributions by Becke method
+ 10 Calculate atom and fragment contributions by Hirshfeld-I method
+ 11 Calculate atom and fragment contributions by AIM method
+ 100 Evaluate oxidation state by LOBA/mLOBA method

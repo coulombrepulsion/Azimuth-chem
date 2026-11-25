@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,ammonia,methane,bf3,benzene,ethene,co2,h2o2">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Точечные группы симметрии</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/sym.css">
+
+<link rel="stylesheet" href="../assets/css/addon.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-sym-g.webp"><!--pose:end-->
+<h1>Точечные группы симметрии</h1>
+<p class="lead">Выберите группу. Модель вращается мышью или пальцем. Справа — классы операций с анимацией, таблица характеров с орбиталями центрального атома, подсчёт Γ₃N по неподвижным атомам, колебания молекулы и таблица умножения. Внизу — как группа понижается при замещении или искажении и куда переходят её классы.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Точечная группа — это набор всех операций симметрии молекулы; её находят по элементам симметрии (схема Шёнфлиса).</li><li>Сопряжённые операции образуют класс; неприводимых представлений столько же, сколько классов.</li><li>Характеры неприводимых представлений показывают, как при операциях группы ведут себя орбитали, колебания и функции x, y, z.</li><li>Формула приведения отвечает на вопросы «сколько и каких»: колебаний, SALC, подуровней при расщеплении.</li><li>Характеры представления, натянутого на орбитали лигандов, — числа лигандов, оставшихся на месте; формула редукции раскладывает его на неприводимые, а проекционный оператор даёт SALC.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> точная теория групп для жёсткой молекулы</summary><dl><dt>Что вычисляется</dt><dd>Операции, классы, характеры, разложение Γ<sub>3N</sub>, понижение симметрии.</dd><dt>Какие приближения приняты</dt><dd>Идеальная равновесная геометрия; молекула жёсткая. Оси выбраны так, что молекула H₂O лежит в плоскости xz; в соглашении Малликена (плоскость yz, как на странице «Нормальные колебания») обозначения B₁ и B₂ меняются местами.</dd><dt>Какой вывод можно сделать</dt><dd>Правила отбора отвечают на вопрос «да или нет», но не дают интенсивностей.</dd></dl></details><!--lim:end-->
+<details class="sgGuide" id="sgWizard"><summary>Как определить точечную группу — пошаговый алгоритм</summary><div class="sgContent"><p class="hint">Рассматривайте молекулу целиком в заданной конформации. Операция должна совместить атомы с атомами того же вида. Алгоритм следует вашим ответам и не проверяет геометрию автоматически.</p><div id="sgSteps" aria-live="polite"></div></div></details>
+<div class="picker" id="picker" role="group" aria-label="Выбор группы"></div>
+<details class="mymol" id="myMol">
+  <summary>Своя молекула: определить точечную группу</summary>
+  <div class="mrow"><input id="molQ" aria-autocomplete="list" aria-expanded="false" autocomplete="off" spellcheck="false" placeholder="Название или формула: бензол, SF6, ферроцен…" aria-label="Название или формула молекулы"><button class="btn primary" id="molGo" type="button">Показать</button><button class="btn" id="pcGo" type="button">Найти в PubChem</button></div>
+  <p class="hint" style="font-size:13.5px;margin:0">В библиотеке страницы больше 350 молекул — их список по точечным группам в каталоге ниже. Любую другую молекулу можно найти в PubChem по английскому названию или задать координатами атомов.</p>
+  <details class="xyzBox" id="catBox"><summary>Каталог молекул по точечным группам</summary><div id="molCat" class="molcat"></div></details>
+  <details class="xyzBox"><summary>Вставить координаты (формат XYZ, Å)</summary>
+    <textarea id="xyz" rows="6" spellcheck="false" aria-label="Координаты в формате XYZ" placeholder="3&#10;вода&#10;O  0.000  0.000  0.117&#10;H  0.000  0.757 -0.469&#10;H  0.000 -0.757 -0.469"></textarea>
+    <div class="mrow"><button class="btn primary" id="xyzGo" type="button">Определить группу</button></div>
+    <p class="hint" style="font-size:13.5px;margin:0">Подойдут файлы .xyz из Avogadro, ORCA, Gaussian и других программ: первая строка — число атомов, вторая — комментарий, дальше строки «элемент x y z». Первые две строки можно не вставлять.</p>
+  </details>
+  <div class="mrow"><label class="hint" style="font-size:13.5px">Допуск при поиске элементов симметрии <select id="tol"><option value="0.01">0,01 Å — строго</option><option value="0.05">0,05 Å</option><option value="0.1" selected>0,1 Å</option><option value="0.2">0,2 Å — грубо</option></select></label></div>
+  <p id="molMsg" class="hint" aria-live="polite" style="font-size:14px;margin:0"></p>
+</details>
+<div class="work">
+  <div class="stage">
+    <svg id="view" viewBox="0 0 460 420" role="img" aria-label="Модель молекулы с элементами симметрии"></svg>
+    <div class="row"><button class="btn" id="play" type="button">Выполнить операцию</button><button class="btn" id="back" type="button">Вернуть</button><label class="hint" style="display:flex;gap:5px;align-items:center;cursor:pointer"><input type="checkbox" id="nums"> номера атомов</label><span class="hint" id="atomsLegend"></span></div>
+    <div class="msg" id="stageMsg"></div>
+    <div class="legend"><span><i class="dot" style="background:var(--ax-x)"></i><i class="dot" style="background:var(--ax-y)"></i><i class="dot" style="background:var(--ax-z)"></i>координатные оси x, y, z</span><span><i class="dot" style="background:var(--accent)"></i>оси и плоскости выбранной операции</span><span>Пунктирные кружки — где атомы были до операции</span><span id="lobeLegend" hidden><i class="dot" style="background:var(--lp)"></i>доля орбитали «+» <i class="dot" style="background:var(--lm);margin-left:8px"></i>«−»</span></div>
+  </div>
+  <div class="side">
+    <div class="gname"><b id="gName"></b><span id="gMol"></span></div>
+    <p id="gNote" class="hint" style="font-size:14px"></p>
+    <div class="tabs" role="tablist" aria-label="Разделы">
+      <button class="tab" role="tab" data-tab="cls" type="button">Классы</button>
+      <button class="tab" role="tab" data-tab="ct" type="button">Таблица характеров</button>
+      <button class="tab" role="tab" data-tab="gam" type="button">Счётчики Γ</button>
+      <button class="tab" role="tab" data-tab="vib" type="button">Колебания</button>
+      <button class="tab" role="tab" data-tab="mul" type="button">Умножение</button>
+    </div>
+    <div class="pane" id="pane" role="tabpanel"></div>
+  </div>
+</div>
+<section class="desc" aria-labelledby="hDesc">
+<h2 id="hDesc">Понижение симметрии</h2>
+<p class="hint" style="font-size:14px">Операция остаётся в группе, только если после неё изменённая молекула совпадает сама с собой. Поэтому новая группа всегда подгруппа исходной, а каждый её класс целиком лежит внутри одного из старых классов.</p>
+<div class="dlist" id="dList" role="group" aria-label="Варианты понижения"></div>
+<div class="res" id="res"></div>
+<details class="sgGuide" id="sgCompare" hidden><summary>Сравнить операции до и после изменения</summary><div class="sgContent" id="sgCompareBody"></div></details>
+</section>
+<section class="panel addon" aria-labelledby="hSalc">
+  <h2 id="hSalc">Приводимое представление и SALC</h2>
+  <p class="hint">Орбитали лигандов (1s водорода, σ-орбитали галогенов) переходят друг в друга при операциях симметрии. Таблица характеров группы, представление Γ на этих орбиталях, его разложение по формуле редукции и симметризованные комбинации (SALC), полученные проекционным оператором.</p>
+  <div class="crow"><span class="l">Молекула · группа</span><span class="grp" id="salcG" role="group" aria-label="Молекула"></span></div>
+  <div class="salcRow"><div class="tablewrap"><table class="ctab salcT" id="salcTab"></table></div><svg id="salcPic" viewBox="0 0 260 200" role="img" aria-label="Нумерация лигандов"></svg></div>
+  <p class="status note" id="salcRed"></p>
+  <p class="status note" id="salcList"></p>
+  <p class="hint" id="salcNote"></p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Сколько колебаний каждого типа симметрии у молекулы и какие из них видны в спектре?</span><a class="nqA" href="vibrations.html" data-goto="nm">Нормальные колебания →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Откройте O<sub>h</sub>, вкладку «Классы». Почему 3C₂ (= C₄²) и 6C₂ — разные классы, если это одинаковые повороты на 180°?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Повороты сопряжены, но различаются порядком</button><button type="button" class="opt" data-ok="1">Оси неэквивалентны: никакая операция группы не переводит координатную ось в ось через середины рёбер</button><button type="button" class="opt">Это одна и та же операция, разделение условно</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>3C₂ — повороты вокруг координатных осей (тех же, где лежат C₄), а 6C₂ — вокруг осей через середины противоположных рёбер. Никакая операция группы не переводит ось первого типа в ось второго, поэтому повороты не сопряжены и образуют разные классы.</div></div>
+<div class="tq"><p class="qt"><span>O<sub>h</sub> → «удлинение по оси z». Во что переходит класс 3C₂?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Остаётся одним классом</button><button type="button" class="opt" data-ok="1">Распадается на C₂ (вокруг z) и 2C₂′ (вокруг x и y)</button><button type="button" class="opt">Исчезает из группы</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>В C₂ (поворот вокруг z) и 2C₂′ (вокруг x и y). После удлинения ось z уже не эквивалентна x и y, и бывший класс распадается на два.</div></div>
+<div class="tq"><p class="qt"><span>T<sub>d</sub> (CH₄), вкладка «Счётчики Γ». Сколько полос будет в ИК-спектре и сколько линий в спектре КР?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">ИК — 2, КР — 4</button><button type="button" class="opt">ИК — 4, КР — 2</button><button type="button" class="opt">ИК — 2, КР — 2</button><button type="button" class="opt">ИК — 3, КР — 4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Γ<sub>кол</sub> = A₁ + E + 2T₂. ИК-активны только T₂ (как x, y, z) — 2 полосы. В КР активны A₁, E и оба T₂ — 4 линии.</div></div>
+<div class="tq"><p class="qt"><span>C<sub>3v</sub>, вкладка «Умножение». Сравните клетки C₃·σ<sub>v</sub> и σ<sub>v</sub>·C₃. Что они показывают?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Одно и то же отражение: операции коммутируют</button><button type="button" class="opt" data-ok="1">Отражения в разных плоскостях: группа неабелева</button><button type="button" class="opt">Поворот и отражение</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Оба произведения — отражения, но в разных плоскостях: C₃ и σ<sub>v</sub> не коммутируют, группа C<sub>3v</sub> неабелева. Порядок записи важен: в A·B сначала выполняется B.</div></div>
+<div class="tq"><p class="qt"><span>D<sub>4h</sub> ([PtCl₄]²⁻), «Таблица характеров». Какая d-орбиталь относится к b<sub>1g</sub>, а какая к b<sub>2g</sub>, и от чего это зависит?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">b<sub>1g</sub> — d<sub>x²−y²</sub>, b<sub>2g</sub> — d<sub>xy</sub>; зависит от выбора осей C₂′</button><button type="button" class="opt">b<sub>1g</sub> — d<sub>xy</sub>, b<sub>2g</sub> — d<sub>x²−y²</sub>; от осей не зависит</button><button type="button" class="opt">Обе орбитали относятся к e<sub>g</sub></button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>d<sub>x²−y²</sub> — b<sub>1g</sub>, d<sub>xy</sub> — b<sub>2g</sub>. Это следует из соглашения: оси C₂′ проходят через лиганды, т. е. по x и y. Если повернуть оси на 45°, метки поменяются местами.</div></div>
+<div class="tq"><p class="qt"><span>Блок «Приводимое представление и SALC»: на какие неприводимые представления раскладываются 1s-орбитали водородов CH₄?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">A₁ + E</button><button type="button" class="opt" data-ok="1">A₁ + T₂</button><button type="button" class="opt">T₂</button><button type="button" class="opt">2A₁ + E</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>A₁ + T₂: Γ = (4, 1, 0, 0, 2); по формуле редукции n(A₁) = (4 + 8 + 12)/24 = 1, n(T₂) = (12 + 12)/24 = 1. С орбиталями углерода связываются 2s (A₁) и три 2p (T₂).</div></div>
+</div></details></section>
+<script src="js/symmetry.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="sym";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="../assets/js/ballstick.js"></script><script src="js/symmetry.js"></script>
+
+<script src="js/symmetry.2.js"></script>
+<script src="js/salc.js"></script>
+</body>
+</html>

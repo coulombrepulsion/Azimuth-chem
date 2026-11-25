@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,co2,ammonia,methane,formaldehyde">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Normal modes</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/nm.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-nm-g.webp"><!--pose:end-->
+<h1>Normal modes</h1>
+<p class="lead">A molecule of N atoms has 3N − 6 vibrations (3N − 5 if it is linear). Each normal mode transforms as one irreducible representation of the point group, and the symmetry type decides whether there is a band in the IR spectrum and a line in the Raman spectrum. Mode shapes come from a simple valence force field; the frequencies are experimental fundamentals, but they are assigned within a harmonic model, without anharmonicity or Fermi resonance. For example, the symmetric stretch of CO₂ appears in the real Raman spectrum as a Fermi doublet near 1285 and 1388 cm⁻¹; 1333 cm⁻¹ is a nominal ν₁ value without the resonance.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>A molecule of N atoms has 3N − 6 normal modes (3N − 5 if linear).</li><li>Each mode transforms as an irreducible representation; the number of modes of each type is found from Γ<sub>3N</sub> and the reduction formula.</li><li>IR-active modes transform like x, y, z, Raman-active ones like quadratic functions; with an inversion center the mutual exclusion rule applies.</li><li>A degenerate mode is several shapes with one frequency.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> a harmonic model with a simple force field</summary><dl><dt>What is computed</dt><dd>The forms of the normal vibrations, their symmetry, IR and Raman activity.</dd><dt>Which approximations are made</dt><dd>The harmonic approximation, a model valence force field; frequencies taken from experiment; anharmonicity and Fermi resonance are not included. H₂O lies in the yz plane (Mulliken's convention); the “Molecular point groups” page uses the xz plane, so the same vibration is labelled B₁ there, not B₂.</dd><dt>What can be concluded</dt><dd>The number and symmetry of the vibrations and the selection rules are reliable; the forms of the vibrations are qualitative; intensities are not computed.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Vibrations of a molecule</h2>
+  <div class="crow"><span class="l">Molecule</span><span class="row" id="molG" role="group" aria-label="Molecule"></span></div>
+  <div class="work">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <svg id="mv" data-no-axis viewBox="0 0 440 340" role="img" aria-label="Animation of the vibration"></svg>
+      <div class="row"><button class="btn primary" id="bPlay" type="button">❚❚ Pause</button>
+        <span class="hint">Amplitude</span><input type="range" id="amp" min="0.05" max="0.45" step="0.01" style="width:140px" aria-label="Amplitude">
+        <label class="hint" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="arr" checked> displacement arrows</label></div>
+      <div class="row" id="cmpRow" hidden><span class="hint">Component of the degenerate mode</span><span class="row" id="cmpG" role="group" aria-label="Component"></span></div>
+      <p class="hint">Drag the molecule to rotate it.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="tablewrap" id="modeTab"></div>
+      <div class="status" id="st1"></div>
+    </div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. How many vibrations of each symmetry type</h2>
+  <p class="small">Counting by classes: for each class count the atoms that the operation leaves in place, multiply by the contribution of one atom χ = ±1 + 2cos φ (plus for rotations, minus for improper rotations and reflections) and obtain Γ<sub>3N</sub>. Subtract translations (transforming as x, y, z) and rotations (as R<sub>x</sub>, R<sub>y</sub>, R<sub>z</sub>) and decompose the rest by the reduction formula.</p>
+  <div class="tablewrap" id="g3nTab"></div>
+  <div class="red" id="redBox"></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">3. IR and Raman spectra</h2>
+  <p class="small">A vibration is IR active if its symmetry type is that of x, y or z: the dipole moment then changes during the vibration. Vibrations of the same type as the quadratic functions x², xy, … are Raman active: they change the polarizability. For molecules with a center of inversion the <b>rule of mutual exclusion</b> holds: no vibration is active in both IR and Raman.</p>
+  <svg id="spec" viewBox="0 0 1100 190" role="img" aria-label="Schematic IR and Raman spectra"></svg>
+  <div class="status" id="st3"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">How does the symmetry of the surroundings split the d levels of a metal?</span><a class="nqA" href="crystal-field.html" data-goto="cf">Crystal field →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises for exploring the page, plus a trainer. Do the action on the page and answer — your answer is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>H₂O: how many vibrations does the molecule have, and of which symmetry types?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">2A₁ + B₂</button><button type="button" class="opt">A₁ + 2B₂</button><button type="button" class="opt">3A₁</button><button type="button" class="opt">A₁ + B₁ + B₂</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>3N − 6 = 3. From the table in section 2: Γ<sub>vib</sub> = 2A₁ + B₂ — the symmetric stretch (3657 cm⁻¹), the bend (1595 cm⁻¹) and the antisymmetric stretch (3756 cm⁻¹).</div></div>
+<div class="tq"><p class="qt"><span>CO₂: how many bands are there in the IR spectrum (fundamentals)?</span></p>
+<p class="olab">IR bands</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">2</button><button type="button" class="opt">3</button><button type="button" class="opt">4</button><button type="button" class="opt">1</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>2: the antisymmetric stretch Σ<sub>u</sub><sup>+</sup> (2349 cm⁻¹) and the doubly degenerate bend Π<sub>u</sub> (667 cm⁻¹). The symmetric stretch Σ<sub>g</sub><sup>+</sup> (1333 cm⁻¹, a nominal value without Fermi resonance) does not change the dipole moment and is seen only in Raman; in the real spectrum it is a Fermi doublet near 1285 and 1388 cm⁻¹.</div></div>
+<div class="tq"><p class="qt"><span>CH₄: how many lines are there in the Raman spectrum?</span></p>
+<p class="olab">Raman lines</p><div class="opts" role="group"><button type="button" class="opt">3</button><button type="button" class="opt">9</button><button type="button" class="opt">2</button><button type="button" class="opt" data-ok="1">4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>4: A₁, E and both T₂ are Raman active. In the IR only the two T₂ vibrations appear (they transform as x, y, z).</div></div>
+<div class="tq"><p class="qt"><span>SF₆: how many vibrations are active neither in IR nor in Raman?</span></p>
+<p class="olab">Inactive vibrations</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">1</button><button type="button" class="opt">2</button><button type="button" class="opt">15</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>One — T<sub>2u</sub> (347 cm⁻¹): a u type gives no Raman, and in the IR only T<sub>1u</sub> is active. Such vibrations are called “silent”; their frequencies are found from combination bands or from calculations.</div></div>
+<div class="tq"><p class="qt"><span>Why does no frequency of CO₂ appear in both the IR and Raman spectra?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">The molecule is linear</button><button type="button" class="opt" data-ok="1">The molecule has a center of inversion</button><button type="button" class="opt">All vibrations of CO₂ are degenerate</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>CO₂ has a center of inversion. x, y, z change sign under inversion (u type) while the quadratic functions do not (g type), so one vibration cannot be active in both — this is the rule of mutual exclusion. H₂O has no center of inversion, and all three vibrations are seen in both spectra.</div></div>
+<div class="tq"><p class="qt"><span>NH₃: there are 3N − 6 = 6 vibrations. How many distinct frequencies does the molecule have?</span></p>
+<p class="olab">Distinct frequencies</p><div class="opts" role="group"><button type="button" class="opt">6</button><button type="button" class="opt">2</button><button type="button" class="opt" data-ok="1">4</button><button type="button" class="opt">3</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>4: Γ<sub>vib</sub> = 2A₁ + 2E. Each doubly degenerate E vibration is two forms with one frequency.</div></div>
+<!--self:start--><div class="selfBox"><h3 id="h4s">Test yourself</h3>
+  <p class="small">For the molecule below find the number of vibrations, the number of distinct frequencies (a degenerate vibration counts as one frequency) and how many of them are IR and Raman active.</p>
+  <div class="row"><b id="qMol" style="font-family:var(--f-display);font-size:19px"></b><button class="btn" id="qNew" type="button">Another molecule</button></div>
+  <div class="quiz">
+    <label><span>Vibrations</span><input id="q0" inputmode="numeric" autocomplete="off"></label>
+    <label><span>Distinct frequencies</span><input id="q1" inputmode="numeric" autocomplete="off"></label>
+    <label><span>IR active</span><input id="q2" inputmode="numeric" autocomplete="off"></label>
+    <label><span>Raman active</span><input id="q3" inputmode="numeric" autocomplete="off"></label>
+  </div>
+  <div class="row"><button class="btn primary" id="qChk" type="button">Check</button><button class="btn" id="qShow" type="button">Show solution</button></div>
+  <div class="status" id="qRes">Enter the numbers and click “Check”.</div>
+</div><!--self:end--></div></details></section>
+<script src="js/vibrations.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="nm";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="../assets/js/ballstick.js"></script>
+<script src="js/vibrations.js"></script>
+
+</body>
+</html>

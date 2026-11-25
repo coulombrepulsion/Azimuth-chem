@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,ethane">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>由频率计算热化学量</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/thermo.css">
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-thermo-g.webp"><!--pose:end-->
+<h1>由频率计算热化学量</h1>
+<p class="lead">量子化学计算给出的是原子核静止时的电子能量。要得到实验温度下的焓、熵和吉布斯自由能，需要在电子能量上加上校正：零点振动以及分子的热运动——平动、转动和振动。这里按与程序相同的公式计算这些校正，可以选用现成的分子，也可以输入你自己的频率。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>电子能量对应于静止的原子核；焓和吉布斯自由能是在其上加上零点振动和分子热运动的贡献得到的。</li><li>程序按理想气体模型计算这些校正：平动、刚性转子、谐振子。</li><li>气体熵的主要部分来自平动；只有频率约为 kT/hc 或更低的软模才对振动熵有明显贡献。</li><li>零点振动能通常远大于热校正，而熵取决于标准态和对称数。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>理想气体、刚性转子、谐振子</summary><dl><dt>计算的是什么</dt><dd>气相中单个分子的零点振动能、焓、熵、热容以及吉布斯自由能校正——由质量、转动常数和频率计算。</dd><dt>采用了哪些近似</dt><dd>理想气体；经典刚性转子（不考虑离心畸变，也不区分正、仲两种形式）；谐振动，不考虑非谐性和内旋转；只有一个电子态，没有低能激发态。 H₂ 的转动（转动温度约 88 K，与 T 相比并不小）按量子力学求和，正氢与仲氢的权重为 3 : 1；与数据表一样，不计核自旋熵。</dd><dt>能得出什么结论</dt><dd>对于气相中较小的刚性分子，使用实验频率时熵的精度可达零点几 J/(mol·K)。对于软模、内旋转和溶液，只能作为估计；最终 G 的精度主要取决于计算得到的电子能量和频率。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">分子与条件</h2>
+  <div class="crow"><span class="l">分子</span><span class="grp" id="molG" role="group" aria-label="分子"></span></div>
+  <div class="crow"><span class="l">温度 T</span><input type="range" id="T" min="50" max="2000" step="1" value="298" aria-label="温度"><span class="val" id="Tv"></span><button type="button" class="chip" id="bT298">298,15 K</button></div>
+  <div class="crow"><span class="l">压力（标准态）</span><span class="grp" id="pG" role="group" aria-label="压力"></span></div>
+  <p class="hint" id="molInfo"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">电子能量的校正</h2>
+  <div class="cards" id="cards"></div>
+  <div class="tablewrap" id="tab"></div>
+  <div class="ref" id="refBox"></div>
+  <p class="hint">分子的吉布斯自由能：G = E<sub>el</sub> + G<sub>corr</sub>，焓：H = E<sub>el</sub> + H<sub>corr</sub>。在程序的输出文件中，这些校正称为 “Thermal correction to Enthalpy / Gibbs Free Energy”（Gaussian）或 “Thermal Enthalpy correction” 和 “G-E(el)”（ORCA）。ORCA 中的 “Total Enthalpy” 和 “Final Gibbs free energy” 已经是完整的 H 和 G，其中已包含 E<sub>el</sub>：不要再加一次。</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">熵和热容随温度的变化</h2>
+  <div class="crow"><span class="l">显示</span><span class="grp" id="qG" role="group" aria-label="物理量"></span></div>
+  <svg id="chart" viewBox="0 0 960 330" role="img" aria-label="随温度的变化"></svg>
+  <div class="legend" id="leg"></div>
+  <p class="hint" id="chartNote"></p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">自定义分子：来自计算的频率</h2>
+  <p class="hint">从输出文件中粘贴数据：摩尔质量、转动常数（线形分子一个，非线形分子三个）、对称数、自旋多重度和频率。虚频请以负号输入——它们会像过渡态那样被排除。</p>
+  <div class="cin">
+    <label>质量，原子质量单位<input id="cM" inputmode="decimal" value="18.015"></label>
+    <label>转动常数<input id="cB" value="27.376 14.586 9.516"></label>
+    <label>常数的单位<select id="cBu"><option value="cm">cm⁻¹</option><option value="GHz">GHz</option><option value="MHz">MHz</option></select></label>
+    <label>对称数 σ<input id="cSig" inputmode="numeric" value="2"></label>
+    <label>多重度 2S + 1<input id="cG" inputmode="numeric" value="1"></label>
+    <label>频率标度因子<input id="cScale" inputmode="decimal" value="1"></label>
+    <label class="wide">频率，cm⁻¹（用空格、逗号或换行分隔）<textarea id="cNu">3657 1595 3756</textarea></label>
+    <label class="chk wide"><input type="checkbox" id="cLow"> 低于 100 cm⁻¹ 的频率按 100 cm⁻¹ 计算（对软模常这样处理，因为谐振近似会高估其熵）</label>
+  </div>
+  <div class="row"><button type="button" class="btn" id="bFill">采用所选分子的数据</button><button type="button" class="btn primary" id="bCalc">计算</button></div>
+  <p class="status" id="cMsg" role="status"></p>
+</section>
+<section class="panel" aria-labelledby="h5s">
+  <h2 id="h5s">公式</h2>
+  <div class="eq">
+    <div class="eqb"><div class="t">平动（萨克尔–特特罗德公式）</div>S<sub>trans</sub> = R [ln((2πmkT/h²)<sup>3/2</sup>·kT/p) + 5/2]，&nbsp; H<sub>trans</sub> = 5/2 RT（含 pV = RT）</div>
+    <div class="eqb"><div class="t">转动（刚性转子，高温）</div>线形：q<sub>rot</sub> = T/(σΘ)，S = R(ln q + 1)；非线形：q<sub>rot</sub> = √π/σ·(T³/Θ<sub>A</sub>Θ<sub>B</sub>Θ<sub>C</sub>)<sup>1/2</sup>，S = R(ln q + 3/2)</div>
+    <div class="eqb"><div class="t">振动（谐振子），u = hcν/kT</div>ZPE = Σ ½hcν; &nbsp; S = R Σ [u/(e<sup>u</sup> − 1) − ln(1 − e<sup>−u</sup>)]</div>
+    <div class="eqb"><div class="t">电子贡献与总和</div>S<sub>el</sub> = R ln(2S + 1)；&nbsp; G<sub>corr</sub> = ZPE + H<sub>therm</sub> − TS</div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">各参与物的能量校正已经得到。如何由它们求出反应的平衡常数？</span><a class="nqA" href="equilibrium.html" data-goto="eqm">平衡：从能量到平衡常数 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>298.15 K 下的水：熵中有多大比例来自平动？为什么振动几乎没有贡献？</span></p>
+<p class="olab">平动贡献所占比例，%</p><div class="opts" role="group"><button type="button" class="opt">50</button><button type="button" class="opt" data-ok="1">77</button><button type="button" class="opt">99</button><button type="button" class="opt">23</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>约 77 %：188.7 J/(mol·K) 中的 144.9；转动贡献 43.7，振动只有 0.03。水最软的振动 1595 cm⁻¹ 对应温度 hcν/k ≈ 2300 K，在 298 K 时其激发能级几乎没有布居。</div></div>
+<div class="tq"><p class="qt"><span>为什么 O₂ 的熵有电子贡献，而 N₂ 没有？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">O₂ 是三重态：R ln 3</button><button type="button" class="opt">O₂ 的质量更大</button><button type="button" class="opt">O₂ 的振动频率更低</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>O₂ 的基态是三重态：三个能量相同的自旋子能级给出 R ln 3 = 9.13 J/(mol·K)。N₂ 是单重态，R ln 1 = 0。</div></div>
+<div class="tq"><p class="qt"><span>甲烷，σ = 12。点击“采用所选分子的数据”，把 σ 改为 1 后重新计算。熵会被高估多少？</span></p>
+<p class="olab">熵的高估量，J/(mol·K)</p><div class="opts" role="group"><button type="button" class="opt">6.2</button><button type="button" class="opt">0</button><button type="button" class="opt">2.5</button><button type="button" class="opt" data-ok="1">20.7</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>高估 R ln 12 = 20.7 J/(mol·K)——相当于整个转动贡献的一半。在 298 K，这样的错误使 G 偏移 T·ΔS ≈ 6.2 kJ/mol。程序根据点群确定对称数，因此最好先把几何结构对称化。</div></div>
+<div class="tq"><p class="qt"><span>比较水的零点振动能与热校正 H(298) − H(0)。哪个更大？由此能得出什么结论？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">ZPE 大约大五倍</button><button type="button" class="opt">两者大致相等</button><button type="button" class="opt">热校正更大</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>ZPE = 53.9 kJ/mol，热校正为 9.9 kJ/mol，小五倍。零点振动在 0 K 时也存在，因此总要把它加到电子能量上；遗漏 ZPE 会在涉及 X–H 键断裂的反应能中造成严重误差。</div></div>
+<div class="tq"><p class="qt"><span>选择 CO₂ 并打开热容图。哪一项贡献随温度升高而增大？为什么它在 CO₂ 中 298 K 时就已明显，而在 N₂ 中没有？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">振动</button><button type="button" class="opt">转动</button><button type="button" class="opt">平动</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>振动贡献：CO₂ 在 298 K 时为 8.0 J/(mol·K)，在 1000 K 时为 25.1。CO₂ 有一个二重简并的软弯曲振动 667 cm⁻¹（hcν/k ≈ 960 K），而 N₂ 只有一个振动 2330 cm⁻¹（≈ 3350 K）。</div></div>
+<div class="tq"><p class="qt"><span>把压力从 1 bar 改为 1 atm。熵变化了多少？如果改用 1 mol/L 的标准态又会怎样？</span></p>
+<p class="olab">由 1 bar 改为 1 atm 时 S 的变化，J/(mol·K)</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">0.11</button><button type="button" class="opt">0</button><button type="button" class="opt">1.3</button><button type="button" class="opt">26.7</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>变化 R ln(1.01325) = 0.11 J/(mol·K)——可以忽略。298 K 下 1 mol/L 的气体相当于 24.8 bar 的压力：熵减少 R ln 24.8 = 26.7 J/(mol·K)，G 增加 7.96 kJ/mol。计算溶液中的反应时要加上这一校正。</div></div>
+</div></details></section>
+<script src="js/thermochemistry.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="thermo";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/thermochemistry.js"></script>
+
+</body>
+</html>

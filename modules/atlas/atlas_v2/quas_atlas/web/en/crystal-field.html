@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Crystal field and ligand field</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/cf.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-cf-g.webp"><!--pose:end-->
+<h1>Crystal field and ligand field</h1>
+<p class="lead">In a complex the five d orbitals of the metal are no longer degenerate: orbitals pointing at the ligands go up, the others go down. How the levels split is decided by the symmetry of the surroundings. The energies here come from the angular overlap model (AOM): each ligand raises a d orbital by e<sub>σ</sub>F<sub>σ</sub>² + e<sub>π</sub>F<sub>π</sub>², where F is the σ- and π-type overlap of the orbital with the ligand. The parameters e<sub>σ</sub> and e<sub>π</sub> are illustrative values for M³⁺ ions of the 3d series.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>Ligands lift the degeneracy of the metal d orbitals; the splitting pattern is set by the symmetry of the surroundings.</li><li>In an octahedron e<sub>g</sub> lies above t<sub>2g</sub> by Δ<sub>o</sub>; Δ<sub>o</sub> depends on the ligand (spectrochemical series) and on the metal.</li><li>The spin state is decided by the competition between the splitting Δ and the pairing energy P.</li><li>Uneven occupation of a degenerate level distorts the complex (Jahn–Teller effect).</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> the angular overlap model with illustrative parameters</summary><dl><dt>What is computed</dt><dd>Splitting of the d levels in different geometries, the spin state, the Jahn–Teller effect.</dd><dt>Which approximations are made</dt><dd>The metal d orbitals and their mixing with the s orbital (e<sub>ds</sub> = 0.25 e<sub>σ</sub>; it lowers d<sub>z²</sub> in square-planar and linear complexes); the parameters e<sub>σ</sub>, e<sub>π</sub> and the pairing energy are illustrative, for 3d metals, not fitted to a specific complex.</dd><dt>What can be concluded</dt><dd>The order and symmetry of the levels and the high-/low-spin trends, yes; quantitative Δ values, no.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Splitting of the d levels</h2>
+  <div class="crow"><span class="l">Geometry</span><span class="row" id="gG" role="group" aria-label="Geometry"></span></div>
+  <div class="crow" id="tRow"><span class="l">Tetragonal distortion</span><input type="range" id="tet" min="0" max="1.4" step="0.01" style="width:240px" aria-label="Strength of the axial ligands"><span class="val" id="tetV"></span></div>
+  <div class="crow"><span class="l">Ligand</span><span class="row" id="lG" role="group" aria-label="Ligand"></span></div>
+  <div class="crow"><span class="l">d electrons</span><span class="row" id="dG" role="group" aria-label="Number of d electrons"></span></div>
+  <div class="crow"><span class="l">Pairing energy P</span><input type="range" id="pp" min="8000" max="32000" step="100" style="width:240px" aria-label="Pairing energy"><span class="val" id="ppV"></span></div>
+  <div class="work">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="geo"><svg id="geo" viewBox="0 0 150 150" role="img" aria-label="Geometry of the complex"></svg><div class="hint" id="geoT"></div></div>
+      <svg id="dia" viewBox="0 0 460 380" role="img" aria-label="d-level splitting diagram"></svg>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="tablewrap" id="lvTab"></div>
+      <div class="tablewrap" id="sumTab"></div>
+      <div class="status" id="st1"></div>
+    </div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. High or low spin</h2>
+  <p class="small">For octahedral d⁴–d⁷ complexes two configurations are possible. High spin is favored when the splitting Δ<sub>o</sub> is smaller than the pairing energy P, low spin when it is larger. The lines show the d-electron energy of both configurations versus Δ<sub>o</sub>; the vertical bar marks the chosen ligand.</p>
+  <div class="two">
+    <svg id="hsSvg" viewBox="0 0 520 300" role="img" aria-label="Energies of the high- and low-spin configurations"></svg>
+    <div class="status" id="st2"></div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">3. The Jahn–Teller effect</h2>
+  <p class="small">If a degenerate level in an octahedron is unevenly occupied, a distortion lifts the degeneracy and lowers the electron energy — linearly in the size of the distortion. The elastic energy grows quadratically, so the minimum lies at a nonzero distortion. The effect is strongest for uneven occupation of e<sub>g</sub>: d⁹ (Cu²⁺), high-spin d⁴ (Cr²⁺, Mn³⁺), low-spin d⁷.</p>
+  <div class="two">
+    <svg id="jtSvg" viewBox="0 0 520 300" role="img" aria-label="Energy as a function of tetragonal distortion"></svg>
+    <div class="status" id="st3"></div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">4. Symmetry: level labels and correlation</h2>
+  <p class="small">The level labels are the irreducible representations of the point group by which the d orbitals transform (the quadratic-function column of the character table). On descent in symmetry O<sub>h</sub> → D<sub>4h</sub> the degenerate levels split: e<sub>g</sub> → a<sub>1g</sub> + b<sub>1g</sub>, t<sub>2g</sub> → b<sub>2g</sub> + e<sub>g</sub>.</p>
+  <div class="tablewrap" id="corTab"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">How many different states does one configuration, such as d² or p², give?</span><a class="nqA" href="terms.html" data-goto="terms">Atomic terms →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises for exploring the page, plus a trainer. Do the action on the page and answer — your answer is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>What is the CFSE of low-spin [Fe(CN)₆]⁴⁻ in units of Δ<sub>o</sub>?</span></p>
+<p class="olab">CFSE, Δₒ</p><div class="opts" role="group"><button type="button" class="opt">0</button><button type="button" class="opt">-0.4</button><button type="button" class="opt">-1.6</button><button type="button" class="opt" data-ok="1">-2.4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Fe²⁺ is d⁶, low spin: t<sub>2g</sub>⁶e<sub>g</sub>⁰, CFSE = 6 · (−0.4Δ<sub>o</sub>) = −2.4Δ<sub>o</sub> (without the pairing energy). All electrons are paired — the complex is diamagnetic.</div></div>
+<div class="tq"><p class="qt"><span>How many unpaired electrons does [Fe(H₂O)₆]²⁺ have?</span></p>
+<p class="olab">Unpaired electrons</p><div class="opts" role="group"><button type="button" class="opt">0</button><button type="button" class="opt" data-ok="1">4</button><button type="button" class="opt">2</button><button type="button" class="opt">6</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Four: H₂O is a weak-field ligand, Δ<sub>o</sub> &lt; P, configuration t<sub>2g</sub>⁴e<sub>g</sub>² (high spin). Select d⁶ and H₂O, then CN⁻ — you will see the switch to low spin.</div></div>
+<div class="tq"><p class="qt"><span>Switch to the tetrahedron. Why are tetrahedral complexes almost always high-spin?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">The splitting is small compared with the pairing energy</button><button type="button" class="opt">In a tetrahedron the d orbitals do not split</button><button type="button" class="opt">Ligands in a tetrahedron are always weak-field</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The splitting Δ<sub>t</sub> ≈ <span class=fr><span>4</span><span>9</span></span>Δ<sub>o</sub>: there are four ligands instead of six, and no d orbital points straight at a ligand. Δ<sub>t</sub> is almost always smaller than the pairing energy P.</div></div>
+<div class="tq"><p class="qt"><span>Which geometry makes a d⁸ complex with strong ligands diamagnetic?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Square planar</button><button type="button" class="opt">Tetrahedral</button><button type="button" class="opt">Octahedral</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Square planar: d<sub>x²−y²</sub> rises very high, and all eight electrons pair up in the four lower orbitals — as in [Ni(CN)₄]²⁻ and [PtCl₄]²⁻ (Pt(II), a 5d metal, has a much larger splitting than this model's 3d parameters give: here with Cl⁻ the electrons pair only for P below ≈ 12 500 cm⁻¹). In an octahedron d⁸ always has two unpaired electrons in e<sub>g</sub>.</div></div>
+<div class="tq"><p class="qt"><span>Why do CO and CN⁻ give the largest splitting?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">They are π acceptors and lower t₂g</button><button type="button" class="opt">They are the most electronegative</button><button type="button" class="opt">They are the largest</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>They are π acceptors (e<sub>π</sub> &lt; 0 in the model): their empty π* orbitals lower t<sub>2g</sub>, and Δ<sub>o</sub> = 3e<sub>σ</sub> − 4e<sub>π</sub> grows. Halides are π donors (e<sub>π</sub> &gt; 0); they raise t<sub>2g</sub> and reduce Δ<sub>o</sub>.</div></div>
+<div class="tq"><p class="qt"><span>What does the e<sub>g</sub> level of the octahedron become on descent in symmetry O<sub>h</sub> → D<sub>4h</sub>?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">a₁g + b₁g</button><button type="button" class="opt">b₂g + eg</button><button type="button" class="opt">a₁g + eg</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>e<sub>g</sub> → a<sub>1g</sub> (d<sub>z²</sub>) + b<sub>1g</sub> (d<sub>x²−y²</sub>), and t<sub>2g</sub> → e<sub>g</sub> (d<sub>xz</sub>, d<sub>yz</sub>) + b<sub>2g</sub> (d<sub>xy</sub>). This can be seen in the correlation table of section 4 and in the labels on the diagram with the distortion switched on.</div></div>
+<!--self:start--><div class="selfBox"><h3 id="h5s">Test yourself</h3>
+  <p class="small">For the octahedral complex below find the number of d electrons, the number of unpaired electrons and the crystal field stabilization energy (CFSE) in units of Δ<sub>o</sub>, without the pairing energy. The spin state is given from experiment.</p>
+  <div class="row"><b id="qCx" style="font-family:var(--f-display);font-size:19px"></b><button class="btn" id="qNew" type="button">Another complex</button></div>
+  <div class="quiz">
+    <label><span>d electrons</span><input id="q0" inputmode="numeric" autocomplete="off"></label>
+    <label><span>Unpaired electrons</span><input id="q1" inputmode="numeric" autocomplete="off"></label>
+    <label><span>CFSE, Δ<sub>o</sub></span><input id="q2" inputmode="decimal" autocomplete="off"></label>
+  </div>
+  <div class="row"><button class="btn primary" id="qChk" type="button">Check</button><button class="btn" id="qShow" type="button">Show solution</button></div>
+  <div class="status" id="qRes">Enter your answers and press “Check”.</div>
+</div><!--self:end--></div></details></section>
+<script src="js/crystal-field.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="cf";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/crystal-field.js"></script>
+
+</body>
+</html>

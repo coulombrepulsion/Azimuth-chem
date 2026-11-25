@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Defects and surfaces of crystals</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>Defects and surfaces of crystals</h1>
+<p class="lead">A real crystal is not perfect: it has vacancies, impurities and, of course, a surface. The programs compute only periodic systems, so a defect is put into a supercell and a surface into a slab with vacuum. Here you see what a defect costs, how its charge depends on the Fermi level and which traps wait in a calculation of a surface.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>The formation energy of a vacancy: E<sub>f</sub> = E<sub>N−1</sub> − (N − 1)/N · E<sub>N</sub> — the cell with the vacancy is compared with as many atoms of the perfect crystal. From the bonds: E<sub>f</sub> ≈ 2ε, the bond energy per atom.</li><li>The equilibrium share of vacancies c = e^(−E<sub>f</sub>/kT). An error of 0.3 eV in E<sub>f</sub> is a factor of about eight at the melting point of silicon: a calculation tells which defect prevails, not how many there are.</li><li>A charged defect exchanges electrons with the Fermi level: E<sub>f</sub>(q; E<sub>F</sub>) = E<sub>f</sub>(q; 0) + q·E<sub>F</sub>. Where the lines of two charges cross is the transition level ε(q/q′) — a difference of total energies, not an orbital energy.</li><li>A charged supercell interacts with its copies and the background: the correction ≈ q²α/(2εL) falls as 1/L, slowly. Hundreds of atoms are needed, a hybrid functional for the gap and several starting structures.</li><li>A surface is a slab of N layers and vacuum: E<sub>slab</sub>(N) = N·E<sub>bulk</sub> + 2Aγ. The bulk energy is taken from the slope of this line: a bulk energy «from elsewhere» with an error δ gives an error of γ of Nδ/(2A), growing with the thickness.</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">A vacancy: formation energy and concentration</h2>
+  <div class="crow"><span class="l">Formation energy E<sub>f</sub>, eV</span><input type="range" id="ef" min="0.5" max="6" step="0.05" value="3.6" aria-label="Ef"><span class="val" id="efv"></span></div>
+  <div class="crow"><span class="l">Temperature, K</span><input type="range" id="tt" min="300" max="2000" step="1" value="1687" aria-label="T"><span class="val" id="ttv"></span></div>
+  <svg id="vchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Share of vacancies against temperature"></svg>
+  <div class="legend" id="vleg"></div>
+  <div class="cards" id="vcards"></div>
+  <p class="status" id="vNote"></p>
+  <p class="hint">c = e<sup>−E<sub>f</sub>/kT</sup>, k = 8.617·10<sup>−5</sup> eV/K; silicon has 5·10<sup>22</sup> sites per cm³. The measured E<sub>f</sub> of a vacancy in silicon is about 3.6 eV; the model potential of the lecture gives 4.34 eV without relaxation and 2.7–2.8 eV after it. The vibrational entropy of formation is left out.</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Charged defects and transition levels</h2>
+  <div class="crow"><span class="l">E<sub>f</sub> of charge +1 at E<sub>F</sub> = 0, eV</span><input type="range" id="ep" min="-1" max="6" step="0.05" value="2.9" aria-label="Ef(+)"><span class="val" id="epv"></span></div>
+  <div class="crow"><span class="l">E<sub>f</sub> of the neutral, eV</span><input type="range" id="e0" min="-1" max="6" step="0.05" value="3.4" aria-label="Ef(0)"><span class="val" id="e0v"></span></div>
+  <div class="crow"><span class="l">E<sub>f</sub> of charge −1 at E<sub>F</sub> = 0, eV</span><input type="range" id="em" min="-1" max="6" step="0.05" value="4.3" aria-label="Ef(−)"><span class="val" id="emv"></span></div>
+  <div class="crow"><span class="l">Band gap, eV</span><input type="range" id="gp" min="0.3" max="5" step="0.01" value="1.17" aria-label="gap"><span class="val" id="gpv"></span></div>
+  <svg id="cchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Formation energy against the Fermi level"></svg>
+  <div class="legend" id="cleg"></div>
+  <div class="cards" id="ccards"></div>
+  <p class="status" id="cNote"></p>
+  <div class="crow"><span class="l">Charge of the defect q</span><span class="grp" id="qG" role="group" aria-label="Charge of the defect q"></span></div>
+  <div class="crow"><span class="l">Dielectric constant ε</span><input type="range" id="ee" min="1" max="30" step="0.1" value="11.7" aria-label="ε"><span class="val" id="eev"></span></div>
+  <div class="cards" id="scards"></div>
+  <p class="status" id="sNote"></p>
+  <p class="hint">E<sub>f</sub>(q; E<sub>F</sub>) = E<sub>f</sub>(q; 0) + q·E<sub>F</sub>; ε(q/q′) = [E<sub>f</sub>(q; 0) − E<sub>f</sub>(q′; 0)]/(q′ − q). The correction ΔE ≈ q²α·14.4 eV·Å/(2εL), α = 2.84; supercells of silicon of 2³…6³ cubic cells of 8 atoms. ε = 11.7 is silicon, about 5 a typical oxide. The energies are illustrative, as on the slide of the lecture.</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">A surface: the slab and the surface energy</h2>
+  <div class="crow"><span class="l">Face of silicon</span><span class="grp" id="fG" role="group" aria-label="Face of silicon"></span></div>
+  <div class="crow"><span class="l">Error of the bulk energy δ, meV per atom</span><input type="range" id="dd" min="-20" max="20" step="0.5" value="10" aria-label="δ"><span class="val" id="ddv"></span></div>
+  <div class="crow"><span class="l">Noise of the slab energy, meV</span><input type="range" id="nz" min="0" max="10" step="0.5" value="1" aria-label="noise"><span class="val" id="nzv"></span></div>
+  <svg id="schart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Surface energy against the number of layers"></svg>
+  <div class="legend" id="sleg"></div>
+  <div class="cards" id="gcards"></div>
+  <p class="status" id="gNote"></p>
+  <p class="hint">γ = (E<sub>slab</sub> − N·E<sub>bulk</sub>)/(2A); from the bonds γ ≈ n·(ε/2)/A, ε = 2.17 eV (the model potential, 2ε = 4.34 eV per atom); (111): n = 1, A = √3/4·a² = 12.8 Å²; (100): n = 2, A = a²/2 = 14.7 Å². 1 eV/Å² = 16.02 J/m². «From the line» — the intercept of the least-squares line through the slabs of 2…N layers.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">Molecules settle on a surface. Why do some metals hold hydrogen firmly and others not, and where does the magnetism of iron come from?</span><a class="nqA" href="adsorption.html" data-goto="adsorption">Adsorption and magnetism →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Silicon, E<sub>f</sub> = 3.6 eV, at the melting point 1687 K. What share of the sites is empty?</span></p>
+<p class="olab">c</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">2·10⁻¹¹</button><button type="button" class="opt">2·10⁻⁵</button><button type="button" class="opt">3·10⁻²⁷</button><button type="button" class="opt">0.01</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>e<sup>−24.8</sup> ≈ 2·10<sup>−11</sup>: E<sub>f</sub>/kT = 3.6/(8.617·10<sup>−5</sup>·1687) = 24.8. One vacancy per 50 billion atoms — about 10<sup>12</sup> per cubic centimetre.</div></div>
+<div class="tq"><p class="qt"><span>E<sub>f</sub>(+; 0) = 2.9, E<sub>f</sub>(0) = 3.4, E<sub>f</sub>(−; 0) = 4.3 eV. Where is the level ε(0/−)?</span></p>
+<p class="olab">ε(0/−), eV</p><div class="opts" role="group"><button type="button" class="opt">0.5</button><button type="button" class="opt" data-ok="1">0.9</button><button type="button" class="opt">1.4</button><button type="button" class="opt">4.3</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>0.9 eV: ε(0/−) = [E<sub>f</sub>(0) − E<sub>f</sub>(−; 0)]/(−1 − 0) = 4.3 − 3.4. The level ε(+/0) = 3.4 − 2.9 = 0.5 eV: below it the defect is a donor, above 0.9 eV an acceptor.</div></div>
+<div class="tq"><p class="qt"><span>Silicon (ε = 11.7), charge +1, a supercell of 216 atoms. What is the Makov–Payne correction roughly?</span></p>
+<p class="olab">ΔE, eV</p><div class="opts" role="group"><button type="button" class="opt">0.16</button><button type="button" class="opt" data-ok="1">0.11</button><button type="button" class="opt">0.02</button><button type="button" class="opt">1.5</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>0.11 eV: L = 3·5.43 = 16.3 Å, ΔE = 2.84·14.4/(2·11.7·16.3). 0.16 eV is for 64 atoms; the correction falls as 1/L, slowly. 1.5 eV is what an oxide with ε = 5 and charge 2 gives.</div></div>
+<div class="tq"><p class="qt"><span>The bulk energy was taken from a separate calculation with an error δ per atom. How does the error of the surface energy behave as the slab gets thicker?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">It grows in proportion to N</button><button type="button" class="opt">It falls as 1/N</button><button type="button" class="opt">It does not depend on N</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>It grows: Δγ = Nδ/(2A) — the error δ is multiplied by the number of atoms in the slab. This is why the bulk energy is taken from the slope of the line E<sub>slab</sub>(N), computed with the same settings as the slabs.</div></div>
+</div></details></section>
+<script src="js/defects.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="defects";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/defects.js"></script>
+
+</body>
+</html>

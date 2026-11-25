@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Basis set convergence and the complete basis set limit</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/cbs.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-cbs-g.webp"><!--pose:end-->
+<h1>Basis set convergence and the complete basis set limit</h1>
+<p class="lead">The energy in a finite basis is not the final answer but a point on the way to the complete basis set (CBS) limit. Dunning’s cc-pVXZ basis sets are built so that this path is predictable: the Hartree–Fock energy converges quickly, the correlation energy slowly, roughly as X⁻³ in the cardinal number X (D = 2, T = 3, Q = 4, 5). Extrapolation is built on this law: two calculations in neighbouring basis sets give a better estimate of the limit than a calculation in the larger of them. All energies were computed with PySCF at experimental geometries, with the 1s electrons of heavy atoms frozen.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>The energy in a finite basis is a point on the way to the complete basis set limit; the cc-pVXZ basis sets make this path systematic.</li><li>The Hartree–Fock energy converges quickly, almost exponentially; the correlation energy slowly, as X⁻³.</li><li>A two-point X⁻³ extrapolation from TZ and QZ gives a better estimate of the limit than a QZ calculation.</li><li>CCSD(T) atomization energies in cc-pVDZ are too low by 6–33 kcal/mol, in cc-pVTZ by 1–11: quantitative conclusions need at least TZ, preferably extrapolation.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> Dunning basis sets, small molecules</summary><dl><dt>What is computed</dt><dd>Hartree–Fock energies, MP2 and CCSD(T) correlation energies and atomization energies in the cc-pVDZ … cc-pV5Z series; two-point X⁻³ extrapolation.</dd><dt>Which approximations are made</dt><dd>Frozen core; experimental geometries; the Hartree–Fock energy is not extrapolated but taken in the larger basis; cc-pV5Z calculations only for H₂, H₂O, HF and N₂.</dd><dt>What can be concluded</dt><dd>How fast the different contributions converge and how much better extrapolation is than a single calculation — yes; exact limit values for comparison with experiment — no: core correlation and relativistic corrections are also needed.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Energy in the cc-pVXZ series</h2>
+  <div class="crow"><span class="l">Molecule</span><span class="grp" id="molG" role="group" aria-label="Molecule"></span></div>
+  <div class="crow"><span class="l">Quantity</span><span class="grp" id="qG" role="group" aria-label="Quantity"></span></div>
+  <div class="crow"><span class="l">Horizontal axis</span><span class="grp" id="axG" role="group" aria-label="Horizontal axis"></span></div>
+  <svg id="conv" viewBox="0 0 960 330" role="img" aria-label="Convergence of the energy with the basis"></svg>
+  <div class="tablewrap" id="convT"></div>
+  <p class="hint" id="convN"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Extrapolation to the complete basis set limit</h2>
+  <p class="hint">If E<sub>X</sub> = E<sub>CBS</sub> + A·X⁻³, then from two basis sets X and Y = X + 1 the limit is E<sub>CBS</sub> = (X³E<sub>X</sub> − Y³E<sub>Y</sub>) / (X³ − Y³). The formula is applied to the correlation energy; the Hartree–Fock energy is taken in the larger basis — it has almost converged already.</p>
+  <div class="crow"><span class="l">Basis pair</span><span class="grp" id="pG" role="group" aria-label="Basis pair"></span></div>
+  <div class="tablewrap" id="xT"></div>
+  <p class="hint" id="xN"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">What it means for chemistry: atomization energy</h2>
+  <p class="hint">Error of the CCSD(T) atomization energy in the cc-pVXZ basis relative to the limit extrapolated from cc-pVTZ and cc-pVQZ. In a small basis the molecule misses more correlation energy than the atoms do, so the binding comes out weaker.</p>
+  <svg id="taeC" viewBox="0 0 960 330" role="img" aria-label="Error of the atomization energy in different basis sets"></svg>
+  <div class="legend" id="taeL"></div>
+  <div class="tablewrap" id="taeT"></div>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">Why correlation converges slowly</h2>
+  <div class="eq">
+    <div class="eqb"><div class="t">The electron cusp</div>The exact wavefunction has a kink where two electrons meet: as r<sub>12</sub> → 0 it is linear in r<sub>12</sub>. Smooth Gaussian functions describe this kink only through a sum of ever higher angular momenta — hence the slow X⁻³ law.</div>
+    <div class="eqb"><div class="t">Hartree–Fock converges quickly</div>In the Hartree–Fock method an electron moves in a mean field, and no cusp is needed; the energy approaches the limit roughly exponentially. Each next basis reduces its error several times, and in energy differences the remainder mostly cancels.</div>
+    <div class="eqb"><div class="t">The cost of each step</div>The number of functions grows roughly as X³: water has 24, 58, 115 and 201 functions from DZ to 5Z. The CCSD(T) time grows as N⁷, so the step from QZ to 5Z costs tens of times more than the whole QZ calculation.</div>
+    <div class="eqb"><div class="t">Practical rules</div>Energies in DZ are not suitable for quantitative conclusions. A reasonable minimum is TZ, better a TZ/QZ extrapolation. Explicitly correlated methods (F12) add a factor with r<sub>12</sub> to the wavefunction and give QZ quality in a TZ basis.</div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">In complexes an incomplete basis also gives a spurious attraction. Where does it come from and how can it be removed?</span><a class="nqA" href="bsse.html" data-goto="bsse">Basis set superposition error →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Water, CCSD(T) correlation: how much energy does the step cc-pVTZ → cc-pVQZ add?</span></p>
+<p class="olab">Change in correlation, mEₕ</p><div class="opts" role="group"><button type="button" class="opt">2.6</button><button type="button" class="opt" data-ok="1">19.9</button><button type="button" class="opt">7.7</button><button type="button" class="opt">275.0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>About 19.9 mEₕ (from −275.0 to −295.0 mEₕ), i.e. 12.5 kcal/mol. For chemistry this is a huge amount: even QZ is still far from the limit in the correlation energy.</div></div>
+<div class="tq"><p class="qt"><span>For water, how many times larger is the TZ → QZ step for the correlation energy than for the Hartree–Fock energy?</span></p>
+<p class="olab">Times larger</p><div class="opts" role="group"><button type="button" class="opt">10</button><button type="button" class="opt">0.39</button><button type="button" class="opt" data-ok="1">2.6</button><button type="button" class="opt">1.0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>About 2.6 times: the Hartree–Fock energy changes by 7.7 mEₕ, the correlation energy by 19.9 mEₕ. Hartree–Fock converges almost exponentially, correlation as X⁻³, and the gap only widens as X grows.</div></div>
+<div class="tq"><p class="qt"><span>The correlation energy is −275.0 mEₕ in TZ and −295.0 mEₕ in QZ. Estimate the complete basis set limit with the X⁻³ formula.</span></p>
+<p class="olab">E<sub>CBS</sub>, mEₕ</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">-309.6</button><button type="button" class="opt">-295.0</button><button type="button" class="opt">-315.0</button><button type="button" class="opt">-302.3</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>E<sub>CBS</sub> = (4³·E<sub>QZ</sub> − 3³·E<sub>TZ</sub>)/(4³ − 3³) = (64·(−295.0) − 27·(−275.0))/37 ≈ −309.6 mEₕ. The extrapolation adds almost 15 mEₕ more to QZ.</div></div>
+<div class="tq"><p class="qt"><span>How far is the CCSD(T)/cc-pVDZ atomization energy of water from the reference value?</span></p>
+<p class="olab">Too low by, kcal/mol</p><div class="opts" role="group"><button type="button" class="opt">50</button><button type="button" class="opt" data-ok="1">24</button><button type="button" class="opt">0</button><button type="button" class="opt">2.4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Too low by about 24 kcal/mol (about 10 %). A molecule has more electron pairs than the atoms, and its correlation converges more slowly, so a small basis systematically underestimates the binding energy.</div></div>
+<div class="tq"><p class="qt"><span>Why is the Hartree–Fock energy not extrapolated with the X⁻³ law?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">It converges almost exponentially, while X⁻³ describes correlation</button><button type="button" class="opt">It does not depend on the basis</button><button type="button" class="opt">It cannot be computed in QZ</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>It converges much faster, almost exponentially; the X⁻³ law describes the correlation energy, which reproduces the electron–electron cusp only slowly. The HF energy is usually just taken in the largest basis.</div></div>
+</div></details></section>
+<script src="js/cbs.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="cbs";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/cbs.js"></script>
+
+</body>
+</html>

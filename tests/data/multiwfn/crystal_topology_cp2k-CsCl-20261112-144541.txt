@@ -1,0 +1,368 @@
+answers: 2 | 2 | 3 | 4 | 5 | 8 | 7 | 0 | -10 | q | q
+
+ WARNING: "settings.ini" was found neither in current folder nor in the path defined by "Multiwfnpath" environment variable. Now using default settings instead, and all your modifications (if any) on settings.ini will not take effect!
+
+[95m Multiwfn -- A Multifunctional Wavefunction Analyzer
+[0m[32m Version 2026.7.15 (release date is the same as version name)
+[0m Developer: Tian Lu (Beijing Kein Research Center for Natural Sciences)
+ Multiwfn official website: http://sobereva.com/multiwfn
+ Multiwfn English forum: http://sobereva.com/wfnbbs
+ Multiwfn Chinese forum: http://bbs.keinsci.com/wfn
+ ( Number of parallel threads:   4  Current date: 2026-11-13  Time: 04:06:50 )
+
+ Both following papers ***MUST BE CITED IN MAIN TEXT*** if Multiwfn is used:
+[36m  Tian Lu, Feiwu Chen, J. Comput. Chem., 33, 580 (2012) DOI: 10.1002/jcc.22885
+  Tian Lu, J. Chem. Phys., 161, 082503 (2024) DOI: 10.1063/5.0216272
+[0m See "How to cite Multiwfn.pdf" in Multiwfn binary package for more information
+
+ Warning: You should set OMP_STACKSIZE environment variable as mentioned in Section 2.1.2 of Multiwfn manual!
+
+ Please wait...
+ Loading various information of the wavefunction
+ Note: Nuclear charge of Cs has been set to   9
+ Note: Nuclear charge of Cl has been set to   7
+ Loading basis set definition...
+ The highest angular moment basis functions is D
+ All D basis functions are spherical harmonic type
+ Loading orbitals...
+ The actual number of orbitals read:       216
+ Converting basis function information to GTF information...
+ Back converting basis function information from Cartesian to spherical type...
+ Generating density matrix...
+
+ Total/Alpha/Beta electrons:    432.0000    216.0000    216.0000
+ Net charge:     0.00000      Expected multiplicity:    1
+ Atoms:     54,  Basis functions:    729,  GTFs:   3942
+ This is a restricted single-determinant wavefunction
+ Orbitals from 1 to   216 are occupied
+ Loading electron density functions (EDF) information from built-in EDF library
+ (The library is available at https://github.com/zorkzou/Molden2AIM)
+ Cs(    1)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(    2)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(    3)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(    4)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(    5)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(    6)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(    7)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(    8)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(    9)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   10)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   11)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   12)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   13)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   14)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   15)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   16)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   17)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   18)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   19)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   20)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   21)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   22)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   23)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   24)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   25)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   26)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   27)      Core electrons: 46     EDF primitive GTFs: 36
+ Cl(   28)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   29)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   30)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   31)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   32)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   33)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   34)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   35)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   36)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   37)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   38)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   39)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   40)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   41)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   42)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   43)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   44)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   45)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   46)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   47)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   48)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   49)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   50)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   51)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   52)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   53)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   54)      Core electrons: 10     EDF primitive GTFs: 25
+ The number of total inner-core electrons:  1512
+ The number of total EDF primitive GTFs:  1647
+ Loading EDF library finished!
+
+ Loaded input.molden successfully!
+
+ Cell information
+ In Bohr:
+ Cell vector 1,  X=   23.48084  Y=    0.00000  Z=    0.00000  Norm:   23.48084
+ Cell vector 2,  X=    0.00000  Y=   23.48084  Z=    0.00000  Norm:   23.48084
+ Cell vector 3,  X=    0.00000  Y=    0.00000  Z=   23.48084  Norm:   23.48084
+ In Angstrom:
+ Cell vector 1,  X=   12.42553  Y=    0.00000  Z=    0.00000  Norm:   12.42553
+ Cell vector 2,  X=    0.00000  Y=   12.42553  Z=    0.00000  Norm:   12.42553
+ Cell vector 3,  X=    0.00000  Y=    0.00000  Z=   12.42553  Norm:   12.42553
+ Reciprocal vectors in Angstrom^-1:
+ Vector 1,  X=    0.50567  Y=   -0.00000  Z=   -0.00000  Norm:    0.50567
+ Vector 2,  X=    0.00000  Y=   -0.50567  Z=    0.00000  Norm:    0.50567
+ Vector 3,  X=    0.00000  Y=   -0.00000  Z=    0.50567  Norm:    0.50567
+ Cell angles:  Alpha=  90.0000  Beta=  90.0000  Gamma=  90.0000 degree
+ Area between a and b:    154.3937 Angstrom^2
+ Area between b and c:    154.3937 Angstrom^2
+ Area between a and c:    154.3937 Angstrom^2
+ Cell volume:      12946.1603 Bohr^3    (       1918.4230 Angstrom^3 )
+ Density:   3.93462 g/cm^3    (  3934.623 kg/m^3 )
+
+ Command of showing box in VMD program: (then run "pbc box")
+ pbc set {  12.42553  12.42553  12.42553  90.000  90.000  90.000 } -all
+
+ Vertex 1 of the cell:    0.0000    0.0000    0.0000 Bohr
+ Vertex 2 of the cell:   23.4808    0.0000    0.0000 Bohr
+ Vertex 3 of the cell:   23.4808   23.4808    0.0000 Bohr
+ Vertex 4 of the cell:    0.0000   23.4808    0.0000 Bohr
+ Vertex 5 of the cell:    0.0000    0.0000   23.4808 Bohr
+ Vertex 6 of the cell:   23.4808    0.0000   23.4808 Bohr
+ Vertex 7 of the cell:   23.4808   23.4808   23.4808 Bohr
+ Vertex 8 of the cell:    0.0000   23.4808   23.4808 Bohr
+
+ Warning: Because size of a axis of the cell is relatively small, in order to guarantee analysis accuracy, it is suggested to increase the first index of "PBCnxnynz" in settings.ini to  2
+
+ Warning: Because size of b axis of the cell is relatively small, in order to guarantee analysis accuracy, it is suggested to increase the second index of "PBCnxnynz" in settings.ini to  2
+
+ Warning: Because size of c axis of the cell is relatively small, in order to guarantee analysis accuracy, it is suggested to increase the third index of "PBCnxnynz" in settings.ini to  2
+
+ Formula: Cl27 Cs27      Total atoms:      54
+ Molecule weight:      4545.67652 Da
+
+ "q": Exit program gracefully          "r": Load a new file
+                    ************ Main function menu ************
+ 0 Show molecular structure and view orbitals
+ 1 Output all properties at a point       2 Topology analysis
+ 3 Output and plot specific property in a line
+ 4 Output and plot specific property in a plane
+ 5 Output and plot specific property within a spatial region (calc. grid data)
+ 6 Check & modify wavefunction
+ 7 Population analysis and calculation of atomic charges
+ 8 Orbital composition analysis           9 Bond order analysis
+ 10 Plot total DOS, PDOS, OPDOS, local DOS, COHP and photoelectron spectrum
+ 11 Plot IR/Raman/UV-Vis/ECD/VCD/ROA/NMR spectrum
+ 12 Quantitative analysis of molecular surface
+ 13 Process grid data (No grid data is presented currently)
+ 14 Adaptive natural density partitioning (AdNDP) analysis
+ 15 Fuzzy atomic space analysis
+ 16 Charge decomposition analysis (CDA) and plot orbital interaction diagram
+ 17 Basin analysis                       18 Electron excitation analysis
+ 19 Orbital localization analysis        20 Visual study of weak interaction
+ 21 Energy decomposition analysis        22 Conceptual DFT (CDFT) analysis
+ 23 ETS-NOCV analysis                    24 (Hyper)polarizability analysis
+ 25 Electron delocalization and aromaticity analyses
+ 26 Structure and geometry related analyses
+ 100 Other functions (Part 1)            200 Other functions (Part 2)
+ 300 Other functions (Part 3)
+ Note: Virtual orbitals higher than LUMO+9 have been temporarily discarded for saving computational time
+
+ Unique GTFs have been constructed. Number of unique GTFs:    2700
+
+          !!! Note: All length units in this module are Bohr !!!
+
+              ================ Topology analysis ===============
+ -11 Select real space function, current:    1
+ -10 Return to main menu
+ -9 Measure distances, angles and dihedral angles between CPs or atoms
+ -5 Modify or print detail or export paths, or plot property along a path
+ -4 Modify or export CPs (critical points)
+ -3 Set interbasin surface generating parameters
+ -2 Set path generating parameters
+ -1 Set CP searching parameters
+ 0 Print and visualize all generated CPs, paths and interbasin surfaces
+ 1 Search CPs from given starting points
+ 2 Search CPs from nuclear positions
+ 3 Search CPs from midpoint of atomic pairs
+ 4 Search CPs from triangle center of three atoms
+ 5 Search CPs from pyramid center of four atoms
+ 6 Search CPs from a batch of points within sphere(s)
+ 7 Show real space function values at specific CP or all CPs
+ 8 Generating the paths connecting (3,-3) and (3,-1) CPs
+ 9 Generating the paths connecting (3,+1) and (3,+3) CPs
+ 10 Add or delete interbasin surfaces
+ 20 Calculate Shannon aromaticity index
+ 21 Calculate gradient and curvature of electron density along a direction
+ Progress: [--------------------------------------------------]     1.9 %     -
+ Progress: [#-------------------------------------------------]     3.7 %     \
+ Progress: [##------------------------------------------------]     5.6 %     |
+ Progress: [###-----------------------------------------------]     7.4 %     /
+ Progress: [####----------------------------------------------]     9.3 %     -
+ Progress: [#####---------------------------------------------]    11.1 %     \
+ Progress: [######--------------------------------------------]    13.0 %     |
+ Progress: [#######-------------------------------------------]    14.8 %     /
+ Progress: [########------------------------------------------]    16.7 %     -
+ Progress: [#########-----------------------------------------]    18.5 %     \
+ Progress: [##########----------------------------------------]    20.4 %     |
+ Progress: [###########---------------------------------------]    22.2 %     /
+ Progress: [############--------------------------------------]    24.1 %     -
+ Progress: [############--------------------------------------]    25.9 %     \
+ Progress: [#############-------------------------------------]    27.8 %     |
+ Progress: [##############------------------------------------]    29.6 %     /
+ Progress: [###############-----------------------------------]    31.5 %     -
+ Progress: [################----------------------------------]    33.3 %     \
+ Progress: [#################---------------------------------]    35.2 %     |
+ Progress: [##################--------------------------------]    37.0 %     /
+ Progress: [###################-------------------------------]    38.9 %     -
+ Progress: [####################------------------------------]    40.7 %     \
+ Progress: [#####################-----------------------------]    42.6 %     |
+ Progress: [######################----------------------------]    44.4 %     /
+ Progress: [#######################---------------------------]    46.3 %     -
+ Progress: [########################--------------------------]    48.1 %     \
+ Progress: [#########################-------------------------]    50.0 %     |
+ Progress: [#########################-------------------------]    51.9 %     /
+ Progress: [##########################------------------------]    53.7 %     -
+ Progress: [###########################-----------------------]    55.6 %     \
+ Progress: [############################----------------------]    57.4 %     |
+ Progress: [#############################---------------------]    59.3 %     /
+ Progress: [##############################--------------------]    61.1 %     -
+ Progress: [###############################-------------------]    63.0 %     \
+ Progress: [################################------------------]    64.8 %     |
+ Progress: [#################################-----------------]    66.7 %     /
+ Progress: [##################################----------------]    68.5 %     -
+ Progress: [###################################---------------]    70.4 %     \
+ Progress: [####################################--------------]    72.2 %     |
+ Progress: [#####################################-------------]    74.1 %     /
+ Progress: [#####################################-------------]    75.9 %     -
+ Progress: [######################################------------]    77.8 %     \
+ Progress: [#######################################-----------]    79.6 %     |
+ Progress: [########################################----------]    81.5 %     /
+ Progress: [#########################################---------]    83.3 %     -
+ Progress: [##########################################--------]    85.2 %     \
+ Progress: [###########################################-------]    87.0 %     |
+ Progress: [############################################------]    88.9 %     /
+ Progress: [#############################################-----]    90.7 %     -
+ Progress: [##############################################----]    92.6 %     \
+ Progress: [###############################################---]    94.4 %     |
+ Progress: [################################################--]    96.3 %     /
+ Progress: [#################################################-]    98.1 %     -
+ Progress: [##################################################]   100.0 %     \
+                             ---- Summary ----
+  Index                       Coordinate               Type
+     1    15.65389400     0.00000100    15.65389400   (3,-3)
+     2     0.00000100     0.00000100     7.82694700   (3,-3)
+     3     3.91347400     3.91347400    19.56736800   (3,-3)
+     4    11.74042100     3.91347400    19.56736800   (3,-3)
+     5    19.56736800     3.91347400    19.56736800   (3,-3)
+     6     3.91347400     3.91347400    11.74042100   (3,-3)
+     7    15.65389500     0.00000000     0.00000000   (3,-3)
+     8    11.74042100     3.91347400    11.74042100   (3,-3)
+     9    19.56736800     3.91347400    11.74042100   (3,-3)
+    10    15.65389513     7.82694711    23.48084049   (3,-3)
+    11     3.91347400     3.91347400     3.91347400   (3,-3)
+    12    23.48084200     7.82694711    23.48084149   (3,-3)
+    13    11.74042100     3.91347400     3.91347400   (3,-3)
+    14     7.82694800     7.82694800    15.65389400   (3,-3)
+    15    19.56736800     3.91347300     3.91347400   (3,-3)
+    16    15.65389500     7.82694700    15.65389500   (3,-3)
+    17    23.48084187     7.82694700    15.65389400   (3,-3)
+    18     7.82694700     7.82694700     7.82694700   (3,-3)
+    19     3.91347400    11.74042100    19.56736800   (3,-3)
+    20    15.65389400     7.82694800     7.82694800   (3,-3)
+    21    11.74042100    11.74042100    19.56736800   (3,-3)
+    22    23.48084187     7.82694700     7.82694700   (3,-3)
+    23    19.56736800    11.74042000    19.56736800   (3,-3)
+    24     7.82694700     7.82694700     0.00000100   (3,-3)
+    25     3.91347400    11.74042100    11.74042100   (3,-3)
+    26    11.74042100    11.74042100    11.74042100   (3,-3)
+    27    19.56736900    11.74042100    11.74042100   (3,-3)
+    28     3.91347400    11.74042100     3.91347400   (3,-3)
+    29     0.00000100    15.65389500    15.65389400   (3,-3)
+    30    11.74042100    11.74042100     3.91347400   (3,-3)
+    31     7.82694700    15.65389400    15.65389500   (3,-3)
+    32    19.56736800    11.74042100     3.91347400   (3,-3)
+    33    15.65389400    15.65389400    15.65389400   (3,-3)
+    34     7.82694800    15.65389400     7.82694800   (3,-3)
+    35     3.91347400    19.56736800    19.56736800   (3,-3)
+    36    15.65389500    15.65389500     7.82694700   (3,-3)
+    37    11.74042100    19.56736900    19.56736800   (3,-3)
+    38    23.48084187    15.65389500     7.82694800   (3,-3)
+    39    19.56736900    19.56736800    19.56736800   (3,-3)
+    40     7.82694800    15.65389500     0.00000000   (3,-3)
+    41     3.91347400    19.56736800    11.74042100   (3,-3)
+    42    15.65389500    15.65389500     0.00000100   (3,-3)
+    43    11.74042100    19.56736800    11.74042100   (3,-3)
+    44     7.82694734    23.48084176    23.48084149   (3,-3)
+    45    23.48084187    15.65389500     0.00000000   (3,-3)
+    46    19.56736900    19.56736800    11.74042000   (3,-3)
+    47     3.91347400    19.56736800     3.91347400   (3,-3)
+    48    23.48084221    23.48084176    23.48084149   (3,-3)
+    49    11.74042100    19.56736800     3.91347400   (3,-3)
+    50     7.82694821    23.48084064    15.65389400   (3,-3)
+    51    19.56736900    19.56736800     3.91347400   (3,-3)
+    52    23.48084208    23.48084164    15.65389400   (3,-3)
+    53     7.82694721    23.48084164     7.82694700   (3,-3)
+    54    15.65389521    23.48084064     7.82694700   (3,-3)
+ Totally find    54 new critical points
+
+              ================ Topology analysis ===============
+ -11 Delete results and reselect real space function, current:    1
+ -10 Return to main menu
+ -9 Measure distances, angles and dihedral angles between CPs or atoms
+ -5 Modify or print detail or export paths, or plot property along a path
+ -4 Modify or export CPs (critical points)
+ -3 Set interbasin surface generating parameters
+ -2 Set path generating parameters
+ -1 Set CP searching parameters
+ 0 Print and visualize all generated CPs, paths and interbasin surfaces
+ 1 Search CPs from given starting points
+ 2 Search CPs from nuclear positions
+ 3 Search CPs from midpoint of atomic pairs
+ 4 Search CPs from triangle center of three atoms
+ 5 Search CPs from pyramid center of four atoms
+
+--- … the list of the points cut (the oracle: CPprop) … ---
+
+ Totally find    54 new critical points
+ Totally find   361 new critical points
+ Totally found   324 new critical points
+ Number of (3,-1) CPs:   361    Generating topology paths...
+ Totally found   722 new paths
+ 3 Search CPs from midpoint of atomic pairs
+ 4 Search CPs from triangle center of three atoms
+ 5 Search CPs from pyramid center of four atoms
+ 6 Search CPs from a batch of points within sphere(s)
+ 7 Show real space function values at specific CP or all CPs
+ 8 Generating the paths connecting (3,-3) and (3,-1) CPs
+ 9 Generating the paths connecting (3,+1) and (3,+3) CPs
+ 10 Add or delete interbasin surfaces
+ 20 Calculate Shannon aromaticity index
+ 21 Calculate gradient and curvature of electron density along a direction
+ Note: Previous orbital information has been restored
+
+ "q": Exit program gracefully          "r": Load a new file
+                    ************ Main function menu ************
+ 0 Show molecular structure and view orbitals
+ 1 Output all properties at a point       2 Topology analysis
+ 3 Output and plot specific property in a line
+ 4 Output and plot specific property in a plane
+ 5 Output and plot specific property within a spatial region (calc. grid data)
+ 6 Check & modify wavefunction
+ 7 Population analysis and calculation of atomic charges
+ 8 Orbital composition analysis           9 Bond order analysis
+ 10 Plot total DOS, PDOS, OPDOS, local DOS, COHP and photoelectron spectrum
+ 11 Plot IR/Raman/UV-Vis/ECD/VCD/ROA/NMR spectrum
+ 12 Quantitative analysis of molecular surface
+ 13 Process grid data (No grid data is presented currently)
+ 14 Adaptive natural density partitioning (AdNDP) analysis
+ 15 Fuzzy atomic space analysis
+ 16 Charge decomposition analysis (CDA) and plot orbital interaction diagram
+ 17 Basin analysis                       18 Electron excitation analysis
+ 19 Orbital localization analysis        20 Visual study of weak interaction
+ 21 Energy decomposition analysis        22 Conceptual DFT (CDFT) analysis
+ 23 ETS-NOCV analysis                    24 (Hyper)polarizability analysis
+ 25 Electron delocalization and aromaticity analyses
+ 26 Structure and geometry related analyses
+ 100 Other functions (Part 1)            200 Other functions (Part 2)
+ 300 Other functions (Part 3)
+
+--- stderr ---
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DIVIDE_BY_ZERO IEEE_UNDERFLOW_FLAG

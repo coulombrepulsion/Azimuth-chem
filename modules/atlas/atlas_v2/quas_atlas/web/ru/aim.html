@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,ammonia,benzene">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Атомы в молекулах: теория Бейдера</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/aim.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-aim-g.webp"><!--pose:end-->
+<h1>Атомы в молекулах: теория Бейдера</h1>
+<p class="lead">Где в молекуле кончается один атом и начинается другой? Теория Бейдера (QTAIM) отвечает на этот вопрос по одной только электронной плотности ρ(r) — величине, которую можно и рассчитать, и измерить рентгеноструктурным анализом. Атом — это область вокруг ядра, ограниченная поверхностью нулевого потока: через неё не проходит ни одна траектория градиента ∇ρ. Плотность здесь рассчитывается прямо в браузере методом Хартри–Фока в гауссовом базисе — от минимального STO-3G до 6-31G**.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Атом в молекуле — область вокруг ядра, ограниченная поверхностью нулевого потока ∇ρ; разбиение задаёт сама плотность, а не базис.</li><li>Критические точки (∇ρ = 0) бывают четырёх типов; точки связей и пути связей образуют молекулярный граф, а числа точек связаны соотношением n − b + r − c = 1.</li><li>Знак ∇²ρ показывает, где плотность сконцентрирована (∇²ρ &lt; 0) и где обеднена (∇²ρ &gt; 0); вместе с ρ<sub>b</sub> и H<sub>b</sub> он помогает отличить ковалентную связь от взаимодействия закрытых оболочек.</li><li>Заряды по Бейдеру — интегралы плотности по бассейнам атомов и сходятся с ростом базиса; заряды по Малликену зависят от того, как базис распределён по атомам.</li><li>Электростатический потенциал на поверхности ρ = 0,001 показывает, куда подойдут заряды и диполи соседа: σ-дырка — положительная область на продолжении связи (галогенная связь), π-дырка — над пустой или обеднённой p-орбиталью (BF₃, CO₂, C₆F₆).</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> плотность HF; топология устойчивее чисел</summary><dl><dt>Что вычисляется</dt><dd>Плотность HF прямо в браузере, критические точки, бассейны и заряды Бейдера, изоповерхности, ЭСП.</dd><dt>Какие приближения приняты</dt><dd>Метод HF (без корреляции), базисы от STO-3G до 6-31G**; численное интегрирование бассейнов.</dd><dt>Какой вывод можно сделать</dt><dd>Молекулярный граф обычно устойчив к методу и базису; заряды и свойства критических точек — описание плотности, а не энергии связи.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Плотность, траектории градиента и молекулярный граф</h2>
+  <p class="small">Траектории ∇ρ (тонкие линии) приходят из бесконечности и обычно заканчиваются на ядрах: в типичном случае аттракторы — максимумы плотности — находятся у ядер, а все траектории, которые приходят к аттрактору, образуют бассейн атома. Бывают исключения: неядерные аттракторы (например, в некоторых металлах и электридах) и артефакты приближённой плотности, как у HF в базисе STO-3G (вопрос 5 ниже). Траектории, которые заканчиваются не на ядре, а в критической точке связи, образуют межатомную поверхность — границу между бассейнами (толстые линии). Из той же критической точки к двум ядрам ведёт путь связи — линия, вдоль которой плотность максимальна по сравнению с любой соседней линией.</p>
+  <div class="crow"><span class="l">Молекула</span><span class="row" id="mG" role="group" aria-label="Молекула"></span></div>
+  <div class="crow"><span class="l">Базис</span><span class="row" id="bG" role="group" aria-label="Базис"></span></div>
+  <div class="crow"><span class="l">Карта</span><span class="row" id="fG" role="group" aria-label="Что показывать"></span><span class="row" id="lG" role="group" aria-label="Слои"></span></div>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle" id="mapT"></div>
+      <canvas id="map" width="640" height="520" role="img" aria-label="Карта электронной плотности в плоскости молекулы"></canvas>
+      <div class="legend lg" id="mapL"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="tablewrap" id="infoTab"></div>
+      <div class="status" id="pt">Щёлкните по карте, чтобы узнать ρ и ∇²ρ в точке.</div>
+      <div class="status" id="st1"></div>
+    </div>
+  </div>
+</section>
+
+<section class="panel" aria-labelledby="h1bs">
+  <h2 id="h1bs">2. Трёхмерные функции и электростатический потенциал</h2>
+  <p class="small">Изоповерхность — это поверхность, на которой функция принимает одно и то же значение. Поверхность ρ = 0,001 ат. ед. охватывает больше 95 % электронов молекулы, и её принято считать «внешней границей» молекулы. На неё наносят молекулярный электростатический потенциал V(r) = Σ Z<sub>A</sub>/|r − R<sub>A</sub>| − ∫ρ(r′)/|r − r′| dr′ — энергию взаимодействия с единичным положительным зарядом. Красные области (V &lt; 0) привлекают катионы и доноры водородной связи, синие (V &gt; 0) — анионы и неподелённые пары. Положительная область на продолжении ковалентной связи атома галогена называется <b>σ-дыркой</b> (у F₂ она есть, хотя фтор — самый электроотрицательный атом), положительная область над плоскостью π-системы или над атомом с вакантной p-орбиталью — <b>π-дыркой</b> (CO₂, BF₃, F₂CO, C₆F₆). Потяните изображение, чтобы повернуть.</p>
+  <div class="crow"><span class="l">Поверхность</span><span class="row" id="fnG" role="group" aria-label="Функция"></span></div>
+  <div class="crow" id="valRow"><span class="l" id="valL">Значение</span><span class="row" id="valG" role="group" aria-label="Значение"></span></div>
+  <div class="crow" id="espRow"><span class="l">Шкала ЭСП</span><input type="range" id="espR" min="20" max="300" step="5" style="width:220px" aria-label="Предел шкалы потенциала"><span class="val" id="espV"></span></div>
+  <div class="crow"><span class="l">Показать</span><span class="row" id="shG" role="group" aria-label="Что показывать"></span><span class="row" id="vwG" role="group" aria-label="Вид"></span></div>
+  <div class="glwrap"><canvas id="gl" role="img" aria-label="Трёхмерное изображение молекулы и изоповерхности"></canvas><canvas id="glo" aria-hidden="true"></canvas></div>
+  <div class="legend lg" id="glL"></div>
+  <div class="status" id="st5"></div>
+  <h3 class="ptitle">Одномерные профили вдоль линии связи</h3>
+  <p class="small">Срез тех же функций по прямой, проходящей через два ядра. На графике ρ видны острые максимумы у ядер и минимум между ними — это критическая точка связи. На графике ∇²ρ видна оболочечная структура атомов: чередование областей концентрации (∇²ρ &lt; 0) и разрежения (∇²ρ &gt; 0) электронов вокруг тяжёлого ядра; знак ∇²ρ в критической точке связи — одна из характеристик типа связи.</p>
+  <div class="crow"><span class="l">Связь</span><span class="row" id="pbG" role="group" aria-label="Связь"></span></div>
+  <svg id="pRho" viewBox="0 0 960 250" role="img" aria-label="Электронная плотность вдоль линии связи"></svg>
+  <svg id="pLap" viewBox="0 0 960 250" role="img" aria-label="Лапласиан плотности вдоль линии связи"></svg>
+  <div class="status" id="pSt"></div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">3. Критические точки</h2>
+  <p class="small">В критической точке ∇ρ = 0. Тип точки задают знаки трёх собственных значений гессиана ρ (кривизн λ₁ ≤ λ₂ ≤ λ₃): максимум (3, −3), обычно у ядра; критическая точка связи (3, −1) — минимум вдоль пути связи и максимум поперёк него; точка цикла (3, +1) внутри кольца; точка клетки (3, +3) внутри полиэдра. Числа точек всегда связаны соотношением Пуанкаре–Хопфа n − b + r − c = 1. По плотности в точке связи ρ<sub>b</sub>, лапласиану ∇²ρ<sub>b</sub> = λ₁ + λ₂ + λ₃, эллиптичности ε = <span class=fr><span>λ₁</span><span>λ₂</span></span> − 1 и плотности энергии H<sub>b</sub> = G<sub>b</sub> + V<sub>b</sub> судят о характере связи.</p>
+  <div class="tablewrap" id="cpTab"></div>
+  <div class="status" id="st2"></div>
+</section>
+
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">4. Заряды атомов: Бейдер, Малликен, Лёвдин</h2>
+  <p class="small">Заряд атома по Бейдеру — это заряд ядра минус число электронов в его бассейне, то есть интеграл плотности по объёму атома. Заряды по Малликену и Лёвдину получают иначе: делят матрицу плотности между базисными функциями, «приписанными» к атомам. Поэтому они зависят от того, какие функции и на каких атомах есть в базисе. Переключайте базис или посчитайте все базисы сразу — строки таблицы накапливаются.</p>
+  <div class="row"><button class="btn" id="allB" type="button">Посчитать во всех базисах</button><span class="hint" id="allSt"></span></div>
+  <div class="tablewrap" id="qTab"></div>
+  <div class="status" id="st3"></div>
+</section>
+
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">5. Типы связей по критической точке</h2>
+  <p class="small">Все критические точки связей для двенадцати молекул в базисе 6-31G*. Если ∇²ρ<sub>b</sub> &lt; 0, плотность сконцентрирована между ядрами — это обобществлённое (ковалентное) взаимодействие. Если ∇²ρ<sub>b</sub> &gt; 0, плотность из области связи оттянута к ядрам; при этом знак H<sub>b</sub> разделяет взаимодействие закрытых оболочек (ионная связь, H<sub>b</sub> &gt; 0) и сильно полярные или «напряжённые» связи, у которых ковалентный вклад ещё велик (H<sub>b</sub> &lt; 0). Наведите на точку — появится подпись.</p>
+  <div class="two">
+    <svg id="sc" viewBox="0 0 560 380" role="img" aria-label="Лапласиан плотности против плотности в критических точках связей"></svg>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="legend lg"><span><i class="dt" style="background:var(--accent)"></i>H<sub>b</sub> &lt; 0</span><span><i class="dt" style="background:var(--warn)"></i>H<sub>b</sub> &gt; 0</span></div>
+      <div class="status" id="st4"></div>
+    </div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Если всё определяется плотностью, нельзя ли через неё сразу получить энергию?</span><a class="nqA" href="dft.html" data-goto="dft">Функционал плотности →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Выберите C₆H₆ (STO-3G). Сколько всего критических точек связей нашлось?</span></p>
+<p class="olab">Точек связей</p><div class="opts" role="group"><button type="button" class="opt">18</button><button type="button" class="opt">13</button><button type="button" class="opt" data-ok="1">12</button><button type="button" class="opt">6</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>12: шесть связей C–C и шесть C–H. Ещё есть одна точка цикла (3, +1) в центре кольца, и соотношение Пуанкаре–Хопфа выполняется: 12 − 12 + 1 − 0 = 1.</div></div>
+<div class="tq"><p class="qt"><span>Сравните ∇²ρ в точке связи у N₂ и у LiF. Что это говорит о связях?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">N₂ — ковалентная (∇²ρ &lt; 0), LiF — закрытые оболочки (∇²ρ &gt; 0, H &gt; 0)</button><button type="button" class="opt">Обе ковалентные</button><button type="button" class="opt">Обе ионные</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>У N₂ ∇²ρ<sub>b</sub> ≈ −2,5 &lt; 0: плотность сконцентрирована между ядрами — ковалентная связь. У LiF ∇²ρ<sub>b</sub> ≈ +0,8 &gt; 0, а ρ<sub>b</sub> мала (0,07) и H<sub>b</sub> &gt; 0: плотность стянута к ядрам, это взаимодействие закрытых оболочек Li⁺ и F⁻.</div></div>
+<div class="tq"><p class="qt"><span>C₂H₄: почему эллиптичность связи C=C около 0,45, а у связей C–H почти нулевая?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">π-связь вытягивает плотность в одном направлении поперёк связи</button><button type="button" class="opt">Связь C=C короче</button><button type="button" class="opt">Атомы C заряжены сильнее</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>π-связь добавляет плотность над и под плоскостью молекулы, поэтому в точке связи C=C плотность сильнее вытянута в одном направлении поперёк связи: λ₁ и λ₂ заметно различаются. У одинарных связей сечение плотности почти круглое, ε ≈ 0; у тройной связи — тоже круглое, потому что две π-связи вместе дают цилиндрическую симметрию.</div></div>
+<div class="tq"><p class="qt"><span>H₂O, 6-31G**: какой заряд атома O больше по модулю — по Малликену или по Бейдеру? Почему?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">По Бейдеру: граница атома проходит близко к H</button><button type="button" class="opt">По Малликену: он учитывает перекрывание</button><button type="button" class="opt">Они совпадают</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>По Бейдеру: около −1,2 против −0,67 по Малликену. Межатомная поверхность O–H проходит близко к атому H (точка связи в 0,2 Å от него), поэтому почти вся плотность связи попадает в бассейн кислорода. Малликен делит перекрывание поровну между атомами, независимо от их электроотрицательности.</div></div>
+<div class="tq"><p class="qt"><span>Выберите HF в базисе STO-3G. Почему не нашлось ни одной точки связи?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">У H нет собственного максимума плотности в этом базисе</button><button type="button" class="opt">Связь H–F ионная</button><button type="button" class="opt">Точку связи не удалось найти численно</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>В минимальном базисе у атома H нет собственного максимума плотности: вдоль оси она монотонно убывает от F через H наружу. Без аттрактора нет и бассейна H, и весь электрон «принадлежит» фтору (заряд H = +1). Это артефакт гауссова базиса без излома на ядре: уже в 6-31G максимум у H появляется вместе с точкой связи.</div></div>
+<div class="tq"><p class="qt"><span>У CO ∇²ρ<sub>b</sub> &gt; 0. Значит ли это, что связь в CO ионная?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Нет: ρ велика и H &lt; 0, точка связи попадает в область обеднения у C</button><button type="button" class="opt">Да: положительный лапласиан означает ионную связь</button><button type="button" class="opt">Да, потому что O электроотрицательнее C</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Нет. Плотность в точке связи большая (ρ<sub>b</sub> ≈ 0,48), а H<sub>b</sub> ≈ −0,8 — заметно отрицательна, как у ковалентных связей. Положительный лапласиан объясняется тем, что точка связи сдвинута к атому C и попадает в область, где плотность углерода обеднена. Знак ∇²ρ<sub>b</sub> — лишь один из признаков, и для полярных связей его смотрят вместе с ρ<sub>b</sub> и H<sub>b</sub>.</div></div>
+<div class="tq"><p class="qt"><span>Раздел 2, ЭСП, F₂: где на поверхности ρ = 0,001 потенциал положителен? Как это вяжется с тем, что фтор — самый электроотрицательный элемент?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Вдоль оси связи плотность за ядром обеднена, и ядро экранировано слабее</button><button type="button" class="opt">Фтор заряжен положительно</button><button type="button" class="opt">Это ошибка базиса</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>На продолжении связи F–F, у «макушки» каждого атома: около +56 кДж/моль, а пояс вокруг атома отрицателен (около −13). Электрон, участвующий в σ-связи, сосредоточен между ядрами; за ядром вдоль оси плотность обеднена, и там ядро экранировано слабее. Неподелённые пары лежат в поясе. Это σ-дырка; у Cl, Br и I она заметно сильнее, и на ней держится галогенная связь R–X···B.</div></div>
+<div class="tq"><p class="qt"><span>Сравните CO₂ и BF₃. Где у них положительные области и чем π-дырка отличается от σ-дырки?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">σ-дырка — на продолжении σ-связи, π-дырка — перпендикулярно плоскости или оси молекулы</button><button type="button" class="opt">Это одно и то же</button><button type="button" class="opt">π-дырка всегда отрицательна</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>У CO₂ положителен пояс вокруг углерода (около +150 кДж/моль), концы молекулы (O) отрицательны (около −67). У BF₃ максимум около +185 над и под бором, на атомах F около −66. σ-дырка лежит на продолжении σ-связи, π-дырка — перпендикулярно плоскости (или оси) молекулы, там, где у центрального атома пустая или обеднённая p-орбиталь. Именно с этой стороны к CO₂ и BF₃ подходят основания Льюиса.</div></div>
+<div class="tq"><p class="qt"><span>C₆H₆ и C₆F₆ (STO-3G): какой знак потенциала над центром кольца? Что из этого следует?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Над C₆H₆ потенциал отрицателен, над C₆F₆ положителен</button><button type="button" class="opt">Над обоими отрицателен</button><button type="button" class="opt">Над обоими положителен</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>У бензола над кольцом отрицательно (около −44 кДж/моль, π-облако), атомы H положительны. У гексафторбензола наоборот: над кольцом около +91, на фторах отрицательно. Квадрупольные моменты молекул противоположны по знаку, поэтому смесь C₆H₆ и C₆F₆ образует кристалл, в котором кольца стоят стопками друг над другом, а анионы связываются с C₆F₆ над центром кольца (анион–π взаимодействие).</div></div>
+<div class="tq"><p class="qt"><span>В точке связи ρ<sub>b</sub> большая, а ∇²ρ<sub>b</sub> &lt; 0. Можно ли по одной этой критической точке утверждать, что молекула энергетически устойчива — не распадётся на фрагменты с выделением энергии?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">По этим данным определить нельзя: нужны энергии молекулы и фрагментов</button><button type="button" class="opt">Да: ∇²ρ<sub>b</sub> &lt; 0 означает устойчивую ковалентную связь</button><button type="button" class="opt">Нет: большая ρ<sub>b</sub> означает отталкивание</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>По этим данным определить нельзя. Критическая точка описывает плотность при данной геометрии, а устойчивость — вопрос энергий: энергия молекулы по сравнению с фрагментами и минимум на поверхности потенциальной энергии. Путь связи и точка связи есть и в напряжённых и метастабильных структурах.</div></div>
+</div></details></section>
+<script src="js/aim.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="aim";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/aim.js"></script>
+
+</body>
+</html>

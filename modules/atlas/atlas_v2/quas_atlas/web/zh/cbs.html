@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>基组收敛与完全基组极限</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/cbs.css">
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-cbs-g.webp"><!--pose:end-->
+<h1>基组收敛与完全基组极限</h1>
+<p class="lead">有限基组中的能量不是最终答案，而是通往完全基组极限（CBS）路上的一个点。Dunning 的 cc-pVXZ 基组就是为了让这条路可以预测而构建的：Hartree–Fock 能量收敛很快，相关能收敛很慢，大约随基数 X（D = 2，T = 3，Q = 4，5）按 X⁻³ 变化。外推正是建立在这一规律上：相邻两个基组中的两次计算给出的极限估计比较大基组中的单次计算更准确。所有能量都用 PySCF 在实验几何下计算，重原子的 1s 电子冻结。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>有限基组中的能量是通往完全基组极限路上的一个点；cc-pVXZ 基组使这条路变得系统化。</li><li>Hartree–Fock 能量收敛很快，几乎是指数式的；相关能收敛很慢，按 X⁻³。</li><li>按 X⁻³ 规律由 TZ 和 QZ 做两点外推，得到的极限估计比 QZ 计算更准确。</li><li>CCSD(T) 在 cc-pVDZ 中的原子化能偏低 6–33 kcal/mol，在 cc-pVTZ 中偏低 1–11：要得到定量结论至少需要 TZ，最好用外推。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型边界：</b>Dunning 基组，小分子</summary><dl><dt>计算的是什么</dt><dd>cc-pVDZ … cc-pV5Z 系列中的 Hartree–Fock 能量、MP2 和 CCSD(T) 相关能以及原子化能；X⁻³ 两点外推。</dd><dt>采用了哪些近似</dt><dd>冻结芯；实验几何；Hartree–Fock 能量不外推，而取较大基组的值；cc-pV5Z 计算只对 H₂、H₂O、HF 和 N₂ 进行。</dd><dt>能得出什么结论</dt><dd>各项贡献收敛有多快、外推比单次计算好多少——可以；用于与实验比较的精确极限值——不行：还需要芯层相关和相对论校正。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">cc-pVXZ 系列中的能量</h2>
+  <div class="crow"><span class="l">分子</span><span class="grp" id="molG" role="group" aria-label="分子"></span></div>
+  <div class="crow"><span class="l">物理量</span><span class="grp" id="qG" role="group" aria-label="物理量"></span></div>
+  <div class="crow"><span class="l">横轴</span><span class="grp" id="axG" role="group" aria-label="横轴"></span></div>
+  <svg id="conv" viewBox="0 0 960 330" role="img" aria-label="能量随基组的收敛"></svg>
+  <div class="tablewrap" id="convT"></div>
+  <p class="hint" id="convN"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">外推到完全基组极限</h2>
+  <p class="hint">如果 E<sub>X</sub> = E<sub>CBS</sub> + A·X⁻³，那么由两个基组 X 和 Y = X + 1 得到的极限为 E<sub>CBS</sub> = (X³E<sub>X</sub> − Y³E<sub>Y</sub>) / (X³ − Y³)。这个公式用于相关能；Hartree–Fock 能量取较大基组的值——它已经基本收敛。</p>
+  <div class="crow"><span class="l">基组对</span><span class="grp" id="pG" role="group" aria-label="基组对"></span></div>
+  <div class="tablewrap" id="xT"></div>
+  <p class="hint" id="xN"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">这对化学意味着什么：原子化能</h2>
+  <p class="hint">cc-pVXZ 基组中 CCSD(T) 原子化能相对于由 cc-pVTZ 和 cc-pVQZ 外推所得极限的误差。在小基组中，分子比原子损失更多的相关能，所以结合显得偏弱。</p>
+  <svg id="taeC" viewBox="0 0 960 330" role="img" aria-label="不同基组中原子化能的误差"></svg>
+  <div class="legend" id="taeL"></div>
+  <div class="tablewrap" id="taeT"></div>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">为什么相关能收敛得慢</h2>
+  <div class="eq">
+    <div class="eqb"><div class="t">电子尖点</div>精确波函数在两个电子相遇处有一个尖折：当 r<sub>12</sub> → 0 时它对 r<sub>12</sub> 呈线性。平滑的高斯函数只能用角动量越来越高的函数之和来描述这个尖折——由此产生缓慢的 X⁻³ 规律。</div>
+    <div class="eqb"><div class="t">Hartree–Fock 收敛很快</div>在 Hartree–Fock 方法中，电子在平均场中运动，不需要尖点；能量大约以指数方式趋近极限。每增大一级基组，误差缩小数倍，而在能量差中剩余部分大多相互抵消。</div>
+    <div class="eqb"><div class="t">每一步的代价</div>函数数目大约按 X³ 增长：水从 DZ 到 5Z 分别有 24、58、115 和 201 个函数。CCSD(T) 的计算时间按 N⁷ 增长，所以从 QZ 到 5Z 这一步的代价比整个 QZ 计算高几十倍。</div>
+    <div class="eqb"><div class="t">实用规则</div>DZ 中的能量不适合做定量结论。合理的最低要求是 TZ，最好用 TZ/QZ 外推。显式相关方法（F12）在波函数中加入含 r<sub>12</sub> 的因子，在 TZ 基组中就能达到 QZ 的质量。</div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">在复合物中，不完备基组还会造成虚假吸引。它从何而来，如何消除？</span><a class="nqA" href="bsse.html" data-goto="bsse">基组重叠误差 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>水，CCSD(T) 相关能：从 cc-pVTZ 到 cc-pVQZ 增加了多少能量？</span></p>
+<p class="olab">相关能的变化，mEₕ</p><div class="opts" role="group"><button type="button" class="opt">2.6</button><button type="button" class="opt" data-ok="1">19.9</button><button type="button" class="opt">7.7</button><button type="button" class="opt">275.0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>约 19.9 mEₕ（从 −275.0 到 −295.0 mEₕ），即 12.5 kcal/mol。对化学来说这是很大的量：即使 QZ 在相关能上也还远未到达极限。</div></div>
+<div class="tq"><p class="qt"><span>对水而言，TZ → QZ 这一步，相关能的变化是 Hartree–Fock 能量变化的几倍？</span></p>
+<p class="olab">倍数</p><div class="opts" role="group"><button type="button" class="opt">10</button><button type="button" class="opt">0.39</button><button type="button" class="opt" data-ok="1">2.6</button><button type="button" class="opt">1.0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>约 2.6 倍：Hartree–Fock 能量变化 7.7 mEₕ，相关能变化 19.9 mEₕ。Hartree–Fock 几乎按指数收敛，相关能按 X⁻³ 收敛，随着 X 增大差距只会拉大。</div></div>
+<div class="tq"><p class="qt"><span>TZ 中的相关能为 −275.0 mEₕ，QZ 中为 −295.0 mEₕ。按 X⁻³ 公式估计完全基组极限。</span></p>
+<p class="olab">E<sub>CBS</sub>，mEₕ</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">-309.6</button><button type="button" class="opt">-295.0</button><button type="button" class="opt">-315.0</button><button type="button" class="opt">-302.3</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>E<sub>CBS</sub> = (4³·E<sub>QZ</sub> − 3³·E<sub>TZ</sub>)/(4³ − 3³) = (64·(−295.0) − 27·(−275.0))/37 ≈ −309.6 mEₕ。外推在 QZ 的基础上又增加了近 15 mEₕ。</div></div>
+<div class="tq"><p class="qt"><span>水的 CCSD(T)/cc-pVDZ 原子化能与参考值相差多少？</span></p>
+<p class="olab">偏低多少，kcal/mol</p><div class="opts" role="group"><button type="button" class="opt">50</button><button type="button" class="opt" data-ok="1">24</button><button type="button" class="opt">0</button><button type="button" class="opt">2.4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>偏低约 24 kcal/mol（约 10 %）。分子中的电子对比原子中多，其相关能收敛更慢，所以小基组会系统地低估结合能。</div></div>
+<div class="tq"><p class="qt"><span>为什么不按 X⁻³ 规律外推 Hartree–Fock 能量？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">它几乎按指数收敛，而 X⁻³ 描述的是相关能</button><button type="button" class="opt">它与基组无关</button><button type="button" class="opt">它无法在 QZ 中计算</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>它收敛得快得多，几乎是指数式的；X⁻³ 规律描述的是相关能，相关能需要很慢地重现电子–电子尖点。HF 能量通常直接取最大基组中的值。</div></div>
+</div></details></section>
+<script src="js/cbs.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="cbs";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/cbs.js"></script>
+
+</body>
+</html>

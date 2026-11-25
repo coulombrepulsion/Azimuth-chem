@@ -1,0 +1,223 @@
+ *******************************************************************************
+ **                                                                           **
+ **                              MOPAC v23.2.5                                **
+ **                                                                           **
+ *******************************************************************************
+ ** MOPAC's Digital Object Identifier: https://doi.org/10.5281/zenodo.6511958 **
+ **                                                                           **
+ ** Please cite the open-source release paper for use of this MOPAC version:  **
+ ** J. E. Moussa and J. J. P. Stewart (2026)                                  **
+ ** MOPAC: An open-source semiempirical molecular orbital program             **
+ ** J. Open Source Softw., 11(119), 8025, https://doi.org/10.21105/joss.08025 **
+ *******************************************************************************
+
+                              PM7 CALCULATION RESULTS
+
+ *******************************************************************************
+ *  CALCULATION DONE: (MAX THREADS = 1)              Sun Nov  1 17:41:58 2026  *
+ *  PM7        - The PM7 Hamiltonian to be used
+ *  FORCE      - FORCE CALCULATION SPECIFIED
+ *  T=         - A TIME OF 172800.0 SECONDS REQUESTED
+ *  DUMP=N     - RESTART FILE WRITTEN EVERY 7200.0 SECONDS REQUESTED
+ *  AUX        - OUTPUT AUXILIARY INFORMATION
+ *******************************************************************************
+PM7 FORCE AUX
+ water, FORCE at the unoptimized start geometry (gradient not zero)
+ Azimuth reference input (0.91)
+   ATOM   CHEMICAL          X               Y               Z
+  NUMBER   SYMBOL      (ANGSTROMS)     (ANGSTROMS)     (ANGSTROMS)
+
+     1       O          0.00000000  *   0.00000000  *   0.11700000  *
+     2       H          0.00000000  *   0.75700000  *  -0.46700000  *
+     3       H          0.00000000  *  -0.75700000  *  -0.46700000  *
+
+
+
+          CARTESIAN COORDINATES 
+
+    NO.       ATOM           X           Y           Z
+
+     1         O          0.0000      0.0000      0.1170
+     2         H          0.0000      0.7570     -0.4670
+     3         H          0.0000     -0.7570     -0.4670
+
+ General Reference for PM7:
+ "Optimization of Parameters for Semiempirical Methods VI: More Modifications to the 
+ NDDO Approximations and Re-optimization of Parameters", J. J. P. Stewart, J. Mol. Mod., 1:32, 19 (2013)
+ https://link.springer.com/article/10.1007/s00894-012-1667-x
+
+           Empirical Formula: H2 O  =     3 atoms
+
+
+
+      MOLECULAR POINT GROUP   :   C2v 
+
+
+      RHF CALCULATION, NO. OF DOUBLY OCCUPIED LEVELS = 4
+
+
+
+          HEAT OF FORMATION =     -57.794757 KCALS/MOLE
+
+
+          CARTESIAN COORDINATE DERIVATIVES
+
+   NUMBER  ATOM         X            Y            Z
+
+     1       O     -0.781013    -1.012376     0.000000
+     2       H     -0.150153     0.923288     0.000000
+     3       H      0.931166     0.089087     0.000000
+
+ DIPOLE           X         Y         Z       TOTAL
+ POINT-CHG.     1.108     1.436     0.000     1.813
+ HYBRID         0.197     0.256     0.000     0.323
+ SUM            1.305     1.692     0.000     2.137
+
+
+          GRADIENT NORM =   1.83981
+
+          MOLECULAR WEIGHT =   18.02
+
+
+
+          ROTATIONAL CONSTANTS IN CM(-1)
+
+          A =   27.60951342   B =   14.59342722   C =    9.54714099
+
+
+
+           PRINCIPAL MOMENTS OF INERTIA IN UNITS OF 10**(-40)*GRAM-CM**2
+
+          A =        1.0139   B =        1.9182   C =        2.9321
+
+
+          ORIENTATION OF MOLECULE IN FORCE CALCULATION
+
+    NO.       ATOM         X         Y         Z
+
+     1          O      -0.0399   -0.0517    0.0000
+     2          H       0.9162   -0.0517    0.0000
+     3          H      -0.2826    0.8730    0.0000
+
+
+    FIRST DERIVATIVES WILL BE USED IN THE CALCULATION OF SECOND DERIVATIVES
+
+          ESTIMATED TIME TO COMPLETE CALCULATION =        0.07 SECONDS
+
+    FOR POINT-GROUP C2v  THERE ARE   4 UNIQUE SYMMETRY FUNCTIONS.
+
+ STEP:   1 TIME =     0.00 SECS, INTEGRAL =      0.00 TIME LEFT: 172800.00
+ STEP:   2 TIME =     0.00 SECS, INTEGRAL =      0.00 TIME LEFT: 172800.00
+ STEP:   3 TIME =     0.00 SECS, INTEGRAL =      0.00 TIME LEFT: 172800.00
+ STEP:   4 TIME =     0.00 SECS, INTEGRAL =      0.00 TIME LEFT: 172800.00
+ STEP:   5 TIME =     0.00 SECS, INTEGRAL =      0.00 TIME LEFT: 172800.00
+ STEP:   6 TIME =     0.00 SECS, INTEGRAL =      0.00 TIME LEFT: 172800.00
+ STEP:   7                       INTEGRAL =      0.00 TIME LEFT: 172800.00
+ STEP:   8                       INTEGRAL =      0.00 TIME LEFT: 172800.00
+ STEP:   9                       INTEGRAL =      0.00 TIME LEFT: 172800.00
+
+(To convert to Hartree/Bohr^2, multiply by (10^(-21) x N x a0^2)/(4.184 x 627.51) =  0.0642)
+
+
+           FORCE MATRIX IN MILLIDYNES/ANGSTROM
+
+
+                  O  1       H  2       H  3
+ ------------------------------------------
+     O    1   6.431124
+     H    2   4.088539   4.542359
+     H    3   4.087663   0.855714   4.542359
+
+
+          HEAT OF FORMATION =     -57.794757 KCALS/MOLE
+
+          ZERO POINT ENERGY      10.115 KCAL/MOL
+
+
+           NORMAL COORDINATE ANALYSIS (Total motion = 1 Angstrom)
+
+
+   Root No.       1         2         3
+
+                 1 A1      1 B2      2 A1  
+
+                1401.9    2809.7    2864.1
+  
+           1   -0.0322   -0.0376   -0.0160
+           2   -0.0417    0.0290   -0.0208
+           3    0.0000    0.0000    0.0000
+           4    0.0790    0.4762    0.4757
+           5    0.4670    0.0000   -0.1040
+           6   -0.0000   -0.0000   -0.0000
+           7    0.4317    0.1209   -0.2213
+           8    0.1950   -0.4607    0.4337
+           9   -0.0000    0.0000   -0.0000
+
+
+           MASS-WEIGHTED COORDINATE ANALYSIS (NORMAL COORDINATES)
+
+
+   Root No.       1         2         3
+
+                 1 A1      1 B2      2 A1  
+
+                1401.9    2809.7    2864.1
+  
+           1   -0.1826   -0.2142   -0.0917
+           2   -0.2367    0.1653   -0.1188
+           3    0.0000    0.0000    0.0000
+           4    0.1126    0.6807    0.6830
+           5    0.6653    0.0000   -0.1493
+           6   -0.0000   -0.0000   -0.0000
+           7    0.6150    0.1728   -0.3177
+           8    0.2777   -0.6584    0.6227
+           9   -0.0000    0.0000   -0.0000
+
+
+          DESCRIPTION OF VIBRATIONS
+
+
+ VIBRATION          1    1A1         ATOM PAIR     ENERGY CONTRIBUTION    RADIAL
+ FREQUENCY          1401.90         O 1 -- H 2         +50.0% ( 56.8%)      9.7%
+ TRANSITION DIPOLE   0.5242         O 1 -- H 3         +50.0% ( 56.8%)      9.7%
+ TRAVEL (Ang.)       0.2969
+ REDUCED MASS        0.5457
+ EFFECTIVE MASS      1.6926
+ FORCE CONSTANT      0.6319
+
+ VIBRATION          2    1B2         ATOM PAIR     ENERGY CONTRIBUTION    RADIAL
+ FREQUENCY          2809.73         O 1 -- H 2         +50.0% ( 71.7%)     96.7%
+ TRANSITION DIPOLE   1.2474         O 1 -- H 3         +50.0% ( 71.7%)     96.7%
+ TRAVEL (Ang.)       0.2151
+ REDUCED MASS        0.5186
+ EFFECTIVE MASS      1.4971
+ FORCE CONSTANT      2.4122
+
+ VIBRATION          3    2A1         ATOM PAIR     ENERGY CONTRIBUTION    RADIAL
+ FREQUENCY          2864.12         O 1 -- H 3         +50.0% ( 68.5%)     99.8%
+ TRANSITION DIPOLE   0.3910         O 1 -- H 2         +50.0% ( 68.5%)     99.8%
+ TRAVEL (Ang.)       0.2193
+ REDUCED MASS        0.4896
+ EFFECTIVE MASS      1.1523
+ FORCE CONSTANT      2.3664
+
+           FORCE CONSTANT IN CARTESIAN COORDINATES (Millidynes/A)
+
+    ATOM   CHEMICAL       X               Y               Z
+   NUMBER   SYMBOL  FORCE CONSTANT  FORCE CONSTANT  FORCE CONSTANT
+
+      1       O        4.691711        4.167738        0.017905
+      2       H        4.458998        0.625987        0.001613
+      3       H        1.075572        4.009414        0.001613
+
+ **********************
+ *                    *
+ * JOB ENDED NORMALLY *
+ *                    *
+ **********************
+
+
+
+ TOTAL JOB TIME:             0.02 SECONDS
+
+ == MOPAC DONE ==

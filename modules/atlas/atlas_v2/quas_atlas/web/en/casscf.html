@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Multiconfigurational methods: CASSCF</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/cas.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261028-casscf-g.webp"><!--pose:end-->
+<h1>Multiconfigurational methods: CASSCF</h1>
+<p class="lead">Hartree–Fock, MP2 and coupled clusters all start from a single determinant. When several configurations are equally important — in bond breaking, in a biradical, when twisting around a double bond — this foundation fails. The CASSCF method does full CI in a small “active space” of orbitals and optimizes the orbitals themselves at the same time. It describes static correlation, and dynamic correlation is added on top — for example by NEVPT2 perturbation theory. All curves were computed with PySCF in the cc-pVDZ basis.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>When several configurations are equally important (bond breaking, a biradical), single-determinant methods fail — this is static correlation.</li><li>CASSCF solves full CI in an active space of orbitals and optimizes the orbitals at the same time.</li><li>Natural orbital occupation numbers well between 0 and 2 are the sign of multiconfigurational character.</li><li>Dynamic correlation is added on top of CASSCF: NEVPT2, CASPT2, MRCI; the size of the active space is limited to about 18 orbitals.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> diatomic and small molecules, cc-pVDZ</summary><dl><dt>What is computed</dt><dd>Curves for H₂ (RHF, UHF, CASSCF(2,2), full CI), twisting ethylene (RHF, CASSCF(2,2), NEVPT2), curves for N₂ (RHF, CCSD, CCSD(T), CASSCF(6,6), NEVPT2); natural orbital occupation numbers; the number of determinants for CAS(n,m).</dd><dt>Which approximations are made</dt><dd>The cc-pVDZ basis; a rigid ethylene geometry during twisting; NEVPT2 as the reference for N₂ instead of full CI; CCSD may not converge at large R.</dd><dt>What can be concluded</dt><dd>When one determinant is not enough and how the occupation numbers show it — yes; accurate bond dissociation energies — no: that needs larger basis sets and MRCI or similar methods.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">H₂: static and dynamic correlation</h2>
+  <p class="hint">The active space CAS(2,2) is two electrons in the two orbitals σ<sub>g</sub> and σ<sub>u</sub>. Restricted Hartree–Fock (RHF) keeps both electrons in one orbital and goes up when the bond breaks. Unrestricted (UHF) puts the α and β electrons on different atoms and gives the right energy, but at the cost of mixing spin states. CASSCF breaks the bond correctly and stays a singlet.</p>
+  <div class="crow"><span class="l">Distance R</span><input type="range" id="R" min="0" max="35" step="1" value="2" aria-label="Distance R"><span class="val" id="Rv"></span></div>
+  <div class="two">
+    <svg id="h2C" viewBox="0 0 560 330" role="img" aria-label="Energy of H₂: RHF, UHF, CASSCF and full CI"></svg>
+    <div><div class="mbox" id="h2M"></div></div>
+  </div>
+  <p class="hint" id="h2N"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Ethylene: twisting around the double bond</h2>
+  <p class="hint">When one CH₂ group is twisted, the π bond breaks: at 90° the π and π* orbitals are degenerate, and the ground state is a biradical with two equivalent configurations. The active space CAS(2,2) is the same two orbitals π and π*.</p>
+  <div class="crow"><span class="l">Twist angle</span><input type="range" id="ang" min="0" max="9" step="1" value="0" aria-label="Rotation angle"><span class="val" id="angV"></span></div>
+  <div class="two">
+    <svg id="ethC" viewBox="0 0 560 330" role="img" aria-label="Energy of ethylene twisted around the C=C bond"></svg>
+    <div><div class="mbox" id="ethM"></div></div>
+  </div>
+  <p class="hint" id="ethN"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">N₂: three bonds break at once</h2>
+  <p class="hint">A triple bond needs the active space CAS(6,6): the σ, π, π orbitals and the antibonding σ*, π*, π*. Here are also CCSD and CCSD(T), the best single-determinant methods, and NEVPT2 — CASSCF with a perturbative correction for dynamic correlation. The energy of each method is measured from its own energy at 1.1 Å, near equilibrium.</p>
+  <div class="crow"><span class="l">Distance R</span><input type="range" id="Rn" min="0" max="21" step="1" value="2" aria-label="Distance R in N₂"><span class="val" id="RnV"></span></div>
+  <div class="two">
+    <svg id="n2C" viewBox="0 0 560 330" role="img" aria-label="Energy curves of N₂ for different methods"></svg>
+    <div><div class="mbox" id="n2M"></div></div>
+  </div>
+  <p class="hint" id="n2N"></p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">What an active space costs</h2>
+  <p class="hint">Inside the active space CASSCF solves full CI, so the number of determinants grows as fast as in full CI — only there are few orbitals here. Choose the numbers of electrons and orbitals.</p>
+  <div class="crow"><span class="l">Active electrons n</span><input type="range" id="ne" min="2" max="24" step="2" value="6" aria-label="Number of active electrons"><span class="val" id="neV"></span></div>
+  <div class="crow"><span class="l">Active orbitals m</span><input type="range" id="no" min="2" max="24" step="1" value="6" aria-label="Number of active orbitals"><span class="val" id="noV"></span></div>
+  <div class="kvt" id="casK"></div>
+  <p class="hint" id="casN"></p>
+  <div class="eq">
+    <div class="eqb"><div class="t">How to choose active orbitals</div>The active space takes the orbitals whose occupation numbers differ noticeably from 2 and 0: the bonding and antibonding orbitals of breaking bonds, the unpaired d orbitals of a metal, a π system. Natural orbital occupation numbers are the main sign: between 0.02 and 1.98, the orbital belongs in the active space.</div>
+    <div class="eqb"><div class="t">Static and dynamic</div>CASSCF describes static correlation — the degeneracy of several configurations. Dynamic correlation — how electrons avoid each other at short distances — it hardly includes. It is added on top: CASPT2, NEVPT2 (perturbation theory) or MRCI (CI from several reference configurations).</div>
+    <div class="eqb"><div class="t">Size limit</div>Ordinary CASSCF is feasible up to about 18 electrons in 18 orbitals: about 2.4·10⁹ determinants. Beyond that come approximate solvers: DMRG, selected CI, RASSCF with a limited number of excitations.</div>
+    <div class="eqb"><div class="t">Pitfalls</div>The result depends on the choice of the active space, and the optimal orbitals may “switch” between geometries or states. That is why curves are computed by passing the orbitals from point to point, and for several states a state average (SA-CASSCF) is used.</div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">Why do two He atoms still attract each other, although they are not bound in HF?</span><a class="nqA" href="dispersion.html" data-goto="disp">Intermolecular interactions →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>H₂, R = 2.0 Å: what is the occupation number of the σu orbital in CASSCF(2,2)?</span></p>
+<p class="olab">Occupation of σu</p><div class="opts" role="group"><button type="button" class="opt">1.55</button><button type="button" class="opt" data-ok="1">0.45</button><button type="button" class="opt">0.05</button><button type="button" class="opt">1.00</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>About 0.45: σ<sub>g</sub> holds 1.55 electrons, σ<sub>u</sub> 0.45. The function is already clearly two-configurational, while RHF is 251 kJ/mol above full CI here.</div></div>
+<div class="tq"><p class="qt"><span>At the same R = 2.0 Å: what is ⟨S²⟩ of the UHF function?</span></p>
+<p class="olab">⟨S²⟩</p><div class="opts" role="group"><button type="button" class="opt">2.00</button><button type="button" class="opt">0.75</button><button type="button" class="opt" data-ok="1">0.90</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>About 0.90 instead of 0 for a singlet. The UHF energy is only 39 kJ/mol above full CI, but the function is a roughly equal mixture of singlet and triplet, so its spin properties and density are wrong.</div></div>
+<div class="tq"><p class="qt"><span>Ethylene: what rotation barrier (at 90°) does CASSCF(2,2) give, kJ/mol?</span></p>
+<p class="olab">Barrier, kJ/mol</p><div class="opts" role="group"><button type="button" class="opt">542</button><button type="button" class="opt" data-ok="1">312</button><button type="button" class="opt">160</button><button type="button" class="opt">272</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>About 312 kJ/mol; NEVPT2 gives 322, RHF 542. The experimental activation energy of cis–trans isomerization is about 272 kJ/mol; the computed barrier is higher because the geometry does not relax during twisting.</div></div>
+<div class="tq"><p class="qt"><span>Why does CCSD(T) give an energy for N₂ at large R that is lower than at equilibrium?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">The (T) correction starts from one determinant; with nearly half-filled orbitals it is no longer small</button><button type="button" class="opt">The cc-pVDZ basis is too small</button><button type="button" class="opt">At large R the spin of the N₂ ground state changes</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Coupled clusters are built from the single RHF determinant, and the (T) correction is computed by perturbation theory. When the triple bond breaks, six orbitals are nearly half filled, the amplitudes are large, and the correction stops being small: it “collapses” the energy. The warning sign can be seen in advance — in the natural orbital occupation numbers.</div></div>
+<div class="tq"><p class="qt"><span>The section on the active space: how many determinants are there in CAS(16,16)? Answer in millions.</span></p>
+<p class="olab">Determinants, millions</p><div class="opts" role="group"><button type="button" class="opt">12.9</button><button type="button" class="opt">2400</button><button type="button" class="opt">601</button><button type="button" class="opt" data-ok="1">165.6</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>C(16, 8)² = 12 870² ≈ 165.6 million. One CI vector takes 1.3 GB — already heavy, but still ordinary CASSCF; CAS(18,18) has 2.4 billion.</div></div>
+</div></details></section>
+<script src="js/casscf.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="cas";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/casscf.js"></script>
+
+</body>
+</html>

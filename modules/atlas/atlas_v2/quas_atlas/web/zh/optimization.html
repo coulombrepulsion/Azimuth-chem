@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>几何优化</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/opt.css">
+
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-opt-g.webp"><!--pose:end-->
+<h1>几何优化</h1>
+<p class="lead">几乎每个量子化学计算都从寻找平衡几何构型开始——即势能面上的极小点。程序知道当前点的能量及其梯度，并一步步移向梯度为零的点。这里对一个真实的势能面求解这个问题：H₂O 分子的能量，用 HF/6-31G* 方法在键长 r 和键角 θ 的网格上计算（两个 O–H 键相等，C<sub>2v</sub> 对称）。比较不同算法需要多少步。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>优化寻找能量梯度为零的点；它是极小点还是鞍点由黑塞矩阵决定。</li><li>最速下降在狭长山谷中很慢：稳定步长受最硬的模式限制。</li><li>牛顿法几步就能收敛，但需要黑塞矩阵；拟牛顿法 BFGS 从梯度构建它——这是程序中的标准做法。</li><li>优化之后要计算频率：全部为实数——极小点，有一个虚频——过渡态。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>H₂O 的 HF/6-31G*，只有对称结构</summary><dl><dt>计算的是什么</dt><dd>四种优化算法在 H₂O 能量网格上的路径和 2 × 2 黑塞矩阵。</dd><dt>采用了哪些近似</dt><dd>不含相关的 HF 方法，6-31G* 基组；能量在网格上插值；两个 O–H 键相等。</dd><dt>能得出什么结论</dt><dd>算法比较是可靠的；极小值只在图上得到证明——第三个振动模式由“计算验证”页面检查。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. 同一势能面上的四种算法</h2>
+  <p class="small">线条是高于极小点的能量等值线（kJ/mol）。点击图选择起始几何构型。优化在内坐标 r（bohr）和 θ（弧度）中进行；当梯度长度小于每单位坐标 10⁻⁵ E<sub>h</sub> 时认为收敛。</p>
+  <div class="crow"><span class="l">算法</span><span class="grp" id="mG" role="group" aria-label="算法"></span></div>
+  <div class="crow" id="stepRow"><span class="l">步长 α</span><input type="range" id="step" min="0.1" max="2" step="0.05" style="width:240px" aria-label="最速下降的步长"><span class="val" id="stepV"></span></div>
+  <div class="crow"><span class="l">优化过程</span><span class="row"><button class="btn" type="button" id="bStep">单步</button><button class="btn" type="button" id="bRun">直至收敛</button><button class="btn" type="button" id="bReset">从头开始</button><span class="val" id="kV"></span></span></div>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle">H₂O 的势能面 E(r, θ)，HF/6-31G*：高于极小点（+）1、2、5、10、20、50、100、200 kJ/mol 的等值线</div>
+      <svg id="map" viewBox="0 0 540 440" role="img" aria-label="势能面图与优化路径"></svg>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="ptitle">梯度长度 |g| 随步数的变化（对数坐标）</div>
+      <svg id="cv" viewBox="0 0 520 250" role="img" aria-label="随步数的收敛"></svg>
+      <div class="ptitle">从同一起点出发的所有算法</div>
+      <div class="tablewrap" id="cmp"></div>
+    </div>
+  </div>
+  <div class="status" id="st1"></div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. 找到了什么：极小点与频率</h2>
+  <p class="small">鞍点处梯度也为零，因此要用二阶导数矩阵（黑塞矩阵）检验找到的点。在极小点处它的所有本征值都为正。由黑塞矩阵和原子质量可得到谐振频率——这就是每次优化之后都要做的“频率计算”。</p>
+  <div class="tablewrap" id="res"></div>
+  <div class="status" id="st2"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">程序找到了极小值和频率。如何确认程序计算正确？</span><a class="nqA" href="validation.html" data-goto="val">计算验证 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>最速下降，α = 0.5：为什么路径先几乎横穿山谷，然后沿山谷缓慢移动？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">沿 r 的曲率远大于沿 θ 的曲率</button><button type="button" class="opt">梯度总是指向极小点</button><button type="button" class="opt">算法先只优化 r</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>梯度垂直于等值线，而等值线是狭长的：沿 r 的曲率（≈ 1.2 E<sub>h</sub>/bohr²）约为沿 θ（≈ 0.19 E<sub>h</sub>/rad²）的 6 倍。因此键长很快得到修正，而键角修正得很慢。</div></div>
+<div class="tq"><p class="qt"><span>增大最速下降的 α。在 α ≈ 1.6–2 时会发生什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">横穿山谷的振荡不断增大：步长对硬模式来说太大</button><button type="button" class="opt">收敛越来越快</button><button type="button" class="opt">没有变化</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>步长超过 2/λ<sub>max</sub> ≈ 1.65：沿硬方向（键的伸缩）每一步都越过极小点越来越远，路径来回摆动。稳定步长受最硬的模式限制。</div></div>
+<div class="tq"><p class="qt"><span>在表中比较带线搜索的下降法与 BFGS。为什么线搜索不划算，尽管它的步数不多？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">每一步都需要多次计算能量</button><button type="button" class="opt">它找到的是另一个极小点</button><button type="button" class="opt">它根本不收敛</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>为了找到沿方向的极小点，每一步都需要几十次能量计算，而在真实计算中每次能量计算都是一次完整的 SCF 计算。BFGS 步数少，几乎不浪费额外的能量计算。</div></div>
+<div class="tq"><p class="qt"><span>牛顿–拉弗森法 3–4 步就收敛。为什么程序默认使用 BFGS？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">精确的黑塞矩阵太昂贵</button><button type="button" class="opt">牛顿法总是走到鞍点</button><button type="button" class="opt">BFGS 找到的极小点更精确</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>牛顿步需要精确的黑塞矩阵——能量的二阶导数，而它的代价相当于几十次梯度计算。BFGS 用已经算好的梯度构建近似黑塞矩阵，步数几乎不逊色。</div></div>
+<div class="tq"><p class="qt"><span>如何检验找到的点是极小点而不是过渡态？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">黑塞矩阵的所有本征值都为正</button><button type="button" class="opt">梯度为零</button><button type="button" class="opt">能量低于起点</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>看黑塞矩阵：在极小点处它的所有本征值都为正，即所有频率都是实数。在过渡态处有一个本征值为负——一个虚频。</div></div>
+<div class="tq"><p class="qt"><span>为什么 H₂O 的 HF/6-31G* 谐振频率高估约 10 %？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">没有相关的 HF 势能面太陡，再加上非谐性</button><button type="button" class="opt">数值微分误差</button><button type="button" class="opt">H 原子太轻</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>没有相关时 HF 势能面比真实的更陡，键也更短。此外，由于非谐性，观测频率低于谐振频率。因此 HF 频率要乘以约 0.9 的校正因子。</div></div>
+<div class="tq"><p class="qt"><span>算法已收敛，图上黑塞矩阵的两个本征值都为正。能否断定找到了 H₂O 的最低极小值？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">根据这些数据无法判断</button><button type="button" class="opt">能：正定的黑塞矩阵证明是全局极小值</button><button type="button" class="opt">不能：需要负的黑塞矩阵</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>根据这些数据无法判断。这张图只检验对称结构，因此首先要检验反对称振动（“计算验证”页面做了这一步）。即使是真正的极小值也可能只是局部的：局部黑塞矩阵对其他极小值一无所知。H₂O 没有别的极小值，但这是关于分子的知识，而不是由计算得出的结论。</div></div>
+</div></details></section>
+<script src="js/optimization.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="opt";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/optimization.js"></script>
+
+</body>
+</html>

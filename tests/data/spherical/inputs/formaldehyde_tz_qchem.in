@@ -1,0 +1,21 @@
+$comment
+Formaldehyde, B3LYP/cc-pVTZ, pure d and f, no symmetry (Azimuth: the order of the pure functions)
+$end
+
+$molecule
+0 1
+  C     0.210000    -0.130000     0.080000
+  O     0.669265    -1.125763     0.579557
+  H     0.800180     0.806532    -0.011722
+  H    -0.827630    -0.096387    -0.314984
+$end
+
+$rem
+  METHOD               B3LYP
+  BASIS                cc-pVTZ
+  PURECART             11111
+  SYM_IGNORE           TRUE
+  SYMMETRY             FALSE
+  PRINT_GENERAL_BASIS  TRUE
+  PRINT_ORBITALS       200
+$end

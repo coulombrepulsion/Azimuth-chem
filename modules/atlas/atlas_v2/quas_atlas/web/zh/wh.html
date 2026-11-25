@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>π 轨道与周环反应</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/wh.css">
+
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-wh-g.webp"><!--pose:end-->
+<h1>π 轨道与周环反应</h1>
+<p class="lead">协同（周环）反应经由环状过渡态进行，它们是否允许由前线轨道的对称性决定——即伍德沃德–霍夫曼规则。本页分三步：先用休克尔方法构建多烯的 π 轨道，再看 HOMO 末端的符号如何决定闭环时的旋转方向，最后看两个分子在环加成中前线轨道如何重叠。瓣的颜色表示系数的符号，大小表示其数值。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>休克尔方法是 π 轨道的教学模型：多烯的 ψ<sub>k</sub> 有 k − 1 个节点，而环中 4n + 2 个 π 电子构成闭壳层（芳香性）。</li><li>周环反应的进程由前线轨道的对称性（或相关图）决定。</li><li>电环化反应：4n 个电子——加热时顺旋，4n + 2 个——对旋；光照时相反。</li><li>加热条件下 [2 + 2] 环加成是禁阻的，光化学允许；[4 + 2] 加热允许。</li><li>反应物的 HOMO–LUMO 能隙越小，反应越快。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>Hückel 方法和前线轨道的对称性</summary><dl><dt>计算的是什么</dt><dd>多烯的 π 轨道、HOMO 两端的符号、周环反应是否允许。</dd><dt>采用了哪些近似</dt><dd>Hückel 方法：只考虑 π 电子，参数 α 和 β；不计算过渡态。</dd><dt>能得出什么结论</dt><dd>反应在对称性上是否允许——可以判断；其速率和能垒——不能。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h0s">
+  <h2 id="h0s">1. 多烯的 π 轨道：休克尔方法</h2>
+  <p class="small">共轭体系中每个 C 原子提供一个 p 轨道；α 是电子在原子 p 轨道上的能量，β &lt; 0 是相邻原子之间的相互作用，其余全部忽略。由此得到能级 E = α + xβ（x 越大，能级越低）和系数的符号——伍德沃德–霍夫曼规则需要的正是这些符号。如今简单休克尔方法是一种教学模型：在量子化学程序中，类似的方案（扩展休克尔方法）最多用作 SCF 的初始猜测。但它能正确给出 π 轨道的节点数和对称性。点击能级查看轨道。</p>
+  <div class="crow"><span class="l">体系</span><span class="grp" id="hkG" role="group" aria-label="π 体系"></span></div>
+  <div class="two"><svg id="hkMol" viewBox="0 0 460 300" role="img" aria-label="π 体系的轨道"></svg><svg id="hkLev" viewBox="0 0 460 300" role="img" aria-label="π 轨道能级" style="touch-action:manipulation"></svg></div>
+  <div class="status" id="t0"></div>
+</section>
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">2. 电环化反应</h2>
+  <p class="small">多烯两端旋转并闭合成 σ 键。第 1 步：找到前线轨道——加热时为 HOMO，光照时为电子跃迁到的原 LUMO。第 2 步：看它末端系数的符号。如果同号的瓣转向彼此，就会成键：末端符号相反时为顺旋，相同时为对旋。</p>
+  <div class="crow"><span class="l">体系</span><span class="grp" id="sysG" role="group" aria-label="体系"></span></div>
+  <div class="crow"><span class="l">条件</span><span class="grp" id="condG" role="group" aria-label="条件"></span><span class="hint" id="condHint"></span></div>
+  <div class="crow"><span class="l">末端基团的旋转</span><input type="range" id="th" min="0" max="90" step="1" style="width:240px" aria-label="旋转角"><span class="val" id="thv"></span><button class="btn primary" type="button" id="play">闭环</button></div>
+  <div class="two">
+    <div class="mode"><b>顺旋</b><span class="hint">两个末端基团朝同一方向旋转；保持 C₂ 轴</span><svg id="pCon" viewBox="0 0 420 300" role="img" aria-label="顺旋闭环"></svg><span class="verd" id="vCon"></span></div>
+    <div class="mode"><b>对旋</b><span class="hint">末端基团相向旋转；保持 σ 镜面</span><svg id="pDis" viewBox="0 0 420 300" role="img" aria-label="对旋闭环"></svg><span class="verd" id="vDis"></span></div>
+  </div>
+  <div class="legend"><span><i class="box" style="background:var(--lp-bg);border:1.5px solid var(--lp)"></i>c &gt; 0</span><span><i class="box" style="background:var(--ln-bg);border:1.5px solid var(--ln)"></i>c &lt; 0</span><span>Me —— 末端原子上的甲基（E,E-异构体）：由它们可以看出生成哪种立体异构体</span></div>
+  <div class="status" id="t1"></div>
+  <details class="more"><summary>详细：相关图——通过所有轨道的对称性得出同样的结论</summary>
+  <div class="crow"><span class="l">保持的对称元素</span><span class="grp" id="corG" role="group" aria-label="模式"></span></div>
+  <div class="two"><svg id="corr" viewBox="0 0 520 420" role="img" aria-label="轨道相关图"></svg><div class="status" id="t2"></div></div>
+  </details>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">3. 环加成：前线轨道</h2>
+  <p class="small">两个组分以分子平面相互靠近（两侧均为同面）。新键在末端形成；如果前线轨道<b>在两端</b>同时同相重叠，反应就是允许的。</p>
+  <div class="crow"><span class="l">组分 A</span><span class="grp" id="aG" role="group" aria-label="组分 A"></span></div>
+  <div class="crow"><span class="l">组分 B</span><span class="grp" id="bG" role="group" aria-label="组分 B"></span></div>
+  <div class="crow"><span class="l">条件</span><span class="grp" id="cond2G" role="group" aria-label="条件"></span></div>
+  <div class="two"><svg id="fmo" viewBox="0 0 460 340" role="img" aria-label="前线轨道的重叠"></svg><svg id="lev" viewBox="0 0 460 340" role="img" aria-label="前线轨道能级"></svg></div>
+  <div class="status" id="t3"></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">4. 规则汇总</h2>
+  <div class="tablewrap" id="rules"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">反应路径在势能面上是什么样子的？</span><a class="nqA" href="pes.html" data-goto="pes">势能面 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>第 1 节中的苯和环丁二烯：为什么苯有芳香性，而环丁二烯没有？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">苯的 4n + 2 个 π 电子填满了所有成键能级，环丁二烯有两个电子位于简并的非键能级上</button><button type="button" class="opt">环丁二烯有张力，与轨道无关</button><button type="button" class="opt">两者的离域能相同</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>苯的 6 个 π 电子（4n + 2）填满三个成键能级，壳层闭合，离域能为 2|β|。环丁二烯有 4 个 π 电子（4n）：其中两个分别占据一对简并的非键能级 E = α，离域能为 0——这就是反芳香性。</div></div>
+<div class="tq"><p class="qt"><span>(E,E)-2,4-己二烯在加热下闭环。会生成哪种 3,4-二甲基环丁烯立体异构体？为什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">顺式异构体</button><button type="button" class="opt" data-ok="1">反式异构体</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>反式：丁二烯的 HOMO ψ₂ 两端符号相反（c₁ = 0.60，c₄ = −0.60），只有顺旋时才产生成键重叠，而顺旋时 E,E-甲基位于环的两侧。</div></div>
+<div class="tq"><p class="qt"><span>己三烯在加热和光照下：每种情况允许哪种方式？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">加热——顺旋，光照——对旋</button><button type="button" class="opt" data-ok="1">加热——对旋，光照——顺旋</button><button type="button" class="opt">两种情况都是对旋</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>加热时起决定作用的是两端符号相同的 HOMO ψ₃ —— 对旋。光照时电子处于两端符号相反的 ψ₄ —— 顺旋。</div></div>
+<div class="tq"><p class="qt"><span>戊二烯基阳离子（纳扎罗夫反应）和烯丙基阳离子：它们在热条件下如何闭环？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">两者都是顺旋</button><button type="button" class="opt" data-ok="1">戊二烯基——顺旋，烯丙基——对旋</button><button type="button" class="opt">戊二烯基——对旋，烯丙基——顺旋</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>戊二烯基阳离子 —— 4 个 π 电子，顺旋；烯丙基阳离子 —— 2 个 π 电子（4n + 2），对旋。起决定作用的是电子数，而不是原子数。</div></div>
+<div class="tq"><p class="qt"><span>丁二烯 → 环丁烯的相关图：哪个轨道“破坏”了对旋途径？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">ψ₁</button><button type="button" class="opt" data-ok="1">ψ₂</button><button type="button" class="opt">ψ₃</button><button type="button" class="opt">ψ₄</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>ψ₂（对 σ 反对称）与环丁烯的空 π* 相关联。基态转变为双激发态 —— 热禁阻。</div></div>
+<div class="tq"><p class="qt"><span>乙烯 + 乙烯：光照时有何变化？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">[2+2] 变为允许</button><button type="button" class="opt">[2+2] 仍然禁阻</button><button type="button" class="opt">[2+2] 不光照也允许</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>热条件下，一个分子的 HOMO 与另一个分子的 LUMO 只在一端同相重叠 —— [2+2] 禁阻。在激发态乙烯中，电子位于原来的 LUMO 上，它与第二个分子的 LUMO 在两端都同相重叠 —— 光化学允许。</div></div>
+<div class="tq"><p class="qt"><span>为什么丁二烯与丙烯醛的反应比与乙烯快？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">丙烯醛更大</button><button type="button" class="opt">羰基升高了二烯的 HOMO</button><button type="button" class="opt" data-ok="1">羰基降低了亲双烯体的 LUMO，能隙变小</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>羰基降低了亲双烯体的 LUMO：HOMO–LUMO 能隙为 0.97|β|，而与乙烯为 1.62|β|。能隙越小，前线轨道相互作用越强，Diels–Alder 反应越快。</div></div>
+</div></details></section>
+<script src="js/wh.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="wh";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/wh.js"></script>
+
+</body>
+</html>

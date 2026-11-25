@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Atomic terms</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/terms.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-terms-g.webp"><!--pose:end-->
+<h1>Atomic terms</h1>
+<p class="lead">One electron configuration, such as 2p², corresponds to several states with different energies — the terms <sup>2S+1</sup>L. They are found from microstates: list all ways of placing the electrons in spin orbitals allowed by the Pauli principle and group them by M<sub>L</sub> and M<sub>S</sub>. Hund’s rules give the ground term.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>One configuration gives several terms <sup>2S+1</sup>L with different energies.</li><li>Terms are found from the microstate table: each term takes (2L + 1)(2S + 1) states.</li><li>For equivalent electrons the Pauli principle forbids some of the terms.</li><li>The ground term follows from the Hund rules: maximum S, then maximum L, then J according to shell filling.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> LS coupling and the Hund rules</summary><dl><dt>What is computed</dt><dd>Microstates of a configuration, the decomposition into terms, the ground term.</dd><dt>Which approximations are made</dt><dd>The Russell–Saunders scheme (LS coupling); the spin–orbit splitting into J levels is not computed. For configurations with several open shells (e.g. 3d²4p) Hund's rules for the ground term are unreliable.</dd><dt>What can be concluded</dt><dd>The set of terms is exact in the LS scheme; the Hund rules predict the ground term but not the order of the excited ones.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Microstates and terms of a configuration</h2>
+  <div class="crow"><span class="l">Configuration</span><span class="row" id="cfgG" role="group" aria-label="Configuration"></span></div>
+  <div class="crow"><span class="l">Custom configuration</span><input class="formula" id="cfgIn" value="p2" spellcheck="false" autocomplete="off" aria-label="Custom configuration"><button class="btn" id="cfgGo" type="button">Build</button><span class="hint">e.g. d3, p4, s1 p1, 2p1 3p1</span></div>
+  <div class="err" id="cfgErr"></div>
+  <div class="work">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="ptitle" id="tabT"></div>
+      <div class="tablewrap" id="mlmsTab"></div>
+      <div class="row"><button class="btn primary" id="bStep" type="button">Mark the next term</button><button class="btn" id="bAll" type="button">All terms at once</button><button class="btn" id="bReset" type="button">Start over</button></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="kv" id="nMicro"></div>
+      <div class="tl" id="termList"></div>
+      <div class="status" id="st1"></div>
+    </div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. Ground term from Hund’s rules</h2>
+  <p class="small">1) Maximum multiplicity: electrons occupy different orbitals with parallel spins. 2) Then maximum L: fill m<sub>l</sub> starting from the largest. 3) J = |L − S| if the subshell is less than half full, and J = L + S if it is more than half full.</p>
+  <div class="pt" id="ptab" role="group" aria-label="Element"></div>
+  <div class="work">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="kv" id="elCfg"></div>
+      <div class="boxes" id="boxes"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="status" id="st2"></div>
+      <div class="row"><button class="btn" id="bToCfg" type="button">All terms of this configuration</button></div>
+    </div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">Where do the orbitals from which the determinant is built come from?</span><a class="nqA" href="scf.html" data-goto="scf">SCF iterations →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises for exploring the page, plus a trainer. Do the action on the page and answer — your answer is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>How many microstates does the p² configuration have?</span></p>
+<p class="olab">Microstates</p><div class="opts" role="group"><button type="button" class="opt">36</button><button type="button" class="opt" data-ok="1">15</button><button type="button" class="opt">30</button><button type="button" class="opt">6</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden><span class=fr><span>6!</span><span>2! · 4!</span></span> = 15: the two electrons are distributed over six spin orbitals without repetition (Pauli principle).</div></div>
+<div class="tq"><p class="qt"><span>Which terms does the p² configuration give?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">¹D, ³P, ¹S</button><button type="button" class="opt">¹S, ¹P, ¹D, ³S, ³P, ³D</button><button type="button" class="opt">³P and ¹D</button><button type="button" class="opt">²P</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>¹D, ³P and ¹S: 5 + 9 + 1 = 15 microstates. The terms ¹P, ³D and ³S are absent — for equivalent electrons they are forbidden by the Pauli principle (compare with 2p¹3p¹ in section 1).</div></div>
+<div class="tq"><p class="qt"><span>What is J in the ground term of the carbon atom?</span></p>
+<p class="olab">J</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">0</button><button type="button" class="opt">2</button><button type="button" class="opt">1</button><button type="button" class="opt">1/2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>J = 0: term ³P₀. The 2p² subshell is less than half full, so J = |L − S| = |1 − 1| = 0.</div></div>
+<div class="tq"><p class="qt"><span>How many microstates does the d² configuration have?</span></p>
+<p class="olab">Microstates</p><div class="opts" role="group"><button type="button" class="opt">100</button><button type="button" class="opt">10</button><button type="button" class="opt">90</button><button type="button" class="opt" data-ok="1">45</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden><span class=fr><span>10!</span><span>2! · 8!</span></span> = 45. They split into the terms ¹G, ³F, ¹D, ³P, ¹S; the ground term is ³F (as for Ti²⁺ and V³⁺).</div></div>
+<div class="tq"><p class="qt"><span>What is J in the ground term of the iron atom?</span></p>
+<p class="olab">J</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">4</button><button type="button" class="opt">0</button><button type="button" class="opt">6</button><button type="button" class="opt">2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>J = 4: term ⁵D₄. 3d⁶: five electrons spin up and one down, S = 2, L = 2; the subshell is more than half full, so J = L + S = 4.</div></div>
+<div class="tq"><p class="qt"><span>Why is the ground term of oxygen ³P₂, but that of carbon ³P₀?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">The 2p subshell of O is more than half full</button><button type="button" class="opt">O has a larger nuclear charge</button><button type="button" class="opt">O and C have different L</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The 2p⁴ subshell of O is more than half full, and by Hund’s third rule J = L + S = 2. For C (2p²) it is less than half full, J = |L − S| = 0. The terms of p² and p⁴ are the same; only the order of the J levels differs.</div></div>
+<!--self:start--><div class="selfBox"><h3 id="h3s">Test yourself</h3>
+  <p class="small">Find the ground term of the atom: the multiplicity 2S + 1, the quantum number L and J.</p>
+  <div class="row"><b id="qEl" style="font-family:var(--f-display);font-size:19px"></b><button class="btn" id="qNew" type="button">Another atom</button></div>
+  <div class="quiz">
+    <label><span>2S + 1</span><input id="q0" inputmode="numeric" autocomplete="off"></label>
+    <label><span>L</span><input id="q1" autocomplete="off" spellcheck="false"></label>
+    <label><span>J</span><input id="q2" autocomplete="off" spellcheck="false"></label>
+  </div>
+  <div class="row"><button class="btn primary" id="qChk" type="button">Check</button><button class="btn" id="qShow" type="button">Show solution</button></div>
+  <div class="status" id="qRes">Enter your answers and press “Check”.</div>
+</div><!--self:end--></div></details></section>
+<script src="js/terms.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="terms";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/terms.js"></script>
+
+</body>
+</html>

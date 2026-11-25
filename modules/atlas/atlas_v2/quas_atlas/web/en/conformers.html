@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="ethane,butane,cyclohexane">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Conformers: which minima to look for</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-conf-g.webp"><!--pose:end-->
+<h1>Conformers: which minima to look for</h1>
+<p class="lead">An optimisation finds the nearest minimum — the one the starting structure “rolls down” into. A flexible molecule, however, has many minima: rotation about every single bond gives its own conformers, and at room temperature they interconvert quickly. Here you can see where the minima come from, how the molecules are distributed among them and why they are searched by metadynamics rather than by a grid.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>The energy of rotation about a bond is periodic: ethane has three equal minima with a 12 kJ/mol barrier, butane has the anti and two gauche conformers 3–4 kJ/mol higher.</li><li>The fraction of a conformer at temperature T is proportional to exp(−E/RT): at 298 K a difference of 5.7 kJ/mol is a 10 : 1 ratio.</li><li>Measured properties (spectra, dipole moment, energy) are averages over the conformers; one minimum may not be enough.</li><li>Every rotatable bond multiplies the number of combinations by the number of its minima: a grid grows as kⁿ, so CREST explores the surface by metadynamics.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> one torsion, a rigid frame, energies instead of Gibbs energies</summary><dl><dt>What is computed</dt><dd>The energy profile of rotation about one bond from three Fourier terms, its minima and barriers; Boltzmann fractions of the conformers; the number of starts and the time of a grid search.</dd><dt>Which approximations are made</dt><dd>The rest of the molecule is rigid; V₁–V₃ are model parameters (for butane fitted to the typical gauche +3.6 and barriers of 14 and 21 kJ/mol); the fractions use electronic energies, without zero-point vibrations and entropy, each minimum counted separately.</dd><dt>What can be concluded</dt><dd>Where conformers come from, how their fractions depend on the energies and the temperature and why a clever search is needed — yes; exact fractions need the Gibbs energies of the conformers from a calculation (CREST + DFT).</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Rotation about a bond</h2>
+  <div class="crow"><span class="l">Molecule</span><span class="grp" id="pG" role="group" aria-label="Molecule"></span></div>
+  <div class="crow"><span class="l">V₁ (kJ/mol)</span><input type="range" id="V1" min="-20" max="30" step="0.1" value="7.2" aria-label="V1"><span class="val" id="V1v"></span></div>
+  <div class="crow"><span class="l">V₂ (kJ/mol)</span><input type="range" id="V2" min="-20" max="30" step="0.1" value="-2.1" aria-label="V2"><span class="val" id="V2v"></span></div>
+  <div class="crow"><span class="l">V₃ (kJ/mol)</span><input type="range" id="V3" min="-20" max="30" step="0.1" value="13.8" aria-label="V3"><span class="val" id="V3v"></span></div>
+  <svg id="pchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Rotation energy"></svg>
+  <p class="hint">V(φ) = ½V₁(1 + cos φ) + ½V₂(1 − cos 2φ) + ½V₃(1 + cos 3φ); φ = 180° is anti. The numbers above the maxima are the barriers.</p>
+  <p class="status" id="pNote"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Populations at a temperature</h2>
+  <div class="crow"><span class="l">Temperature T</span><input type="range" id="T" min="100" max="1000" step="1" value="298" aria-label="Temperature"><span class="val" id="Tv"></span></div>
+  <div class="bars" id="bars"></div>
+  <p class="status" id="popNote"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Why a grid search fails</h2>
+  <div class="crow"><span class="l">Rotatable bonds n</span><input type="range" id="n" min="1" max="20" step="1" value="10" aria-label="Number of bonds"><span class="val" id="nv"></span></div>
+  <div class="crow"><span class="l">Minima per bond k</span><input type="range" id="k" min="2" max="6" step="1" value="3" aria-label="Minima per bond"><span class="val" id="kv"></span></div>
+  <div class="crow"><span class="l">Optimising one structure</span><input type="range" id="mn" min="0.1" max="60" step="0.1" value="1" aria-label="Optimisation time"><span class="val" id="mnv"></span></div>
+  <div class="cards" id="ccards"></div>
+  <p class="status" id="cNote"></p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">The conformers are found. How do their frequencies give the enthalpy, the entropy and the Gibbs energy?</span><a class="nqA" href="thermochemistry.html" data-goto="thermo">Thermochemistry from frequencies →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Butane at 298 K: what fraction of the molecules is anti?</span></p>
+<p class="olab">Anti fraction</p><div class="opts" role="group"><button type="button" class="opt">0.33</button><button type="button" class="opt">0.50</button><button type="button" class="opt" data-ok="1">0.68</button><button type="button" class="opt">0.95</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>About 0.68: the two gauche conformers lie 3.6 kJ/mol higher, exp(−3.6/2.48) ≈ 0.23 each, 1/(1 + 2·0.23) ≈ 0.68. The other 32 % are gauche.</div></div>
+<div class="tq"><p class="qt"><span>Ethane: how many minima, and how are the molecules distributed?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">1 minimum, 100 %</button><button type="button" class="opt">2 minima, 50 % each</button><button type="button" class="opt" data-ok="1">3 minima, 1/3 each</button><button type="button" class="opt">6 minima</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Three equal staggered minima 120° apart: 1/3 each at any temperature. The barrier V₃ = 12 kJ/mol is the eclipsed form.</div></div>
+<div class="tq"><p class="qt"><span>10 rotatable bonds with 3 minima each: how many starting structures does a full grid need?</span></p>
+<p class="olab">Starts</p><div class="opts" role="group"><button type="button" class="opt">30</button><button type="button" class="opt">1000</button><button type="button" class="opt" data-ok="1">59 049</button><button type="button" class="opt">3¹⁰⁰</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>3¹⁰ = 59 049. At a minute per optimisation that is 41 days, and 20 bonds would give 3.5·10⁹ structures — which is why a grid is not used.</div></div>
+<div class="tq"><p class="qt"><span>What energy window does CREST (CREGEN) keep by default?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">0.05 kcal/mol</button><button type="button" class="opt">1 kcal/mol</button><button type="button" class="opt" data-ok="1">6 kcal/mol</button><button type="button" class="opt">50 kcal/mol</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>6 kcal/mol (25 kJ/mol) above the lowest conformer; 0.05 kcal/mol is the energy threshold below which two conformers count as the same (together with an RMSD of 0.125 Å).</div></div>
+</div></details></section>
+<script src="js/conformers.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="conf";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/conformers.js"></script>
+
+</body>
+</html>

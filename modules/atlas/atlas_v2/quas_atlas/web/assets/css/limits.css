@@ -1,0 +1,10 @@
+.limits{border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:8px 14px;font-size:14.5px}
+.limits summary{cursor:pointer;line-height:1.45}
+.limits dl{margin:8px 0 2px;display:grid;grid-template-columns:minmax(150px,220px) 1fr;gap:4px 14px}
+.limits dt{color:var(--muted);font-weight:600}.limits dd{margin:0}
+@media (max-width:600px){.limits dl{grid-template-columns:1fr}.limits dd{margin-bottom:6px}}
+.nextQ{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;border-left:4px solid var(--accent);background:var(--soft);border-radius:8px;padding:10px 16px;font-size:15px}
+.nextQ .nqL{color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.04em;width:100%}
+.nextQ .nqQ{font-weight:600}.nextQ .nqA{color:var(--accent);font-weight:600;white-space:nowrap}
+/* Azimuth on a phone (390 px) the tables of the new topics and the link «next question» widened the whole page */
+@media (max-width:640px){table.tbl,table.mtab{display:block;max-width:100%;overflow-x:auto}.nextQ .nqA{white-space:normal;overflow-wrap:anywhere}main,article,section,p,li,b,strong{overflow-wrap:anywhere}}

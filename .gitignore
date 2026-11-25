@@ -1,0 +1,59 @@
+.venv/
+.tools/
+__pycache__/
+.pytest_cache/
+*.pyc
+*.log
+# program outputs used as test references and course examples are part of the repository
+!tests/data/**/*.log
+!examples/**/*.log
+.DS_Store
+# files set aside for the author to delete by hand
+_to_delete/
+build/
+dist/
+requirements-frozen.txt
+wheelhouse/
+
+# Atlas author's working materials and legacy sites: kept locally, not in the repository
+modules/atlas/_to_delete/
+modules/atlas/_X/
+modules/atlas/QuAIL_расчёты/
+modules/atlas/Отдельные_страницы/
+modules/atlas/QuAS_Атлас_сайт/
+modules/atlas/QuAS_Атлас.html
+# session outputs
+Claude outputs/
+_claude_*
+
+# snapshots saved into the program folder by versions before 2026-10-22
+Azimuth-*.png
+Azimuth-*.gif
+
+# 0.55.0: the custom icon macOS writes into the bundle when the theme changes (hub/dock_icon.py)
+Azimuth.app/Icon?
+setup-log.txt
+launch-check.txt
+# the pictures of tools/dialog_gallery.py
+.gallery/
+verify-log.txt
+
+# the runtime of Pyodide for the site: fetched by tools/build_atlas_site.py, checked by sha256
+site/.pyodide/
+# the answers of the long calculations of the Atlas, counted by tools/build_atlas_site.py
+site/.answers/
+
+# reports of tools/test.py (logs, summary.json, junit.xml)
+artifacts/
+
+# 2026-11-12: .venv and .tools are links to *.nosync folders (iCloud Drive does not sync those)
+.venv
+.tools
+*.nosync/
+
+# the cache of «npx wrangler pages deploy» (tools/publish_site.py)
+.wrangler/
+
+# a crash report of Quantum ESPRESSO and an empty temporary input once left in the program folder
+CRASH
+input_tmp.in

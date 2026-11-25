@@ -1,0 +1,208 @@
+answers: 17 | 1 | 1 | 2 | 7 | 2 | 1 | -10 | q
+
+ WARNING: "settings.ini" was found neither in current folder nor in the path defined by "Multiwfnpath" environment variable. Now using default settings instead, and all your modifications (if any) on settings.ini will not take effect!
+
+[95m Multiwfn -- A Multifunctional Wavefunction Analyzer
+[0m[32m Version 2026.7.15 (release date is the same as version name)
+[0m Developer: Tian Lu (Beijing Kein Research Center for Natural Sciences)
+ Multiwfn official website: http://sobereva.com/multiwfn
+ Multiwfn English forum: http://sobereva.com/wfnbbs
+ Multiwfn Chinese forum: http://bbs.keinsci.com/wfn
+ ( Number of parallel threads:   4  Current date: 2026-11-12  Time: 15:08:57 )
+
+ Both following papers ***MUST BE CITED IN MAIN TEXT*** if Multiwfn is used:
+[36m  Tian Lu, Feiwu Chen, J. Comput. Chem., 33, 580 (2012) DOI: 10.1002/jcc.22885
+  Tian Lu, J. Chem. Phys., 161, 082503 (2024) DOI: 10.1063/5.0216272
+[0m See "How to cite Multiwfn.pdf" in Multiwfn binary package for more information
+
+ Warning: You should set OMP_STACKSIZE environment variable as mentioned in Section 2.1.2 of Multiwfn manual!
+
+ Please wait...
+ Loading various information of the wavefunction
+ Note: Nuclear charge of Cs has been set to   9
+ Note: Nuclear charge of Cl has been set to   7
+ Loading basis set definition...
+ The highest angular moment basis functions is D
+ All D basis functions are spherical harmonic type
+ Loading orbitals...
+ The actual number of orbitals read:       216
+ Converting basis function information to GTF information...
+ Back converting basis function information from Cartesian to spherical type...
+ Generating density matrix...
+
+ Total/Alpha/Beta electrons:    432.0000    216.0000    216.0000
+ Net charge:     0.00000      Expected multiplicity:    1
+ Atoms:     54,  Basis functions:    729,  GTFs:   3942
+ This is a restricted single-determinant wavefunction
+ Orbitals from 1 to   216 are occupied
+ Loading electron density functions (EDF) information from built-in EDF library
+ (The library is available at https://github.com/zorkzou/Molden2AIM)
+ Cs(    1)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(    2)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(    3)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(    4)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(    5)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(    6)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(    7)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(    8)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(    9)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   10)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   11)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   12)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   13)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   14)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   15)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   16)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   17)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   18)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   19)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   20)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   21)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   22)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   23)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   24)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   25)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   26)      Core electrons: 46     EDF primitive GTFs: 36
+ Cs(   27)      Core electrons: 46     EDF primitive GTFs: 36
+ Cl(   28)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   29)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   30)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   31)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   32)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   33)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   34)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   35)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   36)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   37)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   38)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   39)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   40)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   41)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   42)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   43)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   44)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   45)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   46)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   47)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   48)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   49)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   50)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   51)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   52)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   53)      Core electrons: 10     EDF primitive GTFs: 25
+ Cl(   54)      Core electrons: 10     EDF primitive GTFs: 25
+ The number of total inner-core electrons:  1512
+ The number of total EDF primitive GTFs:  1647
+ Loading EDF library finished!
+
+ Loaded input.molden successfully!
+
+ Cell information
+ In Bohr:
+ Cell vector 1,  X=   23.48084  Y=    0.00000  Z=    0.00000  Norm:   23.48084
+ Cell vector 2,  X=    0.00000  Y=   23.48084  Z=    0.00000  Norm:   23.48084
+ Cell vector 3,  X=    0.00000  Y=    0.00000  Z=   23.48084  Norm:   23.48084
+ In Angstrom:
+ Cell vector 1,  X=   12.42553  Y=    0.00000  Z=    0.00000  Norm:   12.42553
+ Cell vector 2,  X=    0.00000  Y=   12.42553  Z=    0.00000  Norm:   12.42553
+ Cell vector 3,  X=    0.00000  Y=    0.00000  Z=   12.42553  Norm:   12.42553
+ Reciprocal vectors in Angstrom^-1:
+ Vector 1,  X=    0.50567  Y=   -0.00000  Z=   -0.00000  Norm:    0.50567
+ Vector 2,  X=    0.00000  Y=   -0.50567  Z=    0.00000  Norm:    0.50567
+ Vector 3,  X=    0.00000  Y=   -0.00000  Z=    0.50567  Norm:    0.50567
+ Cell angles:  Alpha=  90.0000  Beta=  90.0000  Gamma=  90.0000 degree
+ Area between a and b:    154.3937 Angstrom^2
+ Area between b and c:    154.3937 Angstrom^2
+ Area between a and c:    154.3937 Angstrom^2
+ Cell volume:      12946.1603 Bohr^3    (       1918.4230 Angstrom^3 )
+ Density:   3.93462 g/cm^3    (  3934.623 kg/m^3 )
+
+ Command of showing box in VMD program: (then run "pbc box")
+ pbc set {  12.42553  12.42553  12.42553  90.000  90.000  90.000 } -all
+
+ Vertex 1 of the cell:    0.0000    0.0000    0.0000 Bohr
+ Vertex 2 of the cell:   23.4808    0.0000    0.0000 Bohr
+ Vertex 3 of the cell:   23.4808   23.4808    0.0000 Bohr
+ Vertex 4 of the cell:    0.0000   23.4808    0.0000 Bohr
+ Vertex 5 of the cell:    0.0000    0.0000   23.4808 Bohr
+ Vertex 6 of the cell:   23.4808    0.0000   23.4808 Bohr
+ Vertex 7 of the cell:   23.4808   23.4808   23.4808 Bohr
+ Vertex 8 of the cell:    0.0000   23.4808   23.4808 Bohr
+
+ Warning: Because size of a axis of the cell is relatively small, in order to guarantee analysis accuracy, it is suggested to increase the first index of "PBCnxnynz" in settings.ini to  2
+
+ Warning: Because size of b axis of the cell is relatively small, in order to guarantee analysis accuracy, it is suggested to increase the second index of "PBCnxnynz" in settings.ini to  2
+
+ Warning: Because size of c axis of the cell is relatively small, in order to guarantee analysis accuracy, it is suggested to increase the third index of "PBCnxnynz" in settings.ini to  2
+
+ Formula: Cl27 Cs27      Total atoms:      54
+ Molecule weight:      4545.67652 Da
+
+ "q": Exit program gracefully          "r": Load a new file
+                    ************ Main function menu ************
+ 0 Show molecular structure and view orbitals
+ 1 Output all properties at a point       2 Topology analysis
+ 3 Output and plot specific property in a line
+ 4 Output and plot specific property in a plane
+ 5 Output and plot specific property within a spatial region (calc. grid data)
+ 6 Check & modify wavefunction
+ 7 Population analysis and calculation of atomic charges
+ 8 Orbital composition analysis           9 Bond order analysis
+ 10 Plot total DOS, PDOS, OPDOS, local DOS, COHP and photoelectron spectrum
+ 11 Plot IR/Raman/UV-Vis/ECD/VCD/ROA/NMR spectrum
+ 12 Quantitative analysis of molecular surface
+ 13 Process grid data (No grid data is presented currently)
+ 14 Adaptive natural density partitioning (AdNDP) analysis
+ 15 Fuzzy atomic space analysis
+ 16 Charge decomposition analysis (CDA) and plot orbital interaction diagram
+ 17 Basin analysis                       18 Electron excitation analysis
+ 19 Orbital localization analysis        20 Visual study of weak interaction
+ 21 Energy decomposition analysis        22 Conceptual DFT (CDFT) analysis
+ 23 ETS-NOCV analysis                    24 (Hyper)polarizability analysis
+ 25 Electron delocalization and aromaticity analyses
+ 26 Structure and geometry related analyses
+ 100 Other functions (Part 1)            200 Other functions (Part 2)
+ 300 Other functions (Part 3)
+
+                  ============= Basin analysis =============
+ -10 Return to main menu
+ -6 Set parameter for attractor clustering
+ -1 Select the method for generating basins
+  1 Generate basins and locate attractors
+ Select the real space function used for partitioning basins
+             ----------- Available real space functions -----------
+ 1 Electron density (rho)     2 Gradient norm of rho     3 Laplacian of rho
+ 4 Value of orbital wavefunction         44 Orbital probability density
+ 5 Electron spin density
+ 6 Hamiltonian kinetic energy density K(r)
+ 7 Lagrangian kinetic energy density G(r)
+ 8 Electrostatic potential from nuclear charges
+ 9 Electron localization function (ELF)
+ 10 Localized orbital locator (LOL)
+ 11 Local information entropy
+ 12 Total electrostatic potential (ESP)
+ 13 Reduced density gradient (RDG)       14 RDG with promolecular approximation
+ 15 Sign(lambda2)*rho      16 Sign(lambda2)*rho with promolecular approximation
+ 17 Correlation hole for alpha, ref. point:   0.00000   0.00000   0.00000
+ 18 Average local ionization energy (ALIE)
+ 19 Source function, mode: 1, ref. point:   0.00000   0.00000   0.00000
+ 20 Electron delocal. range func. EDR(r;d)  21 Orbital overlap dist. func. D(r)
+ 22 Delta-g (promolecular approximation)    23 Delta-g (Hirshfeld partition)
+ 24 Interaction region indicator (IRI)    25 van der Waals potential (probe=C )
+ 100 User-defined function (iuserfunc=    0), see Section 2.7 of manual
+ Please select a method for setting up grid
+ -10 Set grid extension distance for mode 1~6, current: Detect rho isosurface
+ 1 Low quality grid, spacing=0.20 Bohr, cost: 1x
+ 2 Medium quality grid, spacing=0.10 Bohr, cost: 8x
+ 3 High quality grid, spacing=0.06 Bohr, cost: 36x
+ 4 Lunatic quality grid, spacing=0.04 Bohr, cost: 120x
+ 5 Only input grid spacing, automatically set other parameters
+ 6 Only input the number of points in X,Y,Z, automatically set other parameters
+ 7 Input original point, translation vector and the number of points
+ 8 Set center position, grid spacing and box length
+ 9 Use grid setting of another cube file
+ 10 Set box of grid data visually using a GUI window
+ 11 Use translation vectors of current cell, manually specify origin, box lengths and grid spacing
+ Detecting proper box size...
+
+--- timeout: the answers did not lead out of the menus ---

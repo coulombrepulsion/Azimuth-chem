@@ -1,0 +1,8 @@
+PM7 FORCE AUX
+formaldehyde, PM7 frequencies at the PM7 minimum
+Azimuth reference input (0.91), geometry: ch2o_pm7_opt.out
+C   -0.000000000 1  -0.000000000 1  -0.533465776 1
+O    0.000000000 1   0.000000000 1   0.672726799 1
+H    0.000000000 1   0.933869211 1  -1.098779210 1
+H    0.000000000 1  -0.933869210 1  -1.098779210 1
+

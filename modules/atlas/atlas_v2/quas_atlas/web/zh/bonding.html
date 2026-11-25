@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>从轨道看化学键：定域化、NBO、NCI</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>从轨道看化学键：定域化、NBO、NCI</h1>
+<p class="lead">键、孤对、杂化、给体–受体相互作用是化学家的语言。波函数本身并不包含它们：它们是解读波函数的方式。这里讲为什么轨道可以无损地旋转、分数杂化从何而来、NBO 分析中的 E(2) 意味着什么，以及 NCI 图如何找到弱接触。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>旋转占据轨道不改变行列式：能量和密度不变，只有轨道的样子改变。正则轨道使 F 对角化并有轨道能；定域轨道（Boys——弥散度最小，Pipek–Mezey——原子数最少）像 Lewis 结构，但没有轨道能。</li><li>NBO 由密度矩阵构造自然原子轨道、杂化轨道和键轨道，使占据数尽量接近 2。形式上空轨道上的剩余量衡量分子偏离单一 Lewis 结构的程度。</li><li>夹角为 θ 的杂化轨道 s + λp 在 λ² = −1/cosθ 时正交：109.5°——sp³，120°——sp²，180°——sp。水（104.5°）中键为 sp⁴（20 % s），孤对各 30 % s——氧不是 sp³。</li><li>E(2) = −n_i F_ij²/(ε_j* − ε_i)：占据轨道向空轨道“渗入”带来的稳定化（n → σ*、σ → σ*）。这些能量不可相加，且依赖参考 Lewis 结构——是解释的语言，而非能量分解。</li><li>NCI：约化梯度 s = |∇ρ|/(2(3π²)^⅓ρ^{4/3})。小 ρ 处 s 也小只出现在片段之间——s 对 sign(λ₂)ρ 图上的尖峰；λ₂ < 0 吸引，λ₂ > 0 排斥；尖峰位置是强度的粗略量度。</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">轨道旋转：正则与定域</h2>
+  <div class="crow"><span class="l">旋转角 θ，°</span><input type="range" id="th" min="-90" max="90" step="1" value="0" aria-label="theta"><span class="val" id="thv"></span></div>
+  <svg id="ochart" class="ch" viewBox="0 0 960 280" role="img" aria-label="旋转后的两个占据轨道与总密度"></svg>
+  <div class="legend" id="oleg"></div>
+  <svg id="pchart" class="ch" viewBox="0 0 960 200" role="img" aria-label="轨道总弥散度随旋转角的变化"></svg>
+  <div class="cards" id="ocards"></div>
+  <p class="status" id="oNote"></p>
+  <p class="hint">模型：两根键为位于 x = ±1.5 bohr 的归一化高斯函数，正则轨道 φ₁,₂ = (a ± b)/√2，能量为 −0.65 和 −0.45 hartree；φ₁′ = cosθ φ₁ + sinθ φ₂，φ₂′ = −sinθ φ₁ + cosθ φ₂。密度 ρ = 2(φ₁′² + φ₂′²) 以一半高度画出。</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">由键角求杂化</h2>
+  <div class="crow"><span class="l">原子</span><span class="grp" id="nG" role="group" aria-label="原子"></span></div>
+  <div class="crow"><span class="l">键角 θ，°</span><input type="range" id="an" min="91" max="180" step="0.1" value="104.5" aria-label="angle"><span class="val" id="anv"></span></div>
+  <svg id="hchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="成键杂化与孤对中 s 轨道的成分"></svg>
+  <div class="legend" id="hleg"></div>
+  <div class="cards" id="hcards"></div>
+  <p class="status" id="hNote"></p>
+  <p class="hint">键为彼此正交的相同杂化轨道 s + λp：1 + λ²cosθ = 0；s 轨道只有一个，余下部分在孤对间平分。标记为分子的实验键角。</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">给体–受体能量 E(2)</h2>
+  <div class="crow"><span class="l">耦合 F_ij，hartree</span><input type="range" id="ff" min="0" max="0.3" step="0.005" value="0.05" aria-label="F"><span class="val" id="ffv"></span></div>
+  <div class="crow"><span class="l">能量差 ε_j* − ε_i，hartree</span><input type="range" id="gp" min="0.1" max="2" step="0.01" value="0.6" aria-label="gap"><span class="val" id="gpv"></span></div>
+  <div class="crow"><span class="l">给体占据数 n_i</span><input type="range" id="nn" min="1" max="2" step="0.01" value="2" aria-label="n"><span class="val" id="nnv"></span></div>
+  <svg id="echart" class="ch" viewBox="0 0 960 300" role="img" aria-label="稳定化能随轨道耦合的变化"></svg>
+  <div class="legend" id="eleg"></div>
+  <div class="cards" id="ecards"></div>
+  <p class="status" id="eNote"></p>
+  <p class="hint">2 × 2 问题：占据轨道 i 与空轨道 j*，非对角元 F_ij。精确：n(√((Δε/2)² + F²) − Δε/2)；二阶：n·F²/Δε。</p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">NCI：约化密度梯度</h2>
+  <div class="crow"><span class="l">体系</span><span class="grp" id="kG" role="group" aria-label="体系"></span></div>
+  <div class="crow"><span class="l">片段间距离，bohr</span><input type="range" id="dd" min="2.5" max="7" step="0.1" value="4" aria-label="d"><span class="val" id="ddv"></span></div>
+  <svg id="nchart" class="ch" viewBox="0 0 960 320" role="img" aria-label="约化梯度 s 对 sign(λ₂)ρ"></svg>
+  <div class="cards" id="ncards"></div>
+  <p class="status" id="nNote"></p>
+  <p class="hint">模型：每个片段为球形密度 0.5·e^{−1.8r}；点为片段平面内 81 × 81 网格，显示 10⁻⁴ < ρ < 0.08 且 s < 2；着色的是 s < 0.5 的点。环为边长 d 的正六边形。网格较粗时尖峰达不到零。</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">NCI 图显示了接触。分子间相互作用能由什么组成？为什么没有色散校正的 DFT 看不到它？</span><a class="nqA" href="dispersion.html" data-goto="disp">分子间相互作用 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>把甲烷的正则轨道换成四个定域的 C–H 键轨道。什么变了？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">能量和密度</button><button type="button" class="opt" data-ok="1">只有轨道的样子；新轨道没有轨道能</button><button type="button" class="opt">偶极矩</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>旋转占据轨道使行列式乘以 1：可观测量不变。但定域轨道不是 F 的本征函数。</div></div>
+<div class="tq"><p class="qt"><span>两个相同杂化轨道之间的键角为 120°。它们是什么杂化？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">sp</button><button type="button" class="opt" data-ok="1">sp²</button><button type="button" class="opt">sp³</button><button type="button" class="opt">sp⁴</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>λ² = −1/cos120° = 2：sp²，33 % s。</div></div>
+<div class="tq"><p class="qt"><span>在 E(2) = −n F²/Δε 中，给体与受体的能量差加倍。E(2) 会怎样？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">减半</button><button type="button" class="opt">减为四分之一</button><button type="button" class="opt">加倍</button><button type="button" class="opt">不变</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>E(2) 与 Δε 成反比。耦合 F 加倍才会使它变为四倍。</div></div>
+<div class="tq"><p class="qt"><span>NCI 图在 sign(λ₂)ρ ≈ +0.005 处出现尖峰。这是什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">氢键</button><button type="button" class="opt" data-ok="1">位阻排斥，例如环中心</button><button type="button" class="opt">共价键</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>λ₂ > 0——密度在两个方向上减小，即环点：排斥。吸引给出负值处的尖峰。</div></div>
+</div></details></section>
+<script src="js/bonding.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="bonding";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/bonding.js"></script>
+
+</body>
+</html>

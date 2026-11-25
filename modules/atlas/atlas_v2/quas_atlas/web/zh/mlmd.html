@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>分子动力学与机器学习势</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>分子动力学与机器学习势</h1>
+<p class="lead">分子动力学需要数十万步，每一步都要所有原子上的力。用 DFT 这样的轨迹要花几个月，用学习得到的势只要几分钟。这里可以看到如何选择积分步长、学习模型在哪里可以信任，以及轨迹究竟能看到什么。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>机器学习势：能量是原子贡献之和，每个贡献取决于截断球内的环境；力是精确导数。计算量随原子数线性增长，而不像 DFT 那样按 N³。</li><li>模型只会插值：没有训练结构的地方它会给出任意答案，而且自己不会说明。模型委员会（或高斯过程）给出离散；离散超过平常三倍的结构用 DFT 计算并重新训练模型——主动学习。</li><li>速度 Verlet 时间可逆：能量误差不累积，而是振荡并随 Δt² 增大。步长取最快振动周期的十分之一到二十分之一：含氢 0.5 fs，硅 1–2 fs。</li><li>瞬时温度的涨落为 √(2/(3N))：64 个原子为 ±10 %。这是小体系的性质，而不是恒温器（Langevin、Nosé–Hoover）的误差。</li><li>动力学能看到皮秒到纳秒内发生的事：振动、扩散、熔化。势垒 80 kJ/mol 的反应——每十秒一次——用任何模型都看不到：它需要过渡态和 Eyring 理论。</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Verlet 积分器与时间步长</h2>
+  <div class="crow"><span class="l">最快的振动</span><span class="grp" id="sysG" role="group" aria-label="最快的振动"></span></div>
+  <div class="crow"><span class="l">积分器</span><span class="grp" id="intG" role="group" aria-label="积分器"></span></div>
+  <div class="crow"><span class="l">步长 Δt，fs</span><input type="range" id="dt" min="0.05" max="6" step="0.05" value="0.5" aria-label="Δt"><span class="val" id="dtv"></span></div>
+  <div class="crow"><span class="l">振动能量，eV</span><input type="range" id="e0" min="0.02" max="1.5" step="0.01" value="0.3" aria-label="E"><span class="val" id="e0v"></span></div>
+  <svg id="vchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="总能量相对初值的偏差"></svg>
+  <div class="cards" id="vcards"></div>
+  <p class="status" id="vNote"></p>
+  <p class="hint">Morse 键，频率取 O–H 3700 cm⁻¹、O–D 2700 cm⁻¹ 或硅光学声子 15.5 THz；200 fs，无恒温器。速度 Verlet：v<sub>½</sub> = v + Δt·F/(2m)，r′ = r + Δt·v<sub>½</sub>，v′ = v<sub>½</sub> + Δt·F(r′)/(2m)。Euler：r′ = r + Δt·v，v′ = v + Δt·F/m。</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">模型委员会：学习势在哪里可以信任</h2>
+  <div class="crow"><span class="l">训练点数</span><input type="range" id="nn" min="4" max="40" step="1" value="16" aria-label="n"><span class="val" id="nnv"></span></div>
+  <div class="crow"><span class="l">训练范围 2.15 Å 至，Å</span><input type="range" id="hi" min="2.4" max="3.5" step="0.05" value="2.9" aria-label="上限"><span class="val" id="hiv"></span></div>
+  <svg id="cchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="键能：“DFT”、模型及其离散"></svg>
+  <div class="legend" id="cleg"></div>
+  <div class="cards" id="ccards"></div>
+  <p class="status" id="cNote"></p>
+  <p class="hint">“DFT”是 Si–Si 键的 Morse 曲线；五个高斯核回归模型，各用随机 70 % 的点。离散 σ² = (1/M)Σ(E<sub>m</sub> − Ē)²。着色处 σ 大于训练范围内 σ 的三倍。</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">轨迹能看到什么：涨落与稀有事件</h2>
+  <div class="crow"><span class="l">晶胞中的原子数</span><input type="range" id="na" min="0.9" max="5" step="0.001" value="1.806" aria-label="N"><span class="val" id="nav"></span></div>
+  <div class="crow"><span class="l">温度，K</span><input type="range" id="tk" min="100" max="2500" step="10" value="300" aria-label="T"><span class="val" id="tkv"></span></div>
+  <div class="crow"><span class="l">势垒 ΔG，eV</span><input type="range" id="bb" min="0.1" max="2" step="0.01" value="0.8" aria-label="ΔG"><span class="val" id="bbv"></span></div>
+  <div class="crow"><span class="l">轨迹长度</span><input type="range" id="ll" min="0" max="6" step="0.1" value="2" aria-label="长度"><span class="val" id="llv"></span></div>
+  <svg id="echart" class="ch" viewBox="0 0 960 300" role="img" aria-label="事件平均等待时间随势垒的变化"></svg>
+  <div class="legend" id="eleg"></div>
+  <div class="cards" id="ecards"></div>
+  <p class="status" id="eNote"></p>
+  <p class="hint">δT/T = √(2/(3N))；k = (kT/h)·e<sup>−ΔG/kT</sup>，等待时间为 1/k。1 eV = 96.5 kJ/mol。代价：步长 1 fs，机器学习势每步 30 ms，DFT 每步 3 分钟（笔记本上 64 个硅原子；第 16 讲的数量级）。</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">模型不仅能为动力学学习力，还能学习廉价方法的修正和由结构预测性质。如何诚实地检验它？</span><a class="nqA" href="mlqc.html" data-goto="mlqc">量子化学中的机器学习 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>O–H 键，3700 cm⁻¹：振动周期约 9 fs。动力学步长取多少？</span></p>
+<p class="olab">Δt，fs</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">0.5</button><button type="button" class="opt">2</button><button type="button" class="opt">5</button><button type="button" class="opt">9</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>0.5 fs——约为周期的二十分之一。2 fs 时能量明显锯齿状波动，4–5 fs 时积分发散。不含氢的硅（周期 64 fs）用 1–2 fs 即可。</div></div>
+<div class="tq"><p class="qt"><span>速度 Verlet 的步长加倍。总能量的振荡如何变化？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">增大约四倍</button><button type="button" class="opt">增大一倍</button><button type="button" class="opt">能量开始无限增长</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>四倍：误差 ∝ Δt²。但它不累积——格式时间可逆。能量无限增长的是 Euler 方法。</div></div>
+<div class="tq"><p class="qt"><span>64 个原子，300 K。瞬时温度涨落多少？</span></p>
+<p class="olab">δT</p><div class="opts" role="group"><button type="button" class="opt">±3 K</button><button type="button" class="opt" data-ok="1">±31 K</button><button type="button" class="opt">±100 K</button><button type="button" class="opt">0：恒温器保持它</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>±31 K：δT/T = √(2/(3·64)) = 0.10。这是小体系的性质：192 个速度平方之和。6400 个原子的晶胞为 ±3 K。</div></div>
+<div class="tq"><p class="qt"><span>模型在 300 K 的晶体上训练，而动力学在高压下运行。委员会离散增大了几十倍。怎么办？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">用 DFT 计算这些结构并重新训练模型</button><button type="button" class="opt">不用管：平均模型反正准确</button><button type="button" class="opt">减小时间步长</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>用 DFT 计算并重新训练：在训练范围外模型会编造力，委员会离散随误差一起增大。这就是主动学习：DFT 只计算模型不知道的东西。</div></div>
+</div></details></section>
+<script src="js/mlmd.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="mlmd";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/mlmd.js"></script>
+
+</body>
+</html>

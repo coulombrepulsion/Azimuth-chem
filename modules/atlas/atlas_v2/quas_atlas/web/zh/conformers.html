@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="ethane,butane,cyclohexane">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>构象：寻找哪些极小点</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-conf-g.webp"><!--pose:end-->
+<h1>构象：寻找哪些极小点</h1>
+<p class="lead">优化找到的是最近的极小点——起始结构“滚落”进去的那一个。但柔性分子有许多极小点：绕每个单键的旋转都会产生自己的构象，而且室温下它们迅速相互转化。这里可以看到极小点从何而来、分子如何分布于其间，以及为什么用元动力学而不是网格遍历来寻找它们。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>绕键旋转的能量是周期性的：乙烷有三个相同的极小点，能垒 12 kJ/mol；丁烷有反式构象和两个高 3–4 kJ/mol 的邻位交叉构象。</li><li>温度 T 下某构象的比例正比于 exp(−E/RT)：298 K 时相差 5.7 kJ/mol 即为 10 : 1。</li><li>实验测得的性质（光谱、偶极矩、能量）是对构象的平均；一个极小点可能不够。</li><li>每个可旋转键都把组合数乘以其极小点数：网格按 kⁿ 增长，所以 CREST 用元动力学探索势能面。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b> 单个扭转、刚性骨架、用能量代替吉布斯能</summary><dl><dt>计算的是什么</dt><dd>由三个傅里叶项给出的绕一个键旋转的能量曲线、其极小点和能垒；构象的玻尔兹曼比例；网格搜索的起点数和时间。</dd><dt>采用了哪些近似</dt><dd>分子其余部分为刚性；V₁–V₃ 为模型参数（丁烷的参数按典型的邻位交叉 +3.6 以及 14 和 21 kJ/mol 能垒选取）；比例用电子能计算，不含零点振动和熵，每个极小点单独计。</dd><dt>能得出什么结论</dt><dd>构象从何而来、其比例如何随能量和温度变化、为何需要巧妙的搜索——可以；准确的比例需要计算得到的构象吉布斯能（CREST + DFT）。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">绕键旋转</h2>
+  <div class="crow"><span class="l">分子</span><span class="grp" id="pG" role="group" aria-label="分子"></span></div>
+  <div class="crow"><span class="l">V₁（kJ/mol）</span><input type="range" id="V1" min="-20" max="30" step="0.1" value="7.2" aria-label="V1"><span class="val" id="V1v"></span></div>
+  <div class="crow"><span class="l">V₂（kJ/mol）</span><input type="range" id="V2" min="-20" max="30" step="0.1" value="-2.1" aria-label="V2"><span class="val" id="V2v"></span></div>
+  <div class="crow"><span class="l">V₃（kJ/mol）</span><input type="range" id="V3" min="-20" max="30" step="0.1" value="13.8" aria-label="V3"><span class="val" id="V3v"></span></div>
+  <svg id="pchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="旋转能量"></svg>
+  <p class="hint">V(φ) = ½V₁(1 + cos φ) + ½V₂(1 − cos 2φ) + ½V₃(1 + cos 3φ)；φ = 180° 为反式。极大点上方的数字为能垒。</p>
+  <p class="status" id="pNote"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">一定温度下的布居</h2>
+  <div class="crow"><span class="l">温度 T</span><input type="range" id="T" min="100" max="1000" step="1" value="298" aria-label="温度"><span class="val" id="Tv"></span></div>
+  <div class="bars" id="bars"></div>
+  <p class="status" id="popNote"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">为什么网格遍历行不通</h2>
+  <div class="crow"><span class="l">可旋转键数 n</span><input type="range" id="n" min="1" max="20" step="1" value="10" aria-label="键数"><span class="val" id="nv"></span></div>
+  <div class="crow"><span class="l">每个键的极小点数 k</span><input type="range" id="k" min="2" max="6" step="1" value="3" aria-label="每个键的极小点数"><span class="val" id="kv"></span></div>
+  <div class="crow"><span class="l">优化一个结构</span><input type="range" id="mn" min="0.1" max="60" step="0.1" value="1" aria-label="优化时间"><span class="val" id="mnv"></span></div>
+  <div class="cards" id="ccards"></div>
+  <p class="status" id="cNote"></p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">构象找到了。如何由它们的频率得到焓、熵和吉布斯能？</span><a class="nqA" href="thermochemistry.html" data-goto="thermo">由频率求热化学 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>298 K 下的丁烷：反式构象分子占多少？</span></p>
+<p class="olab">反式比例</p><div class="opts" role="group"><button type="button" class="opt">0.33</button><button type="button" class="opt">0.50</button><button type="button" class="opt" data-ok="1">0.68</button><button type="button" class="opt">0.95</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>约 0.68：两个邻位交叉构象高 3.6 kJ/mol，各为 exp(−3.6/2.48) ≈ 0.23，1/(1 + 2·0.23) ≈ 0.68。其余 32% 为邻位交叉。</div></div>
+<div class="tq"><p class="qt"><span>乙烷：有几个极小点，分子如何分布？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">1 个极小点，100%</button><button type="button" class="opt">2 个极小点，各 50%</button><button type="button" class="opt" data-ok="1">3 个极小点，各 1/3</button><button type="button" class="opt">6 个极小点</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>三个相同的交叉式极小点，相隔 120°：任何温度下各占 1/3。能垒 V₃ = 12 kJ/mol 对应重叠式。</div></div>
+<div class="tq"><p class="qt"><span>10 个可旋转键、每个 3 个极小点：完整网格需要多少初始结构？</span></p>
+<p class="olab">起点数</p><div class="opts" role="group"><button type="button" class="opt">30</button><button type="button" class="opt">1000</button><button type="button" class="opt" data-ok="1">59 049</button><button type="button" class="opt">3¹⁰⁰</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>3¹⁰ = 59 049。每次优化一分钟就要 41 天，而 20 个键会给出 3.5·10⁹ 个结构——所以不用网格遍历。</div></div>
+<div class="tq"><p class="qt"><span>CREST（CREGEN）默认保留多大的能量窗口？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">0.05 kcal/mol</button><button type="button" class="opt">1 kcal/mol</button><button type="button" class="opt" data-ok="1">6 kcal/mol</button><button type="button" class="opt">50 kcal/mol</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>最低构象之上 6 kcal/mol（25 kJ/mol）；0.05 kcal/mol 是能量阈值，低于此值（并且 RMSD 小于 0.125 Å）的两个构象被视为相同。</div></div>
+</div></details></section>
+<script src="js/conformers.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="conf";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/conformers.js"></script>
+
+</body>
+</html>

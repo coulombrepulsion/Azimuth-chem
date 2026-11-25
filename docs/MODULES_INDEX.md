@@ -1,0 +1,511 @@
+# Модули «Азимута» — указатель
+
+Составлен `tools/modules_index.py` по первым строкам описаний модулей (docstring); подробности — в самих
+модулях (раздел §4 SPECIFICATION) и в docs/MODULES.md, docs/ARCHITECTURE.md. Не правится вручную.
+
+
+## azimuth
+
+- `azimuth/activities.py` — Long work of the program that goes on behind a window put away — one sign for all of it.
+- `azimuth/app.py` — The main window of «Азимут» (Studio): the left panel, the File menus, the pages of the modules and the settings.
+- `azimuth/app_files.py` — Saving and opening in Azimuth: a text, the project (Ctrl+S, «Сохранить как…»), the recent files of each kind, opening a molecule or a project. Methods of Studio (self is the window), kept here to make app.py shorter.
+- `azimuth/app_menus.py` — The menu bar of Azimuth: «Файл», «Правка», «Вид», «Структура», «Расчёт», «Анализ», «Справка» and their items. build_menus is a method of Studio (self is the window), kept here to make app.py shorter.
+- `azimuth/app_style.py` — The style sheets of Azimuth: STYLE (light) and DARK_STYLE (dark), with the paths of the pictures of the arrows, the check mark and the closing cross put in. theme_extra(dark) — the part made at run time; theme_style_sheet() — both themes…
+- `azimuth/app_theme.py` — The theme of Azimuth applied to the window: the light and dark sheets, following the theme of the system, the look of the combo boxes made after the start. Methods of Studio (self is the window), kept here to make app.py shorter; the col…
+- `azimuth/atom_labels.py` — Atoms named by their element and number — «H1», «C3–C8» — wherever the user types or reads atom numbers.
+- `azimuth/button_icons.py` — Icons of the text buttons of the program.
+- `azimuth/compass_glyph.py` — The compass of the icon of the program, for the signs of waiting. Oracle: assets/app-icon/glyph.svg (from SMALL_BELOW px up) and glyph-small.svg (smaller) — read off their lines and paths: the ring, the divisions, the meridian, the arc o…
+- `azimuth/consoles.py` — No console windows on Windows for the programs Azimuth starts.
+- `azimuth/controls.py` — Press for a discrete step; hold for smaller timed increments.
+- `azimuth/core.py` — Chemistry data and validation; no GUI or external calculation dependencies.
+- `azimuth/core_bases.py` — The elements (SYMBOLS, Z, the dummy atom X), the tables of methods and basis sets of the programs (METHOD_TABLE, BASIS_TABLE, the names of GAMESS and NWChem) and the basis sets of a calculation: those of an element (its own basis), the r…
+- `azimuth/core_isotopes.py` — Isotopes of the atoms of a calculation: the table of the isotopes, their abundance, names, masses and the text of them in an input.
+- `azimuth/crash_report.py` — Errors of the program written down and handed to the author.
+- `azimuth/crystal_projects.py` — A crystal as a project of its own.
+- `azimuth/defaults.py` — Defaults of the whole program chosen in «Файл → Настройки»: bonds, the steps of an optimization, pictures, spectra.
+- `azimuth/drop_overlay.py` — The veil over the window while files are dragged onto it.
+- `azimuth/element_window.py` — «Справка → Таблица Менделеева»: the periodic table and the isotopes; a click on an element shows a small animation of its atom — the nucleus of protons and neutrons, the electrons going round it by shells — its mass, how many protons, ne…
+- `azimuth/elements.py` — The elements for «Таблица Менделеева» of «Справка».
+- `azimuth/file_dialogs.py` — The folder of the file windows: every «Открыть…» starts where the last file was opened.
+- `azimuth/files.py` — Writing a text file whole or not at all.
+- `azimuth/fonts.py` — The typeface of the program: Inter (SIL Open Font License 1.1), carried in assets/fonts.
+- `azimuth/handbook.py` — The handbook of «Справка → Справочник» (azimuth/handbook_window.py): units and constants, solvents, scaling factors of frequencies and where to find experimental data — what one looks up while preparing a calculation or reading it.
+- `azimuth/handbook_window.py` — «Справка → Справочник»: units and constants, solvents, scaling factors of frequencies and where to find measured data (azimuth/handbook.py — the data and their sources).
+- `azimuth/headless.py` — Azimuth without its window: a molecule, the settings of a calculation, its input file, the run on this computer, its state and its result — the same code Sextant and Spectrum use; and the checks of the program (tools/test.py) as jobs.
+- `azimuth/headless_server.py` — Azimuth without its window: a calculation sent to the SLURM server of a profile of Sextant, watched and read here.
+- `azimuth/i18n.py` — Languages of Compass, Sextant and Spectrum.
+- `azimuth/icons.py` — Original, scalable toolbar glyphs. No external icon assets or fonts.
+- `azimuth/isotope_table.py` — The stable isotopes of the elements: mass number, exact mass (u), natural abundance.
+- `azimuth/link_channel.py` — The way of an azimuth:// link to the running program; the addresses themselves — azimuth/links.py.
+- `azimuth/links.py` — Links azimuth://: a page of the site asks the installed program to open a molecule in Compass.
+- `azimuth/paths.py` — Shared resource root, independent of the current working directory.
+- `azimuth/polish.py` — The finishing touches of every window of the program.
+- `azimuth/project_actions.py` — Project workflow for Studio: portable folders, explicit membership and single/batch attempt recording.
+- `azimuth/project_crystals.py` — The crystal projects in the project tabs — a part of ProjectNavigation (azimuth/project_navigation.py), a mixin of Studio.
+- `azimuth/project_folders.py` — Where the projects live: «Документы/Azimuth/Проекты», a folder per project (stage B of docs/architecture/PROJECT_RUNTIME_GUIDE.md, §1).
+- `azimuth/project_import.py` — A project made of calculations done outside Azimuth.
+- `azimuth/project_kinds.py` — The kind of a project on disk — molecules, crystal or empty — and the sorting of the folder of projects into the folders of the kinds.
+- `azimuth/project_menus.py` — The menu of the list of molecules of a project: the molecules chosen, their history, the role in a reaction and its ΔG, the folder of a calculation, the ticks of the batch mode and the queue they choose. Methods of ProjectNavigation (sel…
+- `azimuth/project_moves.py` — Molecules moved between projects, removed and restored — a part of ProjectNavigation (azimuth/project_navigation.py), a mixin of Studio.
+- `azimuth/project_navigation.py` — Project tabs and a shared molecule sidebar for Compass, Sextant and Spectrum.
+- `azimuth/project_reaction.py` — The reaction of a project: its molecules as reactants, transition states and products, and ΔG of the reaction from their results.
+- `azimuth/project_results.py` — The results of the molecules of a project: shown in Spectrum, the conformers, a result of other data told, the rows of a queue ended, preparing the project or its chosen molecules, reading files into a project. Methods of ProjectNavigati…
+- `azimuth/project_rows.py` — The rows of the molecule list of a project: its columns and conformers — a part of ProjectNavigation (azimuth/project_navigation.py), a mixin of Studio.
+- `azimuth/project_saving.py` — Saving, naming and discarding projects; drafts of new molecules — a part of ProjectNavigation (azimuth/project_navigation.py), a mixin of Studio.
+- `azimuth/project_store.py` — The metadata of a project in SQLite, the calculations as ordinary files (docs/architecture/PROJECT_RUNTIME_GUIDE.md, §5).
+- `azimuth/project_tabs.py` — The tabs of the projects: refreshing them, the folder of the projects, a new project (of molecules or of a crystal), the loose molecule of no project, choosing and closing a tab. Methods of ProjectNavigation (self is the window), kept he…
+- `azimuth/project_view.py` — «История и файлы проекта»: the molecules of the project with their attempts and current results, the history of the calculations of a molecule, adding molecules from files and a queue folder; nothing is launched on open. Only that — the …
+- `azimuth/project_widgets.py` — The pieces of the project list and its tabs (azimuth/project_navigation.py builds them into the window): the row of the project tabs and their «+», the table of the molecules with its columns, the sliding of the panel and its log.
+- `azimuth/projects.py` — Portable research projects: molecules, immutable calculation attempts and current usable results.
+- `azimuth/qt_language.py` — Qt's own texts in the language of the program.
+- `azimuth/quill.py` — Quill in the windows of the program.
+- `azimuth/recovery.py` — Atomic, process-owned recovery copies of molecular projects.
+- `azimuth/recovery_ui.py` — Periodic molecular drafts and explicit recovery into new tabs, without changing original files.
+- `azimuth/settings.py` — The settings of Azimuth (named Azimuth): one place that opens them.
+- `azimuth/settings_dialog.py` — «Файл → Настройки…»: one window for the preferences of the whole program.
+- `azimuth/site.py` — The site of Azimuth: the Atlas lives there, the program opens it in the browser.
+- `azimuth/tasks.py` — Background tasks of the program: long work off the window's thread.
+- `azimuth/text_editor.py` — The text editor of the program. §1 PURPOSE     One editor for the input files of Sextant and the text files of «Файлы на сервере»: what a plain text editor such     as AkelPad gives — the line numbers, the line of the cursor, the pairs o…
+- `azimuth/text_highlight.py` — The colours of the editor of input files: the language of a text guessed (guess_language), the highlighter of its keywords, numbers and comments (Highlighter), the column of line numbers (_Numbers).
+- `azimuth/theme_sheet.py` — One style sheet for both themes; the theme is switched by a property of the windows.
+- `azimuth/ui.py` — Shared Qt widget helpers, retaining the existing interface.
+- `azimuth/ui_windows.py` — The small windows and the placing of windows in Azimuth: «?» with its popup of help, the echo of a status, the ornaments frozen while a window moves, a dialog kept in the centre of its owner, a pill fitted to its text, «Скопировано».
+- `azimuth/window_port.py` — The declared part of the window a tool may use: Studio holds the tools and links them through a small explicit interface of commands and events, not through free access to the window.
+
+## azimuth/runtime
+
+- `azimuth/runtime/analysis.py` — Analyses of the results apart from the queue of calculations (stage E of docs/architecture/PROJECT_RUNTIME_GUIDE.md, §10 «Результаты, плотность и QTAIM до конца пакета»).
+- `azimuth/runtime/contracts.py` — Identity, commands and events of the runtime; who owns which data (PROJECT_RUNTIME_GUIDE.md §3, §4, §11).
+- `azimuth/runtime/delivery.py` — Where the result of a calculation goes: found by the ids of its attempt at the end, not by the tab it was started from (docs/architecture/PROJECT_RUNTIME_GUIDE.md §3, RUNTIME_CONTRACTS.md §4; scenario T05).
+- `azimuth/runtime/errors.py` — What kind of failure it is and what to do about it (the roadmap of 2026-11-09, «C. Общие правила ошибок»).
+- `azimuth/runtime/lifecycle.py` — The life of one calculation apart from the window: its attempt, its start, its end (the roadmap of 2026-11-09, stages 1 and 3 — «Жизненный цикл расчёта тестируется с поддельным исполнителем без создания Studio»).
+- `azimuth/runtime/places.py` — The calculation of each place — this computer and a server — as an explicit object (the external review of 2026-11-09, item 4, step 2: «Ввести явные объекты состояния локального и серверного запуска»).
+- `azimuth/runtime/provenance.py` — Which content a derived result was made from, and whether it is still current.
+- `azimuth/runtime/queue_steps.py` — What a queue of calculations does next, apart from the window. §1 PURPOSE     BatchTool.start_next_batch_item decided and did everything in one method of the window: which row comes next, what     a queue on a server watches first, when …
+- `azimuth/runtime/records.py` — The records of a calculation — in the database of its project, or a file next to it (docs/architecture/PROJECT_RUNTIME_GUIDE.md, §5: the old batch.json, job.json and project-link.json are only a source of import).
+- `azimuth/runtime/runs.py` — The sending of one calculation to a SLURM server without a duplicate (stage C of docs/architecture/PROJECT_RUNTIME_GUIDE.md, §7 «Надёжный удалённый запуск»).
+- `azimuth/runtime/session.py` — The open project: one ProjectSession per project_id over the JSON project (stage B of docs/architecture/PROJECT_RUNTIME_GUIDE.md).
+- `azimuth/runtime/single_run.py` — One calculation from its start to its result, without the window. §1 PURPOSE     RunTool._finish_job decided everything at the end of a calculation and showed it at once: the final state, the     orbitals made from the .gbw, the warnings…
+- `azimuth/runtime/states.py` — The states of an attempt in six dimensions and their transitions (PROJECT_RUNTIME_GUIDE.md §6).
+- `azimuth/runtime/workspace_state.py` — What a tab shows, apart from what it holds (PROJECT_RUNTIME_GUIDE.md §3–4 and RUNTIME_CONTRACTS.md §1: «Камера, раскрытые панели, прокрутка — WorkspaceState: только представление, не источник научных данных»).
+- `azimuth/runtime/writer_lock.py` — One writer of a project across processes: a lock between processes, a check of the owner, an explicit read-only mode in a second window (docs/architecture/PROJECT_RUNTIME_GUIDE.md §5; scenario T19).
+
+## hub
+
+- `hub/about.py` — «О программе», the manual and the change log dialogs of the hub (moved from window.py).
+- `hub/branding.py` — Hub drawing helpers: SVG icons in currentColor, the Azimuth wordmark, the sidebar typeface (moved from window.py).
+- `hub/chrome.py` — Hub window decorations: faint scales (Ornament), the wordmark widget, the sidebar scrim (moved from window.py).
+- `hub/dock_icon.py` — The icon of Azimuth.app on macOS follows the theme of the program.
+- `hub/header.py` — Section header above Compass, Sextant and Spectrum (moved from window.py).
+- `hub/home.py` — Hub home page: the name and the motto, what the program is, «continue where you left off», four section cards (moved from window.py).
+- `hub/job_indicator.py` — The long work of the program in the left panel of the hub: the turning compass while it runs, a mark when it ends.
+- `hub/launch.py` — Azimuth entry points. CLI and shared-state contract: docs/MODULES.md.
+- `hub/menu_search.py` — «Справка → Поиск»: a search of the menus by a word, as in the Help menu of macOS, pointing to the item found.
+- `hub/menus.py` — HubMenus: the menus of the header of the hub — the menus of each section (Compass, Sextant, Spectrum) built from the actions of Studio, and the label of the theme button; «Проект» of Compass, «Сервер» of Sextant and «Справка» of every se…
+- `hub/menus_sections.py` — The menus of each section of the hub: Compass, Compass · Crystal, Sextant, Spectrum. Each function is the branch of HubMenus._section_menus for its section and gets the helpers made there (menu, own, help_menu…).
+- `hub/registry.py` — Section registry of the Azimuth hub (contract: docs/MODULES.md §4).
+- `hub/texts.py` — Hub texts per language and shared sizes/colours of the hub chrome (moved from window.py).
+- `hub/theme_wipe.py` — The change of theme as a circle from the theme button.
+- `hub/window.py` — Azimuth hub window: own sidebar, sections in one content area, smooth switching.
+- `hub/window_sections.py` — Showing a section of the hub: the switch with its transition, the calculation following into Sextant, the history of the sections (back and forward), the page or the mode of Compass changed by itself. Methods of HubWindow (self is the wi…
+- `hub/window_sidebar.py` — The sidebar of the hub: its buttons of the sections, the logo, the languages and the theme, folding to icons or opening over the page, its look in the light and the dark theme. Methods of HubWindow (self is the window), kept here to make…
+
+## modules/compass
+
+- `modules/compass/__main__.py` — Launch the compass workspace from the Azimuth root.
+- `modules/compass/constraints.py` — Optimization constraints on atoms, bonds, angles and dihedrals — the rules, without Qt (split from modules/compass/actions/constraint_actions.py, the roadmap of 2026-11-09, stage 5: the first part of Compass that is no longer a mixin of …
+- `modules/compass/workspace.py` — CompassWorkspace: module-owned pages and operations. Contract: docs/MODULES.md.
+- `modules/compass/workspace_building.py` — Building a structure on the model of Compass: the mode of building, the atom or fragment placed or snapped to an atom, its preview, the isotopes and hydrogens of the new atoms, the tidying, moving, the bonds. Methods of CompassWorkspace …
+- `modules/compass/workspace_molecules.py` — «Новая молекула» of Compass: a new molecule of the project, a structure from SMILES, a name or the clipboard as a new molecule, and the check that the project has not the same molecule already. Methods of CompassWorkspace (self is the wi…
+- `modules/compass/workspace_notices.py` — The messages of the window of Compass: the pill over the model, the line of a work going on, the pill over the foot of a page, and where the pill is placed. Methods of CompassWorkspace (self is the window), kept here to make workspace.py…
+
+## modules/compass/actions
+
+- `modules/compass/actions/brillouin_window.py` — «Кристалл → Зона Бриллюэна…»: the first Brillouin zone of the crystal shown, its points of high symmetry and the path of its band structure (modules/compass/chemistry/brillouin.py), turned with the mouse.
+- `modules/compass/actions/calculation_tools.py` — «Расчёт» of Compass: a quick xtb, the charge and the multiplicity, the steps as data, the modes of atoms.
+- `modules/compass/actions/cod_window.py` — «Файл → Найти кристалл в COD…»: a search of the Crystallography Open Database and its CIF opened in «Компас · Кристалл» (cod.py).
+- `modules/compass/actions/conformer_actions.py` — Compass: «Правка → Поиск конформеров…» — candidates by turns, then GFN2-xTB energies.
+- `modules/compass/actions/constraint_actions.py` — Compass: optimization constraints. No longer a mixin of the window — ConstraintTool, a part of its own with an explicit port (the roadmap of 2026-11-09, stage 5); the rules are modules/compass/constraints.py.
+- `modules/compass/actions/coordinate_actions.py` — CoordinateTool (window.coordinate_tool, a part of the window; was the mixin CoordinateActions of CompassWorkspace, split from it on 2026-11-08): the table «Координаты» of Compass — drawing it, its units and format, editing a cell back in…
+- `modules/compass/actions/coordination_actions.py` — Compass: «Правка → Геометрия → Координационный центр…» — a metal and its ligands in an ideal polyhedron (modules/compass/chemistry/coordination.py). The structure replaces the one shown (after confirm_replace, as the peptide); the charge…
+- `modules/compass/actions/crystal_actions.py` — Compass: opening a CIF, the «Кристалл» window, the unit cell drawn on the model.
+- `modules/compass/actions/crystal_analysis.py` — Multiwfn on the wave function of a CP2K run of a crystal — for the panel of the calculation, for «Компас · Кристалл» and for Spectrum alike (was in the panel only, qe_window.QePanel.show_aim / show_charges of 0.141–0.142).
+- `modules/compass/actions/crystal_batch.py` — The batch of crystals of a project: one calculation of Quantum ESPRESSO or CP2K for each crystal with a tick, one after another, with the settings of the window.
+- `modules/compass/actions/crystal_code_window.py` — «Расчёт → Входной файл CRYSTAL…» of «Компас · Кристалл» and the outputs of CRYSTAL opened in Compass. §1 PURPOSE     CRYSTAL (Dovesi et al.) is not run by the program (a licence of its own, usually on a cluster): its input is made     he…
+- `modules/compass/actions/crystal_contacts_window.py` — Compass: the «Контакты» window of a crystal — the short contacts and hydrogen bonds of the structure, their table (HydrogenBondTable) and «Показать сеть». Opened from the «Кристалл» window (crystal_window.CrystalWindow).
+- `modules/compass/actions/crystal_dynamics.py` — The frequencies at Γ and the critical points of a crystal on its model.
+- `modules/compass/actions/crystal_marks.py` — What is shown over the model of a crystal and built from it: the symmetry elements, the lattice nodes, a clicked hydrogen bond, the ellipsoids, polyhedra, rings, tints, the range of coordinates, the network, the shell, the energy framewo…
+- `modules/compass/actions/crystal_quick.py` — «Расчёт → Быстрый расчёт xtb» of «Компас · Кристалл». §1 PURPOSE     As the quick xtb of a molecule (calculation_tools.quick_xtb): the crystal of the tab computed at once, without the     page of Sextant — GFN1-xTB of CP2K (periodic, Γ; …
+- `modules/compass/actions/crystal_results_panel.py` — «Расчёт → Результаты расчётов» of «Компас · Кристалл» (2026-11-21 group 15 of the list: what the calculations of a crystal gave was scattered over the items of «Расчёт» and the tabs of Spectrum, greyed or not, and nowhere was there a lis…
+- `modules/compass/actions/crystal_side.py` — The side panel of Compass beside the model: the crystal window docked in it, the kind shown, its buttons, the panel sliding out and back in with its picture over it, the folding on a click past the atoms. Methods of CrystalTool (self is …
+- `modules/compass/actions/crystal_structure.py` — «Анализ структуры» of a crystal in Compass: the window of crystal_energetics.
+- `modules/compass/actions/crystal_window.py` — Compass: the «Кристалл» window — the cell, the group, the block of cells to build, the surface (hkl), the contacts. What it does with the model is CrystalTool (crystal_actions.py); theory: modules/compass/chemistry/crystal.py.
+- `modules/compass/actions/custom_bar.py` — The user's own buttons in Compass. The row above the field (top) and the column at its right edge (rail) are groups of buttons parted by thin lines. Any item of the menus of the window — a command or a submenu — becomes a button: a right…
+- `modules/compass/actions/custom_bar_carry.py` — Carrying an item of the menus onto the panels of Compass: the picture that follows the mouse, the gap that opens where it would drop, the drop, the place and the slot of a point. Methods of CustomBar (self is the bar), kept here to make …
+- `modules/compass/actions/dialog_openers.py` — Compass: the openers of three windows of Compass — the reaction path, the rotation about a bond, the search of conformers (were the mixins PathActions, TorsionActions, ConformerActions of the window — the roadmap of 2026-11-09, stage 5).
+- `modules/compass/actions/file_actions.py` — Compass: «Файл → Недавние файлы», «Перечитать файл» and «Сохранить несколько файлов».
+- `modules/compass/actions/fragment_actions.py` — Compass: the user's own fragments — save a group of the model, reuse it, share it.
+- `modules/compass/actions/hirshfeld_window.py` — «Кристалл → Поверхность Хиршфельда…»: the Hirshfeld surface of a molecule of the crystal on the model, coloured by d_norm, d_i or d_e, and its fingerprint plot with the shares of the contacts (crystal_hirshfeld), as in CrystalExplorer.
+- `modules/compass/actions/menu_actions.py` — ModelMenuTool (window.model_menu_tool, a part of the window; was the mixin ModelMenuActions of CompassWorkspace, split from it on 2026-11-08): the menus of the model of Compass — the menu of an atom, of a bond, of the choice, the fragmen…
+- `modules/compass/actions/morphology_window.py` — «Кристалл → Форма кристалла (BFDH)…»: the shape of the crystal by the spacings of its planes (crystal_morphology), turned with the mouse, its forms {hkl} in a table.
+- `modules/compass/actions/naming_actions.py` — Compass: the «IUPAC» button next to the molecule summary.
+- `modules/compass/actions/opening_actions.py` — OpeningTool (window.opening_tool, a part of the window; was the mixin OpeningActions of CompassWorkspace, split from it on 2026-11-08): opening structures in Compass — files of every format (open_path, file_kind, read_structures), a file…
+- `modules/compass/actions/overlay_actions.py` — Compass: overlay of another structure for comparison, atoms in any order.
+- `modules/compass/actions/packing_window.py` — «Кристалл → Сравнить упаковку…»: the packing of the crystal shown against another CIF or the last optimization of the project (packing_similarity) — as «Crystal Packing Similarity» of Mercury.
+- `modules/compass/actions/pairs_window.py` — «Кристалл → Энергии пар и каркас (xtb)…»: the interaction energies of a molecule with its neighbours, the lattice energy and the energy framework on the model (crystal_pairs), as CrystalExplorer.
+- `modules/compass/actions/path_actions.py` — Compass: «Путь между структурами…» — images between the structure and another one, the NEB task.
+- `modules/compass/actions/pictures.py` — Compass: PNG snapshots and GIF animations of the model (moved from workspace.py).
+- `modules/compass/actions/planes_window.py` — «Кристалл → Плоскости (hkl) в ячейке…»: the lattice planes of a reflection drawn in the block shown (lattice_planes), their spacing and the line of the powder pattern — as the hkl planes of Mercury.
+- `modules/compass/actions/powder_window.py` — «Порошковая дифрактограмма» of the «Кристалл» window.
+- `modules/compass/actions/print3d_window.py` — «Файл → Модель для 3D-печати…»: the model on the screen as STL or VRML for a 3D printer (print3d).
+- `modules/compass/actions/property_actions.py` — Compass: properties of a calculation result on the model — charges, spin populations, Mayer valences and bond orders, the dipole moment, the forces.
+- `modules/compass/actions/property_crystal.py` — The properties of a crystal from its last CP2K run: the charges (CM5, Hirshfeld) on the atoms, the density and ELF, QTAIM. Methods of PropertyTool (self is the tool; the window only through its port self.w), kept here to make property_ac…
+- `modules/compass/actions/property_multiwfn.py` — The analyses of Multiwfn on the result shown in Compass: bond orders, spins, Hirshfeld, RESP, AIM, ADCH and CM5 charges onto the model, and finding the program and the file of the orbitals. Methods of PropertyTool (self is the tool; the …
+- `modules/compass/actions/property_queues.py` — The properties computed from a queue of calculations: CDA of a complex and its fragments, the Fukui functions (N, N+1, N−1) and their surfaces. Methods of PropertyTool (self is the tool; the window only through its port self.w), kept her…
+- `modules/compass/actions/protein_actions.py` — Compass: «Вид → Ленты белка» — the ribbon of a protein over or instead of its atoms; «Правка → Геометрия → Построить пептид…» — a peptide from its sequence (modules/compass/chemistry/peptide.py).
+- `modules/compass/actions/qe_common.py` — What the parts of the crystal window share: the units, the headers of the steps, the notes of the programs, the names of the tasks and the lines of the phonons.
+- `modules/compass/actions/qe_controls.py` — The form of the crystal calculation (QePanel): its fields, the rows shown for the task and the program, the processes and memory of this computer. Methods of QePanel (self is the panel), kept here to make qe_window.py shorter.
+- `modules/compass/actions/qe_plots.py` — The plots of a band structure and of a density of states of Quantum ESPRESSO.
+- `modules/compass/actions/qe_results.py` — The results of a crystal calculation in QePanel: the bands, the densities of states, the phonons, QTAIM and the charges of a CP2K run (their table windows), the summary, the optimized cell and its steps. Methods of QePanel (self is the p…
+- `modules/compass/actions/qe_run.py` — Running a crystal calculation from QePanel: the steps and their input, the SSSP library, the start here (Quantum ESPRESSO, CP2K through mpirun) or on the server, a batch of crystals, the progress and the stop. Methods of QePanel (self is…
+- `modules/compass/actions/qe_window.py` — «Расчёт в Quantum ESPRESSO» of a crystal of Compass.
+- `modules/compass/actions/scheme_actions.py` — Compass: «Вид → Схема отображения» — ready looks, the user's own, element colours.
+- `modules/compass/actions/selection_actions.py` — Compass: selection, copy/paste and mirroring of atoms (moved from workspace.py).
+- `modules/compass/actions/setting_window.py` — «Кристалл → Установка ячейки…»: the cell of the crystal in another setting of its group or as the reduced cell (crystal_setting) — the crystal shown again in the cell chosen.
+- `modules/compass/actions/shell_window.py` — «Кристалл → Молекулярная оболочка…»: a molecule of the crystal and all the molecules near it (crystal_shell), as «Molecular Shell» of Mercury.
+- `modules/compass/actions/structure_actions.py` — Compass: the actions of the Chemcraft-like menus that Compass did not have.
+- `modules/compass/actions/structure_editing.py` — Changes of the content of a structure in Compass: «Проверить структуру…», the solvent round it, the isotopes, a proton added, removed or moved. Methods of StructureTool (self is the tool; the window only through its port self.w), kept he…
+- `modules/compass/actions/structure_measures.py` — Measuring and moving a structure in Compass: «Сдвинуть и повернуть…», the planes of groups of atoms, vectors and planes (guides), the internal coordinates, the size, the statistics, the masses, the inertia, the pinned distances and angle…
+- `modules/compass/actions/structure_styles.py` — The styles of the model of Compass: the window of styles, the bonds, the labels, the measurements, the numbers of the camera. Methods of StructureTool (self is the tool; the window only through its port self.w), kept here to make structu…
+- `modules/compass/actions/style_form.py` — The small windows of the styles of the model: «Стиль подписей…», «Стиль измерений…», «Стиль векторов и плоскостей…».
+- `modules/compass/actions/surface_actions.py` — Compass: an orbital, the electron or spin density, or the ESP on the density shown on the model.
+- `modules/compass/actions/surface_aim.py` — The critical points and bond paths of QTAIM on the model of Compass: shown, the weak contacts kept, the kinds followed, the point chosen let go, the buttons of the panels. Methods of SurfaceTool (self is the tool; the window only through…
+- `modules/compass/actions/surface_functions.py` — The ESP on the surface of the density and the real space functions of Multiwfn (ELF, LOL…) on the model of Compass, the surfaces of an excitation. Methods of SurfaceTool (self is the tool; the window only through its port self.w), kept h…
+- `modules/compass/actions/surface_nci.py` — NCI, IRI and IGMH of Multiwfn on the model of Compass: the grid, the tables (CSV), the menu, the surfaces, their domains and markers, the plot of the tab «NCI». Methods of SurfaceTool (self is the tool; the window only through its port s…
+- `modules/compass/actions/symmetry_actions.py` — Compass: point group, symmetrization and standard orientation (moved from workspace.py).
+- `modules/compass/actions/torsion_actions.py` — Compass: the «Вращение вокруг связи» window — exact dihedral, turn by an angle, drag, conformer scan.
+- `modules/compass/actions/trajectory_actions.py` — Compass: optimization steps drawer, browsing and adopting a step (moved from workspace.py).
+- `modules/compass/actions/view_actions.py` — Compass: standard views, the Z-matrix editor, SVG / PDF pictures, files dropped on the window.
+- `modules/compass/actions/voids_window.py` — «Кристалл → Пустоты…»: the voids of the crystal shown (crystal_voids) — their volume, the separate cavities and channels, the surface on the model.
+
+## modules/compass/chemistry
+
+- `modules/compass/chemistry/abc_search.py` — Conformer search by an Artificial Bee Colony (ABC) over the torsions of the rotatable bonds.
+- `modules/compass/chemistry/brillouin.py` — The first Brillouin zone of a crystal and the path of its band structure.
+- `modules/compass/chemistry/builder.py` — Independent coordinate-based builder. Templates are starting geometries, not optimized structures.
+- `modules/compass/chemistry/cleanup.py` — «Выровнять геометрию»: a quick, simple force field for a hand-built structure.
+- `modules/compass/chemistry/cod.py` — Crystal structures from the Crystallography Open Database (COD) — the search and the CIF.
+- `modules/compass/chemistry/conformers.py` — Conformer search: turns about the rotatable bonds, steric filter, duplicates, Boltzmann weights.
+- `modules/compass/chemistry/coordination.py` — Coordination centres from a template: «Правка → Геометрия → Координационный центр…».
+- `modules/compass/chemistry/crystal.py` — Crystals for Compass: CIF files, the unit cell, supercells.
+- `modules/compass/chemistry/crystal_adp.py` — Atomic displacement ellipsoids of a crystal.
+- `modules/compass/chemistry/crystal_contacts.py` — Short contacts and hydrogen bonds of a crystal; the molecules they join.
+- `modules/compass/chemistry/crystal_energetics.py` — The ionic picture of a crystal: oxidation states, the Madelung energy, bond valence sums, Shannon radii and Pauling's rules, the packing of the ions, the cell computed against the cell of the file.
+- `modules/compass/chemistry/crystal_export.py` — The crystal to other programs: POSCAR of VASP, the extended XYZ of ASE and OVITO, the block as CIF in P 1.
+- `modules/compass/chemistry/crystal_field.py` — The electron density and the ELF of a crystal on its model: from the orbitals of CP2K (its Molden file, the Γ point of the cell computed), periodic.
+- `modules/compass/chemistry/crystal_graphsets.py` — Graph sets of the hydrogen bonds of a crystal (Etter).
+- `modules/compass/chemistry/crystal_hirshfeld.py` — The Hirshfeld surface of a molecule in a crystal and its fingerprint plot (as CrystalExplorer — Mercury has none).
+- `modules/compass/chemistry/crystal_hydrogens.py` — The hydrogen atoms of an X-ray structure moved to their neutron distances — as Mercury does before it looks for contacts.
+- `modules/compass/chemistry/crystal_model_map.py` — Results of the cell computed put on the model of the crystal: the displacements of the vibrations at Γ and the critical points of the density — on every atom and in every cell of the block shown.
+- `modules/compass/chemistry/crystal_morphology.py` — The shape of a crystal by BFDH: the faces of the planes with the largest spacings — as «BFDH Morphology» of Mercury (CCDC).
+- `modules/compass/chemistry/crystal_packing.py` — The packing of a crystal: a block by ranges of the coordinates, the molecules coloured by symmetry.
+- `modules/compass/chemistry/crystal_pairs.py` — The interaction energies of a molecule with its neighbours in a crystal, the lattice energy and the energy framework (as CrystalExplorer's «interaction energies» and «energy frameworks», here with GFN2-xTB).
+- `modules/compass/chemistry/crystal_pdos.py` — The projected density of states of a crystal: CP2K (its .pdos files, else its Molden file) and Quantum ESPRESSO (projwfc.x), by element and by s, p, d, f.
+- `modules/compass/chemistry/crystal_results.py` — The results of the calculations of a project of a crystal, read from their folders — for «Компас · Кристалл» (the charges on the atoms of the model), for Spectrum (the plots of an optimization, the bands, the density of states, the table…
+- `modules/compass/chemistry/crystal_rings.py` — Rings of the molecules of a crystal: centroids, planes and π–π stacking.
+- `modules/compass/chemistry/crystal_setting.py` — Another setting of the cell of a crystal: the axes changed by a matrix, the reduced cell, the name of the setting — as «Unit cell transformation» and «Reduced cell» of Mercury.
+- `modules/compass/chemistry/crystal_shell.py` — The molecular shell of a crystal: a molecule and all the molecules near it (as «Molecular Shell» of Mercury).
+- `modules/compass/chemistry/crystal_steps.py` — The steps of the optimization of a crystal: each step a crystal of its own, the start as a ghost, the shift of the atoms and of the cell — as the steps of a molecule.
+- `modules/compass/chemistry/crystal_symmetry.py` — The symmetry of a crystal from its operations; whole molecules across the cell faces.
+- `modules/compass/chemistry/crystal_voids.py` — The voids of a crystal: where a probe sphere fits between the van der Waals spheres of the atoms — as «Display Voids» of Mercury (CCDC).
+- `modules/compass/chemistry/editing.py` — Quick structure edits of Compass: hydrogens by valence, H → group, element change.
+- `modules/compass/chemistry/embed3d.py` — Flat (2D) structures of a file and their 3D coordinates by RDKit.
+- `modules/compass/chemistry/formats.py` — Molecule files of other programs: reading and writing for Compass.
+- `modules/compass/chemistry/formats_common.py` — What the readers of structure files share: the numbers of their text, the element of a symbol or a number, the molecule made of atoms, whether a file can be read.
+- `modules/compass/chemistry/formats_outputs.py` — Structures read from the inputs and outputs of calculation programs and from trajectories: Gaussian and ORCA inputs, the orientations of a Gaussian log, Molden, XYZ with many frames (Trajectory, Step).
+- `modules/compass/chemistry/formats_smiles.py` — A structure from SMILES (from_smiles): the graph made into coordinates, the hydrogens put in, the bonds written as double kept so, the chalcogens turned.
+- `modules/compass/chemistry/geometry_tools.py` — Coordinate blocks and ordered geometric measurements. Internal lengths are Å.
+- `modules/compass/chemistry/guides.py` — Vectors and planes on the model, as «Operations with vectors and planes» of Chemcraft.
+- `modules/compass/chemistry/identity.py` — Compass: the same molecule? — a key of a structure by its atoms and bonds, not its coordinates.
+- `modules/compass/chemistry/iupac.py` — Systematic (IUPAC) names of the structure built in Compass, in Russian, English or Chinese.
+- `modules/compass/chemistry/lattice_planes.py` — The lattice planes (hkl) drawn in a block of cells — the planes of a reflection of the powder pattern seen in the crystal, as Mercury shows «hkl planes».
+- `modules/compass/chemistry/library.py` — Ready molecules and fragments of the Compass menus.
+- `modules/compass/chemistry/molecular_size.py` — The size of a molecule: the van der Waals volume, the surface areas, the effective diameter.
+- `modules/compass/chemistry/names.py` — Names of common molecules for the Compass status line.
+- `modules/compass/chemistry/overlay.py` — Overlay of two structures with the atoms in any order: matching, alignment, deviations.
+- `modules/compass/chemistry/packing_similarity.py` — How alike two crystals of one compound are packed — a cluster of molecules compared, as «Crystal Packing Similarity» (COMPACK, Chisholm & Motherwell 2005) of Mercury.
+- `modules/compass/chemistry/peptide.py` — Peptides built from a sequence: «Правка → Построить пептид…».
+- `modules/compass/chemistry/powder.py` — The powder X-ray diffraction pattern of a crystal.
+- `modules/compass/chemistry/powder_match.py` — A measured powder pattern against the calculated one: the background, the zero shift, the agreement, the lines found and missing, the change of the cell — as the comparison of patterns in Mercury.
+- `modules/compass/chemistry/print3d.py` — A model of balls and sticks for 3D printing: STL and VRML (as Mercury's «Print 3D» / «Save as VRML»).
+- `modules/compass/chemistry/protein.py` — Proteins in Compass: the backbone found in the bonds, the secondary structure, the ribbon.
+- `modules/compass/chemistry/pubchem.py` — SMILES of the built structure and its IUPAC name from PubChem, for what iupac.py cannot name.
+- `modules/compass/chemistry/rdkit_embed.py` — Run by a Python with RDKit (not imported by Azimuth): 3D coordinates for the records of an SDF.
+- `modules/compass/chemistry/reaction_path.py` — A path between two structures of the same atoms: linear and IDPP interpolation.
+- `modules/compass/chemistry/space_group_symbol.py` — What the Hermann–Mauguin symbol of a space group says, part by part, and the Bravais lattice.
+- `modules/compass/chemistry/space_groups.py` — The 230 space groups in their 530 settings: operations from a symbol.
+- `modules/compass/chemistry/step_tools.py` — The steps of a calculation and its normal modes as data — «Job tools» of Chemcraft for Compass.
+- `modules/compass/chemistry/structure_check.py` — «Проверить структуру», явная сольватация и протоны.
+- `modules/compass/chemistry/structure_tools.py` — Compass: the structure tools of the menus «Правка» and «Инструменты», as in Chemcraft.
+- `modules/compass/chemistry/surface.py` — Surfaces (slabs) of a crystal by Miller indices and CIF files of crystals and slabs.
+- `modules/compass/chemistry/symmetry.py` — Point group, symmetrisation and standard orientation of the Compass structure.
+- `modules/compass/chemistry/torsion.py` — Rotation about a bond: the dihedral angle, a turn of one side, a conformer scan.
+- `modules/compass/chemistry/transforms.py` — Rigid fragment edits; cycles are rejected when cutting a bond cannot isolate a side.
+- `modules/compass/chemistry/uff.py` — UFF, the universal force field: energies in kcal/mol and an optimization for Compass.
+- `modules/compass/chemistry/uff_params.py` — The parameters of UFF: Rappé, Casewit, Colwell, Goddard, Skiff, J. Am. Chem. Soc. 114, 10024 (1992), Table 1, as RDKit keeps them (Code/ForceField/UFF/Params.cpp, release 2024.09.6, BSD licence; the GMP electronegativities Xi of the same…
+- `modules/compass/chemistry/user_fragments.py` — User fragments of Compass: a group cut from a model, kept and reused like the built-in ones.
+- `modules/compass/chemistry/user_molecules.py` — «Мои молекулы»: the user's own molecules kept by the program — as «Мои фрагменты» (user_fragments.py).
+- `modules/compass/chemistry/zmatrix.py` — Internal coordinates (Z-matrix) of the Compass structure.
+
+## modules/compass/view
+
+- `modules/compass/view/bond_depth.py` — Atoms and bonds of the Compass model drawn with a per-pixel depth test.
+- `modules/compass/view/gif.py` — Animated GIF of Compass pictures: rotation of the molecule, optimization steps.
+- `modules/compass/view/label_places.py` — Where the labels of the critical points go on the model (drawn by viewer.MoleculeView.draw_aim).
+- `modules/compass/view/nci_plot.py` — The plot RDG (or IRI) — sign(λ₂)ρ of an NCI analysis from Multiwfn.
+- `modules/compass/view/occlusion.py` — Which atoms are drawn in front of an atom — for its selection ring (the rubber band takes every atom inside it, seen or not).
+- `modules/compass/view/opengl_setup.py` — Compass: the whole program composes its windows with OpenGL when VTK is to draw straight into the window.
+- `modules/compass/view/quill_hint.py` — Quill and her speech bubble in the empty field of «Компас · Молекула».
+- `modules/compass/view/raster.py` — Per-pixel depth renderer of balls and sticks for the Compass model.
+- `modules/compass/view/result_overlay.py` — What Compass draws over the model from a calculation result: atom values, Mayer bond orders, the dipole and the forces, in the frame of the structure on screen.
+- `modules/compass/view/schemes.py` — Display schemes of the Compass model: ready looks and the user's own.
+- `modules/compass/view/surfaces.py` — Isosurfaces on the Compass model: orbitals, electron and spin density, the electrostatic potential mapped on the density.
+- `modules/compass/view/viewer.py` — Original editable orthographic view. Geometry edits are emitted to the application.
+- `modules/compass/view/viewer_camera.py` — The camera of the Compass view (MoleculeView): centring, the best view, looking along a direction, zoom and pan, the turns, the inset of a drawer, and the field as SVG, PDF or a picture. Methods of MoleculeView (self is the view), kept h…
+- `modules/compass/view/viewer_crystal.py` — What the model of a crystal has drawn over it: the edges of the cell, the lattice points and planes, the symmetry elements, the displacement ellipsoids, the rings and π–π stacks, the energy framework, the polyhedra. Methods of ViewerDraw…
+- `modules/compass/view/viewer_drawing.py` — ViewerDrawing: what the model view of Compass draws over and around the molecule with QPainter — labels, axes, the aim of a point, surfaces with their veil and legend, hydrogen bonds, measurements, overlays, bond labels, van der Waals sp…
+- `modules/compass/view/viewer_motion.py` — The Compass view while the window around it moves: the model keeping its place while rows above it change, a panel sliding beside the field (a picture of the field glides instead). Methods of MoleculeView (self is the view), kept here to…
+- `modules/compass/view/viewer_mouse.py` — The mouse of the Compass view (MoleculeView): a click selects or adds, a drag moves, turns or draws a bond, the wheel zooms, a double click centres. Methods of MoleculeView (self is the view), kept here to make viewer.py shorter.
+- `modules/compass/view/viewer_paint.py` — The painting of the Compass view (MoleculeView): the labels of the atoms, the layers under and over the model, the silhouette, what is painted over the native (VTK) picture. Methods of MoleculeView (self is the view), kept here to make v…
+- `modules/compass/view/viewer_surface.py` — The surface on the model of Compass: its meshes in the pixels of the view, the triangles shaded, the veil of its silhouette, the legend and the extrema of the ESP. Methods of ViewerDrawing (self is the view), kept here to make viewer_dra…
+- `modules/compass/view/vtk_model.py` — Atoms and bonds of the Compass model drawn by VTK (OpenGL) instead of the NumPy ray caster.
+- `modules/compass/view/vtk_view.py` — Compass: VTK draws the atoms and bonds straight into the window, with no copy of the picture.
+
+## modules/compass/panels
+
+- `modules/compass/panels/density_drawer.py` — Compass: the orbitals and the electron density of the result — pages of the left drawer.
+- `modules/compass/panels/density_orbitals.py` — The page «Орбитали» of the density panel of Compass: the table of the canonical orbitals or of the LMOs, their localization, the composition by atoms. Methods of DensityDrawer (self is the panel), kept here to make density_drawer.py shor…
+- `modules/compass/panels/density_surfaces.py` — The page «Поверхности» of the density panel of Compass: the tree of the surfaces of Multiwfn, the one chosen put on the model or taken away. Methods of DensityDrawer (self is the panel), kept here to make density_drawer.py shorter.
+- `modules/compass/panels/documents.py` — Compass, Sextant and Spectrum: document tabs — several structures, their calculations and results side by side (one row of tabs for the three sections).
+- `modules/compass/panels/layout.py` — Compass: construction of the structure page (widgets, layout, signals; moved from workspace.py).
+- `modules/compass/panels/layout_parts.py` — Small parts of the page of Compass: a widget that matches the height of another (_MatchHeight), the Delete key of the field (DeleteKey), the box whose width slides for the side panel (side_slide_box), the pill of the chosen fragment or m…
+- `modules/compass/panels/periodic.py` — Compact element picker; all elements remain available independently of export support.
+- `modules/compass/panels/scan_map_view.py` — Compass: the map of a two-dimensional scan — ΔE in colour with isolines, the points, the valley.
+- `modules/compass/panels/scheme_editor.py` — «Отображение → Свой вид…»: one window to make the look of the model one's own and keep it as a scheme.
+- `modules/compass/panels/trajectory_drawer.py` — Optimization steps in Compass: a drawer over the left edge of the model field.
+- `modules/compass/panels/widgets.py` — Small Compass widgets: the element tile and the expanding arrow button (moved from workspace.py).
+
+## modules/sextant
+
+- `modules/sextant/__main__.py` — Launch the sextant workspace from the Azimuth root.
+- `modules/sextant/advice.py` — Sextant: what the molecule suggests — charge and multiplicity, the computer's cores and memory, a method.
+- `modules/sextant/batch.py` — A queue of calculations for a set of structures: the conformers or the structures of the drawer of Compass with the same settings of Sextant, one after another on this computer.
+- `modules/sextant/batch_actions.py` — Sextant: a queue of calculations for the set of the drawer of Compass. The pure part: batch.py.
+- `modules/sextant/batch_browser.py` — Saved calculation packages: reopen the whole queue after a restart, including completed queues.
+- `modules/sextant/batch_conformers.py` — The best conformer of every structure of a queue before its calculation — the methods of the program, chosen in «Настройки → Расчёты».
+- `modules/sextant/batch_dialog.py` — BatchDialog: the window «Очередь расчётов» — which structures go into a queue, and «Комплексы с ионом».
+- `modules/sextant/batch_results.py` — The end of a queue: the table of its results, the conformers, interaction energies, CDA and Fukui functions, the results put into Compass, «QTAIM для всех» and «Дескрипторы и logK…». Methods of BatchTool (self is the tool; the window onl…
+- `modules/sextant/batch_retry.py` — Prepare a new package from selected calculations without overwriting or resubmitting the old ones.
+- `modules/sextant/batch_server.py` — A queue on a server: opening the server for it, sending the waiting calculations at once or before the exit, picking up a calculation left there, cancelling what was sent, asking about an uncertain row. Methods of BatchTool (self is the …
+- `modules/sextant/batch_tasks.py` — The queues a task makes by itself: the Fukui functions (N, N+1, N−1), CDA, the interaction energy with BSSE, a chain of calculations and its end, and the search of conformers before a queue. Methods of BatchTool (self is the tool; the wi…
+- `modules/sextant/binding.py` — Binding of a metal ion by a set of ligands: the ion, every ligand and its complex in one queue, the binding energies and, for ORCA, the counterpoise correction of the basis set superposition error.
+- `modules/sextant/calculation_page.py` — The building of the page of Sextant: the page itself, the card «Запуск расчёта», the further settings and the box of the task. Methods of SextantWorkspace (self is the window), kept here to make workspace.py shorter.
+- `modules/sextant/chain.py` — A chain of calculations. §1 PURPOSE     The calculations made one after another on one molecule by hand — an optimization with frequencies, then the UV-Vis     spectrum, the NMR or the energy with a larger basis at the geometry it gave —…
+- `modules/sextant/chain_steps.py` — The steps of a chain in «Постановка задачи» of Sextant, each with its own method and basis set.
+- `modules/sextant/cluster.py` — Sextant: a SLURM server — its cores and memory, the job script, the job number and its state.
+- `modules/sextant/cluster_queue.py` — «Сервер → Очередь кластера…»: the jobs of SLURM on the server of the profile, as squeue shows them, with the cancel of the jobs chosen.
+- `modules/sextant/cp2k_inputs.py` — The input of CP2K (Quickstep, GPW) for a crystal of Compass.
+- `modules/sextant/crystal_inputs.py` — The input of CRYSTAL (.d12) for a crystal of Compass, and of its program properties with TOPOND (.d3). §1 THEORY CRYSTAL (Dovesi et al., WIREs Comput. Mol. Sci. 8 (2018) e1360) reads its input in blocks. 1 — the geometry: a     title; CR…
+- `modules/sextant/crystal_mode.py` — Sextant for a crystal: the page of the calculation of a crystal tab, as that of a molecule.
+- `modules/sextant/descriptor_view.py` — «Дескрипторы и logK»: the descriptors of a finished queue next to the constants of its records, one fitted against another. The numbers: modules/spectrum/analysis/descriptors.py; this is the window.
+- `modules/sextant/doctor.py` — The doctor of a calculation: what went wrong in a calculation, why, and — where a safe remedy is known — the settings to repeat it with. §1 PURPOSE     Sextant told what went wrong (runner.diagnose) and what to change by hand. The remedy…
+- `modules/sextant/doctor_actions.py` — DoctorTool: the doctor of a calculation in the window — after a calculation that failed (or an optimization that ran out of cycles) the remedy the doctor knows (modules/sextant/doctor.py) is offered as one button of the window of the cal…
+- `modules/sextant/estimate.py` — A rough estimate of the time of a calculation, shown in Sextant.
+- `modules/sextant/history.py` — Sextant: the history of calculations — the calculation is not lost when the program is closed.
+- `modules/sextant/history_actions.py` — HistoryTool: «Расчёт → История расчётов…» — the row of a calculation remembered at its start, the window of the history, «Открыть результат», «Папка», «Убрать из списка», «Очистить список». RunTool keeps the same methods, which hand the …
+- `modules/sextant/history_dialog.py` — Sextant: the window «История расчётов» — the calculations of history.py with their state now.
+- `modules/sextant/hubbard.py` — DFT+U of a crystal: the Hubbard U of the d or f shell of an element, for Quantum ESPRESSO and CP2K.
+- `modules/sextant/input_actions.py` — InputTool (window.input_tool, a part of the window; was the mixin InputActions of SextantWorkspace, split from it on 2026-11-08): the input file of Sextant — the preview made from the settings, its own edit and the check of it (input_che…
+- `modules/sextant/input_blocks.py` — «Правка → Вставить блок» of Sextant (2026-11-21 the blocks of an input written by hand most often, put where the program expects them).
+- `modules/sextant/input_check.py` — Sextant: a check of an input file edited by hand before it is run.
+- `modules/sextant/inputs.py` — Input files of Gaussian, Psi4 and xtb for the Sextant settings (ORCA: azimuth.core.orca_input).
+- `modules/sextant/inputs_more.py` — Input files of GAMESS (US) and NWChem for the Sextant settings. §1 PURPOSE     Spectrum reads the outputs of GAMESS (US) / Firefly and NWChem; Sextant wrote no inputs for them. Here the     same calculation as for ORCA and Gaussian is wr…
+- `modules/sextant/install_actions.py` — InstallTool: «Установить программы для расчёта» — the question of Quill, the installation of Open MPI (MS-MPI), xtb, CREST and MOPAC from conda-forge into the folder of the program as a job of its own, shown in the window of the calculat…
+- `modules/sextant/install_tools.py` — Install the calculation tools: Open MPI 4.1 (parallel ORCA), xtb, CREST from conda-forge.
+- `modules/sextant/interaction.py` — The interaction energy of two molecules with the counterpoise correction of the basis set superposition error, in one step.
+- `modules/sextant/job_dialogs.py` — The small windows of a calculation in Sextant: the output of the program (OutputWindow), «Дополнительные настройки…» (OptionsDialog), the picker of methods and basis sets by family (FamilyPicker).
+- `modules/sextant/job_window.py` — Sextant: the window of a running calculation and the dialog of additional settings.
+- `modules/sextant/keychain.py` — Sextant: the password of a server in the Keychain of macOS or the Credential Manager of Windows.
+- `modules/sextant/magnetism.py` — The magnetic order of a crystal: ferro- or antiferromagnetic starting moments of its d and f atoms.
+- `modules/sextant/molecule_card.py` — The molecule to be calculated, small, in Sextant.
+- `modules/sextant/program_actions.py` — ProgramTool: the program of Sextant shown and chosen — its mark, name and tick (the path in the tooltip), «Указать…», «Искать самой», «Установить…» shown when it is missing, and, with «Сервер», what the check of the server found there. W…
+- `modules/sextant/qe_inputs.py` — The input of pw.x (Quantum ESPRESSO) for a crystal of Compass.
+- `modules/sextant/qe_paths.py` — The path through the Brillouin zone for a band structure of Quantum ESPRESSO.
+- `modules/sextant/qe_pseudo.py` — The pseudopotentials of Quantum ESPRESSO: the library SSSP downloaded once into the folder of the program.
+- `modules/sextant/remote.py` — Sextant: the server profile for calculations on a cluster (the environment lines of the job).
+- `modules/sextant/remote_job.py` — Sextant: a calculation on a SLURM server, watched like one on this computer.
+- `modules/sextant/run_actions.py` — RunTool (window.run_tool, a part of the window; was the mixin RunActions of SextantWorkspace, split from it on 2026-11-08): running a calculation of Sextant — where it runs (this computer or a server), the program found or chosen, the fo…
+- `modules/sextant/runner.py` — Run ORCA, Gaussian, Psi4 or xtb from Sextant: find the program, prepare a job folder, start, watch, stop.
+- `modules/sextant/server_access.py` — Sextant: opening a server for a calculation — the password, the VPN and what the server has now.
+- `modules/sextant/server_browser.py` — Sextant: «Файлы на сервере» — a two-pane file manager, this computer and the server, as Total Commander.
+- `modules/sextant/server_browser_extras.py` — The extras of «Файлы на сервере»: the favourite folders (Ctrl+D), the search by a mask, the keys (F1), dragging files between the panes and from the window. Methods of ServerBrowser (self is the window), kept here to make server_browser.…
+- `modules/sextant/server_browser_files.py` — What «Файлы на сервере» does with files: opening one in Azimuth, F3 view, F4 edit, Shift+F4 a new file, F5 copy, F6 move, rename, a new folder, F8 delete. Methods of ServerBrowser (self is the window), kept here to make server_browser.py…
+- `modules/sextant/server_dialog.py` — Sextant: the dialog «Сервер для расчётов» — the profile of remote.py.
+- `modules/sextant/server_files.py` — The files of the server: what the two-pane file manager of Sextant asks the server and how it reads it.
+- `modules/sextant/server_panes.py` — The panes of «Файлы на сервере»: the list of files of a folder (FileTree), a pane — here or the server — with its path and its list (Pane), and the editor of a text file (TextEditor).
+- `modules/sextant/server_watch_actions.py` — ServerWatchTool: the server of the profile watched from Sextant — its dialog, «Проверить подключение» and the mark next to it (✓ free cores and memory, or ✗ and why), the probe again every SERVER_PING_S s in a thread of its own, «Файлы н…
+- `modules/sextant/setup_rows.py` — Which fields of «Постановка задачи» of Sextant stand in the card and which are in «Дополнительные настройки…».
+- `modules/sextant/ssh.py` — Sextant: commands and files on a calculation server through the system ssh and scp.
+- `modules/sextant/unfinished.py` — Sextant at the start: a queue of calculations and a calculation on a server left unfinished when the program was closed are offered again.
+- `modules/sextant/vpn.py` — Sextant: OpenVPN Connect (or, on Windows, OpenVPN GUI) switched on by the program for a server that needs a VPN.
+- `modules/sextant/workspace.py` — SextantWorkspace: module-owned pages and operations. Contract: docs/MODULES.md.
+- `modules/sextant/workspace_molecule.py` — The molecule of a calculation in Sextant: the charge and multiplicity following its structure, a basis set of an element, the fragments of CDA and of the interaction energy, the structure and constraints that go to the program. Methods o…
+- `modules/sextant/workspace_scan.py` — The scan of Sextant: the coordinates of the constraints of Compass offered, the second coordinate, the end of a scan chosen. Methods of SextantWorkspace (self is the window), kept here to make workspace.py shorter.
+- `modules/sextant/workspace_texts.py` — The texts and names of the page of Sextant: the programs, the notes of their input files, the defaults.
+- `modules/sextant/workspace_widgets.py` — The small widgets of the page of Sextant: fill_grouped (a list of methods or basis sets by family), GuessPicker (the file of the starting orbitals) and WrappedNote (a wrapped note of an exact height).
+
+## modules/spectrum
+
+- `modules/spectrum/__main__.py` — Launch the spectrum workspace from the Azimuth root.
+- `modules/spectrum/result_analyses.py` — The analyses of a result in Spectrum that live on its tabs: the topology of the density, the maps and profiles, the delocalization, the excitations and their NTO, the density of states. Methods of SpectrumWorkspace (self is the window), …
+- `modules/spectrum/result_orbitals.py` — The orbitals and grids of a result in Spectrum: the CUBE window, the orbital window (Molden, fchk, an ORCA .gbw turned into Molden, an output with printed orbitals), the orbitals handed to the density panel of Compass. Methods of Spectru…
+- `modules/spectrum/results_page.py` — The page of Spectrum: the tabs of the result (ResultTabs over WholeTabBar), the cards, the pill of the status. results_page is a method of SpectrumWorkspace (self is the window), kept here to make workspace.py shorter.
+- `modules/spectrum/workspace.py` — SpectrumWorkspace: module-owned pages and operations. Contract: docs/MODULES.md.
+
+## modules/spectrum/readers
+
+- `modules/spectrum/readers/cp2k.py` — The output of CP2K (Quickstep) for a crystal: the energy, the optimisation, the final cell.
+- `modules/spectrum/readers/crystal_out.py` — The output of CRYSTAL (CRYSTAL14, CRYSTAL17, CRYSTAL23; Dovesi et al.) and of its program properties with TOPOND: the energy, the optimization with its steps, the external pressure, the band gap, the elastic constants, the critical point…
+- `modules/spectrum/readers/cube.py` — Bounded Gaussian CUBE reader. Grid basis and geometry returned in angstrom.
+- `modules/spectrum/readers/gamess.py` — Read a GAMESS (US) or Firefly output into an Output.
+- `modules/spectrum/readers/gaussian.py` — Read a Gaussian log file (Gaussian 09/16) into the same Output as an ORCA output.
+- `modules/spectrum/readers/mopac.py` — MOPAC results: the output (.out) and its auxiliary file (.aux) — semiempirical PM7, PM6, AM1, RM1, MNDO.
+- `modules/spectrum/readers/mopac_orbitals.py` — MOPAC orbitals from the auxiliary file (.aux): Slater functions as fitted Gaussians.
+- `modules/spectrum/readers/nist.py` — Measured IR and UV-Vis spectra from the NIST Chemistry WebBook.
+- `modules/spectrum/readers/nwchem.py` — Read an NWChem output (NWChem 6.x-7.x) into an Output.
+- `modules/spectrum/readers/orbital_files.py` — Readers of molecular orbitals: Molden files, Gaussian formatted checkpoints, ORCA outputs.
+- `modules/spectrum/readers/orca.py` — Read a single ORCA output. Missing evidence is kept distinct from success.
+- `modules/spectrum/readers/orca_properties.py` — Atomic and molecular properties from an ORCA output: charges, spin populations, Mayer bond orders and valences, dipole moment, Cartesian gradient.
+- `modules/spectrum/readers/orca_scan.py` — Potential energy surface scans and IRC paths in an ORCA output.
+- `modules/spectrum/readers/orca_spectra.py` — Electronic absorption (TD-DFT, CIS, EOM, ADC), electronic circular dichroism and NMR shieldings from an ORCA output.
+- `modules/spectrum/readers/output_orbitals.py` — Orbitals printed in the outputs of GAMESS (US) / Firefly, NWChem and Q-Chem.
+- `modules/spectrum/readers/outputs.py` — One entry for the outputs of all supported programs.
+- `modules/spectrum/readers/psi4.py` — Read a Psi4 output (Psi4 1.2-1.7) into an Output.
+- `modules/spectrum/readers/qchem.py` — Read a Q-Chem output (Q-Chem 4.x-6.x) into an Output.
+- `modules/spectrum/readers/qe.py` — The output of pw.x (Quantum ESPRESSO): energies, the relaxation, the final cell (внутр. 2026-11-11, для Секстанта и Спектра).
+- `modules/spectrum/readers/results.py` — The model of a read result, shared by the readers of all programs (was in orca.py — the audit of 2026-11-04, R6: «the general model lives inside the ORCA parser»).
+- `modules/spectrum/readers/vibration_data.py` — ORCA text normal modes: retain printed Cartesian displacement ratios.
+- `modules/spectrum/readers/xtb.py` — Read an xtb run (output and the files xtb writes next to it) into an Output.
+
+## modules/spectrum/wavefunction
+
+- `modules/spectrum/wavefunction/batch_qtaim.py` — QTAIM of every calculation of a finished queue at once: the critical points of the density by Multiwfn, the weak interactions named, tables for all the molecules.
+- `modules/spectrum/wavefunction/crystal_aim.py` — The bonds of a crystal by QTAIM: the critical points of the electron density that Multiwfn finds in the periodic wave function of CP2K, gathered into kinds of bonds.
+- `modules/spectrum/wavefunction/field_tables.py` — Tables of an analysis written into the folder of the calculation: the extrema of a field on a grid, the ESP on the molecular surface, the critical points of the density by their kinds.
+- `modules/spectrum/wavefunction/multiwfn.py` — Multiwfn (Tian Lu) run in the background on the wavefunction of a result: atomic charges ADCH and CM5; weak interactions NCI (RDG) and IRI on grids; the topology of the electron density (QTAIM critical points) and the electrostatic poten…
+- `modules/spectrum/wavefunction/multiwfn_cda.py` — Multiwfn: the charge decomposition analysis CDA of Dapprich and Frenking.
+- `modules/spectrum/wavefunction/multiwfn_igmh.py` — Multiwfn: IGMH — the weak interactions between fragments and the atoms and atom pairs that make them.
+- `modules/spectrum/wavefunction/multiwfn_lmo.py` — Multiwfn: the localized molecular orbitals — Pipek–Mezey and Foster–Boys.
+- `modules/spectrum/wavefunction/multiwfn_populations.py` — Multiwfn: the Hirshfeld charges and the charges and spin populations of the AIM basins.
+- `modules/spectrum/wavefunction/multiwfn_resp.py` — Multiwfn: the RESP charges.
+
+## modules/spectrum/analysis
+
+- `modules/spectrum/analysis/boltzmann.py` — Energies of several results and the Boltzmann shares — Simple utilities of Chemcraft's Tools.
+- `modules/spectrum/analysis/charge_transfer.py` — Multiwfn: the charge transfer of an excited state between fragments (IFCT) and its transition matrix.
+- `modules/spectrum/analysis/comparison.py` — Rigid geometry alignment (Kabsch); contract: docs/features/GEOMETRY_COMPARISON.md.
+- `modules/spectrum/analysis/contacts.py` — Weak (noncovalent) interactions named after a QTAIM search: hydrogen, halogen, chalcogen, pnictogen, tetrel bonds and van der Waals contacts.
+- `modules/spectrum/analysis/convergence.py` — The course of a geometry optimization: energy and gradient step by step, the convergence criteria.
+- `modules/spectrum/analysis/delocalization.py` — Electron delocalization between atoms and the aromaticity of rings.
+- `modules/spectrum/analysis/density.py` — Electron density analysis from the orbitals of a calculation: ∇ρ, ∇²ρ, Δρ, QTAIM critical points, bond paths and slices.
+- `modules/spectrum/analysis/descriptors.py` — Descriptors of the calculations of a queue against the constants of its structures — logK and the like.
+- `modules/spectrum/analysis/dos.py` — The density of states of a molecule — total, by fragments (PDOS) and the overlap population between two (OPDOS) .
+- `modules/spectrum/analysis/emission.py` — Fluorescence and phosphorescence from an optimization of an excited state.
+- `modules/spectrum/analysis/ensemble.py` — The spectrum of a mixture of conformers, averaged by their Boltzmann shares.
+- `modules/spectrum/analysis/experiment.py` — An experimental spectrum over the computed one.
+- `modules/spectrum/analysis/fukui.py` — The Fukui functions and the dual descriptor condensed to the atoms, and the global indices of the conceptual DFT .
+- `modules/spectrum/analysis/gto.py` — Contracted Gaussian basis functions: normalization, overlap and values on a grid.
+- `modules/spectrum/analysis/ir_spectrum.py` — Gaussian IR broadening (the lines and the broadened curve). Contract: docs/features/IR_SPECTRUM.md.
+- `modules/spectrum/analysis/isotopes.py` — The isotope pattern of a molecular ion: M, M+1, M+2… with their exact masses.
+- `modules/spectrum/analysis/nci_domains.py` — Weak interactions told apart by NCI: the regions of low RDG split into domains, each named and measured.
+- `modules/spectrum/analysis/nmr_multiplets.py` — NMR multiplets from computed spin-spin couplings: the first-order splitting of every signal.
+- `modules/spectrum/analysis/nmr_reference.py` — The NMR reference «TMS at the level of the result» in one click.
+- `modules/spectrum/analysis/nto.py` — Natural transition orbitals of an ORCA TD-DFT calculation.
+- `modules/spectrum/analysis/orbitals.py` — Molecular orbitals of a calculation: the common part of all readers, fields on a grid.
+- `modules/spectrum/analysis/quality.py` — What is known of a result and whether it is fit for an operation — codes, not texts (the roadmap of 2026-11-09, «A. Единая модель качества результата»).
+- `modules/spectrum/analysis/raman.py` — Raman spectra from the activities of a frequency calculation.
+- `modules/spectrum/analysis/reaction.py` — Spectrum: the energy diagram of a reaction from several calculation results.
+- `modules/spectrum/analysis/scaling.py` — Scaling factors of harmonic frequencies for the IR spectrum of Spectrum.
+- `modules/spectrum/analysis/scan_map.py` — The map of a two-dimensional relaxed scan: energies on a grid, isolines, the valley.
+- `modules/spectrum/analysis/sto_fits.py` — Slater-type radial functions (zeta = 1) as 6 normalized Gaussians each — written by tools/fit_sto.py.
+- `modules/spectrum/analysis/thermo.py` — Thermochemistry of an ideal gas from a frequency calculation: ZPE, E, H, S, G at T and P.
+
+## modules/spectrum/views
+
+- `modules/spectrum/views/cda_view.py` — The window «Донорно-акцепторная связь (CDA)» (the calculation: modules/spectrum/wavefunction/multiwfn_cda.py).
+- `modules/spectrum/views/convergence_view.py` — Spectrum: the «Сходимость» tab. Data: modules/spectrum/analysis/convergence.py.
+- `modules/spectrum/views/crystal_view.py` — Spectrum of a project of a crystal: the results of its calculations.
+- `modules/spectrum/views/cube_view.py` — Independent VTK viewer for scalar CUBE fields; no editor mutations.
+- `modules/spectrum/views/delocalization_view.py` — The tab «Делокализация и ароматичность» of Spectrum: the rings with HOMA (from the geometry, at once) and FLU, PDI, MCI; the delocalization indices of the atom pairs and the localization indices of the atoms (Multiwfn, fuzzy atomic space…
+- `modules/spectrum/views/density_view.py` — The window «Анализ электронной плотности» of the orbital window. Numbers: modules/spectrum/analysis/density.py.
+- `modules/spectrum/views/dos_view.py` — The tab «Плотность состояний» of Spectrum: DOS, PDOS of fragments, OPDOS (modules/spectrum/analysis/dos.py).
+- `modules/spectrum/views/field_view.py` — Spectrum: «Карты и профили» — a function of the wavefunction in the plane of three atoms (a colour map with contours) and along the line through two atoms (a profile), computed by Multiwfn.
+- `modules/spectrum/views/fukui_view.py` — The window «Функции Фукуи» (the calculation: modules/spectrum/analysis/fukui.py).
+- `modules/spectrum/views/ir_plot.py` — The plot of an IR or Raman spectrum (a Qt widget; moved here from modules/spectrum/analysis/ir_spectrum.py, which keeps the broadening). Contract: docs/features/IR_SPECTRUM.md.
+- `modules/spectrum/views/nist_window.py` — «Найти в NIST…» of the button «Эксперимент и конформеры»: a measured IR or UV-Vis spectrum from the NIST Chemistry WebBook laid over the computed one (modules/spectrum/readers/nist.py).
+- `modules/spectrum/views/orbitals_view.py` — The orbital window of the Spectrum module: molecular orbitals of a Molden file, a Gaussian .fchk or an ORCA output (print[p_mos]).
+- `modules/spectrum/views/plot_zoom.py` — Spectrum: moving and zooming a picture of «Карты и профили» — the map and the profile.
+- `modules/spectrum/views/reaction_view.py` — Spectrum: the window «Диаграмма реакции». Numbers: modules/spectrum/analysis/reaction.py.
+- `modules/spectrum/views/spectra_view.py` — Spectrum: the «UV-Vis» and «ЯМР» tabs. The numbers come from orca_spectra.py.
+- `modules/spectrum/views/spectrum_common.py` — What the plots of Spectrum share: the reference result of a spectrum (its path, reading it), the error shown with Quill, the export of a plot widget to a picture.
+- `modules/spectrum/views/spectrum_extras.py` — The button «Эксперимент и конформеры» of the IR (Raman) and the UV-Vis (ECD) spectra.
+- `modules/spectrum/views/spectrum_pulse.py` — The sign of a running calculation in Spectrum: a small spectrum being recorded by the status line.
+- `modules/spectrum/views/thermo_view.py` — Spectrum: the «Термохимия» tab. Numbers: modules/spectrum/analysis/thermo.py.
+- `modules/spectrum/views/tools_view.py` — «Инструменты» of Spectrum: the isotope pattern, the energies of several results, the Boltzmann shares.
+- `modules/spectrum/views/trajectory.py` — Selectable, theme-aware energy plot of optimization cycles (used by the Compass drawer).
+- `modules/spectrum/views/transfer_view.py` — Spectrum: the window «Перенос заряда» of an excited state — IFCT between fragments and the transition matrix as a heat map (the calculation: modules/spectrum/analysis/charge_transfer.py).
+- `modules/spectrum/views/uv_view.py` — The UV-Vis, ECD and emission of a result in Spectrum: the plots (UVPlot, EmissionPlot) and the panel UVVisPanel — the states, their NTO on the model, the analyses of Multiwfn (D, Sr, H, t, HDI, EDI), the charge transfer, the fit, the ref…
+- `modules/spectrum/views/vibrations.py` — Read-only vibrational animation; displayed time and amplitude are illustrative.
+
+## modules/atlas
+
+- `modules/atlas/paths.py` — Single source of truth for the bundled Atlas location (contract: docs/features/ATLAS.md §4).
+
+## tools
+
+- `tools/azimuth_mcp.py` — Azimuth as an MCP server (stdio): a language model — Claude, or a local one through an MCP client — prepares and runs calculations, reads their results and runs the checks of the program, by the commands of azimuth/headless.py.
+- `tools/bench_project_save.py` — Timing of saving a project into project.sqlite (the external review of 2026-11-09, item 5).
+- `tools/bench_workloads.py` — A small reproducible set of workloads to measure before optimizing. What is measured (each R times; the median, the slowest and, where it matters, the peak memory):   start — a new process to the first window: imports, QApplication, Stud…
+- `tools/build_atlas_site.py` — The Atlas as a static web site.
+- `tools/build_compass_library.py` — Build modules/compass/chemistry/library.json: the molecules and fragments of the Compass menus.
+- `tools/check_programs.py` — Run the input files Sextant writes on the programs installed here: a short calculation for every task and the main options, on a small molecule; the table says which ran to a normal end and Spectrum read the result.
+- `tools/dialog_gallery.py` — Галерея окон «Азимута»: снимки всех диалогов, окон сообщений и меню в светлой и тёмной теме.
+- `tools/fit_sto.py` — Fit Slater-type radial functions with K Gaussians; writes modules/spectrum/analysis/sto_fits.py.
+- `tools/make_crystal_tables.py` — Make the crystal data tables of Compass from spglib and xraydb.
+- `tools/mixin_to_tool.py` — Turn a mixin of the window into a tool with a declared port (the second version — what was done by hand in 0.108.24 is done here; the roadmap of 2026-11-09, stage 5).
+- `tools/modules_index.py` — The index of the modules of the program: docs/MODULES_INDEX.md — every module with the first line of its docstring (the audit: docs/MODULES.md named about a third of the 184 modules).
+- `tools/publish_site.py` — Publish the site to both places at once: the main site (www.azimuth-chem.com, Cloudflare Pages) and the mirror for Russia (ru.azimuth-chem.com, Yandex Object Storage — the providers of Russia slow down Cloudflare).
+- `tools/pytest_timing.py` — The timing of a test run (internal; TEST_FEEDBACK_PLAN.md, stage 1): phases of every test, collection apart, the environment of the run, a line while one test lasts long, a summary for the developer and a JSON report.
+- `tools/quill_ground.py` — Quill stands on a surface: a hand-drawn hatched ground around her feet and the things that stand by her.
+- `tools/record_multiwfn_cda.py` — Record the answers of Multiwfn for the charge decomposition analysis CDA of Dapprich and Frenking (docs/plans/ROADMAP.md, beta item 9): ORCA computes a donor–acceptor complex and its two fragments at the geometry of the complex (the atom…
+- `tools/record_multiwfn_crystal.py` — Record the answers of Multiwfn on the wave function of a crystal from CP2K: the Molden file of the end of the run with [Cell] and [Nval] (readers.cp2k.for_multiwfn) — how Multiwfn reads it (the cell, the electrons, the effective charges)…
+- `tools/record_multiwfn_excitations.py` — Record the answers of Multiwfn for the charge transfer of the excited states (docs/plans/ROADMAP.md, beta item 6): main menu 18 → 8 (IFCT, interfragment charge transfer) and 18 → 2 (the atom / fragment transition matrix as a heat map) on…
+- `tools/record_multiwfn_fuzzy.py` — Record the answers of Multiwfn for the fuzzy atomic space analysis: localization and delocalization indices (LI, DI) and the aromaticity indices PDI, FLU, MCI — the outputs become the oracles of the parsers (tests/data/multiwfn).
+- `tools/record_multiwfn_igmh.py` — Record the answers of Multiwfn for IGMH: the independent gradient model based on the Hirshfeld partition (Lu & Chen, J. Comput. Chem. 43, 539 (2022)) — main menu 20 → 11, the fragments, the grid, «3» (the cubes sl2r.cub and dg_inter.cub)…
+- `tools/record_multiwfn_lmo.py` — Record the answers of Multiwfn for the localized orbitals (docs/plans/ROADMAP.md, beta item 5): main menu 19 (orbital localization) — the list of methods (−6), the localization of the occupied orbitals (1) with its summary of one- and tw…
+- `tools/record_multiwfn_populations.py` — Record the answers of Multiwfn for the populations of the beta: Hirshfeld charges and spin populations (main menu 7) and the charges of the AIM basins (main menu 17); and the menus of the next items of docs/plans/ROADMAP.md (localized or…
+- `tools/record_multiwfn_resp.py` — Record the answers of Multiwfn for the RESP charges (docs/plans/ROADMAP.md, beta item 7): main menu 7 (population analysis and atomic charges) → 18 (RESP) — its menu, the standard two-stage fitting and what it asks after it; the outputs …
+- `tools/run_references.py` — Compute the reference outputs of a set in tests/data/<set>/inputs with the programs installed here.
+- `tools/run_test_groups.py` — Run every group of the tests in a process of its own.
+- `tools/site_scales.py` — The faint scales of the program's background as SVG, for the site (tools/build_atlas_site.py).
+- `tools/site_screenshots.py` — Pictures of the program for the panels of its sections on the home page of the site — taken from the program itself.
+- `tools/sort_projects.py` — Sort the projects made into «Проекты/Молекулы» and «Проекты/Кристаллы» (azimuth/project_kinds.py).
+- `tools/test.py` — Checks of the program at three depths (internal; TEST_FEEDBACK_PLAN.md §3) — run with the interpreter of the program:
+- `tools/test_affected.py` — Which tests a change touches (internal; tools/test.py affected): from the files changed to the test files that depend on them, by the imports of the code.
+- `tools/test_profiles.py` — What each profile of tools/test.py runs (internal; TEST_FEEDBACK_PLAN.md §3, §7): one place for the composition.
+- `tools/testkit.py` — The runner of tools/test.py and tools/run_test_groups.py (internal; TEST_FEEDBACK_PLAN.md, stages 1–3).
+- `tools/uff_reference.py` — RDKit's UFF numbers for the structures of tests/data/uff/structures.json.
+- `tools/untranslated.py` — What waits for its translation (0.108.75+, the process agreed on the journal of Quill and the manual are written in Russian with each version and translated at a release).
+- `tools/upload_site_yandex.py` — Upload the built site to Yandex Object Storage — the mirror for Russia.
+- `tools/vtk_window_check3.py` — Check, round 3: which part of the VTK scene aborts when VTK draws into a Qt OpenGL widget?
+- `tools/workspace_gallery.py` — Снимки Секстанта и Спектра: каждая программа и задача Секстанта, каждая вкладка Спектра на примерах.

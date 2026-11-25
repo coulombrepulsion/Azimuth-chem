@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>组态相互作用与耦合簇</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/cicc.css">
+
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-ci-cc-g.webp"><!--pose:end-->
+<h1>组态相互作用与耦合簇</h1>
+<p class="lead">给定基组中的精确波函数是由轨道能构造的所有行列式的组合：这就是完全 CI。行列式的数目增长极快，只有极小的体系才能做精确计算。这里可以看到，为什么截断 CI（CISD）会出人意料地损害大体系的能量，以及耦合簇方法的指数形式如何纠正这一点。最小基组中的 H₂ 模型直接在页面上求解，6-31G 基组中的 (H₂)<sub>n</sub> 系列用 PySCF 计算。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>完全 CI 是给定基组中的精确解，但行列式数目按阶乘增长：即使在 STO-3G 中，苯也约有 3·10¹⁹ 个。</li><li>CISD 只包含单激发和双激发，因此不满足大小一致性：对 n 个无相互作用的分子，其相关能只按 √n 增长。</li><li>在耦合簇方法中 Ψ = exp(T)·Φ₀；指数本身产生振幅的乘积（½T₂² 等），因此 CCSD 满足大小一致性。</li><li>CISD 和 CCSD 的计算量相同（N⁶）；(T) 校正以 N⁷ 的代价用微扰理论加入三激发。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型边界：</b>模型体系：H₂ 和无相互作用的 (H₂)ₙ</summary><dl><dt>计算的是什么</dt><dd>按激发级别统计的行列式数目；STO-3G 基组中任意 R 下 H₂ 的 2 × 2 CI；6-31G 基组中 (H₂)ₙ（n = 1…4）的 HF、CISD、CCSD、CCSD(T) 和完全 CI 能量；二聚体在完全 CI、CISD 和 CCSD 中的组态权重。</dd><dt>采用了哪些近似</dt><dd>H₂ 使用最小基组；(H₂)ₙ 中的分子相互不作用（10 Å）；行列式计数不考虑对称性和冻结芯。</dd><dt>能得出什么结论</dt><dd>为什么截断 CI 不满足大小一致性、指数拟设如何纠正——可以；方法对真实分子的精度——不行：这由“方法层级”和“基组收敛”两页说明。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">一共有多少行列式</h2>
+  <p class="hint">选定哪些自旋轨道被占据，就得到一个行列式。k 级激发是把 k 个占据自旋轨道换成 k 个空自旋轨道。完全 CI 包含所有级别，CISD 只包含单激发和双激发。</p>
+  <div class="crow"><span class="l">分子</span><span class="grp" id="molG" role="group" aria-label="分子"></span></div>
+  <div class="crow"><span class="l">基组</span><span class="grp" id="basG" role="group" aria-label="基组"></span></div>
+  <svg id="detC" viewBox="0 0 960 300" role="img" aria-label="按激发级别统计的行列式数目"></svg>
+  <div class="tablewrap" id="detT"></div>
+  <p class="hint" id="detN"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">最小基组中的 H₂：两个组态</h2>
+  <p class="hint">由 σ<sub>g</sub> 和 σ<sub>u</sub> 两个轨道可以构成两个适合基态的组态：σ<sub>g</sub>²（哈特里-福克）和 σ<sub>u</sub>²。2 × 2 CI 矩阵通过交换积分 K = (σ<sub>g</sub>σ<sub>u</sub>|σ<sub>g</sub>σ<sub>u</sub>) 把它们联系起来。对两个电子，这里的 CISD 与完全 CI 相同。</p>
+  <div class="crow"><span class="l">距离 R</span><input type="range" id="R" min="0" max="72" step="1" value="7" aria-label="距离 R"><span class="val" id="Rv"></span></div>
+  <div class="two">
+    <svg id="h2C" viewBox="0 0 560 330" role="img" aria-label="H₂ 的能量：哈特里-福克与 CI"></svg>
+    <div><div class="mbox" id="h2M"></div><div id="h2W"></div></div>
+  </div>
+  <p class="hint" id="h2N"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">大小一致性：n 个互相“看不见”的分子</h2>
+  <p class="hint">n 个无相互作用分子的能量必须恰好是单个分子能量的 n 倍。完全 CI 和耦合簇满足这一点，CISD 不满足：总波函数中没有两个分子同时被激发的组态（那已经是四重激发）。</p>
+  <div class="crow"><span class="l">模型</span><span class="grp" id="szG" role="group" aria-label="模型"></span></div>
+  <svg id="szC" viewBox="0 0 960 300" role="img" aria-label="每个分子的相关能比例"></svg>
+  <div class="tablewrap" id="szT"></div>
+  <p class="hint" id="szN"></p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">指数拟设</h2>
+  <p class="hint">在耦合簇方法中 Ψ = e<sup>T</sup>Φ<sub>0</sub>，其中 T = T₁ + T₂ + … 是激发算符。对两个相距很远的分子 T = T<sub>A</sub> + T<sub>B</sub>，而 e<sup>T<sub>A</sub>+T<sub>B</sub></sup> = e<sup>T<sub>A</sub></sup>·e<sup>T<sub>B</sub></sup>：波函数自动分解为乘积。½T₂² 项给出两个分子的同时激发，尽管 T 中并没有这样的项。</p>
+  <svg id="ampC" viewBox="0 0 960 260" role="img" aria-label="二聚体 (H₂)₂ 的组态权重"></svg>
+  <p class="hint" id="ampN"></p>
+  <div class="eq">
+    <div class="eqb"><div class="t">为什么 CISD 会“丢失”能量</div>在 CISD 中，n 个分子只有一个分子被激发的组态。它们对二阶修正的贡献按 n 增长，而波函数的归一化也按 n 增长；结果相关能只按 √n 增长，平均到每个分子越来越少。</div>
+    <div class="eqb"><div class="t">耦合簇</div>CCSD 的参数与 CISD 相同（振幅 t₁、t₂），但指数“免费”加入了它们的乘积：非连接的四重、六重激发。因此该方法满足大小一致性，对双电子片段 CCSD 是精确的。</div>
+    <div class="eqb"><div class="t">代价</div>CISD 和 CCSD 的计算量相同——N⁶，但 CCSD 方程是非线性的，需要迭代求解。三激发的 (T) 校正代价为 N⁷，给出“金标准”CCSD(T)。</div>
+    <div class="eqb"><div class="t">耦合簇在哪里也会失效</div>耦合簇从单个行列式出发构造。如果同时有几个组态很重要（化学键断裂、双自由基），振幅会变大，CCSD(T) 会降到精确能量以下——见“方法层级与雅各布天梯”一页。</div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">能否用比 CCSD 更低的代价得到大部分相关能？</span><a class="nqA" href="mp2.html" data-goto="mp2">微扰理论与 MP2 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>采用球谐 d 函数的 6-31G* 基组中的水（18 个轨道，10 个电子）：完全 CI 有多少个行列式？以百万为单位作答。</span></p>
+<p class="olab">行列式数，百万</p><div class="opts" role="group"><button type="button" class="opt">135</button><button type="button" class="opt">0.04</button><button type="button" class="opt">8.6</button><button type="button" class="opt" data-ok="1">73.4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>C(18, 5)² = 8568² ≈ 7340 万：五个 α 电子和五个 β 电子独立地分布在 18 个轨道上。若采用六个笛卡尔 d 函数（“基组”页面的约定），则有 19 个轨道、约 1.35 亿个行列式。在 cc-pVDZ（24 个轨道）中已达 18 亿；考虑对称性和冻结芯后会少一些，但增长量级相同。</div></div>
+<div class="tq"><p class="qt"><span>STO-3G 中的 H₂，R = 0.75 Å：σu² 组态在 CI 波函数中的权重是多少（百分比）？</span></p>
+<p class="olab">σu² 的权重，%</p><div class="opts" role="group"><button type="button" class="opt">13</button><button type="button" class="opt">0.1</button><button type="button" class="opt">46</button><button type="button" class="opt" data-ok="1">1.3</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>约 1.3%：在平衡附近，哈特里-福克在波函数组成上几乎准确，但相关能已有 21 mEₕ（13 kcal/mol）。</div></div>
+<div class="tq"><p class="qt"><span>把键拉伸到 3 Å。现在 σu² 的权重是多少？</span></p>
+<p class="olab">σu² 的权重，%</p><div class="opts" role="group"><button type="button" class="opt">25</button><button type="button" class="opt">1.3</button><button type="button" class="opt">100</button><button type="button" class="opt" data-ok="1">46</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>约 46%：两个组态几乎同等重要。键完全断裂时它们的权重相等，波函数描述的是每个原子上各有一个电子。这里单一组态 σg² 在定性上已经是错的。</div></div>
+<div class="tq"><p class="qt"><span>在大小一致性一节的“H₂/STO-3G”模型中，R = 0.75 Å：CISD 对 10 个无相互作用分子能恢复多少相关能，%？</span></p>
+<p class="olab">相关能比例，%</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">90</button><button type="button" class="opt">57</button><button type="button" class="opt">100</button><button type="button" class="opt">98.7</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>约 90%：对一个分子 CISD 是精确的，两个分子为 98.7%，十个为 90%，一百个为 57%。CISD 的相关能按 √n 增长，而它应当按 n 增长。</div></div>
+<div class="tq"><p class="qt"><span>为什么 CCSD 满足大小一致性，而 CISD 不满足？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">e^(T_A+T_B) = e^(T_A)·e^(T_B)：振幅的乘积给出两个片段的同时激发</button><button type="button" class="opt">CCSD 包含三激发</button><button type="button" class="opt">CCSD 在更大的基组中计算</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>对相距很远的片段 T = T_A + T_B，而 e^(T_A+T_B) = e^(T_A)·e^(T_B)：波函数自动分解为乘积。振幅的乘积无需新参数就给出两个片段的同时激发，而线性的 CISD 波函数不包含它们。</div></div>
+</div></details></section>
+<script src="js/ci-cc.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="cicc";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/ci-cc.js"></script>
+
+</body>
+</html>

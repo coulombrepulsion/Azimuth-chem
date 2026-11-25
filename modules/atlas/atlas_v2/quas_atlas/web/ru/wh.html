@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>π-орбитали и перициклические реакции</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/wh.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-wh-g.webp"><!--pose:end-->
+<h1>π-орбитали и перициклические реакции</h1>
+<p class="lead">Согласованные (перициклические) реакции идут через циклическое переходное состояние, и разрешены ли они, решает симметрия граничных орбиталей — правила Вудворда–Хоффмана. Логика страницы в три шага: сначала строим π-орбитали полиенов методом Хюккеля, затем смотрим, как знаки на концах ВЗМО определяют направление вращения при замыкании цикла, и наконец — как перекрываются граничные орбитали двух молекул при циклоприсоединении. Цвет лепестка — знак коэффициента, размер — его величина.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Метод Хюккеля — учебная модель π-орбиталей: у ψ<sub>k</sub> полиена k − 1 узлов, а 4n + 2 π-электрона в цикле дают замкнутую оболочку (ароматичность).</li><li>Ход перициклической реакции определяет симметрия граничных орбиталей (или корреляционная диаграмма).</li><li>Электроциклические реакции: 4n электронов — термически конротаторно, 4n + 2 — дисротаторно; при облучении наоборот.</li><li>Термическое [2 + 2]-циклоприсоединение запрещено, фотохимическое разрешено; [4 + 2] разрешено термически.</li><li>Чем меньше щель ВЗМО–НСМО реагентов, тем быстрее реакция.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> метод Хюккеля и симметрия граничных орбиталей</summary><dl><dt>Что вычисляется</dt><dd>π-орбитали полиенов, знаки на концах ВЗМО, разрешённость перициклических реакций.</dd><dt>Какие приближения приняты</dt><dd>Метод Хюккеля: только π-электроны, параметры α и β; переходное состояние не рассчитывается.</dd><dt>Какой вывод можно сделать</dt><dd>Разрешена ли реакция по симметрии — да; её скорость и барьер — нет.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h0s">
+  <h2 id="h0s">1. π-орбитали полиенов: метод Хюккеля</h2>
+  <p class="small">Каждый атом C сопряжённой системы даёт одну p-орбиталь; α — энергия электрона на p-орбитали атома, β &lt; 0 — взаимодействие соседних атомов, всё остальное отбрасывается. Получаются уровни E = α + xβ (чем больше x, тем ниже уровень) и знаки коэффициентов — а именно они нужны для правил Вудворда–Хоффмана. Сегодня простой метод Хюккеля — учебная модель: в квантово-химических программах похожая схема (расширенный метод Хюккеля) используется разве что как начальное приближение для SCF. Но число узлов и симметрию π-орбиталей он передаёт правильно. Щёлкните по уровню, чтобы увидеть орбиталь.</p>
+  <div class="crow"><span class="l">Система</span><span class="grp" id="hkG" role="group" aria-label="π-система"></span></div>
+  <div class="two"><svg id="hkMol" viewBox="0 0 460 300" role="img" aria-label="Орбиталь π-системы"></svg><svg id="hkLev" viewBox="0 0 460 300" role="img" aria-label="Уровни π-орбиталей" style="touch-action:manipulation"></svg></div>
+  <div class="status" id="t0"></div>
+</section>
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">2. Электроциклические реакции</h2>
+  <p class="small">Концы полиена поворачиваются и замыкаются в σ-связь. Шаг 1: найдите граничную орбиталь — при нагревании это ВЗМО, при облучении — бывшая НСМО, куда перешёл электрон. Шаг 2: посмотрите на знаки её концевых коэффициентов. Связь образуется, если навстречу друг другу повернутся лепестки одного знака: при противоположных знаках на концах это конротация, при одинаковых — дисротация.</p>
+  <div class="crow"><span class="l">Система</span><span class="grp" id="sysG" role="group" aria-label="Система"></span></div>
+  <div class="crow"><span class="l">Условия</span><span class="grp" id="condG" role="group" aria-label="Условия"></span><span class="hint" id="condHint"></span></div>
+  <div class="crow"><span class="l">Поворот концевых групп</span><input type="range" id="th" min="0" max="90" step="1" style="width:240px" aria-label="Угол поворота"><span class="val" id="thv"></span><button class="btn primary" type="button" id="play">Замкнуть цикл</button></div>
+  <div class="two">
+    <div class="mode"><b>Конротаторно</b><span class="hint">обе концевые группы вращаются в одну сторону; сохраняется ось C₂</span><svg id="pCon" viewBox="0 0 420 300" role="img" aria-label="Конротаторное замыкание"></svg><span class="verd" id="vCon"></span></div>
+    <div class="mode"><b>Дисротаторно</b><span class="hint">концевые группы вращаются навстречу друг другу; сохраняется плоскость σ</span><svg id="pDis" viewBox="0 0 420 300" role="img" aria-label="Дисротаторное замыкание"></svg><span class="verd" id="vDis"></span></div>
+  </div>
+  <div class="legend"><span><i class="box" style="background:var(--lp-bg);border:1.5px solid var(--lp)"></i>c &gt; 0</span><span><i class="box" style="background:var(--ln-bg);border:1.5px solid var(--ln)"></i>c &lt; 0</span><span>Me — метильные группы концевых атомов (E,E-изомер): по ним видно, какой стереоизомер получится</span></div>
+  <div class="status" id="t1"></div>
+  <details class="more"><summary>Подробнее: корреляционная диаграмма — тот же вывод через симметрию всех орбиталей</summary>
+  <div class="crow"><span class="l">Сохраняющийся элемент</span><span class="grp" id="corG" role="group" aria-label="Режим"></span></div>
+  <div class="two"><svg id="corr" viewBox="0 0 520 420" role="img" aria-label="Корреляционная диаграмма орбиталей"></svg><div class="status" id="t2"></div></div>
+  </details>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">3. Циклоприсоединение: граничные орбитали</h2>
+  <p class="small">Компоненты сближаются плоскостями (супраповерхностно с обеих сторон). Новые связи образуются на концах; реакция разрешена, если граничные орбитали перекрываются в фазе <b>на обоих концах</b> сразу.</p>
+  <div class="crow"><span class="l">Компонент A</span><span class="grp" id="aG" role="group" aria-label="Компонент A"></span></div>
+  <div class="crow"><span class="l">Компонент B</span><span class="grp" id="bG" role="group" aria-label="Компонент B"></span></div>
+  <div class="crow"><span class="l">Условия</span><span class="grp" id="cond2G" role="group" aria-label="Условия"></span></div>
+  <div class="two"><svg id="fmo" viewBox="0 0 460 340" role="img" aria-label="Перекрывание граничных орбиталей"></svg><svg id="lev" viewBox="0 0 460 340" role="img" aria-label="Уровни граничных орбиталей"></svg></div>
+  <div class="status" id="t3"></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">4. Сводка правил</h2>
+  <div class="tablewrap" id="rules"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Как выглядит путь реакции на поверхности потенциальной энергии?</span><a class="nqA" href="pes.html" data-goto="pes">Поверхность потенциальной энергии →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Бензол и циклобутадиен в разделе 1: почему бензол ароматичен, а циклобутадиен нет?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">У бензола 4n + 2 π-электрона заполняют все связывающие уровни, у циклобутадиена два электрона на вырожденных несвязывающих уровнях</button><button type="button" class="opt">Циклобутадиен напряжён, орбитали тут ни при чём</button><button type="button" class="opt">У обоих одинаковая энергия делокализации</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>У бензола 6 π-электронов (4n + 2) заполняют три связывающих уровня, оболочка замкнута, энергия делокализации 2|β|. У циклобутадиена 4 π-электрона (4n): два из них занимают по одному вырожденную пару несвязывающих уровней E = α, энергия делокализации 0 — это антиароматичность.</div></div>
+<div class="tq"><p class="qt"><span>(E,E)-2,4-гексадиен замыкается при нагревании. Какой стереоизомер 3,4-диметилциклобутена получится и почему?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">цис-изомер</button><button type="button" class="opt" data-ok="1">транс-изомер</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Транс: у ВЗМО бутадиена ψ₂ знаки на концах противоположны (c₁ = 0,60, c₄ = −0,60), связывающее перекрывание возникает только при конротации, а при конротации E,E-метилы оказываются по разные стороны цикла.</div></div>
+<div class="tq"><p class="qt"><span>Гексатриен при нагревании и при облучении: какой режим разрешён в каждом случае?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Нагревание — конротаторно, облучение — дисротаторно</button><button type="button" class="opt" data-ok="1">Нагревание — дисротаторно, облучение — конротаторно</button><button type="button" class="opt">В обоих случаях дисротаторно</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>При нагревании решает ВЗМО ψ₃ с одинаковыми знаками на концах — дисротаторно. При облучении электрон на ψ₄ с противоположными знаками — конротаторно.</div></div>
+<div class="tq"><p class="qt"><span>Пентадиенил-катион (реакция Назарова) и аллил-катион: как они замыкаются термически?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Оба конротаторно</button><button type="button" class="opt" data-ok="1">Пентадиенил — конротаторно, аллил — дисротаторно</button><button type="button" class="opt">Пентадиенил — дисротаторно, аллил — конротаторно</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Пентадиенил-катион — 4 π-электрона, конротаторно; аллил-катион — 2 π-электрона (4n + 2), дисротаторно. Значение имеет число электронов, а не число атомов.</div></div>
+<div class="tq"><p class="qt"><span>Корреляционная диаграмма бутадиен → циклобутен: какая орбиталь «портит» дисротаторный путь?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">ψ₁</button><button type="button" class="opt" data-ok="1">ψ₂</button><button type="button" class="opt">ψ₃</button><button type="button" class="opt">ψ₄</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>ψ₂ (антисимметрична относительно σ) коррелирует с незанятой π* циклобутена. Основное состояние переходит в дважды возбуждённое — термически запрещено.</div></div>
+<div class="tq"><p class="qt"><span>Этилен + этилен: что меняется при облучении?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">[2+2] становится разрешённым</button><button type="button" class="opt">[2+2] остаётся запрещённым</button><button type="button" class="opt">[2+2] разрешено и без облучения</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Термически ВЗМО одного и НСМО другого перекрываются в фазе только на одном конце — [2+2] запрещено. В возбуждённом этилене электрон на бывшей НСМО, и её перекрывание с НСМО второй молекулы в фазе на обоих концах — фотохимически разрешено.</div></div>
+<div class="tq"><p class="qt"><span>Почему бутадиен реагирует с акролеином быстрее, чем с этиленом?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Акролеин крупнее</button><button type="button" class="opt">Карбонил повышает ВЗМО диена</button><button type="button" class="opt" data-ok="1">Карбонил понижает НСМО диенофила, и щель меньше</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Карбонил понижает НСМО диенофила: щель ВЗМО–НСМО 0,97|β| против 1,62|β| с этиленом. Меньше щель — сильнее взаимодействие граничных орбиталей и быстрее реакция Дильса–Альдера.</div></div>
+</div></details></section>
+<script src="js/wh.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="wh";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/wh.js"></script>
+
+</body>
+</html>

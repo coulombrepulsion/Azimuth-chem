@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Конические пересечения и бирадикалы</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>Конические пересечения и бирадикалы</h1>
+<p class="lead">Где два электронных состояния сходятся, приближение Борна–Оппенгеймера перестаёт работать: молекула переходит с одной поверхности на другую за десятки фемтосекунд. А у бирадикала два электрона почти не спарены, и один определитель не может сказать даже, синглет или триплет лежит ниже.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Два состояния: E± = H̄ ± √(Δ² + H₁₂²). Они вырождены, только если Δ = 0 и H₁₂ = 0 — два независимых условия. У двухатомной молекулы одна координата: термы одной симметрии не пересекаются, а разной — пересекаются (H₁₂ ≡ 0).</li><li>У многоатомной молекулы 3N − 6 координат, и два условия выделяют шов размерности 3N − 8 (Вигнер и фон Нейман, 1929). Около точки шва E± ≈ Ē ± √(g²x² + h²y²) — двойной конус в ветвящейся плоскости (g — разность градиентов, h — вектор связи).</li><li>Коническое пересечение — воронка фотохимии: внутренняя конверсия за десятки–сотни фемтосекунд, быстрее флуоресценции (ретиналь — 200 фс). Ищут точку шва с минимальной энергией (MECI) методом CASSCF с усреднением по состояниям. В TD-DFT связь S₀–S₁ равна нулю: шов неверной размерности; если S₁ и S₀ ближе 0,5 эВ — TD-DFT не верить.</li><li>Модель двух центров: триплет −K, ковалентный синглет +K, связанный перескоком 2t с ионным при U. ΔE(T − S) ≈ 4t²/U − 2K: перескок выгоден только электронам с разными спинами. Бензины: о- 157, м- 88, п- 16 кДж/моль — t падает с удалением центров.</li><li>DFT с нарушенной симметрией: решение — смесь синглета и триплета, ⟨S²⟩_BS = 2(1 − w). Формула Ямагучи ΔE = 2(E_T − E_BS)/(⟨S²⟩_T − ⟨S²⟩_BS); при ⟨S²⟩_BS = 1 — правило сумм Циглера E_S = 2E_BS − E_T. Ограниченный DFT для п-бензина даёт неверный знак.</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Правило непересечения</h2>
+  <div class="crow"><span class="l">Связь состояний H₁₂</span><input type="range" id="cc" min="0" max="0.5" step="0.01" value="0.1" aria-label="H12"><span class="val" id="ccv"></span></div>
+  <div class="crow"><span class="l">Состояния</span><span class="grp" id="sG" role="group" aria-label="Состояния"></span></div>
+  <svg id="xchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Диабатические и адиабатические кривые двух состояний"></svg>
+  <div class="legend" id="xleg"></div>
+  <div class="cards" id="xcards"></div>
+  <p class="status" id="xNote"></p>
+  <p class="hint">Две диабатические конфигурации: H₁₁ = ½(R + 1)², H₂₂ = ½(R − 1)², связь H₁₂ постоянна; адиабатические состояния — собственные значения матрицы 2 × 2. Единицы условные.</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Двойной конус и ветвящаяся плоскость</h2>
+  <div class="crow"><span class="l">Разность градиентов |g|</span><input type="range" id="gg" min="0.2" max="2" step="0.05" value="1" aria-label="g"><span class="val" id="ggv"></span></div>
+  <div class="crow"><span class="l">Вектор связи |h|</span><input type="range" id="hh" min="0" max="2" step="0.05" value="0.6" aria-label="h"><span class="val" id="hhv"></span></div>
+  <div class="crow"><span class="l">Сечение y₀</span><input type="range" id="yy" min="-1" max="1" step="0.05" value="0.3" aria-label="y0"><span class="val" id="yyv"></span></div>
+  <div class="crow"><span class="l">Наклон Ē вдоль x</span><input type="range" id="tl" min="-1" max="1" step="0.05" value="0" aria-label="tilt"><span class="val" id="tlv"></span></div>
+  <div class="crow"><span class="l">Метод</span><span class="grp" id="dG" role="group" aria-label="Метод"></span></div>
+  <div class="crow"><span class="l">Атомов в молекуле</span><input type="range" id="na" min="2" max="30" step="1" value="6" aria-label="N"><span class="val" id="nav"></span></div>
+  <svg id="cmap" class="ch" viewBox="0 0 960 300" role="img" aria-label="Щель между поверхностями в ветвящейся плоскости"></svg>
+  <svg id="csec" class="ch" viewBox="0 0 960 280" role="img" aria-label="Сечения конуса"></svg>
+  <div class="legend" id="cleg"></div>
+  <div class="cards" id="ccards"></div>
+  <p class="status" id="cNote"></p>
+  <p class="hint">E± = Ē + наклон·x ± √(g²x² + h²y²) около точки шва; на карте — щель E₊ − E₋, линии — сечения, нарисованные ниже. Демонстрация лекции: при h = 0,6 и y₀ = 0,3 щель 2|hy₀| = 0,36. Этилен (6 атомов): 12 внутренних координат, шов десятимерный.</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Бирадикал: модель двух центров</h2>
+  <div class="crow"><span class="l">Перескок t, эВ</span><input type="range" id="tt" min="0" max="2" step="0.01" value="0.5" aria-label="t"><span class="val" id="ttv"></span></div>
+  <div class="crow"><span class="l">Отталкивание U, эВ</span><input type="range" id="uu" min="1" max="10" step="0.1" value="4" aria-label="U"><span class="val" id="uuv"></span></div>
+  <div class="crow"><span class="l">Прямой обмен K, эВ</span><input type="range" id="kk" min="0" max="0.3" step="0.01" value="0.02" aria-label="K"><span class="val" id="kkv"></span></div>
+  <svg id="bchart" class="ch" viewBox="0 0 960 320" role="img" aria-label="Расщепление синглет–триплет против перескока"></svg>
+  <div class="legend" id="bleg"></div>
+  <div class="cards" id="bcards"></div>
+  <p class="status" id="bNote"></p>
+  <p class="hint">Точно: E_S = (K + U)/2 − √(((U − K)/2)² + 4t²), E_T = −K. Точки на линиях опыта — перескок t, при котором модель с этими U и K воспроизводит расщепление бензина. Опыт: Wenthold, Squires, Lineberger, JACS 120, 5279 (1998); расчёт CASSCF(2,2) и NEVPT2/def2-SVP — ORCA 6.0.1, 21.11.2026.</p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">Нарушенная симметрия и формула Ямагучи</h2>
+  <div class="crow"><span class="l">E_T − E_BS, кДж/моль</span><input type="range" id="de" min="0" max="40" step="0.1" value="10.3" aria-label="dE"><span class="val" id="dev"></span></div>
+  <div class="crow"><span class="l">⟨S²⟩ решения BS</span><input type="range" id="s2" min="0" max="1.5" step="0.01" value="1" aria-label="S2"><span class="val" id="s2v"></span></div>
+  <svg id="ychart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Расщепление п-бензина разными методами"></svg>
+  <div class="legend" id="yleg"></div>
+  <div class="cards" id="ycards"></div>
+  <p class="status" id="yNote"></p>
+  <p class="hint">п-Бензин, B3LYP/def2-SVP в геометрии синглета, вертикально: E_T − E_BS = 10,3 кДж/моль, RKS — синглет выше триплета на 90. ⟨S²⟩_T = 2. Опыт (адиабатически) — 16 кДж/моль.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Нарушенная симметрия — главный способ DFT считать бирадикалы и комплексы металлов. Почему ответ так зависит от функционала?</span><a class="nqA" href="dft.html" data-goto="dft">Функционал плотности →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Двухатомная молекула, два терма одной симметрии сближаются при растяжении связи. Что с ними происходит?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Пересекаются в одной точке</button><button type="button" class="opt" data-ok="1">Избегают пересечения: щель 2|H₁₂|</button><button type="button" class="opt">Сливаются на всём участке</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Для вырождения нужны два условия (Δ = 0 и H₁₂ = 0), а координата одна. Термы разной симметрии пересекаются: у них H₁₂ ≡ 0.</div></div>
+<div class="tq"><p class="qt"><span>Какова размерность шва конического пересечения у этилена C₂H₄?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">0 — точка</button><button type="button" class="opt" data-ok="1">10</button><button type="button" class="opt">12</button><button type="button" class="opt">11</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>10: внутренних координат 3·6 − 6 = 12, два условия снимают две. В TD-DFT шов S₁/S₀ получается 11-мерным — неверно.</div></div>
+<div class="tq"><p class="qt"><span>В модели двух центров t = 0,5 эВ, U = 4 эВ, K = 0. Каково расщепление ΔE(T − S) по теории возмущений?</span></p>
+<p class="olab">эВ</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">0,25</button><button type="button" class="opt">0,125</button><button type="button" class="opt">1,0</button><button type="button" class="opt">0,5</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>4t²/U = 4·0,25/4 = 0,25 эВ ≈ 24 кДж/моль; точно 2×2 — 0,24 эВ. Синглет ниже: перескок выгоден только электронам с разными спинами.</div></div>
+<div class="tq"><p class="qt"><span>Решение BS для п-бензина ниже триплета на 10,3 кДж/моль, ⟨S²⟩_BS = 1. Какое расщепление даёт формула Ямагучи?</span></p>
+<p class="olab">кДж/моль</p><div class="opts" role="group"><button type="button" class="opt">10,3</button><button type="button" class="opt" data-ok="1">около 21</button><button type="button" class="opt">5,2</button><button type="button" class="opt">−90</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>2·10,3/(2 − 1) ≈ 21 кДж/моль (опыт — 16). При ⟨S²⟩_BS = 1 это правило сумм Циглера: E_S = 2E_BS − E_T.</div></div>
+</div></details></section>
+<script src="js/conical.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="conical";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/conical.js"></script>
+
+</body>
+</html>

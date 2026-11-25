@@ -1,0 +1,117 @@
+{
+  "_about": "Provenance of every data file in this folder (Atlas v2 2.7.0). Not read by the models; checked by tests/test_provenance.py. Units: energies in hartree unless stated; geometries as stored in the file.",
+  "bsse_water_dimer.json": {
+    "content": "(H2O)2: interaction energies without and with counterpoise at R(O...O) = 2.91 A in 11 basis sets; R scan 2.5-4.5 A",
+    "method": "RHF (conv_tol 1e-10), MP2 and CCSD(T) with frozen O 1s",
+    "basis": "6-31G, 6-31G*, 6-31G**, 6-31+G*, 6-31++G**, cc-pVXZ and aug-cc-pVXZ (X = D, T, Q); Pople sets with spherical d (PySCF default)",
+    "geometry": "rigid monomers r(OH) = 0.9572 A, HOH = 104.52 deg; dimer(R) in the script",
+    "program": "PySCF (version not recorded)",
+    "script": "tools/data_sources/bsse.py",
+    "by": "author of the Atlas, 2026"
+  },
+  "casscf_curves.json": {
+    "content": "H2, ethylene twist, N2 dissociation curves",
+    "method": "RHF, UHF, CASSCF(2,2)/(6,6), NEVPT2, CCSD(T), FCI",
+    "basis": "cc-pVDZ",
+    "program": "PySCF (version not recorded)",
+    "script": "tools/data_sources/cas_data.py, tools/data_sources/make_data3.py",
+    "by": "author of the Atlas, 2026"
+  },
+  "cbs_energies.json": {
+    "content": "9 molecules and their atoms: total energies for basis-set extrapolation and atomisation energies",
+    "method": "HF, MP2, CCSD, CCSD(T), frozen core; atoms UHF",
+    "basis": "cc-pVXZ, X = 2-5",
+    "program": "PySCF (version not recorded)",
+    "script": "tools/data_sources/tae.py",
+    "by": "author of the Atlas, 2026"
+  },
+  "charges_rhf.json": {
+    "content": "Mulliken, Loewdin and Bader charges, dipole moments (a.u.) and energies of 9 molecules in 4 basis sets",
+    "method": "RHF (tol 1e-10); Loewdin with each Cartesian d shell orthonormalised first (orientation-independent, 2.7.0); Bader basins on a grid (core.qtaim)",
+    "basis": "STO-3G, 6-31G, 6-31G*, 6-31G** (six Cartesian d)",
+    "geometry": "stored in the file (bohr)",
+    "program": "Atlas v2 engine core.gto / core.qtaim",
+    "script": "tools/data_sources/charges_engine.py",
+    "by": "recomputed 2026-10-21 (2.7.0); the v1.0 data (script not kept) agree in E (4e-6), Mulliken and dipoles (1e-4), Bader (< 0.007 e); Loewdin changed by the new definition (up to 0.05 e)",
+    "previous": "tests/fixtures/data_080/charges_rhf.json"
+  },
+  "ci_cc_h2.json": {
+    "content": "H2/STO-3G: E_g, E_u, K at 73 distances; (H2)n in 6-31G",
+    "method": "RHF, CISD, CCSD, CCSD(T), FCI",
+    "basis": "STO-3G, 6-31G",
+    "program": "PySCF (version not recorded)",
+    "script": "tools/data_sources/ci_cc.py, tools/data_sources/make_data2.py",
+    "by": "author of the Atlas, 2026"
+  },
+  "dft.json": {
+    "content": "E(N) of the H atom, H2+ curves",
+    "method": "the Atlas's own functionals (LSDA, B88, PBE, PW92) on a radial grid and a Becke grid",
+    "program": "Atlas v2 engine core.dft (precompute_en, precompute_h2)",
+    "script": "src/quas_atlas/core/dft.py",
+    "by": "recomputed and tested by tests/test_dft.py"
+  },
+  "dispersion.json": {
+    "content": "He2 and (H2O)2: interaction energies, columns [R, HF raw, MP2 raw, HF cp, MP2 cp]; monomer energies [HF, MP2]",
+    "method": "RHF (tol 1e-10), all-electron MP2, counterpoise with ghost atoms (Boys-Bernardi)",
+    "basis": "He2: aug-cc-pVDZ; (H2O)2: 6-31G* with six Cartesian d",
+    "geometry": "He2: R = 4.4-12.0 bohr; (H2O)2: dimer(R) of bsse.py, R(O...O) = 2.40-5.00 A",
+    "program": "v1.0: PySCF (script not kept); reproduced with the Atlas v2 engine core.gto",
+    "script": "tools/data_sources/dispersion_engine.py",
+    "by": "author of the Atlas (v1.0); reproduced 2026-10-21: He2 to 5e-14 Eh (all 77 points), monomers to 3e-10 Eh, (H2O)2 to 1e-11 Eh (14 points checked, R = 2.40-3.05 A)"
+  },
+  "ladder_methods.json": {
+    "content": "errors relative to FCI (H2O, 6-31G, frozen core); timings (H2O)n/cc-pVDZ; DFT atomisation energies",
+    "method": "HF, MP2, CISD, CCSD, CCSD(T), FCI; LDA ... B2PLYP, TPSS (xcfun, grid level 5)",
+    "basis": "6-31G; cc-pVDZ; cc-pVQZ",
+    "program": "PySCF (version not recorded)",
+    "script": "tools/data_sources/ladder_fci.py, scaling.py, dfttae.py, tpss_run.py",
+    "by": "author of the Atlas, 2026"
+  },
+  "mp2_series.json": {
+    "content": "H2/STO-3G by perturbation order; MPn series of water; MP2 share of CCSD(T)",
+    "method": "RHF conv_tol 1e-12, MPn, FCI, CCSD(T); water all electrons",
+    "basis": "H2: STO-3G; water: 6-31G (1 656 369 determinants)",
+    "program": "PySCF (version not recorded)",
+    "script": "tools/data_sources/mp2_data.py, tools/data_sources/make_data3.py",
+    "by": "author of the Atlas, 2026"
+  },
+  "optimization_h2o_pes.json": {
+    "content": "E(r, theta) of symmetric water on a 33 x 33 grid, E[i][j] for r_i, theta_j",
+    "method": "RHF (tol 1e-10)",
+    "basis": "6-31G* (six Cartesian d)",
+    "geometry": "r(OH) = 0.80-1.20 A, HOH = 80-140 deg",
+    "program": "v1.0: author (script not kept); reproduced with the Atlas v2 engine core.gto",
+    "script": "tools/data_sources/h2o_pes_engine.py",
+    "by": "author of the Atlas (v1.0); reproduced 2026-10-21 to 1e-9 Eh (the rounding of the file)"
+  },
+  "solvation_cpcm.json": {
+    "content": "solvation energies of 11 molecules",
+    "method": "B3LYP, C-PCM (PySCF defaults for the cavity)",
+    "basis": "6-31+G*",
+    "geometry": "HF/6-31G*",
+    "program": "PySCF (version not recorded)",
+    "script": "tools/data_sources/solv.py",
+    "by": "author of the Atlas, 2026"
+  },
+  "symmetry_ct.json": {
+    "content": "character tables of point groups",
+    "method": "standard tables (constant CT of the v1.0 pages)",
+    "program": "-",
+    "script": "-",
+    "by": "checked by the orthogonality of characters in tests/test_symmetry.py"
+  },
+  "validation.json": {
+    "content": "geometries of the validation table and of Crawford's water; reference energies of the page",
+    "method": "reference values of the page (Szabo-Ostlund, Crawford); PySCF repeat in tests/fixtures/pyscf/validation_rhf.json",
+    "program": "-",
+    "script": "-",
+    "by": "author of the Atlas; recomputed live by core.validation"
+  },
+  "vibrations_ct.json": {
+    "content": "character tables used by the normal-mode page",
+    "method": "standard tables (constant CT of the v1.0 pages)",
+    "program": "-",
+    "script": "-",
+    "by": "same tables as symmetry_ct.json for the groups used; checked through the mode counts in tests/test_vibrations.py"
+  }
+}

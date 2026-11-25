@@ -1,0 +1,9 @@
+PM7 CHARGE=1 PRECISE AUX
+ammonium, PM7 optimization of a cation
+Azimuth reference input (0.91)
+N     0.000000 1    0.000000 1    0.000000 1
+H     0.590000 1    0.590000 1    0.590000 1
+H    -0.590000 1   -0.590000 1    0.590000 1
+H    -0.590000 1    0.590000 1   -0.590000 1
+H     0.590000 1   -0.590000 1   -0.590000 1
+

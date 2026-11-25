@@ -1,0 +1,1 @@
+"""Azimuth application hub."""

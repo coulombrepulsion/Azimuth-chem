@@ -1,0 +1,106 @@
+ *******************************************************************************
+ **                                                                           **
+ **                              MOPAC v23.2.5                                **
+ **                                                                           **
+ *******************************************************************************
+ ** MOPAC's Digital Object Identifier: https://doi.org/10.5281/zenodo.6511958 **
+ **                                                                           **
+ ** Please cite the open-source release paper for use of this MOPAC version:  **
+ ** J. E. Moussa and J. J. P. Stewart (2026)                                  **
+ ** MOPAC: An open-source semiempirical molecular orbital program             **
+ ** J. Open Source Softw., 11(119), 8025, https://doi.org/10.21105/joss.08025 **
+ *******************************************************************************
+
+                              PM7 CALCULATION RESULTS
+
+ *******************************************************************************
+ *  CALCULATION DONE: (MAX THREADS = 4)              Mon Nov 23 10:46:19 2026  *
+ *  PM7        - The PM7 Hamiltonian to be used
+ *  FORCE      - FORCE CALCULATION SPECIFIED
+ *  T=         - A TIME OF 172800.0 SECONDS REQUESTED
+ *  DUMP=N     - RESTART FILE WRITTEN EVERY 7200.0 SECONDS REQUESTED
+ *  AUX        - OUTPUT AUXILIARY INFORMATION
+ *  THERMO     - THERMODYNAMIC QUANTITIES TO BE CALCULATED
+ *******************************************************************************
+PM7 FORCE THERMO AUX
+ H2O_PM7
+ Azimuth
+   ATOM   CHEMICAL          X               Y               Z
+  NUMBER   SYMBOL      (ANGSTROMS)     (ANGSTROMS)     (ANGSTROMS)
+
+     1       O         -0.02254755     -0.00000000     -0.00000000   
+     2       H          0.57130357      0.54232895      0.54232895   
+     3       H          0.57130350     -0.54232895     -0.54232895   
+
+
+
+          CARTESIAN COORDINATES 
+
+    NO.       ATOM           X           Y           Z
+
+     1         O         -0.0225     -0.0000     -0.0000
+     2         H          0.5713      0.5423      0.5423
+     3         H          0.5713     -0.5423     -0.5423
+
+ General Reference for PM7:
+ "Optimization of Parameters for Semiempirical Methods VI: More Modifications to the 
+ NDDO Approximations and Re-optimization of Parameters", J. J. P. Stewart, J. Mol. Mod., 1:32, 19 (2013)
+ https://link.springer.com/article/10.1007/s00894-012-1667-x
+
+           Empirical Formula: H2 O  =     3 atoms
+
+
+
+      MOLECULAR POINT GROUP   :   C2v 
+
+
+      RHF CALCULATION, NO. OF DOUBLY OCCUPIED LEVELS = 4
+
+
+
+          HEAT OF FORMATION =     -57.674131 KCALS/MOLE
+
+
+          CARTESIAN COORDINATE DERIVATIVES
+
+   NUMBER  ATOM         X            Y            Z
+
+     1       O     -6.222458    -8.036379     0.000000
+     2       H      8.720508    -0.324970     0.000000
+     3       H     -2.498050     8.361349     0.000000
+
+ DIPOLE           X         Y         Z       TOTAL
+ POINT-CHG.     1.126     1.454     0.000     1.839
+ HYBRID         0.194     0.251    -0.000     0.317
+ SUM            1.320     1.705    -0.000     2.156
+
+
+          GRADIENT NORM =  15.98773
+
+
+
+ ** GRADIENT IS TOO LARGE TO ALLOW THE FORCE MATRIX TO BE CALCULATED, (LIMIT = 10.0) **
+
+
+
+ THE GEOMETRY IS NOT AT A STATIONARY POINT ON THE POTENTIAL ENERGY SURFACE
+
+ EITHER ADD 'LET' OR OPTIMIZE THE GEOMETRY SO THAT THE GEOMETRY IS AT A STATIONARY POINT.
+ (FOR A TRANSITION STATE, USE 'TS', FOR A GROUND STATE DO A NORMAL GEOMETRY OPTIMIZATION)
+
+          Gradient in FORCE is too large, geometry is not at a stationary point on the P.E.S.
+
+ ***************************************************************************************
+ *                                                                                     *
+ *     Error and normal termination messages reported in this calculation              *
+ *                                                                                     *
+ * Gradient in FORCE is too large, geometry is not at a stationary point on the P.E.S. *
+ * JOB ENDED NORMALLY                                                                  *
+ *                                                                                     *
+ ***************************************************************************************
+
+
+
+ TOTAL JOB TIME:             0.01 SECONDS
+
+ == MOPAC DONE ==

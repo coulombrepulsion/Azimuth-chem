@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "Если вы пользовались Азимутом в работе, сошлитесь на него так (обязательно по лицензии). If you used Azimuth in your work, please cite it as below (required by the license)."
+title: "Азимут (Azimuth): учебная программа для квантово-химических расчётов"
+type: software
+authors:
+  - family-names: Sobalev
+    given-names: S. A.
+    alias: "Собалев С. А."
+url: "https://azimuth-chem.com"
+keywords:
+  - quantum chemistry
+  - teaching
+  - ORCA
+  - DFT

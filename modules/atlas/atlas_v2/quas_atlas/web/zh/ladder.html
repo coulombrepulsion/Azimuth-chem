@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>方法层级与雅各布天梯</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/lad.css">
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-ladder-g.webp"><!--pose:end-->
+<h1>方法层级与雅各布天梯</h1>
+<p class="lead">计算该选哪种方法？波函数方法构成一个层级：每一级都比前一级更准确、更昂贵，顶端是完全 CI——给定基组中的精确解。Perdew 把密度泛函排在“雅各布天梯”上：各级的区别在于泛函对电子了解多少。本页所有数字都经过实际计算：拉伸化学键时各方法相对完全 CI 的误差、水团簇的计算时间以及九个分子的原子化能。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>波函数方法构成层级 HF → MP2 → CCSD → CCSD(T) → 完全 CI：每一级都更接近给定基组中的精确答案，也更昂贵。</li><li>只要单一组态占主导，这一层级就是可靠的；在化学键断裂时，基于单一行列式的方法，包括 CCSD(T)，都会失效。</li><li>代价按体系大小的幂次增长：MP2 为 N⁵，CCSD 为 N⁶，CCSD(T) 为 N⁷，完全 CI 按阶乘增长。</li><li>雅各布天梯按“配料”给泛函分级：密度、密度梯度、动能密度、精确交换、虚轨道；级别越高通常越准确，但并非总是如此。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型边界：</b>小分子，每次比较只用一个基组</summary><dl><dt>计算的是什么</dt><dd>MP2、CISD、CCSD 和 CCSD(T) 在键拉长时相对于完全 CI 的误差；水团簇的计算时间；九个分子用八种泛函和四种波函数方法得到的原子化能。</dd><dt>采用了哪些近似</dt><dd>完全 CI 只在 6-31G 基组中计算；原子化能在 cc-pVQZ 中计算，不含色散、相对论和芯层校正；参考值为外推到完全基组极限的 CCSD(T)。</dd><dt>能得出什么结论</dt><dd>层级和天梯的各级表现如何、代价如何增长——可以；针对你的问题给泛函排名——不行：九个分子和一种性质，检验范围太窄。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">波函数方法与完全 CI 的比较</h2>
+  <p class="hint">6-31G 基组中的分子，1s 电子冻结。完全 CI（FCI）是这个基组中的精确能量，所以与它的差值就是方法本身的误差，不含基组误差。化学键从平衡键长 r<sub>e</sub> 拉伸到 3 r<sub>e</sub>。</p>
+  <div class="crow"><span class="l">分子</span><span class="grp" id="molG" role="group" aria-label="分子"></span></div>
+  <div class="slrow"><span class="l">r / r<sub>e</sub></span><input type="range" id="kS" min="0" max="6" step="1" value="0" aria-label="键的拉伸"><span class="val" id="kV"></span></div>
+  <svg id="errC" viewBox="0 0 960 330" role="img" aria-label="各方法相对完全 CI 的误差"></svg>
+  <div class="legend" id="errL"></div>
+  <div class="tablewrap" id="errT"></div>
+  <p class="hint" id="errN"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">计算代价</h2>
+  <p class="hint">计算时间按体系大小 N（基函数数目）的幂次增长。指数是区分各级的关键：分子加倍时，MP2 计算时间延长 32 倍，CCSD(T) 延长 128 倍。</p>
+  <div class="slrow"><span class="l">体系增大倍数</span><input type="range" id="fS" min="1" max="10" step="1" value="2" aria-label="体系增大的倍数"><span class="val" id="fV"></span></div>
+  <div class="tablewrap" id="costT"></div>
+  <h3 class="ptitle">实测时间：cc-pVDZ 中的 (H<sub>2</sub>O)<sub>n</sub> 链</h3>
+  <svg id="timeC" viewBox="0 0 960 320" role="img" aria-label="计算时间与基函数数目的关系"></svg>
+  <div class="legend" id="timeL"></div>
+  <p class="hint" id="timeN"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">密度泛函的雅各布天梯</h2>
+  <p class="hint">J. Perdew 的比喻：泛函站在一架梯子的各级上，梯子从 Hartree 的“人间”通向化学精度（约 1 kcal/mol）的“天堂”。每上一级，泛函就获得一种新的“配料”。点击某一级。</p>
+  <div class="two">
+    <svg id="jac" viewBox="0 0 480 380" role="img" aria-label="雅各布天梯"></svg>
+    <div id="rung" class="eqb" aria-live="polite"></div>
+  </div>
+  <h3 class="ptitle">九个分子的原子化能：平均绝对误差</h3>
+  <p class="hint">H<sub>2</sub>、CH<sub>4</sub>、NH<sub>3</sub>、H<sub>2</sub>O、HF、N<sub>2</sub>、CO、F<sub>2</sub>、C<sub>2</sub>H<sub>2</sub>；cc-pVQZ 基组。参考值为由 cc-pVTZ 和 cc-pVQZ 外推到完全基组极限的 CCSD(T)。</p>
+  <svg id="maeC" viewBox="0 0 960 360" role="img" aria-label="原子化能的平均绝对误差"></svg>
+  <div class="crow"><span class="l">分子</span><span class="grp" id="tmolG" role="group" aria-label="分子"></span></div>
+  <div class="tablewrap" id="taeT"></div>
+  <p class="hint" id="taeN"></p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">如何选择</h2>
+  <div class="eq">
+    <div class="eqb"><div class="t">首先——问题的物理本质</div>如果分子只有一个占主导的组态（平衡附近的普通闭壳层），层级就有效：好基组中的 CCSD(T) 是“金标准”。在化学键断裂、双自由基以及许多过渡金属配合物中，单行列式方法会失效——需要多组态方法。</div>
+    <div class="eqb"><div class="t">其次——体系大小</div>CCSD(T) 适用于几十个原子，MP2 可到一两百个，DFT 可到上千个。对于大体系，带色散校正的杂化泛函通常是最好的折中。</div>
+    <div class="eqb"><div class="t">泛函的级别不是保证</div>雅各布天梯描述的是配料，而不是精度：拟合得好的 GGA 有时比差的杂化泛函更好。泛函要在与你的问题同类型的任务上检验。</div>
+    <div class="eqb"><div class="t">方法与基组要一起考虑</div>昂贵的方法用在小基组中就失去意义：基组误差会抵消方法带来的收益。基组收敛见下一页。</div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">昂贵的方法用在小基组中就失去意义。能量随基组增大收敛得有多快？</span><a class="nqA" href="cbs.html" data-goto="cbs">基组收敛 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>平衡距离下的 HF 分子：CCSD(T) 比 MP2 接近完全 CI 多少倍？</span></p>
+<p class="olab">倍数</p><div class="opts" role="group"><button type="button" class="opt">2</button><button type="button" class="opt">1</button><button type="button" class="opt">90</button><button type="button" class="opt" data-ok="1">9</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>约 9 倍：MP2 的误差为 3.7 mEₕ，CCSD(T) 为 0.4 mEₕ。在单一组态占主导时，层级中的每一级都明显比前一级更准确。</div></div>
+<div class="tq"><p class="qt"><span>把 HF 的键拉伸到 3 倍。CCSD(T) 发生了什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">降到完全 CI 以下：该方法不是变分的，在简并时会失效</button><button type="button" class="opt">与完全 CI 一致</button><button type="button" class="opt">没有收敛</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>CCSD(T) 能量比完全 CI 低 17 mEₕ。该方法不是变分的，在组态接近简并时 (T) 校正发散：答案看起来“比精确值更好”，但这是方法的失效。</div></div>
+<div class="tq"><p class="qt"><span>体系增大一倍。CCSD(T) 的计算时间变长多少倍？</span></p>
+<p class="olab">时间增加的倍数</p><div class="opts" role="group"><button type="button" class="opt">7</button><button type="button" class="opt">32</button><button type="button" class="opt" data-ok="1">128</button><button type="button" class="opt">2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>约 2⁷ = 128 倍（形式估计 N⁷）。所以大基组下的 CCSD(T) 仍然是小分子的方法。</div></div>
+<div class="tq"><p class="qt"><span>B3LYP 位于雅各布天梯的第几级？</span></p>
+<p class="olab">级数</p><div class="opts" role="group"><button type="button" class="opt">5</button><button type="button" class="opt">3</button><button type="button" class="opt">2</button><button type="button" class="opt" data-ok="1">4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>第四级——杂化泛函：在密度、梯度以及（部分泛函中的）动能密度之外，加入了基于占据轨道的精确交换。</div></div>
+<div class="tq"><p class="qt"><span>在这个数据集中 LDA 的原子化能平均误差是多少？</span></p>
+<p class="olab">LDA 的 MAE，kcal/mol</p><div class="opts" role="group"><button type="button" class="opt">100</button><button type="button" class="opt" data-ok="1">35</button><button type="button" class="opt">4.5</button><button type="button" class="opt">3</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>约 35 kcal/mol：LDA 严重过度成键。GGA（BLYP——约 4.5 kcal/mol）已经消除了这一误差的大部分。</div></div>
+</div></details></section>
+<script>window.DEMO=[{t:'平衡',d:"平衡时的 HF 分子。把各方法与精确的完全 CI 比较：MP2 误差 3.7 mEₕ，CCSD(T) 仅 0.4 mEₕ。层级越高，越精确。",a:[['click','#molG button',0],['set','#kS',0],['scroll','#h1s']]},{t:'键的断裂',d:"把键拉长到三倍。此时 CCSD(T) 比完全 CI 低 17 mEₕ——当一个组态不再够用时，建立在单行列式上的方法就会失效。",a:[['set','#kS',6]]},{t:'代价',d:"计算代价。把体系扩大一倍：MP2 贵 32 倍（按 N⁵ 增长），CCSD(T) 贵 128 倍（按 N⁷）。精度要用时间来换。",a:[['scroll','#h2s'],['set','#fS',2]]},{t:'雅各布天梯',d:"密度泛函的雅各布阶梯。每一级都加入新的“成分”：密度、密度梯度、动能密度、精确交换，最后是虚轨道。越往上越精确，也越贵。",a:[['scroll','#h3s']]}];</script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="lad";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/ladder.js"></script>
+
+</body>
+</html>

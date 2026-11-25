@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,ethane">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Thermochemistry from frequencies</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/thermo.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-thermo-g.webp"><!--pose:end-->
+<h1>Thermochemistry from frequencies</h1>
+<p class="lead">A quantum chemical calculation gives the electronic energy for fixed nuclei. To obtain the enthalpy, entropy and Gibbs energy at the temperature of an experiment, corrections are added to it: zero-point vibrations and the thermal motion of the molecule — translational, rotational and vibrational. Here these corrections are computed with the same formulas that programs use, for ready-made molecules or from your own frequencies.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>The electronic energy refers to fixed nuclei; the enthalpy and Gibbs energy are obtained by adding zero-point vibrations and the thermal motion of the molecule.</li><li>Programs compute these corrections in the ideal-gas model: translation, rigid rotor, harmonic oscillator.</li><li>Most of the entropy of a gas is translational; vibrations contribute noticeably only through soft modes with frequencies of the order of kT/hc or below.</li><li>Zero-point vibrations are usually much larger than the thermal correction, and the entropy depends on the standard state and on the symmetry number.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> ideal gas, rigid rotor, harmonic oscillator</summary><dl><dt>What is computed</dt><dd>Zero-point vibrations, enthalpy, entropy, heat capacity and the Gibbs energy correction of one molecule in the gas phase — from its mass, rotational constants and frequencies.</dd><dt>Which approximations are made</dt><dd>Ideal gas; classical rigid rotor (no centrifugal distortion, no separation into ortho and para forms); harmonic vibrations without anharmonicity and internal rotations; a single electronic state with no low-lying excited states. The rotation of H₂ (rotational temperature about 88 K, not small compared with T) is summed quantum-mechanically, with ortho and para hydrogen weighted 3 : 1; the nuclear-spin entropy is not counted, as in the tables.</dd><dt>What can be concluded</dt><dd>For small rigid molecules in the gas phase, the entropy is accurate to tenths of a J/(mol·K) with experimental frequencies. For soft modes, internal rotations and solutions it is only an estimate; the accuracy of the final G is set mainly by the electronic energy and frequencies from the calculation.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Molecule and conditions</h2>
+  <div class="crow"><span class="l">Molecule</span><span class="grp" id="molG" role="group" aria-label="Molecule"></span></div>
+  <div class="crow"><span class="l">Temperature T</span><input type="range" id="T" min="50" max="2000" step="1" value="298" aria-label="Temperature"><span class="val" id="Tv"></span><button type="button" class="chip" id="bT298">298,15 K</button></div>
+  <div class="crow"><span class="l">Pressure (standard state)</span><span class="grp" id="pG" role="group" aria-label="Pressure"></span></div>
+  <p class="hint" id="molInfo"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Corrections to the electronic energy</h2>
+  <div class="cards" id="cards"></div>
+  <div class="tablewrap" id="tab"></div>
+  <div class="ref" id="refBox"></div>
+  <p class="hint">Gibbs energy of the molecule: G = E<sub>el</sub> + G<sub>corr</sub>, enthalpy: H = E<sub>el</sub> + H<sub>corr</sub>. In program output files these corrections are called “Thermal correction to Enthalpy / Gibbs Free Energy” (Gaussian) or “Thermal Enthalpy correction” and “G-E(el)” (ORCA). The ORCA lines “Total Enthalpy” and “Final Gibbs free energy” are already the full H and G, with E<sub>el</sub> included: do not add it a second time.</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Entropy and heat capacity versus temperature</h2>
+  <div class="crow"><span class="l">Show</span><span class="grp" id="qG" role="group" aria-label="Quantity"></span></div>
+  <svg id="chart" viewBox="0 0 960 330" role="img" aria-label="Temperature dependence"></svg>
+  <div class="legend" id="leg"></div>
+  <p class="hint" id="chartNote"></p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">Your own molecule: frequencies from a calculation</h2>
+  <p class="hint">Paste the data from an output file: the molar mass, rotational constants (one for a linear molecule, three for a nonlinear one), symmetry number, multiplicity and frequencies. Enter imaginary frequencies with a minus sign — they will be excluded, as for a transition state.</p>
+  <div class="cin">
+    <label>Mass, amu<input id="cM" inputmode="decimal" value="18.015"></label>
+    <label>Rotational constants<input id="cB" value="27.376 14.586 9.516"></label>
+    <label>Units of the constants<select id="cBu"><option value="cm">cm⁻¹</option><option value="GHz">GHz</option><option value="MHz">MHz</option></select></label>
+    <label>Symmetry number σ<input id="cSig" inputmode="numeric" value="2"></label>
+    <label>Multiplicity 2S + 1<input id="cG" inputmode="numeric" value="1"></label>
+    <label>Frequency scale factor<input id="cScale" inputmode="decimal" value="1"></label>
+    <label class="wide">Frequencies, cm⁻¹ (separated by spaces, commas or new lines)<textarea id="cNu">3657 1595 3756</textarea></label>
+    <label class="chk wide"><input type="checkbox" id="cLow"> Treat frequencies below 100 cm⁻¹ as 100 cm⁻¹ (common for soft modes, where the harmonic approximation overestimates the entropy)</label>
+  </div>
+  <div class="row"><button type="button" class="btn" id="bFill">Take the data of the selected molecule</button><button type="button" class="btn primary" id="bCalc">Calculate</button></div>
+  <p class="status" id="cMsg" role="status"></p>
+</section>
+<section class="panel" aria-labelledby="h5s">
+  <h2 id="h5s">Formulas</h2>
+  <div class="eq">
+    <div class="eqb"><div class="t">translation (Sackur–Tetrode)</div>S<sub>trans</sub> = R [ln((2πmkT/h²)<sup>3/2</sup>·kT/p) + 5/2], &nbsp; H<sub>trans</sub> = 5/2 RT (including pV = RT)</div>
+    <div class="eqb"><div class="t">rotation (rigid rotor, high T)</div>linear: q<sub>rot</sub> = T/(σΘ), S = R(ln q + 1); nonlinear: q<sub>rot</sub> = √π/σ·(T³/Θ<sub>A</sub>Θ<sub>B</sub>Θ<sub>C</sub>)<sup>1/2</sup>, S = R(ln q + 3/2)</div>
+    <div class="eqb"><div class="t">vibrations (harmonic oscillator), u = hcν/kT</div>ZPE = Σ ½hcν; &nbsp; S = R Σ [u/(e<sup>u</sup> − 1) − ln(1 − e<sup>−u</sup>)]</div>
+    <div class="eqb"><div class="t">electronic contribution and total</div>S<sub>el</sub> = R ln(2S + 1); &nbsp; G<sub>corr</sub> = ZPE + H<sub>therm</sub> − TS</div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">The energy corrections of the participants are ready. How do we get the equilibrium constant of the reaction from them?</span><a class="nqA" href="equilibrium.html" data-goto="eqm">Equilibrium: from energy to constant →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Water at 298.15 K: what fraction of the entropy comes from translation, and why do vibrations contribute almost nothing?</span></p>
+<p class="olab">Translational fraction, %</p><div class="opts" role="group"><button type="button" class="opt">50</button><button type="button" class="opt" data-ok="1">77</button><button type="button" class="opt">99</button><button type="button" class="opt">23</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>About 77 %: 144.9 of 188.7 J/(mol·K); rotation gives 43.7, vibrations 0.03. The softest vibration of water, 1595 cm⁻¹, corresponds to a temperature hcν/k ≈ 2300 K, so at 298 K its excited levels are almost unpopulated.</div></div>
+<div class="tq"><p class="qt"><span>Why does O₂ have an electronic contribution to the entropy while N₂ does not?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">O₂ is a triplet: R ln 3</button><button type="button" class="opt">O₂ is heavier</button><button type="button" class="opt">O₂ has a lower vibrational frequency</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The ground state of O₂ is a triplet: three spin sublevels with the same energy give R ln 3 = 9.13 J/(mol·K). N₂ is a singlet, R ln 1 = 0.</div></div>
+<div class="tq"><p class="qt"><span>Methane, σ = 12. Click “Take the data of the selected molecule”, set σ = 1 and recalculate. By how much is the entropy overestimated?</span></p>
+<p class="olab">Overestimate of the entropy, J/(mol·K)</p><div class="opts" role="group"><button type="button" class="opt">6.2</button><button type="button" class="opt">0</button><button type="button" class="opt">2.5</button><button type="button" class="opt" data-ok="1">20.7</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>By R ln 12 = 20.7 J/(mol·K) — half of the whole rotational contribution. At 298 K such an error shifts G by T·ΔS ≈ 6.2 kJ/mol. Programs take the symmetry number from the point group, so it is worth symmetrizing the geometry.</div></div>
+<div class="tq"><p class="qt"><span>Compare the zero-point energy of water with the thermal correction H(298) − H(0). Which is larger, and what follows from this?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">ZPE is about five times larger</button><button type="button" class="opt">They are about equal</button><button type="button" class="opt">The thermal correction is larger</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>ZPE = 53.9 kJ/mol, the thermal correction is 9.9 kJ/mol, five times smaller. Zero-point vibrations exist even at 0 K, so they are always added to the electronic energy; a forgotten ZPE is a gross error in the energies of reactions that break X–H bonds.</div></div>
+<div class="tq"><p class="qt"><span>Choose CO₂ and switch on the heat capacity plot. Which contribution grows with temperature, and why is it already noticeable for CO₂ at 298 K but not for N₂?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Vibrational</button><button type="button" class="opt">Rotational</button><button type="button" class="opt">Translational</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Vibrational: for CO₂ it is 8.0 J/(mol·K) at 298 K and 25.1 at 1000 K. CO₂ has a soft doubly degenerate bending vibration at 667 cm⁻¹ (hcν/k ≈ 960 K), while N₂ has a single vibration at 2330 cm⁻¹ (≈ 3350 K).</div></div>
+<div class="tq"><p class="qt"><span>Switch the pressure from 1 bar to 1 atm. How much did the entropy change? And what happens with the 1 mol/L standard state?</span></p>
+<p class="olab">Change in S from 1 bar to 1 atm, J/(mol·K)</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">0.11</button><button type="button" class="opt">0</button><button type="button" class="opt">1.3</button><button type="button" class="opt">26.7</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>By R ln(1.01325) = 0.11 J/(mol·K) — negligible. A gas at 1 mol/L and 298 K corresponds to a pressure of 24.8 bar: the entropy is lower by R ln 24.8 = 26.7 J/(mol·K), and G is higher by 7.96 kJ/mol. This correction is added when reactions in solution are computed.</div></div>
+</div></details></section>
+<script src="js/thermochemistry.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="thermo";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/thermochemistry.js"></script>
+
+</body>
+</html>

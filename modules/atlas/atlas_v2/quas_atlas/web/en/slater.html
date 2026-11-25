@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Slater–Condon rules</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/sc.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-sc-g.webp"><!--pose:end-->
+<h1>Slater–Condon rules</h1>
+<p class="lead">The Hamiltonian matrix element ⟨Ψ|Ĥ|Ψ′⟩ between two Slater determinants reduces to a few one- and two-electron integrals. Build two determinants from spin orbitals — the program will bring them into maximum coincidence, identify the case, and write out the answer in terms of h<sub>ij</sub>, J<sub>ij</sub>, and K<sub>ij</sub>.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>Matrix elements between Slater determinants reduce to one- and two-electron integrals by the Slater–Condon rules.</li><li>First bring the determinants into maximum coincidence; every column transposition changes the sign.</li><li>An element can be nonzero only if the determinants differ by at most two spin orbitals and have the same M<sub>S</sub>.</li><li>Exchange integrals arise only between spin orbitals of the same spin.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> exact rules for determinants</summary><dl><dt>What is computed</dt><dd>Matrix elements of the Hamiltonian between two Slater determinants, in terms of h<sub>ij</sub>, J<sub>ij</sub>, K<sub>ij</sub>.</dd><dt>Which approximations are made</dt><dd>Orthonormal spin orbitals; the numerical values of the integrals are not computed.</dd><dt>What can be concluded</dt><dd>The formulas are exact; an energy is obtained only after substituting the integrals of a specific calculation.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Two determinants</h2>
+  <div class="crow"><span class="l">Examples</span><span class="grp" id="preG"></span></div>
+  <div class="two" id="dets"></div>
+  <p class="hint">Arrows ↑ and ↓ denote the spin orbitals φ<sub>k</sub>α and φ<sub>k</sub>β. The column order is the order in which you added them; clicking a column moves it left. The orbitals φ₁…φ₄ are real and orthonormal.</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Step-by-step solution</h2>
+  <div id="sol"></div>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">Cheat sheet</h2>
+  <div class="tablewrap"><table class="mtab bt"><thead><tr><th class="n">determinants differ by</th><th class="n">⟨Ψ|Ĥ|Ψ′⟩</th></tr></thead><tbody>
+  <tr><td class="n">nothing (Ψ′ = Ψ)</td><td class="n">Σ<sub>i</sub> h<sub>ii</sub> + ½ Σ<sub>i,j</sub> (⟨ij|ij⟩ − ⟨ij|ji⟩)</td></tr>
+  <tr><td class="n">one spin orbital χ<sub>m</sub> → χ<sub>p</sub></td><td class="n">h<sub>mp</sub> + Σ<sub>n</sub> (⟨mn|pn⟩ − ⟨mn|np⟩)</td></tr>
+  <tr><td class="n">two: χ<sub>m</sub> → χ<sub>p</sub>, χ<sub>n</sub> → χ<sub>q</sub></td><td class="n">⟨mn|pq⟩ − ⟨mn|qp⟩</td></tr>
+  <tr><td class="n">three or more</td><td class="n">0</td></tr></tbody></table></div>
+  <p class="hint">Before applying the rules, the determinants are brought into maximum coincidence; each column swap changes the sign. Relation between notations: ⟨ij|kl⟩ = (ik|jl), J<sub>ij</sub> = ⟨ij|ij⟩ = (ii|jj), K<sub>ij</sub> = ⟨ij|ji⟩ = (ij|ji). Spin integration kills every term in which the “incoming” and “outgoing” spins of an electron differ.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">One configuration corresponds to several states. How are they found?</span><a class="nqA" href="terms.html" data-goto="terms">Atomic terms →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises for exploring the page, plus a trainer. Do the action on the page and answer — your answer is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>He, ⟨1s²|Ĥ|1s²⟩: why is there no exchange integral K in the answer?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">K cancels with h₁₁</button><button type="button" class="opt" data-ok="1">K appears only between spin orbitals with the same spin</button><button type="button" class="opt">K₁₁ is included in J₁₁</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The answer is 2h₁₁ + J₁₁. An exchange term exists only between spin orbitals with the same spin, and 1sα and 1sβ differ in spin — spin integration makes it vanish.</div></div>
+<div class="tq"><p class="qt"><span>H₂: what is ⟨σ<sub>g</sub>²|Ĥ|σ<sub>u</sub>²⟩ equal to, and what role does it play?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">J₁₂ — the repulsion energy</button><button type="button" class="opt">Zero by Brillouin’s theorem</button><button type="button" class="opt" data-ok="1">K₁₂ = (12|12): mixes σ<sub>g</sub>² and σ<sub>u</sub>² in CI</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Two spin orbitals differ, and the answer is K₁₂ = (12|12) — the exchange integral between σ<sub>g</sub> and σ<sub>u</sub>. This is the off-diagonal CI matrix element that mixes σ<sub>g</sub>² and σ<sub>u</sub>² and fixes the dissociation.</div></div>
+<div class="tq"><p class="qt"><span>Single excitation 1β → 2β from the closed shell 1s²: what is the matrix element, and why is it zero for HF orbitals?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">It is the element F₁₂, and HF orbitals diagonalize F</button><button type="button" class="opt">The spins differ</button><button type="button" class="opt">The integral (11|12) is always zero</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>h₁₂ + (11|12) is the element F₁₂ of the Fock operator. Hartree–Fock orbitals diagonalize F, so F₁₂ = 0: Brillouin’s theorem.</div></div>
+<div class="tq"><p class="qt"><span>|1α 2α 3β| and |3β 1α 4α|: how many transpositions, and what sign?</span></p>
+<p class="olab">Number of transpositions</p><div class="opts" role="group"><button type="button" class="opt">0</button><button type="button" class="opt">1</button><button type="button" class="opt">3</button><button type="button" class="opt" data-ok="1">2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Move 3β from the first position to the third — two transpositions, sign +. After that, one spin orbital differs: 2α → 4α.</div></div>
+<div class="tq"><p class="qt"><span>Are |1α 1β 2α| and |1β 1α 2α| the same determinant?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Yes, identical</button><button type="button" class="opt" data-ok="1">Yes, up to a factor of −1</button><button type="button" class="opt">No, they are different functions</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The same function up to sign: one transposition gives a factor of −1, and the element equals −E. That is why the column order must be fixed before computing the CI matrix.</div></div>
+<div class="tq"><p class="qt"><span>Why is ⟨|1α1β||Ĥ||1α2α|⟩ = 0 even though only one spin orbital differs?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Ĥ changes the spin</button><button type="button" class="opt">Two spin orbitals differ</button><button type="button" class="opt" data-ok="1">The spin changes, and ⟨β|α⟩ = 0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The replacement 1β → 2α changes the spin. Ĥ does not act on spin, and the spin integral ⟨β|α⟩ = 0. Only determinants with the same M<sub>S</sub> mix.</div></div>
+<!--self:start--><div class="selfBox"><h3 id="h3s">Test yourself</h3>
+  <p class="small">The program picks two determinants (they will appear in the editor above, with the solution hidden). Answer two questions — then the solution will be revealed.</p>
+  <div class="row"><button class="btn primary" type="button" id="qNew">New problem</button><span class="hint" id="qScore"></span></div>
+  <div id="quiz" style="display:flex;flex-direction:column;gap:10px"></div>
+</div><!--self:end--></div></details></section>
+<script src="js/slater.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="sc";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/slater.js"></script>
+
+</body>
+</html>

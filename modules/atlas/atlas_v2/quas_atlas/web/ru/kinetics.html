@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Скорость реакции: переходное состояние</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/kin.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-kin-g.webp"><!--pose:end-->
+<h1>Скорость реакции: переходное состояние</h1>
+<p class="lead">Теория переходного состояния связывает константу скорости с энергией Гиббса активации — разностью энергий переходного состояния и исходных веществ: k = (k<sub>B</sub>T/h)·exp(−ΔG<sup>‡</sup>/RT). Переходное состояние находят расчётом как седловую точку с одной мнимой частотой. Здесь видно, какие барьеры дают реакции за секунды, часы и годы, откуда берутся изотопный эффект и поправка на туннелирование.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>По теории переходного состояния k = (k<sub>B</sub>T/h)·exp(−ΔG<sup>‡</sup>/RT): скорость определяется энергией Гиббса переходного состояния относительно исходных веществ.</li><li>При 298 K каждые 5,7 кДж/моль барьера меняют скорость в 10 раз; барьер около 90–100 кДж/моль — это минуты и часы.</li><li>Энтропия активации так же важна, как энтальпия: упорядоченные переходные состояния замедляют реакцию.</li><li>Изотопный эффект и туннелирование — следствия квантовой природы ядер: нулевых колебаний и проницаемости барьера.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> теория переходного состояния</summary><dl><dt>Что вычисляется</dt><dd>Константа скорости и период полупревращения по ΔH‡ и ΔS‡; изотопный эффект по нулевым колебаниям связи C–H; поправка Вигнера на туннелирование.</dd><dt>Какие приближения приняты</dt><dd>Уравнение Эйринга с трансмиссионным коэффициентом 1; одна валентная мода в изотопном эффекте; поправка Вигнера справедлива только при κ, близком к 1.</dd><dt>Какой вывод можно сделать</dt><dd>Порядки величин скоростей, роль ΔS‡, чувствительность k к ошибке барьера — да; точная константа скорости требует точного барьера и учёта туннелирования и динамики.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Уравнение Эйринга</h2>
+  <div class="crow"><span class="l">Энтальпия активации ΔH<sup>‡</sup></span><input type="range" id="dH" min="20" max="160" step="0.5" value="90" aria-label="Энтальпия активации"><span class="val" id="dHv"></span></div>
+  <div class="crow"><span class="l">Энтропия активации ΔS<sup>‡</sup></span><input type="range" id="dS" min="-150" max="60" step="1" value="0" aria-label="Энтропия активации"><span class="val" id="dSv"></span></div>
+  <div class="crow"><span class="l">Температура T</span><input type="range" id="T" min="200" max="700" step="1" value="298" aria-label="Температура"><span class="val" id="Tv"></span><button type="button" class="chip" id="bT298">298,15 K</button></div>
+  <div class="crow"><span class="l">Молекулярность</span><span class="grp" id="mG" role="group" aria-label="Молекулярность"></span></div>
+  <div class="cards" id="cards"></div>
+  <p class="hint" id="eyNote"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Барьер и время реакции</h2>
+  <svg id="chart" viewBox="0 0 960 300" role="img" aria-label="Период полупревращения от барьера"></svg>
+  <p class="hint">Шкала времени логарифмическая. Каждые 5,7 кДж/моль барьера при 298 K замедляют реакцию в 10 раз.</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Кинетический изотопный эффект</h2>
+  <p class="hint">Если в переходном состоянии связь C–H рвётся, её валентное колебание перестаёт быть колебанием — и его нулевая энергия теряется. У C–D нулевая энергия меньше, поэтому барьер для дейтерия выше. В простейшей оценке k<sub>H</sub>/k<sub>D</sub> = exp[hc(ν<sub>H</sub> − ν<sub>D</sub>)/(2k<sub>B</sub>T)].</p>
+  <div class="crow"><span class="l">Частота C–H, см⁻¹</span><input type="range" id="nu" min="2700" max="3200" step="10" value="2900" aria-label="Частота C–H"><span class="val" id="nuv"></span></div>
+  <p class="status" id="kie"></p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">Туннелирование: поправка Вигнера</h2>
+  <p class="hint">Лёгкие частицы (атом H, протон) могут проходить сквозь барьер. Простейшая поправка использует мнимую частоту переходного состояния: κ = 1 + (1/24)(hcν<sup>‡</sup>/k<sub>B</sub>T)². Она верна, только пока κ близка к единице.</p>
+  <div class="crow"><span class="l">Мнимая частота ν<sup>‡</sup>, см⁻¹</span><input type="range" id="im" min="100" max="2500" step="10" value="1500" aria-label="Мнимая частота"><span class="val" id="imv"></span></div>
+  <p class="status" id="tun"></p>
+</section>
+<section class="panel" aria-labelledby="h5s">
+  <h2 id="h5s">Своя реакция: энергии из выходных файлов</h2>
+  <p class="hint">Введите полные энергии Гиббса (электронная энергия плюс поправка G) исходных веществ и переходного состояния в хартри — их печатают программы после расчёта частот. Для бимолекулярной реакции энергии исходных веществ складываются.</p>
+  <div class="cin">
+    <label><span>G исходных веществ (сумма), E<sub>h</sub></span><input id="cGr" inputmode="decimal" value="-154.520000"></label>
+    <label><span>G переходного состояния, E<sub>h</sub></span><input id="cGt" inputmode="decimal" value="-154.485000"></label>
+    <label><span>Температура, K</span><input id="cT" inputmode="decimal" value="298.15"></label>
+    <label><span>Мнимая частота, см⁻¹ (необязательно)</span><input id="cIm" inputmode="decimal" value=""></label>
+    <label><span>Молекулярность</span><select id="cN"><option value="1">1 — мономолекулярная</option><option value="2">2 — бимолекулярная</option></select></label>
+    <label><span>Стандартное состояние энергий</span><select id="cSS"><option value="gas">газ, 1 бар (как в выходном файле)</option><option value="sol">1 моль/л</option></select></label>
+  </div>
+  <div class="row"><button type="button" class="btn primary" id="bCalc">Рассчитать</button></div>
+  <p class="status" id="cMsg" role="status"></p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Переходное состояние — седловая точка поверхности. Как программа находит стационарные точки и отличает минимум от седла?</span><a class="nqA" href="optimization.html" data-goto="opt">Оптимизация геометрии →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Мономолекулярная реакция при 298 K, ΔS‡ = 0. Подберите ΔH‡ так, чтобы период полупревращения был около часа. Чему равен барьер?</span></p>
+<p class="olab">ΔH‡, кДж/моль</p><div class="opts" role="group"><button type="button" class="opt">80</button><button type="button" class="opt">110</button><button type="button" class="opt">60</button><button type="button" class="opt" data-ok="1">94</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Около 94 кДж/моль (22,5 ккал/моль). Полезный ориентир: при комнатной температуре барьер 80 кДж/моль — секунды, 95 — около часа, 110 — недели.</div></div>
+<div class="tq"><p class="qt"><span>Расчёт ошибся в барьере на 4 кДж/моль. Во сколько раз ошибётся константа скорости при 298 K?</span></p>
+<p class="olab">Во сколько раз ошибётся k</p><div class="opts" role="group"><button type="button" class="opt">4</button><button type="button" class="opt" data-ok="1">5,0</button><button type="button" class="opt">50</button><button type="button" class="opt">1,6</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>В 5,0 раза: exp(4000/RT). Изменение в 10 раз — 5,7 кДж/моль. Поэтому даже точные методы предсказывают абсолютные скорости с точностью до порядка, а относительные (между похожими реакциями) — лучше, за счёт сокращения ошибок.</div></div>
+<div class="tq"><p class="qt"><span>Сравните ΔS‡ = 0 и ΔS‡ = −50 Дж/(моль·К) при том же ΔH‡. Во сколько раз медленнее вторая реакция?</span></p>
+<p class="olab">Во сколько раз медленнее</p><div class="opts" role="group"><button type="button" class="opt">50</button><button type="button" class="opt" data-ok="1">410</button><button type="button" class="opt">1,0</button><button type="button" class="opt">6</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>В exp(50/8,314) ≈ 410 раз — так же, как при повышении барьера на 15 кДж/моль при 298 K. Отрицательная энтропия активации типична для бимолекулярных и циклических переходных состояний (например, реакция Дильса–Альдера).</div></div>
+<div class="tq"><p class="qt"><span>Изотопный эффект для связи C–H с частотой 2900 см⁻¹: чему он равен при 298 K и почему уменьшается при нагревании?</span></p>
+<p class="olab">k<sub>H</sub>/k<sub>D</sub> при 298 K</p><div class="opts" role="group"><button type="button" class="opt">3,0</button><button type="button" class="opt">1,0</button><button type="button" class="opt" data-ok="1">6,4</button><button type="button" class="opt">1,4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>k<sub>H</sub>/k<sub>D</sub> ≈ 6,4 при 298 K и ≈ 3,0 при 500 K. Эффект — это exp(ΔZPE/RT): разность нулевых энергий постоянна, а RT растёт, поэтому отношение стремится к 1.</div></div>
+<div class="tq"><p class="qt"><span>Мнимая частота 1500i см⁻¹ при 298 K: чему равна поправка Вигнера и можно ли ей верить?</span></p>
+<p class="olab">κ</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">3,2</button><button type="button" class="opt">1,0</button><button type="button" class="opt">13</button><button type="button" class="opt">1,2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>κ ≈ 3,2. Формула Вигнера — первый член разложения и верна лишь при κ, близком к 1; при κ > 2 туннелирование надо считать моделью Эккарта или полуклассически. Большая мнимая частота (узкий барьер) — признак переноса атома H, где туннелирование важно.</div></div>
+<div class="tq"><p class="qt"><span>Блок «Своя реакция»: для бимолекулярной реакции в растворе энергии взяты из газофазного расчёта при 1 бар. Почему ΔG‡ нужно пересчитывать к 1 моль/л?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">k в л/(моль·с) отвечает 1 моль/л, а энергии — газу при 1 бар</button><button type="button" class="opt">В растворе меняется электронная энергия</button><button type="button" class="opt">Пересчёт нужен только для мономолекулярных реакций</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Константа скорости в л/(моль·с) отвечает стандартному состоянию 1 моль/л, а энергии из выходного файла — газу при 1 бар. При переходе каждого участника к 1 моль/л его G растёт на RT ln 24,8 = 7,96 кДж/моль при 298 K; у бимолекулярной реакции исходных молекул на одну больше, поэтому ΔG‡ уменьшается на 7,96 кДж/моль, а k растёт примерно в 25 раз.</div></div>
+</div></details></section>
+<script src="js/kinetics.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="kin";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/kinetics.js"></script>
+
+</body>
+</html>

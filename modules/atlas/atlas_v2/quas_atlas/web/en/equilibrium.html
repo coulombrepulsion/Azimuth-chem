@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Equilibrium: from energy to constant</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/eqm.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-eqm-g.webp"><!--pose:end-->
+<h1>Equilibrium: from energy to constant</h1>
+<p class="lead">The equilibrium constant is set by the standard Gibbs energy of reaction: K = exp(−ΔG°/RT). A calculation gives the electronic energies of the participants; zero-point vibrations and thermal corrections are added to them (see the “Thermochemistry from frequencies” page) to obtain ΔH°, ΔS°, ΔG° and K at any temperature. Here you can see the contribution of each step and how sensitive K is to an error in the energy.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>The equilibrium constant is set by the standard Gibbs energy of reaction: K = exp(−ΔG°/RT); it is computed from the electronic energies of the participants plus zero-point vibrations and thermal corrections.</li><li>Zero-point vibrations noticeably change the energy of reactions in which bonds to hydrogen are formed or broken.</li><li>The sign of ΔH° determines how K depends on temperature; the sign of ΔS° determines which way temperature shifts ΔG°.</li><li>An error of 5.7 kJ/mol in ΔG° at 298 K changes K tenfold: even “chemical accuracy” gives K only to within an order of magnitude.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> ideal gas, standard pressure 1 bar</summary><dl><dt>What is computed</dt><dd>ΔH°, ΔS°, ΔG° and the equilibrium constant of a gas-phase reaction at any temperature — from the energies and frequencies of the participants.</dd><dt>Which approximations are made</dt><dd>Thermal corrections use the ideal-gas, rigid-rotor, harmonic-oscillator model; the electronic reaction energy is back-calculated from the tabulated ΔH°(298); ideal gas mixture.</dd><dt>What can be concluded</dt><dd>How ΔG° and K change with temperature and how an energy error turns into an error in K — yes; the exact constant for a real process (pressure, non-ideality, solvent) — no.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Reaction and temperature</h2>
+  <div class="crow"><span class="l">Reaction</span><span class="grp" id="rxG" role="group" aria-label="Reaction"></span></div>
+  <div class="rxn" id="rxn"></div>
+  <div class="crow"><span class="l">Temperature T</span><input type="range" id="T" min="200" max="1500" step="1" value="298" aria-label="Temperature"><span class="val" id="Tv"></span><button type="button" class="chip" id="bT298">298,15 K</button></div>
+  <p class="hint" id="rxInfo"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">From electronic energy to ΔG°</h2>
+  <div class="steps" id="steps"></div>
+  <div class="cards" id="cards"></div>
+  <div class="ref" id="refBox"></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Temperature dependence</h2>
+  <div class="crow"><span class="l">Show</span><span class="grp" id="qG" role="group" aria-label="Quantity"></span></div>
+  <svg id="chart" viewBox="0 0 960 330" role="img" aria-label="Temperature dependence"></svg>
+  <div class="legend" id="leg"></div>
+  <p class="hint" id="chartNote"></p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">Sensitivity to calculation errors</h2>
+  <div class="crow"><span class="l">Error in ΔG°, kJ/mol</span><input type="range" id="dG" min="-20" max="20" step="0.5" value="4" aria-label="Error in ΔG"><span class="val" id="dGv"></span></div>
+  <p class="status" id="sens"></p>
+</section>
+<section class="panel" aria-labelledby="h5s">
+  <h2 id="h5s">Your own reaction: energies from output files</h2>
+  <p class="hint">For each participant enter the stoichiometric coefficient (negative for reactants), the electronic energy and the Gibbs energy correction from the output file, both in hartree. The corrections must be computed at the same temperature and in the same standard state (ideal gas, 1 bar or 1 atm).</p>
+  <div class="tablewrap"><table class="ctab"><thead><tr><th>participant</th><th>coefficient</th><th>E<sub>el</sub>, E<sub>h</sub></th><th>G<sub>corr</sub>, E<sub>h</sub></th></tr></thead><tbody id="cRows"></tbody></table></div>
+  <div class="crow"><span class="l">Calculation temperature, K</span><input id="cT" class="formula" value="298.15" inputmode="decimal" aria-label="Calculation temperature"></div>
+  <div class="row"><button type="button" class="btn" id="bEx">Example: ammonia synthesis</button><button type="button" class="btn primary" id="bCalc">Calculate</button></div>
+  <p class="status" id="cMsg" role="status"></p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">Equilibrium tells us which way a reaction goes. But how fast does it go?</span><a class="nqA" href="kinetics.html" data-goto="kin">Reaction rate: transition state →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Ammonia synthesis at 298 K: which step makes ΔH° half as large in magnitude as the electronic reaction energy?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Zero-point vibrations</button><button type="button" class="opt">Thermal correction</button><button type="button" class="opt">Entropy term</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Zero-point vibrations: ΔE<sub>el</sub> = −161 kJ/mol, ΔZPE = +84 kJ/mol, ΔH°(0) = −77. Two NH₃ molecules contain six N–H bonds with large zero-point energies, while N₂ and 3H₂ have four bonds. Without ZPE the reaction energy is off by a factor of two.</div></div>
+<div class="tq"><p class="qt"><span>At what temperature does the equilibrium constant of ammonia synthesis become equal to 1 (ΔG° = 0)?</span></p>
+<p class="olab">Temperature at which K = 1, K</p><div class="opts" role="group"><button type="button" class="opt">1000</button><button type="button" class="opt">200</button><button type="button" class="opt">298</button><button type="button" class="opt" data-ok="1">457</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>About 457 K. The reaction is exothermic (ΔH° < 0) and reduces the number of moles of gas (ΔS° ≈ −198 J/(mol·K)), so on heating −TΔS° grows and the equilibrium shifts to the left. The Haber process is run at 700–800 K for the sake of rate, and the loss of yield is compensated by pressure.</div></div>
+<div class="tq"><p class="qt"><span>Water–gas shift (CO with steam): find K at 1000 K. Why does K change so slowly with temperature?</span></p>
+<p class="olab">K at 1000 K</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">1.4</button><button type="button" class="opt">1000</button><button type="button" class="opt">0.14</button><button type="button" class="opt">0.0001</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>K(1000 K) ≈ 1.4. ΔH° is only −41 kJ/mol and the number of moles of gas does not change, so ΔS° is small (−42 J/(mol·K)): the slope of lg K versus 1/T is proportional to ΔH°, and with a small ΔH° the constant changes slowly.</div></div>
+<div class="tq"><p class="qt"><span>Steam reforming of methane: why is it run at 1100–1200 K?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">ΔS° > 0: the number of moles of gas grows, and at high T the −TΔS° term outweighs ΔH° > 0</button><button type="button" class="opt">The reaction is exothermic</button><button type="button" class="opt">ΔH° grows at high T</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The reaction is strongly endothermic (ΔH° ≈ +206 kJ/mol), but ΔS° ≈ +214 J/(mol·K): two gas molecules become four. ΔG° passes through zero at about 895 K; above it the equilibrium lies on the product side; at 1000 K, K ≈ 24.</div></div>
+<div class="tq"><p class="qt"><span>“Sensitivity” section: an error of 4 kJ/mol in ΔG° at 298 K — by what factor will K be wrong?</span></p>
+<p class="olab">Factor by which K is wrong</p><div class="opts" role="group"><button type="button" class="opt">1.6</button><button type="button" class="opt">1.0</button><button type="button" class="opt" data-ok="1">5.0</button><button type="button" class="opt">10</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>By a factor of 5.0: exp(4000/(8.314·298.15)) = 5.0. A tenfold change in K corresponds to 5.7 kJ/mol. The “chemical accuracy” of a calculation gives the equilibrium constant to within a factor, not to within percent.</div></div>
+<div class="tq"><p class="qt"><span>“Your own reaction” block: load the example and calculate. Does ΔG° agree with the upper part of the page? What changes if you forget the G corrections and use only electronic energies?</span></p>
+<p class="olab">ΔG°, kJ/mol</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">-32.9</button><button type="button" class="opt">32.9</button><button type="button" class="opt">-161</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>It agrees: ΔG° = −32.9 kJ/mol, K = 5.9·10⁵. Without the corrections one would get ΔE<sub>el</sub> = −161 kJ/mol and K of the order of 10²⁸ — an error of 23 orders of magnitude: ZPE, thermal contributions and especially entropy are essential.</div></div>
+</div></details></section>
+<script src="js/equilibrium.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="eqm";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/equilibrium.js"></script>
+
+</body>
+</html>

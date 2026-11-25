@@ -1,0 +1,33 @@
+&CONTROL
+  calculation = 'vc-relax'
+  prefix = 'si2'
+  pseudo_dir = '../si/pseudo'
+  outdir = './out'
+  tprnfor = .true.
+  tstress = .true.
+/
+&SYSTEM
+  ibrav = 0
+  nat = 2
+  ntyp = 1
+  ecutwfc = 30
+  ecutrho = 120
+/
+&ELECTRONS
+  conv_thr = 2.0e-08
+/
+&IONS
+/
+&CELL
+/
+ATOMIC_SPECIES
+  Si 28.0850 Si_r.upf
+CELL_PARAMETERS angstrom
+      3.84000000     0.00000000     0.00000000
+      1.92000000     3.32553755     0.00000000
+      1.92000000     1.10851252     3.13534687
+ATOMIC_POSITIONS crystal
+  Si 0.00000000 0.00000000 0.00000000
+  Si 0.25000000 0.25000000 0.25000000
+K_POINTS automatic
+  9 9 9 0 0 0

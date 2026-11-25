@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="formaldehyde,benzene,butadiene">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Excited states and spectra</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/exc.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-exc-g.webp"><!--pose:end-->
+<h1>Excited states and spectra</h1>
+<p class="lead">When light is absorbed, an electron moves to a higher orbital faster than the nuclei can move. So the transition is vertical, and a band in the spectrum is not one line but a set of vibrational transitions. Here you can see where the band shape and the Stokes shift come from, how a singlet differs from a triplet, and how to turn calculated excitation energies and oscillator strengths into a spectrum.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>An electronic transition is faster than nuclear motion: it is vertical (the Franck–Condon principle), and the intensities of the vibrational lines are set by the overlap of vibrational wavefunctions.</li><li>The shift of the equilibrium geometry in the excited state (the Huang–Rhys factor S) determines the band shape and the Stokes shift 2Sħω.</li><li>A calculation gives vertical excitation energies and oscillator strengths; they should be compared with the band maximum, not with the 0–0 transition.</li><li>The singlet and triplet of one configuration are split by 2K; transitions between them are spin-forbidden.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> displaced harmonic oscillators</summary><dl><dt>What is computed</dt><dd>The shape of the vibronic absorption and emission band, the Stokes shift, the singlet–triplet splitting; a spectrum from calculated energies and oscillator strengths.</dd><dt>Which approximations are made</dt><dd>One vibrational mode with the same frequency in both states; only a shift of the equilibrium; absorption from the v = 0 level (low temperature); Gaussian broadening of the same width.</dd><dt>What can be concluded</dt><dd>Why bands are broad, where progressions and the Stokes shift come from, how to compare a calculation with experiment — yes; the exact shape of a real spectrum — no.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Franck–Condon principle</h2>
+  <div class="crow"><span class="l">Equilibrium shift, Huang–Rhys factor S</span><input type="range" id="S" min="0" max="5" step="0.05" value="1.5" aria-label="Huang–Rhys factor"><span class="val" id="Sv"></span></div>
+  <div class="crow"><span class="l">Vibrational frequency ħω, cm⁻¹</span><input type="range" id="w" min="300" max="3000" step="10" value="1400" aria-label="Vibrational frequency"><span class="val" id="wv"></span></div>
+  <div class="crow"><span class="l">0–0 transition energy E₀₀, eV</span><input type="range" id="E00" min="1.5" max="5.5" step="0.01" value="3" aria-label="0–0 transition energy"><span class="val" id="E00v"></span></div>
+  <div class="crow"><span class="l">Line width (FWHM), cm⁻¹</span><input type="range" id="fw" min="50" max="3000" step="10" value="700" aria-label="Line width"><span class="val" id="fwv"></span></div>
+  <div class="two">
+    <svg id="pot" viewBox="0 0 460 360" role="img" aria-label="Potential curves of the ground and excited states"></svg>
+    <svg id="spec" viewBox="0 0 560 360" role="img" aria-label="Absorption and emission spectra"></svg>
+  </div>
+  <div class="legend" id="leg"></div>
+  <div class="cards" id="cards"></div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Singlet and triplet</h2>
+  <p class="hint">An excited configuration with two unpaired electrons gives a singlet and a triplet. With the same orbitals their energies differ by 2K, where K is the exchange integral of the two orbitals (see the “Pauli principle” page). The S₀ → T₁ transition is spin-forbidden, so the triplet is populated mainly by intersystem crossing from S₁, and its emission — phosphorescence — is slow.</p>
+  <div class="crow"><span class="l">Exchange integral K, eV</span><input type="range" id="K" min="0" max="1.5" step="0.01" value="0.4" aria-label="Exchange integral"><span class="val" id="Kv"></span></div>
+  <svg id="jab" viewBox="0 0 960 300" role="img" aria-label="Jablonski diagram"></svg>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Spectrum from an output file</h2>
+  <p class="hint">Programs (TDDFT, CIS, ADC, EOM-CC) print vertical excitation energies and oscillator strengths f. Enter them as “energy f” pairs — one line per transition; the energy in eV or nm. Each line gets a Gaussian shape of the given width. The box contains a made-up example.</p>
+  <div class="cin">
+    <label class="wide">Transitions: energy and oscillator strength<textarea id="cIn">4.20 0.020
+5.10 0.450
+5.60 0.080
+6.30 0.900</textarea></label>
+    <label>Energy units<select id="cU"><option value="eV">eV</option><option value="nm">nm</option></select></label>
+    <label>Width (FWHM), eV<input id="cW" inputmode="decimal" value="0.30"></label>
+    <label>Spectrum axis<select id="cX"><option value="nm">wavelength, nm</option><option value="eV">energy, eV</option></select></label>
+  </div>
+  <div class="row"><button type="button" class="btn primary" id="bCalc">Plot spectrum</button></div>
+  <svg id="spec2" viewBox="0 0 960 320" role="img" aria-label="Spectrum from calculated data"></svg>
+  <p class="status" id="cMsg" role="status"></p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">Excitation changes the occupation of the frontier orbitals. How does this change the course of pericyclic reactions?</span><a class="nqA" href="wh.html" data-goto="wh">π orbitals and reactions →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Set S = 0. What do the absorption and emission spectra look like, and why?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">A single 0–0 line shared by absorption and emission</button><button type="button" class="opt">A broad band without structure</button><button type="button" class="opt">Two peaks at opposite ends</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>A single 0–0 line remains, shared by absorption and emission, with no Stokes shift. At S = 0 the equilibrium geometry of the excited state coincides with the ground state, the v = 0 vibrational functions are identical, and the overlap with the other levels is zero.</div></div>
+<div class="tq"><p class="qt"><span>S = 2.5: which vibrational transition 0 → v is the most intense in absorption?</span></p>
+<p class="olab">v of the most intense transition</p><div class="opts" role="group"><button type="button" class="opt">1</button><button type="button" class="opt">3</button><button type="button" class="opt" data-ok="1">2</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>v = 2: the Franck–Condon factors follow the Poisson distribution e<sup>−S</sup>S<sup>v</sup>/v!, which at S = 2.5 peaks at v = 2 (0.257), while v = 3 gives 0.214. So the band maximum lies above the 0–0 transition.</div></div>
+<div class="tq"><p class="qt"><span>S = 1, ħω = 1500 cm⁻¹: what is the Stokes shift between the absorption and emission maxima?</span></p>
+<p class="olab">Stokes shift, cm⁻¹</p><div class="opts" role="group"><button type="button" class="opt">750</button><button type="button" class="opt">0</button><button type="button" class="opt">1500</button><button type="button" class="opt" data-ok="1">3000</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>2Sħω = 3000 cm⁻¹ (0.37 eV). Absorption goes vertically to a high point of the excited curve, emission — after vibrational relaxation — vertically to a high point of the ground curve; each time Sħω is lost.</div></div>
+<div class="tq"><p class="qt"><span>Why does the fluorescence spectrum look like a mirror image of the absorption spectrum?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Emission starts from v = 0, and the frequencies are the same</button><button type="button" class="opt">Energy conservation requires it</button><button type="button" class="opt">It is a coincidence</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Emission starts from the v = 0 level of the excited state, absorption from v = 0 of the ground state; with equal frequencies the Franck–Condon factors are the same, and the progressions are mirrored about the 0–0 transition. Broken mirror symmetry indicates different frequencies or a change in the shape of the potential.</div></div>
+<div class="tq"><p class="qt"><span>S₁ is at 3.0 eV, the exchange integral K = 0.5 eV. Where is T₁, and at what wavelength will phosphorescence appear?</span></p>
+<p class="olab">Phosphorescence wavelength, nm</p><div class="opts" role="group"><button type="button" class="opt">310</button><button type="button" class="opt">827</button><button type="button" class="opt" data-ok="1">620</button><button type="button" class="opt">413</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>T₁ = 3.0 − 2·0.5 = 2.0 eV, phosphorescence at about 620 nm — noticeably redder than fluorescence (413 nm). The 2K estimate refers to one configuration with the same orbitals.</div></div>
+<div class="tq"><p class="qt"><span>“Spectrum from an output file” section: in the made-up example the lowest transition is 4.20 eV (295 nm). Is it visible as a maximum of the envelope?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">No: f is small, the transition gives only a shoulder</button><button type="button" class="opt">Yes, it is the main maximum</button><button type="button" class="opt">It is not displayed at all</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>No: its oscillator strength is 0.02 — more than 20 times smaller than that of the 5.10 eV transition, and it gives only a shoulder. The long-wavelength band is determined not by the lowest-energy transition but by the most intense ones; forbidden transitions are barely visible in a spectrum.</div></div>
+</div></details></section>
+<script src="js/excited.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="exc";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/excited.js"></script>
+
+</body>
+</html>

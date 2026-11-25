@@ -1,0 +1,31 @@
+# Written by Azimuth
+data_Hexachlorobenzene_100K
+_cell_length_a 7.636858
+_cell_length_b 3.384413
+_cell_length_c 13.957691
+_cell_angle_alpha 90.000000
+_cell_angle_beta 93.533658
+_cell_angle_gamma 90.000000
+_space_group_name_H-M_alt 'P21/c'
+_space_group_IT_number 14
+
+loop_
+_space_group_symop_operation_xyz
+'x, y, z'
+'-x, -y, -z'
+'-x+1/2, y+1/2, -z+1/2'
+'x+1/2, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+C1 C 0.129835 0.342221 0.063701 1.0000
+C2 C 0.965693 0.438024 0.095674 1.0000
+C3 C 0.836396 0.599734 0.032330 1.0000
+Cl4 Cl 0.288280 0.160818 0.143221 1.0000
+Cl5 Cl 0.920367 0.344888 0.211354 1.0000
+Cl6 Cl 0.639155 0.735922 0.072285 1.0000

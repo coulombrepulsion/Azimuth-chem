@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,phenol,methanol">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Модели растворителя</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/solv.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-solvation-g.webp"><!--pose:end-->
+<h1>Модели растворителя</h1>
+<p class="lead">Большинство реакций идёт в растворе, а квантово-химический расчёт по умолчанию описывает молекулу в пустоте. Самый дешёвый способ учесть растворитель — заменить его сплошной средой с диэлектрической проницаемостью ε: молекула сидит в полости, поляризует среду, а та в ответ создаёт поле реакции. Здесь — простейшая модель Борна для ионов и поляризуемый континуум (C-PCM) для нейтральных молекул, посчитанный в PySCF и сравнённый с экспериментальными свободными энергиями гидратации.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Неявная модель заменяет растворитель сплошной средой с проницаемостью ε; молекула поляризует среду, а поле реакции поляризует молекулу.</li><li>Модель Борна даёт энергию сольватации иона −694,7·z²/a·(1 − 1/ε) кДж/моль; главный параметр — эффективный радиус полости.</li><li>PCM описывает электростатику полярных молекул, но без вкладов полости и дисперсии ошибается для неполярных.</li><li>Энергия сольватации почти не меняется после ε ≈ 20: важнее всего, полярен растворитель или нет.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> сплошная среда: только электростатика</summary><dl><dt>Что вычисляется</dt><dd>Энергии гидратации ионов по модели Борна; электростатическая энергия сольватации C-PCM для одиннадцати молекул (B3LYP/6-31+G*, ε = 78,36) и её зависимость от ε для воды и ацетона.</dd><dt>Какие приближения приняты</dt><dd>Нет вкладов полости, дисперсии и отталкивания; геометрии HF/6-31G* не релаксируют в растворе; радиусы полости — стандартные для PySCF; стандартное состояние 1 моль/л в обеих фазах. C-PCM масштабирует поле поляризации как (ε−1)/ε по построению, поэтому сходство его зависимости от ε с формулой Борна отчасти заложено в сам метод.</dd><dt>Какой вывод можно сделать</dt><dd>Как растворитель стабилизирует полярные молекулы и ионы и почему сплошной среды не хватает — да; энергии сольватации с химической точностью — нет: нужны модели с неэлектростатическими вкладами (например, SMD) и явные молекулы растворителя.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Модель Борна: ион в диэлектрике</h2>
+  <p class="hint">Заряженная сфера радиуса a, перенесённая из вакуума в среду с проницаемостью ε, выигрывает энергию ΔG = −(N<sub>A</sub>q²/8πε<sub>0</sub>a)·(1 − 1/ε) = −694,7·z²/a[Å]·(1 − 1/ε) кДж/моль. Главный вопрос — чему равен радиус: кристаллические радиусы ионов дают слишком большой выигрыш.</p>
+  <div class="crow"><span class="l">Проницаемость ε</span><input type="range" id="eps" min="1" max="100" step="0.1" value="78.4" aria-label="Проницаемость ε"><span class="val" id="epsV"></span></div>
+  <div class="crow"><span class="l">Добавка к радиусу катиона δ<sub>+</sub></span><input type="range" id="dp" min="0" max="1.2" step="0.01" value="0" aria-label="Добавка к радиусу катиона"><span class="val" id="dpV"></span></div>
+  <div class="crow"><span class="l">Добавка к радиусу аниона δ<sub>−</sub></span><input type="range" id="dm" min="0" max="1.2" step="0.01" value="0" aria-label="Добавка к радиусу аниона"><span class="val" id="dmV"></span></div>
+  <svg id="bornC" viewBox="0 0 960 320" role="img" aria-label="Энергии гидратации ионов: модель Борна и эксперимент"></svg>
+  <div class="legend" id="bornL"></div>
+  <div class="tablewrap" id="bornT"></div>
+  <p class="hint" id="bornN"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Поляризуемый континуум для молекул (C-PCM)</h2>
+  <p class="hint">Полость строится из сфер вокруг атомов, на её поверхности возникают поляризационные заряды, а они входят в гамильтониан молекулы и пересчитываются в каждом цикле самосогласования. Здесь B3LYP/6-31+G*, вода (ε = 78,36), геометрии HF/6-31G*. ΔG — только электростатический вклад.</p>
+  <svg id="pcmC" viewBox="0 0 960 360" role="img" aria-label="Энергия гидратации: расчёт C-PCM и эксперимент"></svg>
+  <div class="tablewrap" id="pcmT"></div>
+  <p class="hint" id="pcmN"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Как ответ зависит от ε</h2>
+  <p class="hint">Тот же расчёт в растворителях разной полярности. Электростатическая энергия сольватации примерно пропорциональна множителю (ε − 1)/ε: он быстро растёт при малых ε и почти перестаёт меняться после ε ≈ 20.</p>
+  <div class="crow"><span class="l">Молекула</span><span class="grp" id="emG" role="group" aria-label="Молекула"></span></div>
+  <svg id="epsC" viewBox="0 0 960 320" role="img" aria-label="Энергия сольватации в зависимости от ε"></svg>
+  <p class="hint" id="epsN"></p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">Чего нет в сплошной среде</h2>
+  <div class="eq">
+    <div class="eqb"><div class="t">Неэлектростатические вклады</div>Создание полости в воде стоит энергии, а дисперсия и отталкивание с молекулами растворителя её частично возвращают. Модели вроде SMD добавляют эти вклады по эмпирическим формулам, подогнанным под эксперимент; без них неполярные молекулы выходят слишком «гидрофильными».</div>
+    <div class="eqb"><div class="t">Специфические взаимодействия</div>Водородные связи с первым слоем воды континуум описывает только в среднем. Для анионов и молекул с сильными донорами водорода явно добавляют несколько молекул воды и окружают уже этот кластер средой (кластерно-континуальная модель).</div>
+    <div class="eqb"><div class="t">Радиусы полости</div>Результат заметно зависит от радиусов атомных сфер: это главный подгоночный параметр. Поэтому сольватационные модели сравнивают и используют вместе с теми радиусами, для которых они откалиброваны.</div>
+    <div class="eqb"><div class="t">Стандартные состояния</div>Здесь сравниваются переходы «1 моль/л в газе → 1 моль/л в растворе». Если газ взят при 1 бар, добавляют RT·ln(24,79) = 7,96 кДж/моль (1,90 ккал/моль) — частая причина расхождений при расчёте pKₐ и констант равновесия в растворе.</div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Растворитель перераспределяет заряд молекулы. Как вообще приписать заряд отдельному атому?</span><a class="nqA" href="charges.html" data-goto="chg">Атомные заряды: сравнение схем →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Модель Борна, ε = 78,4, добавки к радиусам равны нулю: какую энергию гидратации даёт она для Na⁺ (кДж/моль)?</span></p>
+<p class="olab">ΔG(Na⁺), кДж/моль</p><div class="opts" role="group"><button type="button" class="opt">-694,7</button><button type="button" class="opt">-365</button><button type="button" class="opt" data-ok="1">-672</button><button type="button" class="opt">-8,9</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>ΔG = −694,7/1,02 · (1 − 1/78,4) ≈ −672 кДж/моль — почти вдвое больше по модулю, чем эксперимент (−365). Кристаллический радиус слишком мал для полости в сплошной среде.</div></div>
+<div class="tq"><p class="qt"><span>Подберите добавку δ₊, при которой модель Борна для Na⁺ даёт −365 кДж/моль.</span></p>
+<p class="olab">δ₊, Å</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">0,86</button><button type="button" class="opt">0</button><button type="button" class="opt">1,88</button><button type="button" class="opt">0,43</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>a = 694,7·(1 − 1/78,4)/365 ≈ 1,88 Å, то есть δ₊ ≈ 0,86 Å — почти та же добавка 0,85 Å, которую Латимер, Питцер и Сланский предложили в 1939 году для всех катионов.</div></div>
+<div class="tq"><p class="qt"><span>C-PCM для воды: на сколько ккал/моль расчёт отличается от эксперимента (расчёт минус эксперимент)?</span></p>
+<p class="olab">Расчёт − эксперимент, ккал/моль</p><div class="opts" role="group"><button type="button" class="opt">1,3</button><button type="button" class="opt" data-ok="1">-1,3</button><button type="button" class="opt">0</button><button type="button" class="opt">-7,6</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Около −1,3 ккал/моль: −7,6 против −6,3. Электростатика без вклада полости переоценивает выигрыш, а для молекулы, образующей водородные связи, сплошная среда к тому же лишь в среднем описывает первый гидратный слой.</div></div>
+<div class="tq"><p class="qt"><span>Почему для этана C-PCM даёт отрицательную энергию сольватации, а в эксперименте она положительна (+1,8 ккал/моль)?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">В модели нет положительного вклада образования полости; электростатика всегда даёт выигрыш</button><button type="button" class="opt">Базис слишком мал</button><button type="button" class="opt">Геометрия этана неверна</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Электростатический вклад всегда отрицателен: среда только стабилизирует распределение заряда. Положительную часть — затраты на образование полости в воде — эта модель не считает, а для неполярной молекулы именно она главная.</div></div>
+<div class="tq"><p class="qt"><span>Раздел о зависимости от ε, ацетон: какую долю энергии сольватации в воде он получает уже в хлороформе (ε = 4,8), %?</span></p>
+<p class="olab">Доля, %</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">77</button><button type="button" class="opt">21</button><button type="button" class="opt">99</button><button type="button" class="opt">50</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Около 77 %: множитель (ε − 1)/ε при ε = 4,8 равен 0,79, а в воде — 0,99. Поэтому расчёт «в каком-нибудь полярном растворителе» мало отличается от расчёта в воде, но переход от газа к хлороформу уже даёт основную часть эффекта.</div></div>
+</div></details></section>
+<script src="js/solvation.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="solv";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/solvation.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>The bond through orbitals: localization, NBO, NCI</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>The bond through orbitals: localization, NBO, NCI</h1>
+<p class="lead">Bonds, lone pairs, hybridization, donor–acceptor interactions are the chemist's language. The wavefunction does not contain them: they are ways of reading it. Here — why orbitals can be rotated at no cost, where fractional hybridization comes from, what the energy E(2) of an NBO analysis means and how the NCI plot finds weak contacts.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>A rotation of occupied orbitals does not change the determinant: the same energy and density, only the look of the orbitals changes. Canonical orbitals diagonalize F and have energies; localized ones (Boys — the smallest spread, Pipek–Mezey — the fewest atoms) look like the Lewis structure but have no orbital energies.</li><li>NBO builds from the density matrix natural atomic orbitals, hybrids and bond orbitals with occupations as close to two as possible. The remainder on the formally empty orbitals measures how far the molecule is from one Lewis structure.</li><li>Hybrids s + λp at an angle θ are orthogonal if λ² = −1/cosθ: 109.5° — sp³, 120° — sp², 180° — sp. In water (104.5°) the bonds are sp⁴ (20 % s), the lone pairs 30 % s each — oxygen is not sp³.</li><li>E(2) = −n_i F_ij²/(ε_j* − ε_i): the stabilization from a filled orbital «leaking» into an empty one (n → σ*, σ → σ*). These energies do not add up and depend on the reference Lewis structure — a language of explanation, not a decomposition of the energy.</li><li>NCI: the reduced gradient s = |∇ρ|/(2(3π²)^⅓ρ^{4/3}). A small s at a small ρ occurs only between fragments — a spike on the plot of s against sign(λ₂)ρ; λ₂ < 0 attraction, λ₂ > 0 repulsion; the position of the spike is a rough measure of the strength.</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Rotating orbitals: canonical and localized</h2>
+  <div class="crow"><span class="l">Rotation angle θ, °</span><input type="range" id="th" min="-90" max="90" step="1" value="0" aria-label="theta"><span class="val" id="thv"></span></div>
+  <svg id="ochart" class="ch" viewBox="0 0 960 280" role="img" aria-label="Two occupied orbitals after the rotation and the total density"></svg>
+  <div class="legend" id="oleg"></div>
+  <svg id="pchart" class="ch" viewBox="0 0 960 200" role="img" aria-label="The total spread of the orbitals against the rotation angle"></svg>
+  <div class="cards" id="ocards"></div>
+  <p class="status" id="oNote"></p>
+  <p class="hint">Model: two bonds are normalized Gaussians at x = ±1.5 bohr, the canonical orbitals φ₁,₂ = (a ± b)/√2 with the energies −0.65 and −0.45 hartree; φ₁′ = cosθ φ₁ + sinθ φ₂, φ₂′ = −sinθ φ₁ + cosθ φ₂. The density ρ = 2(φ₁′² + φ₂′²) is drawn at half height.</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Hybridization from the bond angle</h2>
+  <div class="crow"><span class="l">Atom</span><span class="grp" id="nG" role="group" aria-label="Atom"></span></div>
+  <div class="crow"><span class="l">Bond angle θ, °</span><input type="range" id="an" min="91" max="180" step="0.1" value="104.5" aria-label="angle"><span class="val" id="anv"></span></div>
+  <svg id="hchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="The share of the s orbital in the hybrids of the bonds and the lone pairs"></svg>
+  <div class="legend" id="hleg"></div>
+  <div class="cards" id="hcards"></div>
+  <p class="status" id="hNote"></p>
+  <p class="hint">The bonds are equal hybrids s + λp orthogonal to each other: 1 + λ²cosθ = 0; there is one s orbital, and the rest is shared equally among the lone pairs. The marks are the experimental angles of molecules.</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">The donor–acceptor energy E(2)</h2>
+  <div class="crow"><span class="l">Coupling F_ij, hartree</span><input type="range" id="ff" min="0" max="0.3" step="0.005" value="0.05" aria-label="F"><span class="val" id="ffv"></span></div>
+  <div class="crow"><span class="l">Energy difference ε_j* − ε_i, hartree</span><input type="range" id="gp" min="0.1" max="2" step="0.01" value="0.6" aria-label="gap"><span class="val" id="gpv"></span></div>
+  <div class="crow"><span class="l">Occupation of the donor n_i</span><input type="range" id="nn" min="1" max="2" step="0.01" value="2" aria-label="n"><span class="val" id="nnv"></span></div>
+  <svg id="echart" class="ch" viewBox="0 0 960 300" role="img" aria-label="The stabilization energy against the coupling of the orbitals"></svg>
+  <div class="legend" id="eleg"></div>
+  <div class="cards" id="ecards"></div>
+  <p class="status" id="eNote"></p>
+  <p class="hint">A 2 × 2 problem: a filled i and an empty j* with the off-diagonal element F_ij. Exactly: n(√((Δε/2)² + F²) − Δε/2); to second order: n·F²/Δε.</p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">NCI: the reduced density gradient</h2>
+  <div class="crow"><span class="l">System</span><span class="grp" id="kG" role="group" aria-label="System"></span></div>
+  <div class="crow"><span class="l">Distance between the fragments, bohr</span><input type="range" id="dd" min="2.5" max="7" step="0.1" value="4" aria-label="d"><span class="val" id="ddv"></span></div>
+  <svg id="nchart" class="ch" viewBox="0 0 960 320" role="img" aria-label="The reduced gradient s against sign(λ₂)ρ"></svg>
+  <div class="cards" id="ncards"></div>
+  <p class="status" id="nNote"></p>
+  <p class="hint">Model: each fragment is a spherical density 0.5·e^{−1.8r}; the points are an 81 × 81 grid in the plane of the fragments, showing 10⁻⁴ < ρ < 0.08 and s < 2; coloured — the points with s < 0.5. The ring is a hexagon with the side d. On a coarse grid the spikes do not reach zero.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">The NCI plot has shown a contact. What does the energy of an intermolecular interaction consist of, and why does DFT miss it without dispersion?</span><a class="nqA" href="dispersion.html" data-goto="disp">Intermolecular interactions →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>The canonical orbitals of methane were replaced by four localized C–H bonds. What changed?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">The energy and the density</button><button type="button" class="opt" data-ok="1">Only the look of the orbitals; the new ones have no orbital energies</button><button type="button" class="opt">The dipole moment</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>A rotation of occupied orbitals multiplies the determinant by one: the observables are the same. But localized orbitals are not eigenfunctions of F.</div></div>
+<div class="tq"><p class="qt"><span>A bond angle of 120° between two equal hybrids. What is their hybridization?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">sp</button><button type="button" class="opt" data-ok="1">sp²</button><button type="button" class="opt">sp³</button><button type="button" class="opt">sp⁴</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>λ² = −1/cos120° = 2: sp², 33 % s.</div></div>
+<div class="tq"><p class="qt"><span>In E(2) = −n F²/Δε the energy difference of the donor and the acceptor doubled. What happens to E(2)?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">It halves</button><button type="button" class="opt">It drops fourfold</button><button type="button" class="opt">It doubles</button><button type="button" class="opt">Nothing</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>E(2) is inversely proportional to Δε. Doubling the coupling F would quadruple it.</div></div>
+<div class="tq"><p class="qt"><span>The NCI plot has a spike at sign(λ₂)ρ ≈ +0.005. What is it?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">A hydrogen bond</button><button type="button" class="opt" data-ok="1">Steric repulsion, e.g. the centre of a ring</button><button type="button" class="opt">A covalent bond</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>λ₂ > 0 — the density decreases in two directions, a ring point: repulsion. Attraction gives spikes at negative values.</div></div>
+</div></details></section>
+<script src="js/bonding.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="bonding";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/bonding.js"></script>
+
+</body>
+</html>

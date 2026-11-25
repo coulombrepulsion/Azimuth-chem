@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Постулаты квантовой механики</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/post.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-post-g.webp"><!--pose:end-->
+<h1>Постулаты квантовой механики: состояние, эволюция, измерение</h1>
+<p class="lead">Частица в одномерном ящике длины L — самая простая система, на которой видны все постулаты. Собственные функции гамильтониана ψ<sub>n</sub>(x) = √<span class=fr><span>2</span><span>L</span></span> sin <span class=fr><span>nπx</span><span>L</span></span>, энергии E<sub>n</sub> = n²E₁. Соберите из них состояние, запустите эволюцию во времени и проведите измерения.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Состояние описывается волновой функцией, |Ψ|² — плотность вероятности.</li><li>Стационарные состояния не меняются во времени (кроме общей фазы), а суперпозиции состояний с разной энергией эволюционируют.</li><li>Измерение даёт одно из собственных значений с вероятностью |c<sub>n</sub>|² и переводит систему в соответствующее состояние; ⟨E⟩ — среднее по многим измерениям.</li><li>Координата и импульс не могут быть одновременно точно определены: Δx·Δp ≥ <span class=fr><span>ħ</span><span>2</span></span>.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> точные решения модельной задачи — качественная иллюстрация постулатов</summary><dl><dt>Что вычисляется</dt><dd>Частица в одномерном ящике: собственные функции и энергии, эволюция суперпозиции во времени, вероятности результатов измерений.</dd><dt>Какие приближения приняты</dt><dd>Одно измерение; бесконечно высокие стенки; идеальное (проективное) измерение.</dd><dt>Какой вывод можно сделать</dt><dd>Постулаты видны точно, но числа относятся к модели, а не к конкретной молекуле.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h0s">
+  <h2 id="h0s">Пять постулатов квантовой механики</h2>
+  <div class="post">
+    <div><b>1. Состояние</b>Всё, что можно знать о системе, содержит волновая функция Ψ. Здесь Ψ = Σ c<sub>n</sub>ψ<sub>n</sub>, и её задают амплитуды и фазы c<sub>n</sub>.<span class="psec">→ раздел <a href="#h1s">1</a></span></div>
+    <div><b>2. Наблюдаемые — операторы</b>Энергии соответствует Ĥ, координате — x̂, импульсу — p̂ = −iħ <span class=fr><span>d</span><span>dx</span></span>. Возможные результаты измерения — собственные значения оператора.<span class="psec">→ раздел <a href="#h4s">4</a></span></div>
+    <div><b>3. Вероятности</b>Вероятность получить E<sub>n</sub> равна |c<sub>n</sub>|². Плотность вероятности найти частицу в точке x — |Ψ(x)|².<span class="psec">→ разделы <a href="#h2s">2</a>, <a href="#h3s">3</a>, <a href="#h5s">5</a></span></div>
+    <div><b>4. Измерение меняет состояние</b>После измерения система оказывается в собственном состоянии с полученным значением — повторное измерение даёт тот же результат.<span class="psec">→ разделы <a href="#h2s">2</a>, <a href="#h3s">3</a></span></div>
+    <div><b>5. Эволюция</b>Между измерениями Ψ меняется по уравнению Шрёдингера: каждая ψ<sub>n</sub> приобретает фазу e<sup>−iE<sub>n</sub>t/ħ</sup>.<span class="psec">→ раздел <a href="#h1s">1</a></span></div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Состояние и его эволюция</h2>
+  <div class="crow"><span class="l">Готовые состояния</span><span class="row" id="preG" role="group" aria-label="Готовые состояния"></span></div>
+  <div class="amp" id="ampBox"></div>
+  <div class="row"><button class="btn primary" id="bPlay" type="button">▶ Эволюция во времени</button><button class="btn" id="bT0" type="button" title="Вернуться к моменту, когда состояние приготовлено или измерено">t = 0</button>
+    <span class="l hint">Время</span><input type="range" id="tS" min="0" max="1" step="0.001" style="width:240px" aria-label="Время"><span class="val" id="tV"></span></div>
+  <p class="hint" id="t0Hint">Время t отсчитывается от момента, когда состояние приготовлено или измерено: это и есть t = 0 (кнопка «t = 0» возвращает туда). Единица времени T₁ = 2πħ/E₁ — за неё фаза основного состояния делает полный оборот, и через T₁ вся картина повторяется. Оси графика неподвижны: их пределы подобраны так, что функция помещается при любом t.</p>
+  <div class="work">
+    <div class="panel" style="padding:8px 10px">
+      <div class="ptitle">Плотность вероятности |Ψ(x, t)|² и Re Ψ</div>
+      <svg id="psiSvg" viewBox="0 0 560 280" role="img" aria-label="Волновая функция в ящике"></svg>
+      <div class="legend"><span><i class="box" style="background:var(--lp-bg)"></i>|Ψ|²</span><span><i class="sw" style="border-color:var(--ln);border-top-style:dashed"></i>Re Ψ</span><span><i class="sw" style="border-color:var(--ok)"></i>⟨x⟩</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="tablewrap" id="obsTab"></div>
+      <div class="status" id="st1"></div>
+    </div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. Измерение энергии</h2>
+  <p class="small">Состояние, заданное в разделе 1, — <b>исходное</b>: так система подготовлена перед опытом. <b>Одно измерение</b> даёт одно из значений E<sub>n</sub> случайно и <i>меняет</i> состояние: после него система находится в ψ<sub>n</sub>, и повторное измерение даст то же самое. Поэтому по одной системе вероятности |c<sub>n</sub>|² не увидеть — нужна <b>серия</b>: много систем в одинаковом исходном состоянии, каждую измеряют один раз. Кнопка «Сбросить» отменяет последствия измерения и возвращает систему в исходное состояние.</p>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="ptitle">Вероятности результатов |c<sub>n</sub>|² для текущего состояния</div>
+      <svg id="pSvg" viewBox="0 0 520 200" role="img" aria-label="Вероятности значений энергии"></svg>
+      <div class="row"><button class="btn primary" id="bME" type="button">Одно измерение</button><button class="btn" id="bM100" type="button">Серия: 200 одинаковых систем</button><button class="btn" id="bBack" type="button">Сбросить в исходное состояние</button></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="ptitle">Гистограмма результатов серии измерений</div>
+      <svg id="hSvg" viewBox="0 0 520 200" role="img" aria-label="Гистограмма результатов"></svg>
+      <div class="status" id="st2">Нажмите «Одно измерение»: результат случаен, но вероятности задаёт состояние.</div>
+    </div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">3. Измерение координаты</h2>
+  <p class="small">Прибор находит частицу с точностью σ. Здесь использована простая идеализация «измерили и приготовили пакет»: точку x₀ выбираем по исходному |Ψ|², а состояние заменяем вещественным гауссовым пакетом ширины σ вокруг x₀, отбрасывая фазу исходной функции. В более общей модели измерения конечного разрешения исходную Ψ умножают на гауссиан вокруг x₀ и нормируют, а статистика показаний учитывает разрешение прибора. Узкий пакет — это суперпозиция многих ψ<sub>n</sub>, поэтому энергия становится сильно неопределённой, а пакет со временем расплывается.</p>
+  <div class="row"><span class="l hint">Точность прибора σ</span><input type="range" id="sig" min="0.02" max="0.12" step="0.005" style="width:220px" aria-label="Точность прибора"><span class="val" id="sigV"></span>
+    <button class="btn primary" id="bMX" type="button">Измерить координату</button><span class="hint">После измерения смена σ повторяет его сама — в той же точке, с новой точностью.</span></div>
+    <div class="two">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="ptitle">|Ψ|² до измерения и пакет после него</div>
+      <svg id="xSvg" viewBox="0 0 520 220" role="img" aria-label="Плотность вероятности до и после измерения координаты"></svg>
+      <div class="legend"><span><i class="box" style="background:var(--soft);border:1px solid var(--muted)"></i>до измерения</span><span><i class="box" style="background:var(--lp-bg)"></i>после</span><span><i class="sw" style="border-color:var(--warn);border-top-style:dashed"></i>x₀</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="ptitle">Вероятности энергий |c<sub>n</sub>|² в пакете</div>
+      <svg id="xpSvg" viewBox="0 0 520 220" role="img" aria-label="Вероятности значений энергии после измерения координаты"></svg>
+    </div>
+  </div>
+  <div class="status" id="st3">Результат измерения координаты случаен с плотностью |Ψ(x)|². Попробуйте несколько раз.</div>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">4. Наблюдаемые — операторы</h2>
+  <p class="small">Каждой наблюдаемой величине соответствует оператор: энергии — Ĥ = −<span class=fr><span>ħ²</span><span>2m</span></span><span class=fr><span>d²</span><span>dx²</span></span>, импульсу — p̂ = −iħ<span class=fr><span>d</span><span>dx</span></span>, координате — умножение на x. Если ÂΨ = aΨ, функция Ψ <b>собственная</b>: измерение A наверняка даст a. Если нет, результат случаен, его среднее ⟨A⟩ = ∫Ψ*ÂΨ dx, а разброс ΔA = ‖ÂΨ − ⟨A⟩Ψ‖ — насколько ÂΨ отличается от ⟨A⟩Ψ.</p>
+  <div class="crow"><span class="l">Оператор</span><span class="row" id="opG" role="group" aria-label="Оператор"></span></div>
+  <div class="crow"><span class="l">Функция</span><span class="row" id="opF" role="group" aria-label="Функция"></span></div>
+  <div class="work">
+    <div class="panel" style="padding:8px 10px">
+      <div class="ptitle">ÂΨ и ⟨A⟩Ψ: совпадают только для собственной функции</div>
+      <svg id="opSvg" viewBox="0 0 560 250" role="img" aria-label="Действие оператора на функцию"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--lp)"></i>Re ÂΨ</span><span><i class="sw" style="border-color:var(--ln)"></i>Im ÂΨ</span><span><i class="sw" style="border-color:var(--muted);border-top-style:dashed"></i>⟨A⟩Ψ</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="tablewrap" id="opTab"></div>
+      <div class="status" id="st4"></div>
+    </div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h5s">
+  <h2 id="h5s">5. Суперпозиция и среднее значение</h2>
+  <p class="small">Состояние из раздела 1 — суперпозиция Ψ = Σ c<sub>n</sub>ψ<sub>n</sub>. Каждое измерение энергии даёт одно из E<sub>n</sub>, а среднее по многим измерениям стремится к <b>ожидаемому значению</b> ⟨E⟩ = Σ |c<sub>n</sub>|² E<sub>n</sub> — сумме вкладов отдельных состояний. Отклонение среднего от ⟨E⟩ уменьшается как <span class=fr><span>ΔE</span><span>√N</span></span>.</p>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="ptitle">Вклады |c<sub>n</sub>|²·E<sub>n</sub> в ⟨E⟩</div>
+      <svg id="cSvg" viewBox="0 0 520 220" role="img" aria-label="Вклады состояний в среднюю энергию"></svg>
+      <div class="status" id="cTxt"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="ptitle">Среднее первых N измерений</div>
+      <svg id="mSvg" viewBox="0 0 520 220" role="img" aria-label="Среднее значение энергии по числу измерений"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>среднее N измерений</span><span><i class="sw" style="border-color:var(--ok);border-top-style:dashed"></i>⟨E⟩</span><span><i class="box" style="background:var(--lp-bg)"></i>⟨E⟩ ± <span class=fr><span>ΔE</span><span>√N</span></span></span></div>
+      <div class="row"><button class="btn primary" id="bS" type="button">Серия: 1000 измерений</button></div>
+      <div class="status" id="st5">Нажмите «Серия»: 1000 систем в состоянии из раздела 1, у каждой измеряют энергию один раз.</div>
+    </div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Почему в квантовой химии энергии измеряют в хартри, а длины — в борах?</span><a class="nqA" href="units.html" data-goto="au">Атомные единицы →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Выберите ψ₂ и запустите эволюцию во времени. Меняется ли |Ψ|²? Почему?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Да, колеблется с частотой <span class=fr><span>E₂</span><span>h</span></span></button><button type="button" class="opt" data-ok="1">Нет: стационарное состояние, фазовый множитель общий</button><button type="button" class="opt">Да, но только вблизи стенок</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Нет. У стационарного состояния множитель e<sup>−iE₂t/ħ</sup> общий для всей функции: Re Ψ колеблется, а |Ψ|² и все средние значения постоянны.</div></div>
+<div class="tq"><p class="qt"><span>Состояние ψ₁ + ψ₂. С каким периодом колеблется ⟨x⟩ (в единицах T₁)?</span></p>
+<p class="olab">Период ⟨x⟩, T₁</p><div class="opts" role="group"><button type="button" class="opt">1</button><button type="button" class="opt">1/2</button><button type="button" class="opt" data-ok="1">1/3</button><button type="button" class="opt">3</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden><span class=fr><span>T₁</span><span>3</span></span>: частота биений <span class=fr><span>E₂ − E₁</span><span>h</span></span> = <span class=fr><span>3E₁</span><span>h</span></span>, а T₁ = <span class=fr><span>h</span><span>E₁</span></span>. Чем больше разность энергий, тем быстрее меняется плотность.</div></div>
+<div class="tq"><p class="qt"><span>Приготовьте ψ₁ + ψ₂ + ψ₃ с равными амплитудами. Чему равно ⟨E⟩ в единицах E₁?</span></p>
+<p class="olab">⟨E⟩, E₁</p><div class="opts" role="group"><button type="button" class="opt">9</button><button type="button" class="opt">1</button><button type="button" class="opt">3</button><button type="button" class="opt" data-ok="1">14/3</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>⟨E⟩ = <span class=fr><span>1 + 4 + 9</span><span>3</span></span> = <span class=fr><span>14</span><span>3</span></span> ≈ 4,67 E₁. Это среднее по многим измерениям; в одном измерении получается только 1, 4 или 9 — но никогда 4,67.</div></div>
+<div class="tq"><p class="qt"><span>Нажмите «Одно измерение» дважды подряд, не сбрасывая состояние. Что даст второе измерение?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Случайное значение с теми же вероятностями</button><button type="button" class="opt">Всегда E₁</button><button type="button" class="opt" data-ok="1">То же значение, что и в первый раз</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>То же значение: после первого измерения система находится в собственном состоянии ψ<sub>n</sub> (постулат 4), и вероятность другого исхода равна нулю.</div></div>
+<div class="tq"><p class="qt"><span>Сравните Δx·Δp для ψ₁ и для пакета после измерения координаты с σ = 0,02 L.</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">У пакета около <span class=fr><span>ħ</span><span>2</span></span> — в модели это вещественный гауссов пакет</button><button type="button" class="opt">У пакета намного больше, чем у ψ₁</button><button type="button" class="opt">У ψ₁ меньше <span class=fr><span>ħ</span><span>2</span></span></button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>У ψ₁ — 0,57ħ, у узкого гауссова пакета — почти ровно <span class=fr><span>ħ</span><span>2</span></span>: вещественный гауссов пакет близок к минимуму, разрешённому соотношением неопределённостей. Это свойство выбранной модели измерения, а не любого измерения координаты. Зато Δp у пакета огромно — отсюда большой разброс энергий.</div></div>
+<div class="tq"><p class="qt"><span>После измерения координаты запустите эволюцию во времени. Через какое время (в T₁) пакет соберётся снова в той же точке?</span></p>
+<p class="olab">Время, T₁</p><div class="opts" role="group"><button type="button" class="opt">1/3</button><button type="button" class="opt" data-ok="1">1</button><button type="button" class="opt">1/9</button><button type="button" class="opt">1/2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Через T₁: все фазы n²·2π кратны 2π — полное «возрождение» пакета. Через <span class=fr><span>T₁</span><span>2</span></span> пакет появляется в зеркальной точке L − x.</div></div>
+</div></details></section>
+<script src="js/postulates.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="post";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/postulates.js"></script>
+
+</body>
+</html>

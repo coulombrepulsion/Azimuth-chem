@@ -1,0 +1,3 @@
+serv4:rank3.orca_startup_mpi: Failed to get br-8f68eb3b4286 (unit 1) cpu set
+[file orca_leanscf/orca_leanscf.cpp, line 269, Process 8]: Error (ORCA_LEANSCF): unfortunately, the SCF has not converged. There may be a way out but we have to stop here 
+ORCA finished by error termination in LEANSCF

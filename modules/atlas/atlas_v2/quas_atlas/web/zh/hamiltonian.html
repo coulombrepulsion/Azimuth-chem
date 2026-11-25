@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>分子哈密顿量</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/ham.css">
+
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-ham-g.webp"><!--pose:end-->
+<h1>分子哈密顿量</h1>
+<p class="lead">分子的完整非相对论哈密顿量由五类项组成：核与电子的动能、电子与核的吸引、电子间排斥和核间排斥。选择一个分子——页面会用原子单位写出哈密顿量，并统计每类项的数目。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>分子哈密顿量包含电子和原子核的动能以及所有库仑相互作用。</li><li>项数随粒子数的平方增长；电子间排斥是问题的主要难点。</li><li>在 Born–Oppenheimer 近似中原子核固定：去掉 T<sub>N</sub>，V<sub>NN</sub> 变成常数，然后求解电子问题。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>算符的精确形式</summary><dl><dt>计算的是什么</dt><dd>所选分子完整哈密顿量的各项及其数目。</dd><dt>采用了哪些近似</dt><dd>非相对论哈密顿量，点状原子核，无自旋–轨道相互作用。</dd><dt>能得出什么结论</dt><dd>算符写得是精确的，但含它的方程只能近似求解。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. 分子</h2>
+  <div class="crow"><span class="l">示例</span><span class="row" id="molG" role="group" aria-label="分子示例"></span></div>
+  <div class="crow"><span class="l">自定义分子式与电荷</span><input class="fin" id="fIn" value="H₂O" spellcheck="false" aria-label="分子式"><select class="fin" id="qIn" style="width:90px" aria-label="电荷"></select><button class="btn primary" id="bGo" type="button">写出哈密顿量</button></div>
+  <p class="hint">分子式：元素符号加数字，可用括号——例如 CH<sub>3</sub>COOH、Fe(C<sub>5</sub>H<sub>5</sub>)<sub>2</sub>、NH<sub>4</sub> 加电荷 +1。每个核都视为点电荷 Z<sub>A</sub>。</p>
+  <div class="status" id="sum"></div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. 原子单位下的哈密顿量</h2>
+  <div class="row"><button class="chip" id="bFull" type="button" aria-pressed="true">完整哈密顿量</button><button class="chip" id="bEl" type="button" aria-pressed="false">核固定（玻恩–奥本海默）</button></div>
+  <div class="ham" id="hamBox"></div>
+  <div class="status" id="hamTxt"></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">3. 项的数目</h2>
+  <div class="cnt" id="cnt"></div>
+  <p class="hint">条形长度为对数刻度。电子间排斥按 <span class=fr><span>N²</span><span>2</span></span> 增长——正是它使多电子问题变得困难。</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">项太多了。能否把原子核的运动与电子的运动分开？</span><a class="nqA" href="bo.html" data-goto="bo">玻恩–奥本海默近似与振动 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面探索练习与训练器。在页面上完成操作并作答——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>CaH₂：V<sub>ee</sub> 中有多少项？</span></p>
+<p class="olab">V<sub>ee</sub> 的项数</p><div class="opts" role="group"><button type="button" class="opt">253</button><button type="button" class="opt" data-ok="1">231</button><button type="button" class="opt">22</button><button type="button" class="opt">462</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>N = 20 + 1 + 1 = 22 个电子；电子对数 <span class=fr><span>N(N − 1)</span><span>2</span></span> = <span class=fr><span>22·21</span><span>2</span></span> = 231。</div></div>
+<div class="tq"><p class="qt"><span>苯：V<sub>eN</sub> 中有多少项？</span></p>
+<p class="olab">V<sub>eN</sub> 的项数</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">504</button><button type="button" class="opt">252</button><button type="button" class="opt">42</button><button type="button" class="opt">546</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>N = 6·6 + 6 = 42 个电子，M = 12 个核：每个电子与每个核，N·M = 504。</div></div>
+<div class="tq"><p class="qt"><span>比较 CH₄ 和 NH₄⁺。它们有什么相同？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">只有电子数</button><button type="button" class="opt" data-ok="1">各类项的数目</button><button type="button" class="opt">除了核的数目都不同</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>核数（5）和电子数（10）相同，因此各类项的数目也相同。区别只在电荷：NH₄⁺ 的 V<sub>eN</sub> 和 V<sub>NN</sub> 中是 Z = 7 而不是 6。</div></div>
+<div class="tq"><p class="qt"><span>打开“核固定”。为什么 V<sub>NN</sub> 不作为算符进入电子哈密顿量？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">核固定时它是一个数：使所有能级同样平移</button><button type="button" class="opt">与 V<sub>eN</sub> 相比它可以忽略</button><button type="button" class="opt">它已包含在 V<sub>eN</sub> 中</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>在给定核坐标下 V<sub>NN</sub> 只是一个数。它使所有电子能级同样平移，不改变波函数，因此把它加到 E<sub>el</sub> 上得到 U(R)。</div></div>
+<div class="tq"><p class="qt"><span>质子质量是电子质量的多少倍？</span></p>
+<p class="olab">倍数</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">1836</button><button type="button" class="opt">207</button><button type="button" class="opt">43</button><button type="button" class="opt">1823</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>1836 倍。因此核比电子运动慢得多——玻恩–奥本海默近似正是建立在这一点上。</div></div>
+<div class="tq"><p class="qt"><span>如果电子数加倍，V<sub>ee</sub> 的项数如何变化？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">增加 2 倍</button><button type="button" class="opt" data-ok="1">约增加 4 倍</button><button type="button" class="opt">不变</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>约 4 倍：<span class=fr><span>N(N − 1)</span><span>2</span></span> ≈ <span class=fr><span>N²</span><span>2</span></span>。电子间排斥是项数最多、也最难处理的部分。</div></div>
+<!--self:start--><div class="selfBox"><h3 id="h4s">自我检测</h3>
+  <p class="small">典型题目：对下面的分子，写出电子数以及电子哈密顿量和 V<sub>NN</sub> 中每类项的数目。</p>
+  <div class="row"><b id="qMol" style="font-family:var(--f-display);font-size:19px"></b><button class="btn" id="qNew" type="button">换一个分子</button></div>
+  <div class="quiz">
+    <label><span>电子数 N</span><input id="q0" inputmode="numeric" autocomplete="off"></label>
+    <label><span>T<sub>e</sub> 的项数</span><input id="q1" inputmode="numeric" autocomplete="off"></label>
+    <label><span>V<sub>eN</sub> 的项数</span><input id="q2" inputmode="numeric" autocomplete="off"></label>
+    <label><span>V<sub>ee</sub> 的项数</span><input id="q3" inputmode="numeric" autocomplete="off"></label>
+    <label><span>V<sub>NN</sub> 的项数</span><input id="q4" inputmode="numeric" autocomplete="off"></label>
+  </div>
+  <div class="row"><button class="btn primary" id="qChk" type="button">检查</button><button class="btn" id="qShow" type="button">显示解答</button></div>
+  <div class="status" id="qRes">输入数字并点击“检查”。</div>
+</div><!--self:end--></div></details></section>
+<script src="js/hamiltonian.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="ham";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/hamiltonian.js"></script>
+
+</body>
+</html>

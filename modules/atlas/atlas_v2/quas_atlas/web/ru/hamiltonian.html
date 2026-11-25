@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Молекулярный гамильтониан</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/ham.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-ham-g.webp"><!--pose:end-->
+<h1>Молекулярный гамильтониан</h1>
+<p class="lead">Полный нерелятивистский гамильтониан молекулы состоит из пяти типов слагаемых: кинетическая энергия ядер и электронов, притяжение электронов к ядрам, отталкивание электронов и отталкивание ядер. Выберите молекулу — страница запишет гамильтониан в атомных единицах и сосчитает слагаемые каждого типа.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Молекулярный гамильтониан содержит кинетическую энергию электронов и ядер и все кулоновские взаимодействия.</li><li>Число слагаемых растёт как квадрат числа частиц; межэлектронное отталкивание — главная трудность задачи.</li><li>В приближении Борна–Оппенгеймера ядра неподвижны: T<sub>N</sub> отбрасывают, V<sub>NN</sub> становится числом, и решают электронную задачу.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> точная форма оператора</summary><dl><dt>Что вычисляется</dt><dd>Слагаемые полного гамильтониана выбранной молекулы и их число.</dd><dt>Какие приближения приняты</dt><dd>Нерелятивистский гамильтониан, точечные ядра, без спин-орбитального взаимодействия.</dd><dt>Какой вывод можно сделать</dt><dd>Оператор записан точно, но решить уравнение с ним можно только приближённо.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Молекула</h2>
+  <div class="crow"><span class="l">Примеры</span><span class="row" id="molG" role="group" aria-label="Примеры молекул"></span></div>
+  <div class="crow"><span class="l">Своя формула и заряд</span><input class="fin" id="fIn" value="H₂O" spellcheck="false" aria-label="Брутто-формула"><select class="fin" id="qIn" style="width:90px" aria-label="Заряд"></select><button class="btn primary" id="bGo" type="button">Записать гамильтониан</button></div>
+  <p class="hint">Формула: символы элементов с числами, скобки разрешены — например CH<sub>3</sub>COOH, Fe(C<sub>5</sub>H<sub>5</sub>)<sub>2</sub>, NH<sub>4</sub> с зарядом +1. Каждое ядро считается точечным зарядом Z<sub>A</sub>.</p>
+  <div class="status" id="sum"></div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. Гамильтониан в атомных единицах</h2>
+  <div class="row"><button class="chip" id="bFull" type="button" aria-pressed="true">Полный гамильтониан</button><button class="chip" id="bEl" type="button" aria-pressed="false">Ядра неподвижны (Борн–Оппенгеймер)</button></div>
+  <div class="ham" id="hamBox"></div>
+  <div class="status" id="hamTxt"></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">3. Сколько слагаемых</h2>
+  <div class="cnt" id="cnt"></div>
+  <p class="hint">Шкала длины полосок логарифмическая. Межэлектронное отталкивание растёт как <span class=fr><span>N²</span><span>2</span></span> — именно оно делает задачу многих электронов трудной.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Слагаемых слишком много. Можно ли отделить движение ядер от движения электронов?</span><a class="nqA" href="bo.html" data-goto="bo">Борн–Оппенгеймер и колебания →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания на исследование страницы и тренажёр. Выполните действие на странице и ответьте — ответ проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>CaH₂: сколько слагаемых в V<sub>ee</sub>?</span></p>
+<p class="olab">Слагаемых V<sub>ee</sub></p><div class="opts" role="group"><button type="button" class="opt">253</button><button type="button" class="opt" data-ok="1">231</button><button type="button" class="opt">22</button><button type="button" class="opt">462</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>N = 20 + 1 + 1 = 22 электрона; пар <span class=fr><span>N(N − 1)</span><span>2</span></span> = <span class=fr><span>22·21</span><span>2</span></span> = 231.</div></div>
+<div class="tq"><p class="qt"><span>Бензол: сколько слагаемых в V<sub>eN</sub>?</span></p>
+<p class="olab">Слагаемых V<sub>eN</sub></p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">504</button><button type="button" class="opt">252</button><button type="button" class="opt">42</button><button type="button" class="opt">546</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>N = 6·6 + 6 = 42 электрона, M = 12 ядер: каждый электрон с каждым ядром, N·M = 504.</div></div>
+<div class="tq"><p class="qt"><span>Сравните CH₄ и NH₄⁺. Что у них одинаково?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Только число электронов</button><button type="button" class="opt" data-ok="1">Числа слагаемых всех типов</button><button type="button" class="opt">Ничего, кроме числа ядер</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Числа ядер (5) и электронов (10) одинаковы, поэтому совпадают и числа слагаемых всех типов. Различаются только заряды: у NH₄⁺ в V<sub>eN</sub> и V<sub>NN</sub> стоит Z = 7 вместо 6.</div></div>
+<div class="tq"><p class="qt"><span>Включите «Ядра неподвижны». Почему V<sub>NN</sub> не входит в электронный гамильтониан как оператор?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">При фиксированных ядрах это число: оно сдвигает все уровни одинаково</button><button type="button" class="opt">Оно пренебрежимо мало по сравнению с V<sub>eN</sub></button><button type="button" class="opt">Оно уже учтено в V<sub>eN</sub></button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>При заданных координатах ядер V<sub>NN</sub> — просто число. Оно одинаково сдвигает все электронные уровни и не меняет волновые функции, поэтому его прибавляют к E<sub>эл</sub> и получают U(R).</div></div>
+<div class="tq"><p class="qt"><span>Во сколько раз масса протона больше массы электрона?</span></p>
+<p class="olab">Во сколько раз</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">1836</button><button type="button" class="opt">207</button><button type="button" class="opt">43</button><button type="button" class="opt">1823</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>В 1836 раз. Поэтому ядра движутся намного медленнее электронов — на этом и держится приближение Борна–Оппенгеймера.</div></div>
+<div class="tq"><p class="qt"><span>Как изменится число слагаемых V<sub>ee</sub>, если число электронов удвоить?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">В 2 раза</button><button type="button" class="opt" data-ok="1">Примерно в 4 раза</button><button type="button" class="opt">Не изменится</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Примерно в 4 раза: <span class=fr><span>N(N − 1)</span><span>2</span></span> ≈ <span class=fr><span>N²</span><span>2</span></span>. Межэлектронное отталкивание — самая многочисленная и самая трудная часть задачи.</div></div>
+<!--self:start--><div class="selfBox"><h3 id="h4s">Проверьте себя</h3>
+  <p class="small">Типовая задача: для молекулы ниже укажите число электронов и число слагаемых каждого типа в электронном гамильтониане и в V<sub>NN</sub>.</p>
+  <div class="row"><b id="qMol" style="font-family:var(--f-display);font-size:19px"></b><button class="btn" id="qNew" type="button">Новая молекула</button></div>
+  <div class="quiz">
+    <label><span>Электронов N</span><input id="q0" inputmode="numeric" autocomplete="off"></label>
+    <label><span>Слагаемых T<sub>e</sub></span><input id="q1" inputmode="numeric" autocomplete="off"></label>
+    <label><span>Слагаемых V<sub>eN</sub></span><input id="q2" inputmode="numeric" autocomplete="off"></label>
+    <label><span>Слагаемых V<sub>ee</sub></span><input id="q3" inputmode="numeric" autocomplete="off"></label>
+    <label><span>Слагаемых V<sub>NN</sub></span><input id="q4" inputmode="numeric" autocomplete="off"></label>
+  </div>
+  <div class="row"><button class="btn primary" id="qChk" type="button">Проверить</button><button class="btn" id="qShow" type="button">Показать решение</button></div>
+  <div class="status" id="qRes">Введите числа и нажмите «Проверить».</div>
+</div><!--self:end--></div></details></section>
+<script src="js/hamiltonian.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="ham";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/hamiltonian.js"></script>
+
+</body>
+</html>

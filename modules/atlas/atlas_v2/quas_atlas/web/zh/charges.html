@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,formaldehyde,ammonia">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>原子电荷：方案比较</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/chg.css">
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-chg-g.webp"><!--pose:end-->
+<h1>原子电荷：方案比较</h1>
+<p class="lead">程序会输出“原子电荷”，但分子中原子的电荷无法测量：它取决于如何在原子之间划分电子密度的约定。不同方案的划分方式不同，对同一个波函数给出不同的数值。这里用同一个哈特里–福克计算、在四种基组下给出马利肯、勒夫丁和巴德电荷——可以看出哪些由电荷得出的结论可靠，哪些不可靠。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>分子中原子的电荷不是可观测量：它取决于所选的电子密度划分方式。</li><li>马利肯和勒夫丁按基函数划分密度；巴德划分的是空间本身，因此随着基组增大其电荷趋于极限。在小基组中巴德电荷也会明显变化：从 STO-3G 到 6-31G**，水中氧的巴德电荷变化 0.4 e。</li><li>只有在同一方案、同一基组下比较电荷才有意义：在一系列相似分子中，趋势比绝对数值更可靠。</li><li>可观测量——偶极矩、静电势——可以检验电荷在多大程度上反映了分子的静电性质。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>电荷是约定，而不是可观测量</summary><dl><dt>计算的是什么</dt><dd>同一 RHF 波函数在四种基组下的马利肯、勒夫丁和巴德原子电荷；点电荷偶极矩与真实偶极矩的比较。</dd><dt>采用了哪些近似</dt><dd>不含相关的哈特里–福克方法；基组从 STO-3G 到 6-31G**；NBO、Hirshfeld 和拟合静电势的方案只作文字说明，没有计算。 在含六个笛卡尔 d 函数的基组（6-31G*、6-31G**）中，勒夫丁电荷是在先将每个这样的壳层正交归一化之后计算的，因此不依赖于分子的取向（按直接定义，NH₃ 中三个等价的 H 原子曾得到 0.2677 / 0.2692 / 0.2692）。</dd><dt>能得出什么结论</dt><dd>电荷对方案和基组的依赖有多强、哪些比较有意义——可以；原子的“真实”电荷——不行：这样的量并不存在。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">分子与基组</h2>
+  <div class="crow"><span class="l">分子</span><span class="grp" id="molG" role="group" aria-label="分子"></span></div>
+  <div class="crow"><span class="l">基组</span><span class="grp" id="basG" role="group" aria-label="基组"></span></div>
+  <p class="hint" id="info"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">三种方案的电荷</h2>
+  <div class="tablewrap" id="tab"></div>
+  <svg id="bars" viewBox="0 0 960 260" role="img" aria-label="原子电荷"></svg>
+  <div class="legend" id="leg"></div>
+  <p class="hint" id="note"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">对基组的依赖</h2>
+  <div class="crow"><span class="l">原子</span><span class="grp" id="atG" role="group" aria-label="原子"></span></div>
+  <svg id="chart" viewBox="0 0 960 300" role="img" aria-label="不同基组下的原子电荷"></svg>
+  <p class="hint">随着基组扩大，能量和偶极矩收敛到极限；马利肯和勒夫丁电荷可能非单调变化——它没有应当收敛到的极限。</p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">用偶极矩检验</h2>
+  <p class="hint">偶极矩是可观测量：它可以测量，也可以由完整的电子密度计算。如果只在原子核上放置该方案的点电荷，就得到“电荷的偶极矩” μ<sub>q</sub> = Σ q<sub>A</sub>R<sub>A</sub>。μ<sub>q</sub> 越接近真实值，电荷对分子静电性质的描述就越好。</p>
+  <div class="tablewrap" id="dip"></div>
+  <p class="hint" id="dipNote"></p>
+</section>
+<section class="panel" aria-labelledby="h5s">
+  <h2 id="h5s">各方案的原理</h2>
+  <div class="eq">
+    <div class="eqb"><div class="t">马利肯</div>原子的布居是其基函数对应的对角元 (<b>PS</b>)<sub>μμ</sub>；重叠密度在两个原子之间平分。简单快速，但强烈依赖于基组，尤其是含弥散函数时。</div>
+    <div class="eqb"><div class="t">勒夫丁</div>先对基组做对称正交化 (<b>S</b><sup>1/2</sup><b>PS</b><sup>1/2</sup>)，再计算布居。不再有重叠，也就无需划分；对基组的依赖较小，但仍然存在。</div>
+    <div class="eqb"><div class="t">巴德（QTAIM）</div>用密度梯度零通量面划分空间；电荷是密度在原子盆内的积分。该方案由密度本身决定，而不是由基组决定，并随基组收敛；电荷的绝对值通常更大。</div>
+    <div class="eqb"><div class="t">其他方案</div>NBO（自然轨道）、Hirshfeld（自由原子密度所占份额）、由静电势拟合的电荷（CHELPG、RESP——拟合静电势，用于力场）。相互比较时应采用同一方案和同一基组。</div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">巴德方案究竟如何划分密度？从它的原子盆中还能得到什么？</span><a class="nqA" href="aim.html" data-goto="aim">分子中的原子（巴德）→</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>水，6-31G**：对同一个波函数，氧的马利肯电荷和巴德电荷相差多少？</span></p>
+<p class="olab">O 电荷之差，e</p><div class="opts" role="group"><button type="button" class="opt">0.81</button><button type="button" class="opt" data-ok="1">0.55</button><button type="button" class="opt">0</button><button type="button" class="opt">0.25</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>相差 0.55：马利肯为 −0.67，巴德为 −1.23（勒夫丁为 −0.42）。波函数是同一个，不同的只是在原子之间划分密度的规则。</div></div>
+<div class="tq"><p class="qt"><span>STO-3G 下的 LiH：马利肯电荷中锂的符号是什么？该相信什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">接近零甚至为负——方案的假象</button><button type="button" class="opt">约 +0.9，与巴德相同</button><button type="button" class="opt">约 −1</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>几乎为零甚至略为负（−0.02）——与化学常识相反：锂把电子给了氢，这从偶极矩（约 4.9 D）和巴德电荷（+0.84）都能看出。马利肯方案把重叠密度平分，在最小基组中会给出这样的假象。</div></div>
+<div class="tq"><p class="qt"><span>水：在氢上加 p 函数（6-31G* → 6-31G**）。氧的马利肯电荷如何变化？为什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">负电荷变小：O–H 键的部分密度归给了氢</button><button type="button" class="opt">负电荷变大</button><button type="button" class="opt">没有变化</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>从 −0.87 变为 −0.67：新函数以氢为中心，按马利肯规则，O–H 键的部分密度现在被归给氢。而能量只改变了 0.013 E<sub>h</sub>，偶极矩只改变 0.04 D：变的不是分子，而是记账方式。</div></div>
+<div class="tq"><p class="qt"><span>甲烷，6-31G**：巴德和马利肯方案中碳的电荷符号分别是什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">巴德为 +，马利肯为 −</button><button type="button" class="opt">两种方案都为 −</button><button type="button" class="opt">两种方案都为 +</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>巴德电荷中碳为正（+0.24），马利肯电荷中为负（−0.47）。两种方案按各自的定义都是对的；“甲烷中的碳带负电荷”这一结论取决于方案，因而并不说明分子本身的任何性质。</div></div>
+<div class="tq"><p class="qt"><span>CO，6-31G*：哈特里–福克计算的偶极矩方向与实验一致吗？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">不一致：HF 给出相反的方向</button><button type="button" class="opt">一致</button><button type="button" class="opt">CO 的偶极矩为零</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>不一致。实验中 μ = 0.11 D，负端在碳上，而 6-31G* 下的哈特里–福克给出 C⁺O⁻。只有考虑电子相关才能得到正确的符号。STO-3G 中符号是对的，但纯属巧合。</div></div>
+<div class="tq"><p class="qt"><span>水，6-31G**：巴德点电荷给出的偶极矩是多少（德拜）？为什么比真实值大？</span></p>
+<p class="olab">巴德 μ<sub>q</sub>，D</p><div class="opts" role="group"><button type="button" class="opt">2.19</button><button type="button" class="opt" data-ok="1">3.45</button><button type="button" class="opt">1.85</button><button type="button" class="opt">0.73</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>约 3.45 D，而由完整密度得到 2.19 D（实验 1.85 D）。原子盆本身还被极化：它们自身的偶极矩部分抵消了电荷转移，而点电荷没有考虑这一点。</div></div>
+</div></details></section>
+<script src="js/charges.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="chg";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/charges.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Иерархия методов и лестница Якова</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/lad.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-ladder-g.webp"><!--pose:end-->
+<h1>Иерархия методов и лестница Якова</h1>
+<p class="lead">Какой метод выбрать для расчёта? Методы волновой функции выстраиваются в иерархию: каждая следующая ступень точнее и дороже предыдущей, а на вершине — полное КВ, точное решение в данном базисе. Функционалы плотности Пердью расставил по «лестнице Якова»: ступени различаются тем, что функционал знает об электронах. Все числа на странице посчитаны: ошибки методов относительно полного КВ при растяжении связи, время расчёта кластеров воды и энергии атомизации девяти молекул.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Методы волновой функции образуют иерархию HF → MP2 → CCSD → CCSD(T) → полное КВ: каждая ступень ближе к точному ответу в данном базисе и дороже.</li><li>Иерархия надёжна, пока доминирует одна конфигурация; при разрыве связи методы на основе одного детерминанта, включая CCSD(T), ломаются.</li><li>Цена растёт как степень размера системы: N⁵ для MP2, N⁶ для CCSD, N⁷ для CCSD(T), полное КВ — факториально.</li><li>Лестница Якова расставляет функционалы по ингредиентам: плотность, её градиент, кинетическая энергия, точный обмен, виртуальные орбитали; выше — обычно точнее, но не всегда.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> малые молекулы, один базис на сравнение</summary><dl><dt>Что вычисляется</dt><dd>Ошибки MP2, CISD, CCSD и CCSD(T) относительно полного КВ при растяжении связи; время расчёта кластеров воды; энергии атомизации девяти молекул для восьми функционалов и четырёх волновых методов.</dd><dt>Какие приближения приняты</dt><dd>Полное КВ — только в базисе 6-31G; энергии атомизации — в cc-pVQZ без дисперсионных, релятивистских и остовных поправок; опорные значения — CCSD(T), экстраполированный к пределу полного базиса.</dd><dt>Какой вывод можно сделать</dt><dd>Как ведут себя ступени иерархии и лестницы и как растёт цена — да; рейтинг функционалов для вашей задачи — нет: девять молекул и одно свойство — слишком узкая проверка.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Волновые методы против полного КВ</h2>
+  <p class="hint">Молекула в базисе 6-31G, 1s-электроны заморожены. Полное КВ (FCI) — точная энергия в этом базисе, поэтому разность с ним — ошибка самого метода, без ошибки базиса. Связь растягивается от равновесной длины r<sub>e</sub> до трёх r<sub>e</sub>.</p>
+  <div class="crow"><span class="l">Молекула</span><span class="grp" id="molG" role="group" aria-label="Молекула"></span></div>
+  <div class="slrow"><span class="l">r / r<sub>e</sub></span><input type="range" id="kS" min="0" max="6" step="1" value="0" aria-label="Растяжение связи"><span class="val" id="kV"></span></div>
+  <svg id="errC" viewBox="0 0 960 330" role="img" aria-label="Ошибка методов относительно полного КВ"></svg>
+  <div class="legend" id="errL"></div>
+  <div class="tablewrap" id="errT"></div>
+  <p class="hint" id="errN"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Цена расчёта</h2>
+  <p class="hint">Время расчёта растёт как степень размера системы N (числа базисных функций). Показатель степени — главное, что отличает ступени: удвоение молекулы удлиняет расчёт MP2 в 32 раза, а CCSD(T) — в 128 раз.</p>
+  <div class="slrow"><span class="l">Система больше в</span><input type="range" id="fS" min="1" max="10" step="1" value="2" aria-label="Во сколько раз больше система"><span class="val" id="fV"></span></div>
+  <div class="tablewrap" id="costT"></div>
+  <h3 class="ptitle">Измеренное время: цепочки (H<sub>2</sub>O)<sub>n</sub> в cc-pVDZ</h3>
+  <svg id="timeC" viewBox="0 0 960 320" role="img" aria-label="Время расчёта в зависимости от числа базисных функций"></svg>
+  <div class="legend" id="timeL"></div>
+  <p class="hint" id="timeN"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Лестница Якова для функционалов плотности</h2>
+  <p class="hint">Метафора Дж. Пердью: функционалы стоят на ступенях лестницы, ведущей с «земли» Хартри к «небесам» химической точности (около 1 ккал/моль). На каждой ступени функционал получает новый ингредиент. Нажмите на ступень.</p>
+  <div class="two">
+    <svg id="jac" viewBox="0 0 480 380" role="img" aria-label="Лестница Якова"></svg>
+    <div id="rung" class="eqb" aria-live="polite"></div>
+  </div>
+  <h3 class="ptitle">Энергии атомизации девяти молекул: средняя абсолютная ошибка</h3>
+  <p class="hint">H<sub>2</sub>, CH<sub>4</sub>, NH<sub>3</sub>, H<sub>2</sub>O, HF, N<sub>2</sub>, CO, F<sub>2</sub>, C<sub>2</sub>H<sub>2</sub>; базис cc-pVQZ. Опорные значения — CCSD(T), экстраполированный к пределу полного базиса из cc-pVTZ и cc-pVQZ.</p>
+  <svg id="maeC" viewBox="0 0 960 360" role="img" aria-label="Средняя абсолютная ошибка энергий атомизации"></svg>
+  <div class="crow"><span class="l">Молекула</span><span class="grp" id="tmolG" role="group" aria-label="Молекула"></span></div>
+  <div class="tablewrap" id="taeT"></div>
+  <p class="hint" id="taeN"></p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">Как выбирать</h2>
+  <div class="eq">
+    <div class="eqb"><div class="t">Сначала — физика задачи</div>Если у молекулы одна доминирующая конфигурация (обычная закрытая оболочка у равновесия), иерархия работает: CCSD(T) в хорошем базисе — «золотой стандарт». При разрыве связей, у бирадикалов и многих комплексов переходных металлов однодетерминантные методы ломаются — нужны многоконфигурационные.</div>
+    <div class="eqb"><div class="t">Потом — размер</div>CCSD(T) практичен до десятков атомов, MP2 — до сотни-другой, DFT — до тысяч. Для большой системы гибридный функционал с дисперсионной поправкой обычно лучший компромисс.</div>
+    <div class="eqb"><div class="t">Ступень функционала — не гарантия</div>Лестница Якова описывает ингредиенты, а не точность: хорошо подогнанный GGA иногда лучше плохого гибрида. Функционал проверяют на задачах того же типа, что ваша.</div>
+    <div class="eqb"><div class="t">Метод и базис — вместе</div>Дорогой метод в маленьком базисе теряет смысл: ошибка базиса перекрывает выигрыш от метода. Сходимость по базису — на соседней странице.</div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Дорогой метод в маленьком базисе теряет смысл. Как быстро энергия сходится с ростом базиса?</span><a class="nqA" href="cbs.html" data-goto="cbs">Сходимость по базису →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Молекула HF при равновесном расстоянии: во сколько раз CCSD(T) ближе к полному КВ, чем MP2?</span></p>
+<p class="olab">Во сколько раз</p><div class="opts" role="group"><button type="button" class="opt">2</button><button type="button" class="opt">1</button><button type="button" class="opt">90</button><button type="button" class="opt" data-ok="1">9</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Примерно в 9 раз: ошибка MP2 3,7 мEₕ, CCSD(T) — 0,4 мEₕ. При одной доминирующей конфигурации каждая ступень иерархии заметно точнее предыдущей.</div></div>
+<div class="tq"><p class="qt"><span>Растяните связь HF в 3 раза. Что случилось с CCSD(T)?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Ушла ниже полного КВ: метод не вариационный и ломается при вырождении</button><button type="button" class="opt">Совпала с полным КВ</button><button type="button" class="opt">Не сошлась</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Энергия CCSD(T) ушла ниже полного КВ на 17 мEₕ. Метод не вариационный, и при почти вырожденных конфигурациях поправка (T) расходится: ответ выглядит «лучше точного», но это поломка метода.</div></div>
+<div class="tq"><p class="qt"><span>Система стала вдвое больше. Во сколько раз дольше считается CCSD(T)?</span></p>
+<p class="olab">Во сколько раз дольше</p><div class="opts" role="group"><button type="button" class="opt">7</button><button type="button" class="opt">32</button><button type="button" class="opt" data-ok="1">128</button><button type="button" class="opt">2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Примерно в 2⁷ = 128 раз (формальная оценка N⁷). Поэтому CCSD(T) с большим базисом остаётся методом для небольших молекул.</div></div>
+<div class="tq"><p class="qt"><span>На какой ступени лестницы Якова стоит B3LYP?</span></p>
+<p class="olab">Номер ступени</p><div class="opts" role="group"><button type="button" class="opt">5</button><button type="button" class="opt">3</button><button type="button" class="opt">2</button><button type="button" class="opt" data-ok="1">4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>На четвёртой — гибриды: к плотности, градиенту и (в части функционалов) кинетической энергии добавлен точный обмен по занятым орбиталям.</div></div>
+<div class="tq"><p class="qt"><span>Средняя ошибка энергий атомизации у LDA в этом наборе?</span></p>
+<p class="olab">MAE LDA, ккал/моль</p><div class="opts" role="group"><button type="button" class="opt">100</button><button type="button" class="opt" data-ok="1">35</button><button type="button" class="opt">4,5</button><button type="button" class="opt">3</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Около 35 ккал/моль: LDA сильно пересвязывает. Уже GGA (BLYP — около 4,5 ккал/моль) убирает большую часть этой ошибки.</div></div>
+</div></details></section>
+<script src="js/ladder.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="lad";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/ladder.js"></script>
+
+</body>
+</html>

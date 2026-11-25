@@ -1,0 +1,46 @@
+ Entering Gaussian System, Link 0=g16_main
+ ...  [lines omitted from the excerpt]
+ Gaussian 16:  ES64L-G16RevA.03 25-Dec-2016
+ ...  [lines omitted from the excerpt]
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          8           0        0.000000    0.000000    0.000000
+      2          1           0        0.000000    0.000000    0.990000
+      3          1           0        0.951649    0.000000   -0.272881
+ ---------------------------------------------------------------------
+ ...  [lines omitted from the excerpt]
+                         Standard orientation:                         
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          8           0       -0.000000    0.000000    0.119159
+      2          1           0       -0.000000    0.790649   -0.476637
+      3          1           0       -0.000000   -0.790649   -0.476637
+ ---------------------------------------------------------------------
+ ...  [lines omitted from the excerpt]
+ SCF Done:  E(RHF) =  -74.9643287914     A.U. after    7 cycles
+ ...  [lines omitted from the excerpt]
+ E2 =    -0.3795333610D-01 EUMP2 =    -0.75002282127453D+02
+ ...  [lines omitted from the excerpt]
+ Mulliken charges:
+               1
+     1  O   -0.339215
+     2  H    0.169607
+     3  H    0.169607
+ Sum of Mulliken charges =  -0.00000
+ ...  [lines omitted from the excerpt]
+ Dipole moment (field-independent basis, Debye):
+    X=             -0.0000    Y=             -0.0000    Z=             -1.6735  Tot=              1.6735
+ ...  [lines omitted from the excerpt]
+ 1\1\GINC-QNODE4159\SP\RCCSD(T)-FC\STO-3G\H2O1\ASR731\04-Apr-2018\0\\#P
+  CCSD(T)/STO-3G\\Water\\0,1\O\H,1,0.99\H,1,0.99,2,106.\\Version=ES64L-
+ G16RevA.03\State=1-A1\HF=-74.9643288\MP2=-75.0022821\MP3=-75.0128009\M
+ P4D=-75.0161936\MP4DQ=-75.0159011\MP4SDQ=-75.0160137\CCSD=-75.0176836\
+ CCSD(T)=-75.0177604\RMSD=2.787e-10\PG=C02V [C2(O1),SGV(H2)]\\@
+ ...  [lines omitted from the excerpt]
+ Normal termination of Gaussian 16 at Wed Apr  4 10:16:45 2018.
+ ...  [lines omitted from the excerpt]

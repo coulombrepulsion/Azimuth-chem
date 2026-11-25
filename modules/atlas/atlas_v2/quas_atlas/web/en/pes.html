@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Potential energy surface</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/pes.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-pes-g.webp"><!--pose:end-->
+<h1>Potential energy surface</h1>
+<p class="lead">Reaction H<sub>A</sub> + H<sub>B</sub>H<sub>C</sub> → H<sub>A</sub>H<sub>B</sub> + H<sub>C</sub>, with the atoms on one straight line. In the Born–Oppenheimer approximation the energy depends only on two distances: r₁ = r(H<sub>A</sub>–H<sub>B</sub>) and r₂ = r(H<sub>B</sub>–H<sub>C</sub>). The surface is a model one (LEPS), close to the exact surface: barrier 0.40 eV, transition state at r₁ = r₂ = 0.93 Å. Click on the map to examine a point.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>PES minima are stable structures; first-order saddle points are transition states with one imaginary frequency.</li><li>A stationary point found must be checked by a frequency calculation: an optimization may stop at a saddle.</li><li>Zero-point vibrations change the effective barrier; the H–D difference gives the kinetic isotope effect.</li><li>If two states come close, the system can hop from one to the other (Landau–Zener model).</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> a model LEPS surface, classical motion of the nuclei</summary><dl><dt>What is computed</dt><dd>The collinear reaction H + H₂: the transition state, the reaction path, trajectories, the probability of hopping between terms.</dd><dt>Which approximations are made</dt><dd>The empirical LEPS surface: the barrier height is close to the exact H₃ surface, but the barrier itself is narrower (imaginary frequency at the saddle about 1980i cm⁻¹ versus roughly 1500i on the exact surface); the atoms are on a line; the nuclei move classically, without tunneling; hopping by the Landau–Zener formula.</dd><dt>What can be concluded</dt><dd>The qualitative patterns (barrier, isotope effect, the role of vibrations) are correct; rate constants cannot be obtained from it.</dd></dl></details><!--lim:end-->
+<div class="crow"><span class="l">Isotopes</span><span id="iso" role="group" aria-label="Isotopes"></span><span class="hint">changes the masses: frequencies, zero-point vibrations and atomic motion; the surface itself does not depend on masses</span></div>
+<div class="work">
+  <div class="panel">
+    <div class="ptitle">E(r₁, r₂), eV relative to H + H₂; contours every 0.1–0.5 eV</div>
+    <svg id="map" viewBox="0 0 470 470" role="img" aria-label="Potential energy surface map" style="cursor:crosshair;touch-action:none"></svg>
+    <div class="legend" id="mapLeg"><span><i class="box" style="background:linear-gradient(90deg,var(--h0),var(--h1),var(--h2),var(--h3))"></i>0 → 3 eV</span><span><i class="sw" style="border-color:#888;border-top-width:5px"></i><i class="sw" style="border-color:#fff;margin-left:-23px;border-top-width:2px;vertical-align:1px"></i>reaction path (IRC)</span><span><i class="sw" style="border-color:var(--traj)"></i>trajectory / search steps</span><span>○ — transition state</span></div>
+  </div>
+  <div class="panel">
+    <div class="tabs" role="tablist"><button class="tab" role="tab" data-tab="pt" type="button">Point on the surface</button><button class="tab" role="tab" data-tab="dyn" type="button">Collision</button></div>
+    <svg id="atoms" viewBox="0 0 520 70" role="img" aria-label="Positions of the three atoms"></svg>
+    <div id="pane" style="display:flex;flex-direction:column;gap:10px"></div>
+  </div>
+</div>
+<section class="panel" aria-labelledby="hP">
+  <h2 id="hP">Reaction profile: a cross-section of the surface along the path</h2>
+  <svg id="prof" viewBox="0 0 900 230" role="img" aria-label="Energy along the reaction path"></svg>
+  <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>PES energy along the path</span><span><i class="sw" style="border-color:var(--rho-l);border-top-style:dashed"></i>with zero-point vibrations across the path, H</span><span><i class="sw" style="border-color:var(--virt);border-top-style:dashed"></i>same for D</span></div>
+  <p class="hint" style="font-size:14px">The horizontal axis is the path length s in atomic coordinates (Å); the path starts at the transition state (s = 0) and descends along the steepest slope in both directions: this is the intrinsic reaction coordinate (IRC). The familiar “hill” in reaction diagrams is exactly this cross-section, not the whole surface. The width of the valley at each point sets the frequency of the vibration across the path.</p>
+  <div class="crow"><span class="l">Temperature</span><input type="range" id="Tk" min="200" max="1500" step="50" style="width:240px"><span class="val" id="Tkv"></span></div>
+  <div class="tablewrap" id="zpeTab"></div>
+  <div class="status" id="zpeTxt"></div>
+</section>
+<section class="panel" aria-labelledby="hN">
+  <h2 id="hN">When one surface is not enough: avoided crossing</h2>
+  <p style="font-size:14.5px">Example: the “harpoon” mechanism of Na + Cl. The covalent term Na + Cl is almost flat; the ionic term Na⁺ + Cl⁻ lies higher by IP(Na) − EA(Cl) = 1.53 eV but drops quickly because of the Coulomb attraction −<span class=fr><span>14.4</span><span>R</span></span>. They cross at R<sub>c</sub> ≈ 9.4 Å. The electronic coupling V turns the crossing into an avoided one: the adiabatic terms split by 2V.</p>
+  <div class="crow"><span class="l">Term coupling V</span><input type="range" id="V" min="-3" max="-0.7" step="0.01" style="width:260px"><span class="val" id="Vv"></span></div>
+  <div class="crow"><span class="l">Nuclear velocity v</span><input type="range" id="vel" min="100" max="5000" step="50" style="width:260px"><span class="val" id="velv"></span></div>
+  <div class="two">
+    <svg id="lz" viewBox="0 0 540 280" role="img" aria-label="Diabatic and adiabatic terms"></svg>
+    <svg id="lzz" viewBox="0 0 540 280" role="img" aria-label="Zoomed-in crossing region"></svg>
+  </div>
+  <div class="legend"><span><i class="sw" style="border-color:var(--muted);border-top-style:dashed"></i>diabatic terms (covalent and ionic)</span><span><i class="sw" style="border-color:var(--accent)"></i>adiabatic (solutions at fixed nuclei)</span></div>
+  <div class="status" id="lzText"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">How does a program find a minimum on the surface without building the whole surface?</span><a class="nqA" href="optimization.html" data-goto="opt">Geometry optimization →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Press “To transition state”. How does the imaginary frequency change when H is replaced by D?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">It grows</button><button type="button" class="opt" data-ok="1">Decreases by about √2</button><button type="button" class="opt">Does not change</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>It decreases by about a factor of √2: ≈ 1977i cm⁻¹ for H and ≈ 1398i cm⁻¹ for D — frequencies are inversely proportional to √m. These are frequencies of the LEPS surface; on the exact H₃ surface the barrier is wider, and the imaginary frequency is about 1500i cm⁻¹. The PES itself (barrier 0.40 eV at r₁ = r₂ = 0.93 Å) does not depend on the isotope.</div></div>
+<div class="tq"><p class="qt"><span>Click at the point r₁ = r₂ ≈ 1.2 Å and start gradient descent. Where does it end up?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">To the reactant minimum</button><button type="button" class="opt" data-ok="1">To the transition state</button><button type="button" class="opt">To the product minimum</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>At the transition state, not a minimum: on the line r₁ = r₂ the gradient points along that line, and the descent goes straight into the saddle. That is why frequencies are always computed after an optimization.</div></div>
+<div class="tq"><p class="qt"><span>A “collision” with H₂ zero-point vibrations (a series of phases): why does the reaction occur already below the barrier?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Because of tunneling</button><button type="button" class="opt" data-ok="1">Vibrational energy also helps to cross the barrier</button><button type="button" class="opt">The barrier is lowered</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Part of the H₂ vibrational energy also goes into crossing the barrier: without vibrations the reaction starts at about 0.41 eV, while with zero-point vibrations at least one phase out of 24 reacts from about 0.2 eV. This is also classical zero-point leakage: in classical mechanics the H₂ vibrational energy can pass entirely into motion along the reaction path, which a quantum molecule cannot do.</div></div>
+<div class="tq"><p class="qt"><span>Why is the effective barrier for D higher than for H once zero-point vibrations are included?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">D has a different PES</button><button type="button" class="opt">D has a deeper reactant well</button><button type="button" class="opt" data-ok="1">D has smaller zero-point energies, so the gain from them is smaller</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>In the transition state the transverse vibration is softer than the H₂ vibration, and the zero-point energy “eats” part of the barrier (≈ 0.26 eV for H). For D all zero-point energies are smaller, the gain is smaller and the barrier higher (≈ 0.30 eV) — the basis of the kinetic isotope effect. This collinear model lacks the two bending vibrations of the transition state; with their zero-point energy (≈ 0.1 eV) the effective barrier is almost the classical one, ≈ 0.39 eV, and the isotope effect is smaller.</div></div>
+<div class="tq"><p class="qt"><span>Avoided crossing: what happens as the coupling V between the states is reduced?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">The system always follows the adiabatic state</button><button type="button" class="opt" data-ok="1">The probability of hopping between the states increases</button><button type="button" class="opt">Nothing changes</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The hopping probability increases: the system more often stays on the diabatic state. At v = 1000 m/s, P = 0.5 at about V ≈ 0.011 eV; with stronger coupling the system follows the adiabatic state.</div></div>
+</div></details></section>
+<script src="js/pes.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="pes";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/pes.js"></script>
+
+</body>
+</html>

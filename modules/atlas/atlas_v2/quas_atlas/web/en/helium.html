@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>The helium atom and correlation</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/he.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-he-g.webp"><!--pose:end-->
+<h1>The helium atom and electron correlation</h1>
+<p class="lead">Two electrons and a nucleus: the simplest system in which correlation matters. The exact energy of He is known (−2.903724 a.u.), so one can see how much each approximation recovers. By definition, the correlation energy is the difference between the exact energy and the Hartree–Fock limit: E<sub>corr</sub> = E<sub>exact</sub> − E<sub>HF</sub>.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>Electron repulsion makes the helium atom impossible to solve exactly; the simplest approximation is an effective charge (screening).</li><li>Hartree–Fock accounts for repulsion only on average; the remaining energy error is the correlation energy.</li><li>Correlation is the concerted avoidance of electrons (the Coulomb hole); it is described by functions that depend explicitly on r₁₂.</li><li>Sometimes correlation matters qualitatively: without it the H⁻ ion is unstable.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> variational functions; the exact energy is known</summary><dl><dt>What is computed</dt><dd>The energy of He and He-like ions for functions from one parameter to Hylleraas functions; the Coulomb hole.</dd><dt>Which approximations are made</dt><dd>A non-relativistic Hamiltonian, an infinitely heavy nucleus; a finite number of terms in the function.</dd><dt>What can be concluded</dt><dd>Variational energies computed with the full Hamiltonian are upper bounds to the exact one; the row without electron repulsion solves a different problem and is not covered by this rule. The 6-term Hylleraas function differs from the exact value by less than 0.001 E<sub>h</sub>.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. The ladder of approximations</h2>
+  <div class="crow"><span class="l">System</span><span class="grp" id="zG" role="group" aria-label="Two-electron system"></span></div>
+  <div class="two"><svg id="ladder" viewBox="0 0 540 396" role="img" aria-label="Energies of different approximations"></svg><div style="display:flex;flex-direction:column;gap:8px"><div class="tablewrap" id="lTab"></div><div class="status" id="t1"></div></div></div>
+  <p class="hint">Hylleraas (1929): the trial function e<sup>−ζ(r₁+r₂)</sup>·(1 + c₁r₁₂ + …) depends explicitly on the interelectronic distance r₁₂. The coefficients are found by the linear variational method, and ζ is optimized. The HF and exact values are tabulated.</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. Effective nuclear charge: screening</h2>
+  <p class="small">The simplest trial function is a product of two 1s orbitals with charge ζ in place of Z: ψ = <span class=fr><span>ζ³</span><span>π</span></span> e<sup>−ζ(r₁+r₂)</sup>. Then T = ζ², V<sub>ne</sub> = −2Zζ, V<sub>ee</sub> = <span class=fr><span>5ζ</span><span>8</span></span>. Each electron partly shields the nucleus from the other.</p>
+  <div class="crow"><span class="l">ζ</span><input type="range" id="zeta" min="0.3" max="4.5" step="0.005" style="width:280px" aria-label="Effective nuclear charge"><span class="val" id="zv"></span><button class="btn primary" type="button" id="zMin">Go to minimum</button></div>
+  <div class="two"><svg id="zChart" viewBox="0 0 540 300" role="img" aria-label="Energy versus effective nuclear charge"></svg><div style="display:flex;flex-direction:column;gap:8px"><div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>E(ζ)</span><span><i class="sw" style="border-color:var(--warn);border-top-style:dashed"></i>T</span><span><i class="sw" style="border-color:var(--ok);border-top-style:dashed"></i>V<sub>ne</sub></span><span><i class="sw" style="border-color:var(--virt);border-top-style:dashed"></i>V<sub>ee</sub></span></div><div class="kvt" id="zKv"></div><div class="status" id="t2"></div></div></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">3. The Coulomb hole</h2>
+  <p class="small">Fix electron 1 at distance r₁ from the nucleus (on the z axis) and look at where electron 2 is. In the product function (no correlation) electron 2 “knows nothing” about the first one: its distribution is the same for any position of electron 1. In the Hylleraas function electron 2 moves away from electron 1, and a Coulomb hole forms around it.</p>
+  <div class="crow"><span class="l">Position of electron 1, r₁</span><input type="range" id="r1" min="0.2" max="2" step="0.01" style="width:260px" aria-label="Position of the first electron"><span class="val" id="r1v"></span></div>
+  <div class="two"><svg id="hole" viewBox="0 0 540 300" role="img" aria-label="Density of the second electron along the axis"></svg><div style="display:flex;flex-direction:column;gap:8px"><div class="legend"><span><i class="sw" style="border-color:var(--muted);border-top-style:dashed"></i>no correlation (Hartree–Fock)</span><span><i class="sw" style="border-color:var(--accent)"></i>Hylleraas, 6 terms</span><span><i class="box" style="background:var(--rho)"></i>difference: hole and “bulge”</span></div><div class="kvt" id="hKv"></div><div class="status" id="t3"></div></div></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">How are the methods that recover correlation built, and why does truncated CI work badly for large systems?</span><a class="nqA" href="ci-cc.html" data-goto="cicc">Configuration interaction and coupled clusters →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Section 2: find the optimal effective nuclear charge for He. What does it mean?</span></p>
+<p class="olab">Optimal ζ</p><div class="opts" role="group"><button type="button" class="opt">1.375</button><button type="button" class="opt" data-ok="1">1.6875</button><button type="button" class="opt">2</button><button type="button" class="opt">1</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>ζ = Z − <span class=fr><span>5</span><span>16</span></span> = 1.6875, E = −2.8477. Each electron shields the nucleus from the other by <span class=fr><span>5</span><span>16</span></span> of a charge; at the minimum <span class=fr><span>V</span><span>T</span></span> = −2.</div></div>
+<div class="tq"><p class="qt"><span>Why is the energy “without repulsion” (−4) below the exact value (−2.9037), although the variational principle forbids going lower?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">The variational principle is violated</button><button type="button" class="opt" data-ok="1">The repulsion is dropped — a different problem is solved</button><button type="button" class="opt">It is a numerical integration error</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The variational principle refers to the full Hamiltonian. Here the electron repulsion is dropped, so a different problem is solved and the estimate is not variational.</div></div>
+<div class="tq"><p class="qt"><span>What fraction of the He correlation energy does the Hylleraas function with one r₁₂ term give, and why?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">About 5%</button><button type="button" class="opt" data-ok="1">About 70%</button><button type="button" class="opt">The full 100%</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>About 70% of −0.0420 a.u. (≈ −110 kJ/mol), and 97% with three terms. The r₁₂ term directly describes electrons keeping farther apart.</div></div>
+<div class="tq"><p class="qt"><span>Select H⁻. Which approximations predict a stable ion?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">All approximations</button><button type="button" class="opt">None of them</button><button type="button" class="opt" data-ok="1">Only the correlated ones (with an r₁₂ term)</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Only the correlated ones. The effective charge (−0.473) and even the HF limit (−0.488) lie above −0.5 (H + e⁻): the extra electron is not bound. Already the function with an r₁₂ term gives −0.509 < −0.5. The stability of H⁻ is a pure correlation effect.</div></div>
+<div class="tq"><p class="qt"><span>Compare E<sub>corr</sub> for H⁻, He, Li⁺, Be²⁺.</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Grows as Z²</button><button type="button" class="opt" data-ok="1">Almost constant, ≈ −0.04 a.u.</button><button type="button" class="opt">Grows as Z</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>−0.040; −0.042; −0.044; −0.044 a.u. Nearly constant, although the total energy changes from −0.53 to −13.7: the correlation energy of an electron pair in one orbital is ≈ 1 eV.</div></div>
+<div class="tq"><p class="qt"><span>The Coulomb hole: how does correlation change the probability of finding the second electron on the same side of the nucleus?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Increases it</button><button type="button" class="opt">Leaves it unchanged</button><button type="button" class="opt" data-ok="1">Decreases it: the electrons avoid each other</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>It decreases: at r₁ = 0.6 bohr about 45 % instead of 50 %. ⟨r₁₂⟩ grows from 1.362 to 1.422 bohr. By itself this does not yet prove that the repulsion is smaller: the repulsion energy equals ⟨1/r₁₂⟩, not 1/⟨r₁₂⟩. It has to be computed separately: ⟨1/r₁₂⟩ decreases from 1.0258 to 0.9460 E<sub>h</sub> (exact value 0.9458). The reference is the Hartree–Fock function, the best function without correlation, so the difference of the curves is the Coulomb hole proper.</div></div>
+</div></details></section>
+<script src="js/helium.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="he";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/helium.js"></script>
+
+</body>
+</html>

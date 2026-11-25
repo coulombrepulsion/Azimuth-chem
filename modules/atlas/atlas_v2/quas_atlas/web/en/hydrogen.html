@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>The hydrogen atom and atomic orbitals</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/hat.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-hat-g.webp"><!--pose:end-->
+<h1>The hydrogen atom and atomic orbitals</h1>
+<p class="lead">The hydrogen atom is the only atom for which the Schrödinger equation is solved exactly. The wavefunction separates into a radial part R<sub>nl</sub>(r) and an angular part Y<sub>lm</sub>(θ, φ); the energy depends only on n: E<sub>n</sub> = −<span class=fr><span>Z²</span><span>2n²</span></span> hartree. Real orbitals (p<sub>x</sub>, d<sub>xy</sub>, …) are shown here: these are the ones drawn in textbooks and used in quantum chemistry. They are obtained as linear combinations of the complex spherical harmonics Y<sub>lm</sub>: for example, p<sub>x</sub> ∝ (Y<sub>1,−1</sub> − Y<sub>1,1</sub>)/√2. The quantum number m is the projection of the orbital angular momentum on the z axis, and p<sub>x</sub>, p<sub>y</sub> have no definite m; m = 0 corresponds to p<sub>z</sub>.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>The state of the electron in the hydrogen atom is set by quantum numbers: n determines the energy, l the orbital angular momentum and shape, m the projection of the angular momentum on the chosen z axis. The real orbitals p<sub>x</sub>, p<sub>y</sub> are linear combinations of the states with m = +1 and m = −1, so they have no single value of m.</li><li>There are n − 1 nodes in total: n − l − 1 radial and l angular.</li><li>The energy depends only on n (degeneracy n²); in many-electron atoms the degeneracy in l is lifted.</li><li>Transitions between levels give a line spectrum: ν̃ ∝ <span class=fr><span>1</span><span>n₁²</span></span> − <span class=fr><span>1</span><span>n₂²</span></span>.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> the exact solution for a hydrogen-like atom</summary><dl><dt>What is computed</dt><dd>Orbitals, radial functions, energy levels and spectral series.</dd><dt>Which approximations are made</dt><dd>A non-relativistic Hamiltonian, a point nucleus; fine structure and spin are not included. Real orbitals are shown: combinations of the +m and −m states. Level energies and line wavelengths use the Rydberg constant of the given nucleus, with the reduced mass: for hydrogen the series limit is 13.598 eV (13.6057 eV for an infinitely heavy nucleus); wavelengths are vacuum wavelengths.</dd><dt>What can be concluded</dt><dd>The energies and nodes are exact in this model; they carry over to many-electron atoms only qualitatively.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Orbital: cross-section and radial function</h2>
+  <div class="crow"><span class="l">Principal number n</span><span class="row" id="nG" role="group" aria-label="Principal quantum number"></span></div>
+  <div class="crow"><span class="l">Orbital</span><span class="row" id="oG" role="group" aria-label="Orbital"></span></div>
+  <div class="crow"><span class="l">Nucleus</span><span class="row" id="zG" role="group" aria-label="Nuclear charge"></span></div>
+  <div class="crow"><span class="l">Cross-section plane</span><span class="row" id="pG" role="group" aria-label="Cross-section plane"></span>
+    <span class="row" id="vG" role="group" aria-label="What to show"></span></div>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle" id="mapT"></div>
+      <canvas id="map" width="420" height="420" role="img" aria-label="Orbital cross-section"></canvas>
+      <div class="legend"><span><i class="box" style="background:var(--lp)"></i>ψ &gt; 0</span><span><i class="box" style="background:var(--ln)"></i>ψ &lt; 0</span><span>thin lines — nodes of ψ</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="ptitle">Radial function R(r) and radial density r²R²</div>
+      <svg id="rad" viewBox="0 0 520 300" role="img" aria-label="Radial function"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>R(r)</span><span><i class="sw" style="border-color:var(--warn)"></i>r²R²(r)</span><span><i class="sw" style="border-color:var(--muted);border-top-style:dashed"></i>⟨r⟩</span></div>
+      <div class="tablewrap" id="infoTab"></div>
+    </div>
+  </div>
+  <div class="status" id="st1"></div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. The electron cloud</h2>
+  <p class="small">Each dot is a possible position of the electron: the dots are scattered with density |ψ|², and the color shows the sign of ψ. Drag the cloud to rotate it.</p>
+  <div class="two">
+    <canvas id="cloud" width="460" height="400" role="img" aria-label="Electron cloud"></canvas>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="row"><button class="btn" id="bNew" type="button">New sample</button><span class="hint" id="cloudN"></span></div>
+      <div class="status" id="st2"></div>
+      <div class="ptitle">Dots by distance from the nucleus and the radial density r²R²</div>
+      <svg id="cHist" viewBox="0 0 520 300" role="img" aria-label="Histogram of the distances of the dots from the nucleus"></svg>
+      <div class="legend"><span><i class="box" style="background:var(--lp);opacity:.35"></i>fraction of dots</span><span><i class="sw" style="border-color:var(--warn)"></i>r²R²(r)</span></div>
+    </div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">3. Energy levels and spectrum</h2>
+  <p class="small">When the electron goes from level n₂ to level n₁, a photon with wavenumber ν̃ = R<sub>H</sub>Z²(<span class=fr><span>1</span><span>n₁²</span></span> − <span class=fr><span>1</span><span>n₂²</span></span>) is emitted. Choose a series — the transitions appear on the diagram, and the lines of the Balmer series fall in the visible range.</p>
+  <div class="crow"><span class="l">Series</span><span class="row" id="sG" role="group" aria-label="Series"></span></div>
+  <div class="two">
+    <svg id="lev" viewBox="0 0 520 360" role="img" aria-label="Energy levels"></svg>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="tablewrap" id="serTab"></div>
+      <div class="specw" id="specW"><div class="spec"></div></div>
+      <div class="status" id="st3" style="margin-top:18px"></div>
+    </div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">Only the hydrogen atom is solved exactly. How is an approximate solution obtained for the rest, and how far can it be trusted?</span><a class="nqA" href="variational.html" data-goto="var">Variational method and PT →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises for exploring the page, plus a trainer. Do the action on the page and answer — your answer is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>How many radial nodes does the 4s orbital have?</span></p>
+<p class="olab">Radial nodes</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">3</button><button type="button" class="opt">2</button><button type="button" class="opt">4</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Three: n − l − 1 = 4 − 0 − 1 = 3. The plot of R(r) has three points where the function changes sign; in the cloud of dots they are empty spherical shells.</div></div>
+<div class="tq"><p class="qt"><span>What is the mean radius ⟨r⟩ of hydrogen 1s (in a₀)?</span></p>
+<p class="olab">⟨r⟩, a₀</p><div class="opts" role="group"><button type="button" class="opt">3</button><button type="button" class="opt">0.5</button><button type="button" class="opt" data-ok="1">1.5</button><button type="button" class="opt">1</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>⟨r⟩ = <span class=fr><span>3n² − l(l + 1)</span><span>2Z</span></span> = 1.5 a₀ ≈ 0.79 Å. It is larger than the most probable distance because the distribution has a long tail at large r.</div></div>
+<div class="tq"><p class="qt"><span>Where is the maximum of the radial density r²R² for 1s (in a₀)?</span></p>
+<p class="olab">r, a₀</p><div class="opts" role="group"><button type="button" class="opt">1.5</button><button type="button" class="opt" data-ok="1">1</button><button type="button" class="opt">2</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>At r = a₀ = 0.529 Å — the Bohr radius. The density |ψ|² itself is largest at the nucleus, but the volume of a thin spherical shell 4πr²dr goes to zero there.</div></div>
+<div class="tq"><p class="qt"><span>Balmer series: the wavelength of the H<sub>α</sub> line (transition 3 → 2), nm?</span></p>
+<p class="olab">λ, nm</p><div class="opts" role="group"><button type="button" class="opt">122</button><button type="button" class="opt">365</button><button type="button" class="opt">486</button><button type="button" class="opt" data-ok="1">656</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>ν̃ = R<sub>H</sub>(<span class=fr><span>1</span><span>2²</span></span> − <span class=fr><span>1</span><span>3²</span></span>) ≈ 15233 cm⁻¹, λ = <span class=fr><span>1</span><span>ν̃</span></span> ≈ 656 nm — the red line of hydrogen. The other lines of the series: 486, 434, 410 nm.</div></div>
+<div class="tq"><p class="qt"><span>What is the ionization energy of He⁺ from the ground state, eV?</span></p>
+<p class="olab">E, eV</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">54.4</button><button type="button" class="opt">13.6</button><button type="button" class="opt">27.2</button><button type="button" class="opt">24.6</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>E = Z² · 13.6 eV = 4 · 13.6 ≈ 54.4 eV. Select the He⁺ nucleus: all levels drop by a factor of Z² = 4 and the orbitals shrink by a factor of 2.</div></div>
+<div class="tq"><p class="qt"><span>Why do 2s and 2p have the same energy in the hydrogen atom?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">In the Coulomb field of one nucleus the energy depends only on n</button><button type="button" class="opt">2s and 2p are the same orbital</button><button type="button" class="opt">Because of the electron spin</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>In the pure Coulomb field of one nucleus the energy depends only on n (an “accidental” degeneracy). In many-electron atoms 2s penetrates closer to the nucleus than 2p, is less screened and lies lower — the degeneracy in l is lifted.</div></div>
+<!--self:start--><div class="selfBox"><h3 id="h4s">Test yourself</h3>
+  <p class="small">For the orbital below find the number of radial and angular nodes and the level energy (for the hydrogen atom, in eV).</p>
+  <div class="row"><b id="qOrb" style="font-family:var(--f-display);font-size:19px"></b><button class="btn" id="qNew" type="button">Another orbital</button></div>
+  <div class="quiz">
+    <label><span>Radial nodes</span><input id="q0" inputmode="numeric" autocomplete="off"></label>
+    <label><span>Angular nodes</span><input id="q1" inputmode="numeric" autocomplete="off"></label>
+    <label><span>E, eV</span><input id="q2" inputmode="decimal" autocomplete="off"></label>
+  </div>
+  <div class="row"><button class="btn primary" id="qChk" type="button">Check</button><button class="btn" id="qShow" type="button">Show solution</button></div>
+  <div class="status" id="qRes">Enter your answers and press “Check”.</div>
+</div><!--self:end--></div></details></section>
+<script src="js/hydrogen.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="hat";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/hydrogen.js"></script>
+
+</body>
+</html>

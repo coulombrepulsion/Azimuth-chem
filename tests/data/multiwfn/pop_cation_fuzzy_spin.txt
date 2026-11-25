@@ -1,0 +1,488 @@
+answers: 15 | 8 | 2 | 1 | 5 | 0 | q
+
+ WARNING: "settings.ini" was found neither in current folder nor in the path defined by "Multiwfnpath" environment variable. Now using default settings instead, and all your modifications (if any) on settings.ini will not take effect!
+
+[95m Multiwfn -- A Multifunctional Wavefunction Analyzer
+[0m[32m Version 2026.7.15 (release date is the same as version name)
+[0m Developer: Tian Lu (Beijing Kein Research Center for Natural Sciences)
+ Multiwfn official website: http://sobereva.com/multiwfn
+ Multiwfn English forum: http://sobereva.com/wfnbbs
+ Multiwfn Chinese forum: http://bbs.keinsci.com/wfn
+ ( Number of parallel threads:   4  Current date: 2026-11-02  Time: 13:43:46 )
+
+ Both following papers ***MUST BE CITED IN MAIN TEXT*** if Multiwfn is used:
+[36m  Tian Lu, Feiwu Chen, J. Comput. Chem., 33, 580 (2012) DOI: 10.1002/jcc.22885
+  Tian Lu, J. Chem. Phys., 161, 082503 (2024) DOI: 10.1063/5.0216272
+[0m See "How to cite Multiwfn.pdf" in Multiwfn binary package for more information
+
+ Warning: You should set OMP_STACKSIZE environment variable as mentioned in Section 2.1.2 of Multiwfn manual!
+
+ Please wait...
+ Loading various information of the wavefunction
+ Loading basis set definition...
+ The highest angular moment basis functions is P
+ All basis functions are Cartesian type
+ Loading orbitals...
+ The actual number of Alpha/Beta orbitals read:        60  /        60
+ Converting basis function information to GTF information...
+ Generating density matrix...
+ Generating overlap matrix...
+
+ Total/Alpha/Beta electrons:     69.0000     35.0000     34.0000
+ Net charge:     1.00000      Expected multiplicity:    2
+ Atoms:     20,  Basis functions:     60,  GTFs:    180
+ This is an unrestricted single-determinant wavefunction
+ Orbitals from      1 to    60 are alpha, from     1 to    35 are occupied
+ Orbitals from     61 to   120 are beta,  from    61 to    94 are occupied
+
+ Loaded input.molden successfully!
+
+ Formula: H10 C10      Total atoms:      20
+ Molecule weight:       130.18677 Da
+ Point group: C2h
+
+ "q": Exit program gracefully          "r": Load a new file
+                    ************ Main function menu ************
+ 0 Show molecular structure and view orbitals
+ 1 Output all properties at a point       2 Topology analysis
+ 3 Output and plot specific property in a line
+ 4 Output and plot specific property in a plane
+ 5 Output and plot specific property within a spatial region (calc. grid data)
+ 6 Check & modify wavefunction
+ 7 Population analysis and calculation of atomic charges
+ 8 Orbital composition analysis           9 Bond order analysis
+ 10 Plot total DOS, PDOS, OPDOS, local DOS, COHP and photoelectron spectrum
+ 11 Plot IR/Raman/UV-Vis/ECD/VCD/ROA/NMR spectrum
+ 12 Quantitative analysis of molecular surface
+ 13 Process grid data (No grid data is presented currently)
+ 14 Adaptive natural density partitioning (AdNDP) analysis
+ 15 Fuzzy atomic space analysis
+ 16 Charge decomposition analysis (CDA) and plot orbital interaction diagram
+ 17 Basin analysis                       18 Electron excitation analysis
+ 19 Orbital localization analysis        20 Visual study of weak interaction
+ 21 Energy decomposition analysis        22 Conceptual DFT (CDFT) analysis
+ 23 ETS-NOCV analysis                    24 (Hyper)polarizability analysis
+ 25 Electron delocalization and aromaticity analyses
+ 26 Structure and geometry related analyses
+ 100 Other functions (Part 1)            200 Other functions (Part 2)
+ 300 Other functions (Part 3)
+
+                 ======== Fuzzy atomic space analysis ========
+ -10 Set X,Y,Z of reference point, current:    0.00000   0.00000   0.00000 Bohr
+ -6 Choose type of integration grid for AOM, current: Atomic grid
+ -5 Define the atoms to be considered in options 1, 2, 13, current: all atoms
+ -4 Adjust reference parameter for FLU
+ -3 Set the number of iterations for Becke partition, current:  3
+ -2 Select radius definition for Becke partition, current: Modified CSD
+ -1 Select method for partitioning atomic spaces, current: Becke
+ 0 Return
+ 1 Perform integration in fuzzy atomic spaces for a real space function
+ 2 Calculate atomic and molecular multipole moments and <r^2>
+ 3 Calculate and output atomic overlap matrix (AOM) in current folder
+ 33 Calculate and output fragment overlap matrix (FOM) in current folder
+ 4 Calculate localization (LI) and delocalization index (DI)
+ 44 Calculate fragment LI (FLI) and interfragment DI (IFDI)
+ 5 Calculate PDI (Para-delocalization index)
+ 6 Calculate FLU (Aromatic fluctuation index)
+ 7 Calculate FLU-pi
+ 8 Perform integration in fuzzy overlap region for a real space functions
+ 9 Calculate condensed linear response kernel (CLRK)
+ 10 Calculate PLR (Para linear response index)
+ 11 Calculate multi-center delocalization index
+ 12 Calculate information-theoretic aromaticity index (ACS Omega, 3, 18370)
+ 13 Calculate atomic effective volume, free volume, polarizability and C6 coefficient
+ -2 Deformation density
+             ----------- Available real space functions -----------
+ 1 Electron density (rho)     2 Gradient norm of rho     3 Laplacian of rho
+ 4 Value of orbital wavefunction         44 Orbital probability density
+ 5 Electron spin density
+ 6 Hamiltonian kinetic energy density K(r)
+ 7 Lagrangian kinetic energy density G(r)
+ 8 Electrostatic potential from nuclear charges
+ 9 Electron localization function (ELF)
+ 10 Localized orbital locator (LOL)
+ 11 Local information entropy
+ 12 Total electrostatic potential (ESP)
+ 13 Reduced density gradient (RDG)       14 RDG with promolecular approximation
+ 15 Sign(lambda2)*rho      16 Sign(lambda2)*rho with promolecular approximation
+ 17 Correlation hole for alpha, ref. point:   0.00000   0.00000   0.00000
+ 18 Average local ionization energy (ALIE)
+ 19 Source function, mode: 1, ref. point:   0.00000   0.00000   0.00000
+ 20 Electron delocal. range func. EDR(r;d)  21 Orbital overlap dist. func. D(r)
+ 22 Delta-g (promolecular approximation)    23 Delta-g (Hirshfeld partition)
+ 24 Interaction region indicator (IRI)    25 van der Waals potential (probe=C )
+ 100 User-defined function (iuserfunc=    0), see Section 2.7 of manual
+ Radial points:   75    Angular points:  434   Total:     32550 per center
+ Please wait...
+
+ Progress: [--------------------------------------------------]     0.0 %     -
+ Progress: [##------------------------------------------------]     5.0 %     \
+ Progress: [#####---------------------------------------------]    10.0 %     |
+ Progress: [#######-------------------------------------------]    15.0 %     /
+ Progress: [##########----------------------------------------]    20.0 %     -
+ Progress: [############--------------------------------------]    25.0 %     \
+ Progress: [###############-----------------------------------]    30.0 %     |
+ Progress: [#################---------------------------------]    35.0 %     /
+ Progress: [####################------------------------------]    40.0 %     -
+ Progress: [######################----------------------------]    45.0 %     \
+ Progress: [#########################-------------------------]    50.0 %     |
+ Progress: [###########################-----------------------]    55.0 %     /
+ Progress: [##############################--------------------]    60.0 %     -
+ Progress: [################################------------------]    65.0 %     \
+ Progress: [###################################---------------]    70.0 %     |
+ Progress: [#####################################-------------]    75.0 %     /
+ Progress: [########################################----------]    80.0 %     -
+ Progress: [##########################################--------]    85.0 %     \
+ Progress: [#############################################-----]    90.0 %     |
+ Progress: [###############################################---]    95.0 %     /
+ Progress: [##################################################]   100.0 %     -
+ Calculation took up       8 seconds wall clock time
+
+ ************* Integration of positive values in overlap region *************
+             1             2             3             4             5      
+     1   25.96120744    0.00064203    0.40240403    0.00345677    0.00336017
+     2    0.00064203   25.96120912    0.00345676    0.40240371    0.40289572
+     3    0.40240403    0.00345676   26.51428557    0.00138157    0.45238630
+     4    0.00345677    0.40240371    0.00138157   26.51426054    0.00510922
+     5    0.00336017    0.40289572    0.45238630    0.00510922   26.52350143
+     6    0.40289633    0.00336017    0.00510923    0.45238644    0.00132189
+     7    0.00106732    0.00000000    0.18817427    0.00000000    0.00284348
+     8    0.00000000    0.00106732    0.00000000    0.18817431    0.00000000
+     9    0.00000000    0.00059545    0.00271862    0.00000000    0.18695616
+    10    0.00059545    0.00000000    0.00000000    0.00271862    0.00000000
+    11    0.00000000    0.38324214    0.00000000    0.01518971    0.00716926
+    12    0.38324252    0.00000000    0.01518971    0.00000000    0.00000000
+    13    0.00000000    0.00142497    0.00000000    0.00205471    0.00000000
+    14    0.00142497    0.00000000    0.00205471    0.00000000    0.00000000
+    15    0.00000000    0.00627411    0.00000000    0.00000001    0.00678428
+    16    0.00627411    0.00000000    0.00000001    0.00000000    0.00000000
+    17    0.00000000    0.00012654    0.00000000    0.00000000    0.00087380
+    18    0.00012654    0.00000000    0.00000000    0.00000000    0.00000000
+    19    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    20    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+             6             7             8             9            10      
+     1    0.40289633    0.00106732    0.00000000    0.00000000    0.00059545
+     2    0.00336017    0.00000000    0.00106732    0.00059545    0.00000000
+     3    0.00510923    0.18817427    0.00000000    0.00271862    0.00000000
+     4    0.45238644    0.00000000    0.18817431    0.00000000    0.00271862
+     5    0.00132189    0.00284348    0.00000000    0.18695616    0.00000000
+     6   26.52351318    0.00000000    0.00284349    0.00000000    0.18695638
+     7    0.00000000    1.38666854    0.00000000    0.00005730    0.00000000
+     8    0.00284349    0.00000000    1.38666977    0.00000000    0.00005730
+     9    0.00000000    0.00005730    0.00000000    1.37424657    0.00000000
+    10    0.18695638    0.00000000    0.00005730    0.00000000    1.37424796
+    11    0.00000000    0.00000000    0.00113536    0.00017503    0.00000000
+    12    0.00716927    0.00113536    0.00000000    0.00000000    0.00017503
+    13    0.00000000    0.00000000    0.00114004    0.00000000    0.00000000
+    14    0.00000000    0.00114004    0.00000000    0.00000000    0.00000000
+    15    0.00000000    0.00000000    0.00000000    0.00120037    0.00000000
+    16    0.00678428    0.00000000    0.00000000    0.00000000    0.00120037
+    17    0.00000000    0.00000000    0.00000000    0.00352036    0.00000000
+    18    0.00087380    0.00000000    0.00000000    0.00000000    0.00352036
+    19    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    20    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+            11            12            13            14            15      
+     1    0.00000000    0.38324252    0.00000000    0.00142497    0.00000000
+     2    0.38324214    0.00000000    0.00142497    0.00000000    0.00627411
+     3    0.00000000    0.01518971    0.00000000    0.00205471    0.00000000
+     4    0.01518971    0.00000000    0.00205471    0.00000000    0.00000001
+     5    0.00716926    0.00000000    0.00000000    0.00000000    0.00678428
+     6    0.00000000    0.00716927    0.00000000    0.00000000    0.00000000
+     7    0.00000000    0.00113536    0.00000000    0.00114004    0.00000000
+     8    0.00113536    0.00000000    0.00114004    0.00000000    0.00000000
+     9    0.00017503    0.00000000    0.00000000    0.00000000    0.00120037
+    10    0.00000000    0.00017503    0.00000000    0.00000000    0.00000000
+    11   26.52258355    0.00000000    0.18701169    0.00000000    0.52518580
+    12    0.00000000   26.52260648    0.00000000    0.18701160    0.00000000
+    13    0.18701169    0.00000000    1.39295956    0.00000000    0.00365160
+    14    0.00000000    0.18701160    0.00000000    1.39295764    0.00000000
+    15    0.52518580    0.00000000    0.00365160    0.00000000   27.10584158
+    16    0.00000000    0.52518653    0.00000000    0.00365160    0.00000000
+    17    0.00058175    0.00000000    0.00000000    0.00000000    0.20612389
+    18    0.00000000    0.00058175    0.00000000    0.00000000    0.00000000
+    19    0.00284544    0.00000000    0.00008486    0.00000000    0.21096753
+    20    0.00000000    0.00284544    0.00000000    0.00008486    0.00000000
+            16            17            18            19            20      
+     1    0.00627411    0.00000000    0.00012654    0.00000000    0.00000000
+     2    0.00000000    0.00012654    0.00000000    0.00000000    0.00000000
+     3    0.00000001    0.00000000    0.00000000    0.00000000    0.00000000
+     4    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     5    0.00000000    0.00087380    0.00000000    0.00000000    0.00000000
+     6    0.00678428    0.00000000    0.00087380    0.00000000    0.00000000
+     7    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     8    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     9    0.00000000    0.00352036    0.00000000    0.00000000    0.00000000
+    10    0.00120037    0.00000000    0.00352036    0.00000000    0.00000000
+    11    0.00000000    0.00058175    0.00000000    0.00284544    0.00000000
+    12    0.52518653    0.00000000    0.00058175    0.00000000    0.00284544
+    13    0.00000000    0.00000000    0.00000000    0.00008486    0.00000000
+    14    0.00365160    0.00000000    0.00000000    0.00000000    0.00008486
+    15    0.00000000    0.20612389    0.00000000    0.21096753    0.00000000
+    16   27.10583702    0.00000000    0.20612365    0.00000000    0.21096726
+    17    0.00000000    1.39503816    0.00000000    0.00015226    0.00000000
+    18    0.20612365    0.00000000    1.39503496    0.00000000    0.00015226
+    19    0.00000000    0.00015226    0.00000000    1.40429122    0.00000000
+    20    0.21096726    0.00000000    0.00015226    0.00000000    1.40428761
+ Summing up diagonal matrix elements:             279.16124790
+ Summing up non-diagonal, matrix elements:         12.88245475
+ Summing up all matrix elements:                  292.04370265
+
+ ************* Integration of negative values in overlap region *************
+             1             2             3             4             5      
+     1    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     2    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     3    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     4    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     5    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     6    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     7    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     8    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     9    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    10    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    11    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    12    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    13    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    14    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    15    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    16    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    17    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    18    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    19    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    20    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+             6             7             8             9            10      
+     1    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     2    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     3    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     4    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     5    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     6    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     7    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     8    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     9    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    10    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    11    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    12    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    13    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    14    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    15    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    16    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    17    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    18    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    19    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    20    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+            11            12            13            14            15      
+     1    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     2    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     3    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     4    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     5    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     6    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     7    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     8    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     9    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    10    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    11    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    12    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    13    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    14    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    15    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    16    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    17    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    18    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    19    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    20    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+            16            17            18            19            20      
+     1    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     2    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     3    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     4    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     5    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     6    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     7    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     8    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     9    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    10    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    11    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    12    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    13    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    14    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    15    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    16    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    17    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    18    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    19    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    20    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+ Summing up diagonal matrix elements:               0.00000000
+ Summing up non-diagonal, matrix elements:          0.00000000
+ Summing up all matrix elements:                    0.00000000
+
+ **************** Integration of all values in overlap region ****************
+             1             2             3             4             5      
+     1   25.96120744    0.00064203    0.40240403    0.00345677    0.00336017
+     2    0.00064203   25.96120912    0.00345676    0.40240371    0.40289572
+     3    0.40240403    0.00345676   26.51428557    0.00138157    0.45238630
+     4    0.00345677    0.40240371    0.00138157   26.51426054    0.00510922
+     5    0.00336017    0.40289572    0.45238630    0.00510922   26.52350143
+     6    0.40289633    0.00336017    0.00510923    0.45238644    0.00132189
+     7    0.00106732    0.00000000    0.18817427    0.00000000    0.00284348
+     8    0.00000000    0.00106732    0.00000000    0.18817431    0.00000000
+     9    0.00000000    0.00059545    0.00271862    0.00000000    0.18695616
+    10    0.00059545    0.00000000    0.00000000    0.00271862    0.00000000
+    11    0.00000000    0.38324214    0.00000000    0.01518971    0.00716926
+    12    0.38324252    0.00000000    0.01518971    0.00000000    0.00000000
+    13    0.00000000    0.00142497    0.00000000    0.00205471    0.00000000
+    14    0.00142497    0.00000000    0.00205471    0.00000000    0.00000000
+    15    0.00000000    0.00627411    0.00000000    0.00000001    0.00678428
+    16    0.00627411    0.00000000    0.00000001    0.00000000    0.00000000
+    17    0.00000000    0.00012654    0.00000000    0.00000000    0.00087380
+    18    0.00012654    0.00000000    0.00000000    0.00000000    0.00000000
+    19    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    20    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+             6             7             8             9            10      
+     1    0.40289633    0.00106732    0.00000000    0.00000000    0.00059545
+     2    0.00336017    0.00000000    0.00106732    0.00059545    0.00000000
+     3    0.00510923    0.18817427    0.00000000    0.00271862    0.00000000
+     4    0.45238644    0.00000000    0.18817431    0.00000000    0.00271862
+     5    0.00132189    0.00284348    0.00000000    0.18695616    0.00000000
+     6   26.52351318    0.00000000    0.00284349    0.00000000    0.18695638
+     7    0.00000000    1.38666854    0.00000000    0.00005730    0.00000000
+     8    0.00284349    0.00000000    1.38666977    0.00000000    0.00005730
+     9    0.00000000    0.00005730    0.00000000    1.37424657    0.00000000
+    10    0.18695638    0.00000000    0.00005730    0.00000000    1.37424796
+    11    0.00000000    0.00000000    0.00113536    0.00017503    0.00000000
+    12    0.00716927    0.00113536    0.00000000    0.00000000    0.00017503
+    13    0.00000000    0.00000000    0.00114004    0.00000000    0.00000000
+    14    0.00000000    0.00114004    0.00000000    0.00000000    0.00000000
+    15    0.00000000    0.00000000    0.00000000    0.00120037    0.00000000
+    16    0.00678428    0.00000000    0.00000000    0.00000000    0.00120037
+    17    0.00000000    0.00000000    0.00000000    0.00352036    0.00000000
+    18    0.00087380    0.00000000    0.00000000    0.00000000    0.00352036
+    19    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+    20    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+            11            12            13            14            15      
+     1    0.00000000    0.38324252    0.00000000    0.00142497    0.00000000
+     2    0.38324214    0.00000000    0.00142497    0.00000000    0.00627411
+     3    0.00000000    0.01518971    0.00000000    0.00205471    0.00000000
+     4    0.01518971    0.00000000    0.00205471    0.00000000    0.00000001
+     5    0.00716926    0.00000000    0.00000000    0.00000000    0.00678428
+     6    0.00000000    0.00716927    0.00000000    0.00000000    0.00000000
+     7    0.00000000    0.00113536    0.00000000    0.00114004    0.00000000
+     8    0.00113536    0.00000000    0.00114004    0.00000000    0.00000000
+     9    0.00017503    0.00000000    0.00000000    0.00000000    0.00120037
+    10    0.00000000    0.00017503    0.00000000    0.00000000    0.00000000
+    11   26.52258355    0.00000000    0.18701169    0.00000000    0.52518580
+    12    0.00000000   26.52260648    0.00000000    0.18701160    0.00000000
+    13    0.18701169    0.00000000    1.39295956    0.00000000    0.00365160
+    14    0.00000000    0.18701160    0.00000000    1.39295764    0.00000000
+    15    0.52518580    0.00000000    0.00365160    0.00000000   27.10584158
+    16    0.00000000    0.52518653    0.00000000    0.00365160    0.00000000
+    17    0.00058175    0.00000000    0.00000000    0.00000000    0.20612389
+    18    0.00000000    0.00058175    0.00000000    0.00000000    0.00000000
+    19    0.00284544    0.00000000    0.00008486    0.00000000    0.21096753
+    20    0.00000000    0.00284544    0.00000000    0.00008486    0.00000000
+            16            17            18            19            20      
+     1    0.00627411    0.00000000    0.00012654    0.00000000    0.00000000
+     2    0.00000000    0.00012654    0.00000000    0.00000000    0.00000000
+     3    0.00000001    0.00000000    0.00000000    0.00000000    0.00000000
+     4    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     5    0.00000000    0.00087380    0.00000000    0.00000000    0.00000000
+     6    0.00678428    0.00000000    0.00087380    0.00000000    0.00000000
+     7    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     8    0.00000000    0.00000000    0.00000000    0.00000000    0.00000000
+     9    0.00000000    0.00352036    0.00000000    0.00000000    0.00000000
+    10    0.00120037    0.00000000    0.00352036    0.00000000    0.00000000
+    11    0.00000000    0.00058175    0.00000000    0.00284544    0.00000000
+    12    0.52518653    0.00000000    0.00058175    0.00000000    0.00284544
+    13    0.00000000    0.00000000    0.00000000    0.00008486    0.00000000
+    14    0.00365160    0.00000000    0.00000000    0.00000000    0.00008486
+    15    0.00000000    0.20612389    0.00000000    0.21096753    0.00000000
+    16   27.10583702    0.00000000    0.20612365    0.00000000    0.21096726
+    17    0.00000000    1.39503816    0.00000000    0.00015226    0.00000000
+    18    0.20612365    0.00000000    1.39503496    0.00000000    0.00015226
+    19    0.00000000    0.00015226    0.00000000    1.40429122    0.00000000
+    20    0.21096726    0.00000000    0.00015226    0.00000000    1.40428761
+ Summing up diagonal matrix elements:             279.16124790
+ Summing up non-diagonal, matrix elements:         12.88245475
+ Summing up all matrix elements:                  292.04370265
+
+ If also outputting above matrices to intovlp.txt in current folder? (y/n)
+
+                 ======== Fuzzy atomic space analysis ========
+ -10 Set X,Y,Z of reference point, current:    0.00000   0.00000   0.00000 Bohr
+ -6 Choose type of integration grid for AOM, current: Atomic grid
+ -5 Define the atoms to be considered in options 1, 2, 13, current: all atoms
+ -4 Adjust reference parameter for FLU
+ -3 Set the number of iterations for Becke partition, current:  3
+ -2 Select radius definition for Becke partition, current: Modified CSD
+ -1 Select method for partitioning atomic spaces, current: Becke
+ 0 Return
+ 1 Perform integration in fuzzy atomic spaces for a real space function
+ 2 Calculate atomic and molecular multipole moments and <r^2>
+ 3 Calculate and output atomic overlap matrix (AOM) in current folder
+ 33 Calculate and output fragment overlap matrix (FOM) in current folder
+ 4 Calculate localization (LI) and delocalization index (DI)
+ 44 Calculate fragment LI (FLI) and interfragment DI (IFDI)
+ 5 Calculate PDI (Para-delocalization index)
+ 6 Calculate FLU (Aromatic fluctuation index)
+ 7 Calculate FLU-pi
+ 8 Perform integration in fuzzy overlap region for a real space functions
+ 9 Calculate condensed linear response kernel (CLRK)
+ 10 Calculate PLR (Para linear response index)
+ 11 Calculate multi-center delocalization index
+ 12 Calculate information-theoretic aromaticity index (ACS Omega, 3, 18370)
+ 13 Calculate atomic effective volume, free volume, polarizability and C6 coefficient
+ Error: This function is only available for closed-shell system!
+
+                 ======== Fuzzy atomic space analysis ========
+ -10 Set X,Y,Z of reference point, current:    0.00000   0.00000   0.00000 Bohr
+ -6 Choose type of integration grid for AOM, current: Atomic grid
+ -5 Define the atoms to be considered in options 1, 2, 13, current: all atoms
+ -4 Adjust reference parameter for FLU
+ -3 Set the number of iterations for Becke partition, current:  3
+ -2 Select radius definition for Becke partition, current: Modified CSD
+ -1 Select method for partitioning atomic spaces, current: Becke
+ 0 Return
+ 1 Perform integration in fuzzy atomic spaces for a real space function
+ 2 Calculate atomic and molecular multipole moments and <r^2>
+ 3 Calculate and output atomic overlap matrix (AOM) in current folder
+ 33 Calculate and output fragment overlap matrix (FOM) in current folder
+ 4 Calculate localization (LI) and delocalization index (DI)
+ 44 Calculate fragment LI (FLI) and interfragment DI (IFDI)
+ 5 Calculate PDI (Para-delocalization index)
+ 6 Calculate FLU (Aromatic fluctuation index)
+ 7 Calculate FLU-pi
+ 8 Perform integration in fuzzy overlap region for a real space functions
+ 9 Calculate condensed linear response kernel (CLRK)
+ 10 Calculate PLR (Para linear response index)
+ 11 Calculate multi-center delocalization index
+ 12 Calculate information-theoretic aromaticity index (ACS Omega, 3, 18370)
+ 13 Calculate atomic effective volume, free volume, polarizability and C6 coefficient
+
+ "q": Exit program gracefully          "r": Load a new file
+                    ************ Main function menu ************
+ 0 Show molecular structure and view orbitals
+ 1 Output all properties at a point       2 Topology analysis
+ 3 Output and plot specific property in a line
+ 4 Output and plot specific property in a plane
+ 5 Output and plot specific property within a spatial region (calc. grid data)
+ 6 Check & modify wavefunction
+ 7 Population analysis and calculation of atomic charges
+ 8 Orbital composition analysis           9 Bond order analysis
+ 10 Plot total DOS, PDOS, OPDOS, local DOS, COHP and photoelectron spectrum
+ 11 Plot IR/Raman/UV-Vis/ECD/VCD/ROA/NMR spectrum
+ 12 Quantitative analysis of molecular surface
+ 13 Process grid data (No grid data is presented currently)
+ 14 Adaptive natural density partitioning (AdNDP) analysis
+ 15 Fuzzy atomic space analysis
+ 16 Charge decomposition analysis (CDA) and plot orbital interaction diagram
+ 17 Basin analysis                       18 Electron excitation analysis
+ 19 Orbital localization analysis        20 Visual study of weak interaction
+ 21 Energy decomposition analysis        22 Conceptual DFT (CDFT) analysis
+ 23 ETS-NOCV analysis                    24 (Hyper)polarizability analysis
+ 25 Electron delocalization and aromaticity analyses
+ 26 Structure and geometry related analyses
+ 100 Other functions (Part 1)            200 Other functions (Part 2)
+ 300 Other functions (Part 3)
+
+--- stderr ---
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_UNDERFLOW_FLAG

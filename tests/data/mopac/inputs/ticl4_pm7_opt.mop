@@ -1,0 +1,8 @@
+PM7 PRECISE AUX
+titanium tetrachloride, PM7 optimization (3d on Ti, d on Cl)
+Azimuth reference input (0.91.6)
+Ti    0.000000 1    0.000000 1    0.000000 1
+Cl    1.258000 1    1.258000 1    1.258000 1
+Cl   -1.258000 1   -1.258000 1    1.258000 1
+Cl   -1.258000 1    1.258000 1   -1.258000 1
+Cl    1.258000 1   -1.258000 1   -1.258000 1

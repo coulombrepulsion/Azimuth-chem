@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Geometry optimization</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/opt.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-opt-g.webp"><!--pose:end-->
+<h1>Geometry optimization</h1>
+<p class="lead">Almost every quantum chemical calculation begins with a search for the equilibrium geometry — a minimum on the potential energy surface. The program knows the energy and its gradient at the current point and moves step by step toward a point where the gradient is zero. Here the problem is solved on a real surface: the energy of the H₂O molecule computed by HF/6-31G* on a grid of bond lengths r and angles θ (both O–H bonds equal, C<sub>2v</sub> symmetry). Compare how many steps different algorithms need.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>Optimization looks for a point where the energy gradient is zero; whether it is a minimum or a saddle is decided by the Hessian.</li><li>Steepest descent is slow in elongated valleys: the stable step length is limited by the stiffest mode.</li><li>The Newton method converges in a few steps but needs the Hessian; the quasi-Newton BFGS method builds it from gradients — the standard in programs.</li><li>After optimization frequencies are computed: all real — a minimum, one imaginary — a transition state.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> HF/6-31G* for H₂O, symmetric structures only</summary><dl><dt>What is computed</dt><dd>The paths of four optimisation algorithms and a 2 × 2 Hessian on a grid of H₂O energies.</dd><dt>Which approximations are made</dt><dd>The HF method without correlation, the 6-31G* basis; the energy is interpolated on a grid; the two O–H bonds are equal.</dd><dt>What can be concluded</dt><dd>The comparison of algorithms is reliable; the minimum is proven only on the map, and the third mode is checked on the “Checking the calculations” page.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Four algorithms on one surface</h2>
+  <p class="small">Lines are energy levels above the minimum (kJ/mol). Click the map to choose the starting geometry. The optimization runs in internal coordinates r (bohr) and θ (radians); convergence is reached when the gradient length is below 10⁻⁵ E<sub>h</sub> per coordinate unit.</p>
+  <div class="crow"><span class="l">Algorithm</span><span class="grp" id="mG" role="group" aria-label="Algorithm"></span></div>
+  <div class="crow" id="stepRow"><span class="l">Step length α</span><input type="range" id="step" min="0.1" max="2" step="0.05" style="width:240px" aria-label="Steepest descent step length"><span class="val" id="stepV"></span></div>
+  <div class="crow"><span class="l">Optimization run</span><span class="row"><button class="btn" type="button" id="bStep">Step</button><button class="btn" type="button" id="bRun">To convergence</button><button class="btn" type="button" id="bReset">Start over</button><span class="val" id="kV"></span></span></div>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle">H₂O surface E(r, θ), HF/6-31G*: contours 1, 2, 5, 10, 20, 50, 100, 200 kJ/mol above the minimum (+)</div>
+      <svg id="map" viewBox="0 0 540 440" role="img" aria-label="Map of the potential energy surface and the optimization path"></svg>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="ptitle">Gradient length |g| by step (log scale)</div>
+      <svg id="cv" viewBox="0 0 520 250" role="img" aria-label="Convergence by step"></svg>
+      <div class="ptitle">All algorithms from the same starting point</div>
+      <div class="tablewrap" id="cmp"></div>
+    </div>
+  </div>
+  <div class="status" id="st1"></div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. What was found: the minimum and frequencies</h2>
+  <p class="small">The gradient is zero at a saddle point too, so the point found is checked with the matrix of second derivatives (the Hessian). At a minimum all its eigenvalues are positive. From the Hessian and the atomic masses one gets the harmonic vibrational frequencies — the “frequency calculation” that follows every optimization.</p>
+  <div class="tablewrap" id="res"></div>
+  <div class="status" id="st2"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">The program has found the minimum and the frequencies. How can one make sure the program computes correctly?</span><a class="nqA" href="validation.html" data-goto="val">Checking the calculations →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Steepest descent, α = 0.5: why does the path first go almost across the valley and then creep slowly along it?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">The curvature along r is much larger than along θ</button><button type="button" class="opt">The gradient always points to the minimum</button><button type="button" class="opt">The algorithm optimizes r first</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The gradient is perpendicular to the contours, and they are elongated: the curvature along r (≈ 1.2 E<sub>h</sub>/bohr²) is about 6 times that along θ (≈ 0.19 E<sub>h</sub>/rad²). So the bond length is corrected quickly and the angle slowly.</div></div>
+<div class="tq"><p class="qt"><span>Increase α for steepest descent. What happens at α ≈ 1.6–2?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Oscillations across the valley grow: the step is too large for the stiff mode</button><button type="button" class="opt">Convergence gets faster and faster</button><button type="button" class="opt">Nothing changes</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The step exceeds 2/λ<sub>max</sub> ≈ 1.65: along the stiff direction (bond stretching) each step overshoots the minimum farther and farther, and the path swings back and forth. The stable step length is limited by the stiffest mode.</div></div>
+<div class="tq"><p class="qt"><span>Compare descent with line search and BFGS in the table. Why is line search wasteful, even though it takes few steps?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Each step requires many energy evaluations</button><button type="button" class="opt">It finds a different minimum</button><button type="button" class="opt">It does not converge at all</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Each step needs dozens of energy evaluations to find the minimum along the direction, and in a real calculation each evaluation is a full SCF calculation. BFGS takes few steps and wastes almost no extra energies.</div></div>
+<div class="tq"><p class="qt"><span>Newton–Raphson converges in 3–4 steps. Why do programs use BFGS by default?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">The exact Hessian is too expensive</button><button type="button" class="opt">Newton always ends at a saddle point</button><button type="button" class="opt">BFGS finds a more accurate minimum</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>A Newton step needs the exact Hessian — the second derivatives of the energy, which cost as much as dozens of gradients. BFGS builds an approximate Hessian from gradients already computed and is almost as good in the number of steps.</div></div>
+<div class="tq"><p class="qt"><span>How do you check that the point found is a minimum and not a transition state?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">All eigenvalues of the Hessian are positive</button><button type="button" class="opt">The gradient is zero</button><button type="button" class="opt">The energy is below the starting one</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>By the Hessian: at a minimum all its eigenvalues are positive, that is, all frequencies are real. At a transition state one eigenvalue is negative — one imaginary frequency.</div></div>
+<div class="tq"><p class="qt"><span>Why are the HF/6-31G* harmonic frequencies of H₂O about 10 % too high?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">The HF surface without correlation is too steep, plus anharmonicity</button><button type="button" class="opt">Numerical differentiation error</button><button type="button" class="opt">The H atoms are too light</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Without correlation the HF surface is steeper than the real one, and the bond is shorter. In addition, observed frequencies are lower than harmonic ones because of anharmonicity. So HF frequencies are multiplied by a scaling factor of ≈ 0.9.</div></div>
+<div class="tq"><p class="qt"><span>The algorithm has converged, and both eigenvalues of the Hessian on the map are positive. Can one claim that the lowest minimum of H₂O has been found?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">It cannot be determined from these data</button><button type="button" class="opt">Yes: a positive Hessian proves a global minimum</button><button type="button" class="opt">No: a negative Hessian is needed</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>It cannot be determined from these data. The map tests only symmetric structures, so the antisymmetric vibration must be checked first (the “Checking the calculations” page does this). And even a true minimum may be local: the local Hessian says nothing about other minima. H₂O has no other minimum, but that is knowledge about the molecule, not a conclusion from the calculation.</div></div>
+</div></details></section>
+<script src="js/optimization.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="opt";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/optimization.js"></script>
+
+</body>
+</html>

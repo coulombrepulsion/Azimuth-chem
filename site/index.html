@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Азимут</title>
+<!--HEAD-->
+<link rel="icon" type="image/png" sizes="32x32" href="img/azimuth-icon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="img/azimuth-icon-64.png">
+<link rel="apple-touch-icon" href="img/azimuth-icon-256.png">
+<!-- the fonts do not hold the first picture of the page back: the text is shown at once in the font of the system -->
+<link rel="stylesheet" href="atlas/assets/fonts/fonts.css" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="atlas/assets/fonts/fonts.css"></noscript>
+<script>
+/* Old links to topics of the Atlas (azimuth-chem.com/#h2) lead to the Atlas, which now lives in atlas/ */
+(function () {
+  var h = location.hash.slice(1);
+  if (h && !/^(atlas|program|download|author)$/.test(h)) location.replace('atlas/' + location.search + location.hash);
+})();
+</script>
+<!-- ?theme=light|dark of an address of the program (azimuth/site.py) is the theme chosen, as by the switch -->
+<script>(function(){try{var t,m=/[?&]theme=(light|dark)(?:&|$)/.exec(location.search);if(m){t=m[1];try{localStorage.setItem('qc-theme',t)}catch(e){}try{var u=new URL(location.href);u.searchParams.delete('theme');history.replaceState(history.state,'',u)}catch(e){}}else t=localStorage.getItem('qc-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}})()</script>
+<style>
+:root{--bg:#f5f6f8;--panel:#ffffff;--ink:#1b2230;--muted:#5b6474;--line:#d8dce3;--soft:#eef0f4;--accent:#2a62b8;--accent-ink:#ffffff;--gold:#b8893f;
+  --f-display:"PT Serif",Georgia,serif;--f-body:"Golos Text","PingFang SC","Microsoft YaHei","Noto Sans SC","Segoe UI",system-ui,sans-serif;color-scheme:light}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#11151c;--panel:#191f28;--ink:#e7eaf0;--muted:#9aa3b2;--line:#2b333f;--soft:#212833;--accent:#6ea2f0;--accent-ink:#0d1420;--gold:#d6a95c;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#11151c;--panel:#191f28;--ink:#e7eaf0;--muted:#9aa3b2;--line:#2b333f;--soft:#212833;--accent:#6ea2f0;--accent-ink:#0d1420;--gold:#d6a95c;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--f-body);-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+header.top{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:20px;height:60px}
+.brand{display:flex;align-items:center;color:var(--ink);text-decoration:none;font-size:30px}
+.qWord{height:.74em;width:auto;display:block;overflow:visible}
+.qWord .wI{fill:currentColor}.qWord .wA{stroke:var(--accent)}.qWord .wS{fill:var(--accent)}.qWord .wZ{fill:var(--gold);stroke:var(--gold)}
+/* the needle of the compass in the A (assets/wordmark/compass_wordmark.py) */
+.qWord .wN{fill:#9aa4b5}.qWord .wP{fill:var(--accent)}.qWord .wH{fill:currentColor}.qWord .wE{fill:var(--bg)}
+:root[data-theme="dark"] .qWord .wN{fill:#7d8aa3}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .qWord .wN{fill:#7d8aa3}}
+.qZh{font-family:var(--f-display);font-size:.8em;letter-spacing:.12em}
+.qStar{height:.42em;width:.42em;fill:var(--gold);vertical-align:.5em;margin-left:.1em;display:inline-block}
+.tag{font:600 13px/1 var(--f-body);letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding-left:20px;border-left:1px solid var(--line);white-space:nowrap}
+.btn.small{font-size:14px;padding:8px 14px;border-radius:9px;white-space:nowrap}
+header.top .btn.small{margin-left:auto}
+.langs{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.langs button{font:inherit;font-size:13px;border:0;background:transparent;color:var(--muted);padding:5px 10px;cursor:pointer}
+.langs button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.hero{display:grid;grid-template-columns:1.3fr .7fr;gap:40px;align-items:center;padding:56px 0 40px}  /* the bubble wider, Quill a little smaller */
+.hero h1{font:700 clamp(32px,5vw,50px)/1.12 var(--f-display);margin:0 0 18px;letter-spacing:-.01em;text-wrap:balance}
+.hero p.lead{font-size:18px;color:var(--muted);margin:0 0 28px;max-width:34em}
+.steps{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 30px;padding:0;list-style:none}
+.steps li{font-size:14px;padding:4px 12px;border-radius:99px;background:var(--soft);border:1px solid var(--line)}
+.btns{display:flex;flex-wrap:wrap;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:16px;padding:12px 20px;border-radius:10px;text-decoration:none;border:1px solid var(--line);color:var(--ink);background:var(--panel)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:hover{filter:brightness(1.06)}
+.hero img{width:100%;height:auto;display:block}
+section{padding:48px 0;border-top:1px solid var(--line)}
+section h2{font:700 30px/1.2 var(--f-display);margin:0 0 10px}
+section p.sub{color:var(--muted);margin:0 0 28px;text-wrap:pretty}
+/* the text of a part is as wide as its cards, and the last
+   line is not left with a word (text-wrap:pretty where the browser has it) */
+section{scroll-margin-top:72px}  /* the part gone to stands below the header (60 px), not under it */
+/* Quill of a part beside its heading, 220 px */
+.partHead{display:grid;grid-template-columns:220px 1fr;gap:32px;align-items:center;margin-bottom:8px}  /* Quill to the left of the heading */
+.partHead p.sub{margin-bottom:0}
+.partQuill{width:220px;height:auto;display:block}
+/* where the first screen stands in one column (≤ 820 px) its Quill comes right before this one — two Quills in
+   a row; there the part keeps only its words */
+@media (max-width:820px){.partHead{grid-template-columns:1fr;margin-bottom:20px}.partQuill{display:none}}
+.atlas{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:26px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}
+.card h3{margin:0 0 6px;font-size:17px}
+.card p{margin:0;color:var(--muted);font-size:15px}
+/* three real topics of the Atlas (the design review §10) */
+.examples{margin:0 0 26px}
+.examples h3{margin:0 0 12px;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--accent)}
+.exGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.example{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;color:inherit;text-decoration:none;transition:border-color .2s,box-shadow .2s,transform .2s}
+.example:hover{border-color:var(--accent);box-shadow:0 10px 26px rgba(0,0,0,.10);transform:translateY(-2px)}
+.example:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.exPic{display:block;aspect-ratio:1/1;border-bottom:1px solid var(--line);overflow:hidden}
+/* the pictures are wider than tall (aim, bo, nm, sym): «cover» cut their labels (nm: «= 3657 см⁻¹» and «группа C2v»
+   half gone) — the whole picture is shown, the rest of the square takes the colour of its corner (fitPicture) */
+.exPic img{display:block;width:100%;height:100%;object-fit:contain}
+.example .dk{display:none}
+:root[data-theme="dark"] .example .lt{display:none}
+:root[data-theme="dark"] .example .dk{display:block}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .example .lt{display:none}:root:not([data-theme="light"]) .example .dk{display:block}}
+.example b{display:block;margin:14px 16px 4px;font-size:16px}
+.exText{display:block;margin:0 16px;color:var(--muted);font-size:14.5px;line-height:1.5;flex:1}
+.exGo{display:block;margin:10px 16px 16px;color:var(--accent);font-weight:600;font-size:14px}
+.exGo::after{content:" →"}
+@media (max-width:820px){.exGrid{grid-template-columns:1fr 1fr}.exGrid .example:last-child{grid-column:1 / -1}}
+@media (max-width:520px){.exGrid{grid-template-columns:1fr}.exPic{aspect-ratio:4/3}}
+.parts{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.parts .card h3{font:700 21px/1.2 var(--f-display);margin-bottom:8px}
+.parts .card .what{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);font-weight:600;margin-bottom:4px}
+.note{margin-top:18px;color:var(--muted);font-size:15px;text-wrap:pretty}
+.dl{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}  /* and Linux */
+.dl .card .os{font:700 20px/1.2 var(--f-display);margin-bottom:6px}
+details.first{margin-top:14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:12px 16px}  /* the first launch of a program without a paid signature */
+details.first summary{cursor:pointer;font-weight:600}
+details.first p,details.first li{color:var(--muted);font-size:15px;text-wrap:pretty}
+details.first ul{margin:8px 0 0;padding-left:20px}
+details.first li{margin:6px 0}
+details.first code{font-size:13px;background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:1px 5px}
+.dl .soon{display:inline-block;margin-top:12px;font-size:13px;padding:3px 10px;border-radius:99px;background:var(--soft);border:1px solid var(--line);color:var(--muted)}
+.author{display:flex;gap:20px;align-items:flex-start}
+/* the cards: a small line picture above the title; the four parts of the program carry the picture of their section
+   from the background of the program (hub/chrome.py Ornament, tools/site_scales.py), faint in the lower right corner */
+.card{position:relative;overflow:hidden}
+.cardIcon{display:block;color:var(--accent);margin:0 0 10px}
+.cardLink{display:inline-block;margin-top:10px;font-size:14px;font-weight:600;text-decoration:none}
+.cardLink:hover{text-decoration:underline}
+.card.part{min-height:210px}
+/* Quill of each part — Теория, Молекула, Расчёт, Результат — one series; «пусть Квил в правом верхнем углу карточки,
+   при этом текст если до нее достает - обтекает ее»: floated in the upper right corner, the text around her */
+.cardQuill{float:right;width:96px;height:96px;margin:-6px -6px 6px 16px;object-fit:contain}
+@media (max-width:700px){.cardQuill{width:80px;height:80px}}
+/* «чтоб они с разных сторон были», then «секстант и спектр развернуть относительно текущего положения»: Молекула and
+   Расчёт turned */
+.card.part[data-part="compass"] .cardQuill,.card.part[data-part="sextant"] .cardQuill{transform:scaleX(-1)}
+.card.part>*:not(.cardArt){position:relative;z-index:1}
+.cardArt{position:absolute;right:0;bottom:0;width:240px;height:240px;color:var(--accent);pointer-events:none;z-index:0}
+.cardArt svg{display:block;width:100%;height:100%}
+.cardArt.mirror svg{transform:scaleX(-1)}
+.cardArt *{vector-effect:non-scaling-stroke}
+@media (max-width:700px){.cardArt{width:190px;height:190px}}
+/* the title of a part opens its panel; the whole card does too */
+.card.part{cursor:pointer;transition:border-color .2s}
+.card.part:hover{border-color:color-mix(in srgb,var(--accent) 55%,var(--line))}
+.partBtn{all:unset;display:inline-flex;align-items:center;gap:.4em;cursor:pointer;color:var(--ink);font:inherit;border-radius:4px}
+.partBtn::after{content:"";width:.36em;height:.36em;border-right:2px solid var(--accent);border-top:2px solid var(--accent);transform:rotate(45deg);transition:transform .2s;flex:none}
+.card.part:hover .partBtn{color:var(--accent)}
+.card.part:hover .partBtn::after{transform:translateX(3px) rotate(45deg)}
+.partBtn:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.secBack{position:fixed;inset:0;z-index:70;background:rgba(8,12,18,.42);opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.secBack.open{opacity:1;visibility:visible;transition:opacity .3s}
+.secPanel{position:fixed;top:0;right:0;bottom:0;z-index:71;width:min(620px,100vw);display:flex;flex-direction:column;background:var(--panel);border-left:1px solid var(--line);box-shadow:-20px 0 60px rgba(0,0,0,.22);transform:translateX(100%);visibility:hidden;transition:transform .36s cubic-bezier(.2,.8,.2,1),visibility 0s .36s}
+.secPanel.open{transform:none;visibility:visible;transition:transform .36s cubic-bezier(.2,.8,.2,1)}
+.secArt .cardArt{width:340px;height:340px}
+.secHead{position:relative;z-index:1;display:flex;justify-content:flex-end;padding:12px 14px 0}
+.secClose{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:400 24px/1 var(--f-body);cursor:pointer}
+.secClose:hover{border-color:var(--accent);color:var(--accent)}
+/* the
+   picture in full size over the page; ×, Esc, a press beside it or «назад» close it, the arrows go through the
+   pictures of the section */
+.shotView{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:56px 64px 48px;background:rgba(8,12,18,0);visibility:hidden;transition:background .34s,visibility 0s .36s}
+.shotView.open{background:rgba(8,12,18,.88);visibility:visible;transition:background .34s}
+/* «чтоб снимок открывался анимацией — перемещаясь в центр экрана и расширяясь, и так же обратно»: the picture flies
+   from its place in the panel (the script, FLIP), the buttons and the caption come after it */
+.shotView .shotBtn,.shotView figcaption{opacity:0;transition:opacity .2s}
+.shotView.open .shotBtn,.shotView.open figcaption{opacity:1;transition:opacity .25s .15s}
+.shotView img{transform-origin:0 0;will-change:transform}
+figure.shot a.flying img{visibility:hidden}
+.shotView figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:12px;max-width:100%;max-height:100%}
+.shotView img{display:block;max-width:100%;max-height:calc(100vh - 140px);width:auto;height:auto;border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,.5);background:var(--panel)}
+.shotView figcaption{color:#dfe5ee;font-size:14px;text-align:center;max-width:70ch}
+.shotBtn{position:absolute;width:44px;height:44px;border-radius:12px;border:1px solid rgba(255,255,255,.22);background:rgba(20,26,36,.6);color:#fff;font:400 26px/1 var(--f-body);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.shotBtn:hover{border-color:#fff}
+.shotBtn:focus-visible{outline:2px solid #6ea2f0;outline-offset:2px}
+.shotBtn[hidden]{display:none}
+#shotClose{top:12px;right:14px}
+#shotPrev{left:12px;top:50%;transform:translateY(-50%)}
+#shotNext{right:12px;top:50%;transform:translateY(-50%)}
+@media (max-width:640px){.shotView{padding:56px 10px 40px}#shotPrev,#shotNext{top:auto;bottom:8px;transform:none}}
+.secBody{position:relative;z-index:1;flex:1;overflow:auto;overscroll-behavior:contain;padding:0 30px 36px}
+.secBody .what{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);font-weight:600;margin:0 0 4px}
+.secBody h2{font:700 30px/1.2 var(--f-display);margin:0 0 10px}
+/* the icon of the section from the program before its title — on the card and on the panel */
+.parts .card h3,.secBody h2{display:flex;align-items:center;gap:.4em}
+.navIcon{flex:none;width:.95em;height:.95em;color:var(--ink)}
+.card.part:hover .navIcon{color:var(--accent)}
+.secBody h3.sub{font:600 13px/1.3 var(--f-body);text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin:22px 0 6px}
+.secBody h3.sub~h3.sub{margin-top:30px}
+.secBody p{color:var(--muted);margin:0 0 12px}
+.secBody ul.can{margin:0 0 18px;padding:0 0 0 1.15em}
+.secBody ul.can li{margin:0 0 6px;font-size:15px}
+.secBody .btns{margin-top:18px}
+.secNote{margin-top:22px !important;font-size:13px}
+figure.shot{margin:16px 0 8px}
+figure.shot a{display:block;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel);box-shadow:0 8px 24px rgba(0,0,0,.10)}
+figure.shot a:hover{border-color:var(--accent)}
+figure.shot img{display:block;width:100%;height:auto}
+figure.shot figcaption{margin-top:8px;font-size:13px;color:var(--muted)}
+.shot .dk{display:none}
+:root[data-theme="dark"] .shot .lt{display:none}
+:root[data-theme="dark"] .shot .dk{display:block}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .shot .lt{display:none}:root:not([data-theme="light"]) .shot .dk{display:block}}
+@media (max-width:520px){.secBody{padding:0 18px 30px}.secBody h2{font-size:26px}.secArt .cardArt{width:240px;height:240px}}
+@media (prefers-reduced-motion:reduce){.secPanel,.secBack,.secPanel.open,.secBack.open{transition:none}}
+/* the press of a button is seen it sinks a little and darkens while held */
+.btn,.example,.card.part,.langs button{-webkit-tap-highlight-color:transparent}
+.btn{transition:transform .12s,filter .12s}
+.btn:active{transform:scale(.96);filter:brightness(.9)}
+.example:active{transform:scale(.98);box-shadow:none;transition-duration:.08s}
+.card.part{transition:border-color .2s,transform .12s}
+.card.part:active{transform:scale(.99)}
+.langs button{transition:transform .12s}
+.langs button:active{transform:scale(.92)}
+@media (prefers-reduced-motion:reduce){.btn:active,.example:active,.card.part:active,.langs button:active{transform:none}}
+/* Quill's greeting in the place of the lead: a speech bubble, its tail pointing at her picture on the right (as the
+   bubble of the program's home page, hub/home.py Bubble) */
+.hello{position:relative;margin:0 0 26px;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:14px;padding:15px 20px 14px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+.hello::after{content:"";position:absolute;top:50%;right:-9px;width:16px;height:16px;margin-top:-8px;background:var(--panel);border-right:1px solid var(--line);border-top:1px solid var(--line);transform:rotate(45deg)}
+.hello p{margin:0;color:var(--muted);font-size:16px;line-height:1.6;text-wrap:pretty}
+.hello p:first-child{color:var(--ink);font-size:17px;font-weight:600;margin-bottom:6px}
+.hello p:first-child i{font-weight:400;color:var(--muted)}
+.hello .qa{color:var(--gold);font-weight:700}
+@media (max-width:820px){.hello::after{display:none}}  /* a narrow screen: she is far below, after the buttons — no tail */
+footer{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--muted);font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between}
+@media (max-width:820px){
+  .hero{grid-template-columns:1fr;padding-top:32px}
+  .hero img{max-width:460px;margin:0 auto}
+  .atlas,.parts,.dl{grid-template-columns:1fr}
+}
+@media (max-width:420px){.wrap{padding:0 16px}.langs button{padding:5px 8px}}
+@media (max-width:600px){.tag{display:none}}
+.scale{position:fixed;width:430px;height:430px;pointer-events:none;z-index:0;color:var(--accent)}
+.scale svg{display:block}
+/* as in the program (hub/chrome.py Ornament.set_scroll): the dial is printed on the page — it goes up as the page
+   is scrolled, not fixed on the window */
+.scale.dial{position:absolute;top:0;right:0}
+main,footer{position:relative;z-index:1}
+@media (max-width:700px){.scale{display:none}}
+</style>
+</head>
+<body>
+<!-- the faint scales of the program's background (hub/chrome.py Ornament; put in by tools/build_atlas_site.py) -->
+<div class="scale dial" aria-hidden="true"><!--DIAL--></div>
+<header class="top"><div class="wrap">
+  <a class="brand" href="./" id="brand" aria-label="Азимут"></a>
+  <!-- as the header of the
+       Atlas: the wordmark, the name of the place, the parts of the page and the way into the Atlas -->
+  <span class="tag" data-t="tag"></span>
+  <a class="btn primary small" id="openAtlas4" href="atlas/" data-t="openAtlas"></a>
+</div></header>
+<!-- the side panel right after the header, not at the end
+     of the page — it is drawn with the header (rail.js needs nothing of the page below it) -->
+<script src="rail.js" data-root="./" data-here="home"></script>
+
+<main class="wrap">
+  <div class="hero">
+    <div>
+      <h1 data-t="h1"></h1>
+      <!-- Quill's greeting (hub/home.py GREETING, told for the site); the text of «lead» stays the description of
+           the page for search engines -->
+      <div class="hello" role="note" aria-label="Квил" data-label="qName"><p data-t="qHello1"></p><p data-t="qHello2"></p></div>
+      <ul class="steps"><li data-t="s1"></li><li data-t="s2"></li><li data-t="s3"></li><li data-t="s4"></li></ul>
+      <div class="btns">
+        <a class="btn primary" id="openAtlas" href="atlas/" data-t="openAtlas"></a>
+        <a class="btn" id="aboutProgram" href="#program" data-t="aboutProgram"></a>
+      </div>
+    </div>
+    <img src="img/quill-home-desk.webp" width="1200" height="865" alt="" data-alt="heroAlt">
+  </div>
+
+  <section id="atlas">
+    <!-- Quill of the part — the open book with a curve and a slider (assets/quill/site/quill-site-atlas.webp,
+         docs/art/QUAIL_ART_SITE.md № 1), to the left of its heading, her book turned to the words -->
+    <div class="partHead">
+      <img class="partQuill" src="img/quill-site-atlas.webp" width="640" height="666" loading="lazy" alt="" data-alt="atlasQuillAlt">
+      <div>
+        <h2 data-t="atlasT"></h2>
+        <p class="sub" data-t="atlasSub"></p>
+      </div>
+    </div>
+    <div class="atlas">
+      <div class="card"><!--ICON formula--><h3 data-t="a1T"></h3><p data-t="a1"></p></div>
+      <div class="card"><!--ICON checked--><h3 data-t="a2T"></h3><p data-t="a2"></p><a class="cardLink" id="toValidation" href="atlas/#val" data-t="a2Link"></a></div>
+      <div class="card"><!--ICON languages--><h3 data-t="a3T"></h3><p data-t="a3"></p></div>
+    </div>
+    <!-- the design review §10 three real topics, a picture of each in the language and the theme of the page
+         (site/img-topics: NAME-LANG-THEME.webp, taken from the Atlas of the site) -->
+    <div class="examples">
+      <h3 data-t="exT"></h3>
+      <div class="exGrid">
+        <a class="example" data-topic="pes" href="atlas/#pes"><span class="exPic"><img class="lt" src="img/topics/pes-ru-light.webp" width="720" height="720" loading="lazy" alt="" data-alt="ex1"><img class="dk" src="img/topics/pes-ru-dark.webp" width="720" height="720" loading="lazy" alt="" data-alt="ex1"></span><b data-t="ex1"></b><span class="exText" data-t="ex1t"></span><span class="exGo" data-t="exGo"></span></a>
+        <a class="example" data-topic="mo" href="atlas/#mo"><span class="exPic"><img class="lt" src="img/topics/mo-ru-light.webp" width="720" height="720" loading="lazy" alt="" data-alt="ex2"><img class="dk" src="img/topics/mo-ru-dark.webp" width="720" height="720" loading="lazy" alt="" data-alt="ex2"></span><b data-t="ex2"></b><span class="exText" data-t="ex2t"></span><span class="exGo" data-t="exGo"></span></a>
+        <a class="example" data-topic="sym" href="atlas/#sym"><span class="exPic"><img class="lt" src="img/topics/sym-ru-light.webp" width="720" height="720" loading="lazy" alt="" data-alt="ex3"><img class="dk" src="img/topics/sym-ru-dark.webp" width="720" height="720" loading="lazy" alt="" data-alt="ex3"></span><b data-t="ex3"></b><span class="exText" data-t="ex3t"></span><span class="exGo" data-t="exGo"></span></a>
+      </div>
+    </div>
+    <a class="btn primary" id="openAtlas2" href="atlas/" data-t="openAtlas"></a>
+  </section>
+
+  <section id="program">
+    <h2 data-t="progT"></h2>
+    <p class="sub" data-t="progSub"></p>
+    <div class="parts">
+      <div class="card part" data-part="atlas"><!--ART book--><img class="cardQuill" src="img/quill-site-theory.webp" width="96" height="96" loading="lazy" alt=""><div class="what" data-t="p1w"></div><h3><!--NAV atlas--><button class="partBtn" type="button" aria-haspopup="dialog" aria-controls="secPanel" data-t="p1T"></button></h3><p data-t="p1"></p></div>
+      <div class="card part" data-part="compass"><!--ART compass--><img class="cardQuill" src="img/quill-site-molecule.webp" width="96" height="96" loading="lazy" alt=""><div class="what" data-t="p2w"></div><h3><!--NAV compass--><button class="partBtn" type="button" aria-haspopup="dialog" aria-controls="secPanel" data-t="p2T"></button></h3><p data-t="p2"></p></div>
+      <div class="card part" data-part="sextant"><!--ART sextant--><img class="cardQuill" src="img/quill-site-calculation.webp" width="96" height="96" loading="lazy" alt=""><div class="what" data-t="p3w"></div><h3><!--NAV sextant--><button class="partBtn" type="button" aria-haspopup="dialog" aria-controls="secPanel" data-t="p3T"></button></h3><p data-t="p3"></p></div>
+      <div class="card part" data-part="spectrum"><!--ART spectrum--><img class="cardQuill" src="img/quill-site-result.webp" width="96" height="96" loading="lazy" alt=""><div class="what" data-t="p4w"></div><h3><!--NAV spectrum--><button class="partBtn" type="button" aria-haspopup="dialog" aria-controls="secPanel" data-t="p4T"></button></h3><p data-t="p4"></p></div>
+    </div>
+    <p class="note" data-t="progNote"></p>
+  </section>
+
+  <section id="download">
+    <h2 data-t="dlT"></h2>
+    <p class="sub" data-t="dlSub"></p>
+    <div class="dl">
+      <div class="card"><!--ICON laptop--><div class="os">macOS</div><p data-t="mac"></p><span class="soon" data-t="soon"></span></div>
+      <div class="card"><!--ICON desktop--><div class="os">Windows</div><p data-t="win"></p><span class="soon" data-t="soon"></span></div>
+      <div class="card"><!--ICON terminal--><div class="os">Linux</div><p data-t="lin"></p><span class="soon" data-t="soon"></span></div>
+    </div>
+    <p class="note" data-t="dlNote"></p>
+    <details class="first"><summary data-t="firstT"></summary><p data-t="firstWhy"></p><ul class="firstList"><li data-t="firstMac"></li><li data-t="firstWin"></li><li data-t="firstLin"></li></ul></details>
+    <p style="margin:18px 0 0"><a class="btn primary" id="askProgram" href="#download" data-t="reqBtn"></a></p>
+  </section>
+
+  <section id="author">
+    <h2 data-t="authT"></h2>
+    <p class="sub" data-t="auth"></p>
+  </section>
+</main>
+
+<footer><div class="wrap"><span data-t="copy"></span><span data-t="contact"></span><span data-t="mirror"></span></div></footer>
+
+<!-- the panel of a section, one part shown at a time -->
+<div class="secBack" id="secBack"></div>
+<div class="shotView" id="shotView" role="dialog" aria-modal="true" aria-labelledby="shotCap">
+  <button class="shotBtn" id="shotClose" type="button" aria-label="Закрыть" data-label="dClose">&#215;</button>
+  <button class="shotBtn" id="shotPrev" type="button" aria-label="Предыдущий снимок" data-label="dPrev">&#8249;</button>
+  <button class="shotBtn" id="shotNext" type="button" aria-label="Следующий снимок" data-label="dNext">&#8250;</button>
+  <figure><img id="shotImg" alt="" width="1600" height="1000"><figcaption id="shotCap"></figcaption></figure>
+</div>
+<aside class="secPanel" id="secPanel" role="dialog" aria-modal="true" aria-labelledby="dh-atlas">
+  <div class="secArt" aria-hidden="true"></div>
+  <div class="secHead"><button class="secClose" id="secClose" type="button" aria-label="Закрыть" data-label="dClose">&#215;</button></div>
+  <div class="secBody">
+    <div class="dpart" data-part="atlas" hidden>
+      <div class="what" data-t="gAw"></div><h2 id="dh-atlas"><!--NAV atlas--><span data-t="gAT"></span></h2>
+      <p data-t="gA"></p>
+      <p data-t="p1"></p>
+      <div class="btns"><a class="btn primary" id="openAtlas3" href="atlas/" data-t="openAtlas"></a></div>
+    </div>
+    <div class="dpart" data-part="compass" hidden>
+      <div class="what" data-t="p2w"></div><h2 id="dh-compass"><!--NAV compass--><span data-t="p2T"></span></h2>
+      <h3 class="sub" data-t="gC1w"></h3>
+      <p data-t="gC1"></p>
+      <ul class="can"><li data-t="gC1a"></li><li data-t="gC1b"></li><li data-t="gC1c"></li><li data-t="gC1d"></li></ul>
+      <!--SHOT compass gC1s1--><!--SHOT compass-optimization gC1s2--><!--SHOT compass-scan gC1s3-->
+      <h3 class="sub" data-t="gC2w"></h3>
+      <p data-t="gC2"></p>
+      <ul class="can"><li data-t="gC2a"></li><li data-t="gC2b"></li><li data-t="gC2e"></li><li data-t="gC2c"></li><li data-t="gC2d"></li></ul>
+      <!--SHOT crystal gC2s1--><!--SHOT crystal-graphite gC2s2-->
+      <!--SHOT crystal-contacts gC2s3--><!--SHOT crystal-hirshfeld gC2s4-->
+      <!--SHOT crystal-fingerprint gC2s5--><!--SHOT crystal-powder gC2s6-->
+    </div>
+    <div class="dpart" data-part="sextant" hidden>
+      <div class="what" data-t="gSw"></div><h2 id="dh-sextant"><!--NAV sextant--><span data-t="gST"></span></h2>
+      <p data-t="gS"></p>
+      <ul class="can"><li data-t="gSa"></li><li data-t="gSb"></li><li data-t="gSc"></li><li data-t="gSe"></li><li data-t="gSd"></li></ul>
+      <!--SHOT sextant gSs1--><!--SHOT sextant-crystal gSs2-->
+    </div>
+    <div class="dpart" data-part="spectrum" hidden>
+      <div class="what" data-t="gPw"></div><h2 id="dh-spectrum"><!--NAV spectrum--><span data-t="gPT"></span></h2>
+      <p data-t="gP"></p>
+      <ul class="can"><li data-t="gPa"></li><li data-t="gPb"></li><li data-t="gPc"></li><li data-t="gPe"></li><li data-t="gPf"></li><li data-t="gPd"></li></ul>
+      <!--SHOT spectrum-vibrations gPs1-->
+      <!--SHOT spectrum-uv gPs2-->
+    </div>
+    <p class="secNote" data-t="gShots"></p>
+  </div>
+</aside>
+
+<script>
+/*WORD*/
+/* the address is put together here, not written whole anywhere in the page — the robots that gather
+   addresses for spam read the HTML and look for «@» */
+const ADDRESS = ['contact', 'azimuth-chem.com'].join(String.fromCharCode(64));  // the address of the site
+const MAIL = '<a href="mailto:' + ADDRESS + '">' + ADDRESS + '</a>';
+const T = /*TEXTS*/;  // site/texts.json, put in by tools/build_atlas_site.py; {mail} is the address above
+const say = text => String(text).split('{mail}').join(MAIL);
+/* the topics shown under «Например, в темах Атласа»: three of EXAMPLES at random, other ones at every visit; the
+   pictures: site/img-topics/KEY-LANG-THEME.webp, the words: texts exN, exNt */
+const EXAMPLES = [['pes', 'ex1'], ['mo', 'ex2'], ['sym', 'ex3'], ['bo', 'ex4'], ['nm', 'ex5'], ['aim', 'ex6']];
+(function shuffle() {
+  const pool = EXAMPLES.slice();
+  for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+  document.querySelectorAll('.example').forEach((a, k) => {
+    const [key, n] = pool[k];
+    a.dataset.topic = key;
+    a.querySelector('b').dataset.t = n;
+    a.querySelector('.exText').dataset.t = n + 't';
+    a.querySelectorAll('img').forEach(i => { i.dataset.alt = n; });
+  });
+})();
+/* the free part of the square around a picture of a topic: the colour of the picture's own corner, so the picture and
+   the square are one (the backgrounds of the Atlas differ a little: #fff, #f7f7f7, #12151d, #191f28) */
+function fitPicture(i) {
+  if (!i.naturalWidth) return;
+  try {  // the middles of the four edges, the colour most of them have (a corner may be rounded, an edge may hold a label)
+    const w = i.naturalWidth, h = i.naturalHeight, c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    const g = c.getContext('2d'); g.drawImage(i, 0, 0);
+    const seen = {};
+    for (const [x, y] of [[w >> 1, 3], [w >> 1, h - 4], [3, h >> 1], [w - 4, h >> 1]]) {
+      const [r, gr, b] = g.getImageData(x, y, 1, 1).data, key = `rgb(${r},${gr},${b})`;
+      seen[key] = (seen[key] || 0) + 1;
+    }
+    i.style.background = Object.keys(seen).sort((a, b) => seen[b] - seen[a])[0];
+  } catch (e) { /* a picture of another site: the square keeps the colour of the card */ }
+}
+document.querySelectorAll('.exPic img').forEach(i => { i.addEventListener('load', () => fitPicture(i)); fitPicture(i); });
+function apply(lang) {
+  const u = T[lang];
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : lang;
+  document.title = u.title;
+  document.querySelectorAll('[data-t]').forEach(e => { e.innerHTML = say(u[e.dataset.t]); });
+  document.querySelectorAll('[data-alt]').forEach(e => { e.alt = u[e.dataset.alt]; });
+  const b = document.getElementById('brand'); b.innerHTML = WORD[lang] || WORD.ru; b.setAttribute('aria-label', lang === 'zh' ? '方位' : lang === 'en' ? 'Azimuth' : 'Азимут');
+  ['openAtlas', 'openAtlas2'].forEach(id => { document.getElementById(id).href = 'atlas/?lang=' + lang; });
+  document.getElementById('toValidation').href = 'atlas/?lang=' + lang + '#val';
+  /* «Запросить программу»: a draft of a letter in the mail program of the visitor — nothing is sent by the page */
+  document.getElementById('askProgram').href = 'mailto:' + ADDRESS + '?subject=' + encodeURIComponent(u.reqSubj) + '&body=' + encodeURIComponent(u.reqBody);
+  document.getElementById('openAtlas3').href = 'atlas/?lang=' + lang;
+  document.getElementById('openAtlas4').href = 'atlas/?lang=' + lang;
+  /* the pictures of the sections in this language where there are such (data-langs), else the Russian */
+  document.querySelectorAll('a[data-shot]').forEach(a => {
+    const own = (a.dataset.langs || '').split(' ').includes(lang) ? '-' + lang : '';
+    a.querySelectorAll('img').forEach(i => { i.src = i.getAttribute('src').replace(/[^/]*$/, a.dataset.shot + own + '-' + (i.classList.contains('dk') ? 'dark' : 'light') + '.webp'); });
+  });
+  document.querySelectorAll('.example').forEach(a => {  // the topic in this language, its pictures with its words
+    a.href = 'atlas/?lang=' + lang + '#' + a.dataset.topic;
+    a.querySelectorAll('img').forEach(i => { i.src = 'img/topics/' + a.dataset.topic + '-' + lang + '-' + (i.classList.contains('dk') ? 'dark' : 'light') + '.webp'; });
+  });
+  document.querySelectorAll('[data-label]').forEach(e => { e.setAttribute('aria-label', u[e.dataset.label]); });
+}
+/* the panel of a section: it comes out from the right when the title of a part (or its card) is pressed; it goes
+   by ×, Esc, a press beside it or «назад» of the browser (a phone's gesture back closes it, not the page) */
+(() => {
+  const drawer = document.getElementById('secPanel'), back = document.getElementById('secBack');
+  const body = drawer.querySelector('.secBody'), art = drawer.querySelector('.secArt');
+  const close = document.getElementById('secClose');
+  let shown = null, opener = null;
+  function show(name) {
+    shown = name;
+    drawer.querySelectorAll('.dpart').forEach(d => { d.hidden = d.dataset.part !== name; });
+    drawer.setAttribute('aria-labelledby', 'dh-' + name);
+    const picture = document.querySelector('.card.part[data-part="' + name + '"] .cardArt');
+    art.replaceChildren(...(picture ? [picture.cloneNode(true)] : []));
+    body.scrollTop = 0;
+    const gap = window.innerWidth - document.documentElement.clientWidth;
+    document.body.style.overflow = 'hidden';
+    if (gap > 0) document.body.style.paddingRight = gap + 'px';
+    back.classList.add('open'); drawer.classList.add('open');
+    requestAnimationFrame(() => close.focus({preventScroll: true}));
+  }
+  function hide() {
+    if (!shown) return;
+    shown = null;
+    back.classList.remove('open'); drawer.classList.remove('open');
+    document.body.style.overflow = ''; document.body.style.paddingRight = '';
+    if (opener) opener.focus({preventScroll: true});
+  }
+  const ours = () => history.state && history.state.drawer;
+  if (ours()) history.replaceState(null, '');  // the page was opened again with the panel in its history
+  function shut() { if (ours()) history.back(); else hide(); }
+  /* the picture in full size: over the panel, in the theme and the language it is shown in */
+  const view = document.getElementById('shotView'), big = document.getElementById('shotImg');
+  const caption = document.getElementById('shotCap'), viewClose = document.getElementById('shotClose');
+  const prev = document.getElementById('shotPrev'), next = document.getElementById('shotNext');
+  let pictures = [], at = -1, from = null;
+  const seen = a => a.querySelector(getComputedStyle(a.querySelector('.dk')).display !== 'none' ? '.dk' : '.lt');
+  function look(i) {
+    at = (i + pictures.length) % pictures.length;
+    const a = pictures[at], img = seen(a);
+    big.src = img.getAttribute('src'); big.alt = img.alt;
+    caption.textContent = a.parentElement.querySelector('figcaption').textContent;
+    prev.hidden = next.hidden = pictures.length < 2;
+  }
+  /* the picture flies between its place in the panel and the middle of the screen (FLIP: the big one is
+     drawn in its place, moved and shrunk onto the small one, then let go) */
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let flight = null, flying = null;
+  function onto(a) {  // the transform that lays the big picture over the small one of a
+    const small = seen(a).getBoundingClientRect(), large = big.getBoundingClientRect();
+    if (!small.width || !large.width) return null;
+    return `translate(${small.left - large.left}px, ${small.top - large.top}px) scale(${small.width / large.width}, ${small.height / large.height})`;
+  }
+  function land() {
+    if (flight) { flight.cancel(); flight = null; }
+    if (flying) { flying.classList.remove('flying'); flying = null; }
+  }
+  function fly(a, out) {
+    land();
+    const there = still.matches ? null : onto(a);
+    if (!there) return null;
+    flying = a; a.classList.add('flying');
+    const frames = out ? [{transform: 'none'}, {transform: there}] : [{transform: there}, {transform: 'none'}];
+    flight = big.animate(frames, {duration: out ? 300 : 340, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'forwards'});
+    return flight;
+  }
+  function open(a) {
+    pictures = [...a.closest('.dpart').querySelectorAll('a[data-shot]')];
+    from = a; look(pictures.indexOf(a));
+    big.style.visibility = '';
+    view.classList.add('open');
+    const go = fly(a, false);
+    if (go) go.finished.then(() => { if (flight === go) land(); }, () => {});
+    requestAnimationFrame(() => viewClose.focus({preventScroll: true}));
+  }
+  function unlook() {
+    if (at < 0) return;
+    const last = pictures[at];
+    at = -1;
+    if (last && last !== from) {  // turned to another picture: the panel shows it, the picture goes back to it
+      const r = last.getBoundingClientRect(), box = body.getBoundingClientRect();  // the panel only, not the page
+      body.scrollTop += (r.top + r.height / 2) - (box.top + box.height / 2);
+      from = last;
+    }
+    view.classList.remove('open');
+    const go = last ? fly(last, true) : null;
+    // landed: the big one goes away at once (it would come back to the middle while the dark is still going)
+    if (go) go.finished.then(() => { if (flight === go) { big.style.visibility = 'hidden'; land(); } }, () => {});
+    if (from) from.focus({preventScroll: true});
+  }
+  const looking = () => history.state && history.state.shot !== undefined;
+  function shutView() { if (looking()) history.back(); else unlook(); }
+  window.addEventListener('popstate', () => {
+    if (looking()) { if (shown !== history.state.drawer) show(history.state.drawer); const a = drawer.querySelector('.dpart:not([hidden]) a[data-shot="' + history.state.shot + '"]'); if (a) open(a); return; }
+    unlook();
+    if (ours()) { if (shown !== history.state.drawer) show(history.state.drawer); } else hide();
+  });
+  document.querySelectorAll('.card.part').forEach(card => card.addEventListener('click', e => {
+    if (e.target.closest('a') || String(window.getSelection()).length) return;
+    opener = card.querySelector('.partBtn');
+    show(card.dataset.part);
+    if (ours()) history.replaceState({drawer: card.dataset.part}, ''); else history.pushState({drawer: card.dataset.part}, '');
+  }));
+  close.addEventListener('click', shut);
+  back.addEventListener('click', shut);
+  drawer.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { e.preventDefault(); shut(); return; }
+    if (e.key !== 'Tab') return;  // the focus stays in the panel while it is open
+    const all = [...secPanel.querySelectorAll('a[href],button')].filter(x => x.offsetParent !== null);
+    const first = all[0], last = all[all.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+  /* a picture opens in full size on the page; with Ctrl, ⌘, Shift or the middle button — in a new tab, as a link
+     (its address in the theme and the language it is shown in) */
+  drawer.querySelectorAll('a[data-shot]').forEach(a => a.addEventListener('click', e => {
+    a.href = seen(a).getAttribute('src');
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault();
+    open(a);
+    history.pushState({drawer: shown, shot: a.dataset.shot}, '');
+  }));
+  viewClose.addEventListener('click', shutView);
+  prev.addEventListener('click', e => { e.stopPropagation(); look(at - 1); });
+  next.addEventListener('click', e => { e.stopPropagation(); look(at + 1); });
+  view.addEventListener('click', e => { if (e.target === view || e.target.tagName === 'FIGURE') shutView(); });
+  view.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); shutView(); }
+    else if (e.key === 'ArrowLeft' && pictures.length > 1) { e.preventDefault(); look(at - 1); }
+    else if (e.key === 'ArrowRight' && pictures.length > 1) { e.preventDefault(); look(at + 1); }
+    else if (e.key === 'Tab') {  // the focus stays on the buttons of the picture
+      const all = [viewClose, prev, next].filter(x => !x.hidden);
+      const i = all.indexOf(document.activeElement);
+      e.preventDefault(); all[(i + (e.shiftKey ? all.length - 1 : 1)) % all.length].focus();
+    }
+  });
+})();
+/* the language and the theme are chosen in the side panel (rail.js), for the whole site */
+apply(window.SiteRail.lang());
+document.addEventListener('rail-lang', e => apply(e.detail));
+</script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Walsh diagrams: molecular shape from orbitals</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-walsh-g.webp"><!--pose:end-->
+<h1>Walsh diagrams: molecular shape from orbitals</h1>
+<p class="lead">Why is water bent while BeH₂ is linear, although both have two A–H bonds? Walsh proposed an answer that needs no total-energy calculation: follow how the energy of each valence orbital changes on bending and add up the energies of the occupied ones. The shape is set by the number of valence electrons — and by the orbitals they go into.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>On bending AH₂ the symmetry drops from D∞h to C₂ᵥ: σg → 1a₁, σᵤ → 1b₂, and the πᵤ pair splits into 2a₁ and 1b₁.</li><li>2a₁ drops strongly on bending — the s orbital of the central atom mixes in; 1b₁ (p perpendicular to the plane) does not depend on the angle, 1b₂ rises slightly.</li><li>Four valence electrons (BeH₂) fill only 1a₁ and 1b₂ — the molecule is linear; from five (BH₂) on, 2a₁ is occupied and the molecule is bent.</li><li>Walsh’s rule is qualitative: the sum of orbital energies is not the total energy, but it gets the trend along BeH₂ → H₂O right.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> a one-electron model, rigid bonds</summary><dl><dt>What is computed</dt><dd>The energies of the six valence orbitals of AH₂ at angles from 80° to 180°, the sum of the occupied orbital energies and the angle of its minimum for 4–8 valence electrons.</dd><dt>Which approximations are made</dt><dd>A Hückel-type Hamiltonian: α for s and p of the central atom and for H 1s, β proportional to the direction cosines; fixed bond length; no electron repulsion; qualitative parameters, the same for all AH₂.</dd><dt>What can be concluded</dt><dd>Why the shape depends on the number of electrons and which orbitals set it — yes; exact angles and inversion barriers come only from total-energy calculations (HF, DFT).</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">AH₂ orbitals against the angle</h2>
+  <div class="crow"><span class="l">Molecule (valence electrons)</span><span class="grp" id="mG" role="group" aria-label="Molecule"></span></div>
+  <svg id="wchart" class="ch" viewBox="0 0 960 380" role="img" aria-label="Walsh diagram"></svg>
+  <p class="hint">Solid lines are occupied orbitals (the number of electrons in brackets), dashed ones are virtual. The vertical dotted line is the model angle.</p>
+  <div class="cards" id="wcards"></div>
+  <p class="status" id="wNote"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">The Walsh energy</h2>
+  <svg id="echart" class="ch" viewBox="0 0 960 200" role="img" aria-label="Sum of occupied orbital energies"></svg>
+  <p class="hint">Σ nε over the occupied orbitals; the minimum is the predicted angle. For CH₂ the model fills the orbitals in order and gives the singlet 2a₁²; the ground state of methylene is the triplet 2a₁¹1b₁¹ with an angle of 134°, the singlet lies 38 kJ/mol higher.</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Where the curves come from</h2>
+  <table class="tbl"><tr><th>D∞h (180°)</th><th>C₂ᵥ (bent)</th><th>made of</th><th>on bending</th></tr>
+  <tr><td>σg</td><td>1a₁</td><td>s(A) + (H₁ + H₂)</td><td>slightly lower: the H atoms come closer</td></tr>
+  <tr><td>σᵤ</td><td>1b₂</td><td>p<sub>y</sub>(A) + (H₁ − H₂)</td><td>higher: p<sub>y</sub> points worse at the H atoms</td></tr>
+  <tr><td>πᵤ</td><td>2a₁</td><td>p<sub>z</sub>(A) + s(A) + (H₁ + H₂)</td><td>much lower: overlap with H appears and s mixes in</td></tr>
+  <tr><td>πᵤ</td><td>1b₁</td><td>p<sub>x</sub>(A), perpendicular to the plane</td><td>unchanged: non-bonding</td></tr></table>
+  <p class="hint">The z axis bisects the angle, the molecule lies in the yz plane. The same reasoning explains pyramidal NH₃ (8 electrons) and planar CH₃⁺ (6 electrons) — the Walsh diagrams of AH₃.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">Walsh reasons about shape from orbital energies. How does the simplest model of π systems do it?</span><a class="nqA" href="huckel.html" data-goto="huckel">Hückel method →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Choose BeH₂. Why is the molecule linear?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">2a₁ is occupied and drops on bending</button><button type="button" class="opt" data-ok="1">Only 1a₁ and 1b₂ are occupied, and 1b₂ rises on bending</button><button type="button" class="opt">1b₁ rises on bending</button><button type="button" class="opt">Beryllium has no p orbitals</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Four valence electrons fill 1a₁ and 1b₂. 1b₂ (from σᵤ) is destabilised on bending, and 2a₁, which would gain from bending, is empty.</div></div>
+<div class="tq"><p class="qt"><span>Which orbital drops the most on bending AH₂?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">1a₁</button><button type="button" class="opt">1b₂</button><button type="button" class="opt" data-ok="1">2a₁</button><button type="button" class="opt">1b₁</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>2a₁: in the linear molecule it is one of the πᵤ, without overlap with the H atoms; on bending it starts to bond with H and the s of the central atom mixes in.</div></div>
+<div class="tq"><p class="qt"><span>Why are the angles of NH₂ and H₂O almost the same (103° and 104.5°)?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">The seventh and eighth electrons go into 1b₁, whose energy does not depend on the angle</button><button type="button" class="opt">N and O have the same electronegativity</button><button type="button" class="opt">Both molecules are linear</button><button type="button" class="opt">Their 2a₁ is empty</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The seventh and eighth valence electrons go into 1b₁ — the p orbital perpendicular to the molecular plane: it is non-bonding and does not depend on the angle, so the angle hardly changes.</div></div>
+<div class="tq"><p class="qt"><span>How many valence electrons does AH₂ need for the model to give a bent molecule?</span></p>
+<p class="olab">Valence electrons</p><div class="opts" role="group"><button type="button" class="opt">3</button><button type="button" class="opt">4</button><button type="button" class="opt" data-ok="1">5 or more</button><button type="button" class="opt">only 8</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>From five on (BH₂, 131°): the fifth electron goes into 2a₁, which is stabilised on bending. With 4 electrons (BeH₂) the molecule is linear.</div></div>
+</div></details></section>
+<script src="js/walsh.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="walsh";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/walsh.js"></script>
+
+</body>
+</html>

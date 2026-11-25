@@ -1,0 +1,172 @@
+answers: 19 | 1 | 0 | q
+
+ WARNING: "settings.ini" was found neither in current folder nor in the path defined by "Multiwfnpath" environment variable. Now using default settings instead, and all your modifications (if any) on settings.ini will not take effect!
+
+[95m Multiwfn -- A Multifunctional Wavefunction Analyzer
+[0m[32m Version 2026.7.15 (release date is the same as version name)
+[0m Developer: Tian Lu (Beijing Kein Research Center for Natural Sciences)
+ Multiwfn official website: http://sobereva.com/multiwfn
+ Multiwfn English forum: http://sobereva.com/wfnbbs
+ Multiwfn Chinese forum: http://bbs.keinsci.com/wfn
+ ( Number of parallel threads:   4  Current date: 2026-11-02  Time: 14:02:25 )
+
+ Both following papers ***MUST BE CITED IN MAIN TEXT*** if Multiwfn is used:
+[36m  Tian Lu, Feiwu Chen, J. Comput. Chem., 33, 580 (2012) DOI: 10.1002/jcc.22885
+  Tian Lu, J. Chem. Phys., 161, 082503 (2024) DOI: 10.1063/5.0216272
+[0m See "How to cite Multiwfn.pdf" in Multiwfn binary package for more information
+
+ Warning: You should set OMP_STACKSIZE environment variable as mentioned in Section 2.1.2 of Multiwfn manual!
+
+ Please wait...
+ Loading various information of the wavefunction
+ Loading basis set definition...
+ The highest angular moment basis functions is P
+ All basis functions are Cartesian type
+ Loading orbitals...
+ The actual number of Alpha/Beta orbitals read:        60  /        60
+ Converting basis function information to GTF information...
+ Generating density matrix...
+ Generating overlap matrix...
+
+ Total/Alpha/Beta electrons:     69.0000     35.0000     34.0000
+ Net charge:     1.00000      Expected multiplicity:    2
+ Atoms:     20,  Basis functions:     60,  GTFs:    180
+ This is an unrestricted single-determinant wavefunction
+ Orbitals from      1 to    60 are alpha, from     1 to    35 are occupied
+ Orbitals from     61 to   120 are beta,  from    61 to    94 are occupied
+
+ Loaded input.molden successfully!
+
+ Formula: H10 C10      Total atoms:      20
+ Molecule weight:       130.18677 Da
+ Point group: C2h
+
+ "q": Exit program gracefully          "r": Load a new file
+                    ************ Main function menu ************
+ 0 Show molecular structure and view orbitals
+ 1 Output all properties at a point       2 Topology analysis
+ 3 Output and plot specific property in a line
+ 4 Output and plot specific property in a plane
+ 5 Output and plot specific property within a spatial region (calc. grid data)
+ 6 Check & modify wavefunction
+ 7 Population analysis and calculation of atomic charges
+ 8 Orbital composition analysis           9 Bond order analysis
+ 10 Plot total DOS, PDOS, OPDOS, local DOS, COHP and photoelectron spectrum
+ 11 Plot IR/Raman/UV-Vis/ECD/VCD/ROA/NMR spectrum
+ 12 Quantitative analysis of molecular surface
+ 13 Process grid data (No grid data is presented currently)
+ 14 Adaptive natural density partitioning (AdNDP) analysis
+ 15 Fuzzy atomic space analysis
+ 16 Charge decomposition analysis (CDA) and plot orbital interaction diagram
+ 17 Basin analysis                       18 Electron excitation analysis
+ 19 Orbital localization analysis        20 Visual study of weak interaction
+ 21 Energy decomposition analysis        22 Conceptual DFT (CDFT) analysis
+ 23 ETS-NOCV analysis                    24 (Hyper)polarizability analysis
+ 25 Electron delocalization and aromaticity analyses
+ 26 Structure and geometry related analyses
+ 100 Other functions (Part 1)            200 Other functions (Part 2)
+ 300 Other functions (Part 3)
+
+                 ======== Orbital localization analysis ========
+ -10 Set threshold for determining one- and two-center LMO, current:  85  80 %
+ -9 Set the method for calculating orbital composition, current: Hirshfeld
+ -8 If calculating center position and dipole moment of LMOs, current: No
+ -6 Set localization method, current: Pipek-Mezey with Mulliken population
+ -5 If also localizing core orbitals, current: Yes
+ -4 If calculating and printing orbital energies, current: No
+ -3 If reloading newly generated .fch file, current: Yes
+ -2 Set criterion of convergence, current:  0.00010000
+ -1 Set maximum cycles, current:  80
+ 0 Return
+ 1 Localizing occupied orbitals only
+ 2 Localizing both occupied and unoccupied orbitals separately
+ 3 Localizing specific set of orbitals
+
+ Calculating intermediate matrix, please wait...
+
+ Localizing alpha occupied orbitals...
+ Cycle:    1  P:     19.06730611  Delta P:     19.06730611
+ Cycle:    2  P:     21.99352721  Delta P:      2.92622110
+ Cycle:    3  P:     22.38903395  Delta P:      0.39550674
+ Cycle:    4  P:     22.39189873  Delta P:      0.00286478
+ Cycle:    5  P:     22.39190570  Delta P:      0.00000697
+ Successfully converged!
+
+ Calculating intermediate matrix, please wait...
+
+ Localizing beta occupied orbitals...
+ Cycle:    1  P:     18.42842190  Delta P:     18.42842190
+ Cycle:    2  P:     21.28153230  Delta P:      2.85311041
+ Cycle:    3  P:     21.77986126  Delta P:      0.49832896
+ Cycle:    4  P:     21.78530469  Delta P:      0.00544343
+ Cycle:    5  P:     21.78530620  Delta P:      0.00000151
+ Successfully converged!
+
+ Orbital localization took up wall clock time         0 s
+ Calculating orbital compositions...
+
+ Calculating atomic contributions to orbitals by Hirshfeld method...
+ Progress: [##------------------------------------------------]     5.0 %     -
+ Progress: [#####---------------------------------------------]    10.0 %     \
+ Progress: [#######-------------------------------------------]    15.0 %     |
+ Progress: [##########----------------------------------------]    20.0 %     /
+ Progress: [############--------------------------------------]    25.0 %     -
+ Progress: [###############-----------------------------------]    30.0 %     \
+ Progress: [#################---------------------------------]    35.0 %     |
+ Progress: [####################------------------------------]    40.0 %     /
+ Progress: [######################----------------------------]    45.0 %     -
+ Progress: [#########################-------------------------]    50.0 %     \
+ Progress: [###########################-----------------------]    55.0 %     |
+ Progress: [##############################--------------------]    60.0 %     /
+ Progress: [################################------------------]    65.0 %     -
+ Progress: [###################################---------------]    70.0 %     \
+ Progress: [#####################################-------------]    75.0 %     |
+ Progress: [########################################----------]    80.0 %     /
+ Progress: [##########################################--------]    85.0 %     -
+ Progress: [#############################################-----]    90.0 %     \
+ Progress: [###############################################---]    95.0 %     |
+ Progress: [##################################################]   100.0 %     /
+
+ Hint: If you hope to print the LMOs in the order of atoms and atomic pairs, set "iprintLMOorder" in settings.ini to 1 prior to the analysis
+
+ **** Major character of alpha occupied LMOs:
+ Almost single center LMOs: (An atom has contribution > 85.0%)
+    1:   1(C ) 99.0%        2:   2(C ) 99.0%        3:   6(C ) 99.0%    
+    4:   5(C ) 99.0%        5:   3(C ) 99.0%        6:   4(C ) 99.0%    
+    7:  12(C ) 99.0%        8:  11(C ) 99.0%        9:  16(C ) 99.0%    
+   10:  15(C ) 99.0%    
+
+ Almost two-center LMOs: (Sum of two largest contributions > 80.0%)
+   11:   6(C ) 53.3%  10(H ) 38.7%        12:   2(C ) 45.6%   5(C ) 44.6%     
+   13:  16(C ) 54.7%  20(H ) 38.8%        14:   5(C ) 53.3%   9(H ) 38.7%     
+   15:  15(C ) 54.7%  19(H ) 38.8%        16:   1(C ) 45.4%   3(C ) 44.6%     
+   17:   2(C ) 45.4%   4(C ) 44.6%        18:  11(C ) 52.9%  13(H ) 39.1%     
+   19:  12(C ) 52.9%  14(H ) 39.1%        20:   5(C ) 45.5%   3(C ) 45.3%     
+   21:   1(C ) 45.6%  12(C ) 43.9%        22:   3(C ) 53.4%   7(H ) 39.0%     
+   23:   1(C ) 45.6%   6(C ) 44.6%        24:  15(C ) 46.6%  11(C ) 46.1%     
+   25:   4(C ) 53.4%   8(H ) 39.0%        26:  16(C ) 46.6%  12(C ) 46.1%     
+   27:  15(C ) 54.1%  17(H ) 38.7%        29:  16(C ) 54.1%  18(H ) 38.7%     
+   30:   6(C ) 45.5%   4(C ) 45.3%        31:   2(C ) 45.6%  11(C ) 43.9%     
+   33:  16(C ) 47.2%  12(C ) 40.0%        35:  15(C ) 48.0%  11(C ) 39.0%     
+
+ More delocalized LMOs: (Three largest contributions are printed)
+   28:    3(C ) 40.4%    1(C ) 26.9%    5(C ) 17.4%
+   32:    2(C ) 43.7%    5(C ) 23.1%    4(C ) 14.9%
+   34:    6(C ) 41.3%    4(C ) 26.7%    1(C ) 15.9%
+ Calculating orbital compositions...
+
+
+--- stderr ---
+
+Program received signal SIGSEGV: Segmentation fault - invalid memory reference.
+
+Backtrace for this error:
+#0  0x12e003323
+#1  0x12e002063
+#2  0x19e01c143
+#3  0x1016a8f77
+#4  0x1015767df
+#5  0x100f05f5b
+#6  0x1017659ff
+
+--- files written: 

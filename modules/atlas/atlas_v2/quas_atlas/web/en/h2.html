@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>H₂ dissociation: RHF, UHF, CI</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/h2.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-h2-g.webp"><!--pose:end-->
+<h1>H₂ dissociation: RHF, UHF, and CI</h1>
+<p class="lead">A real calculation of H₂ in the minimal STO-3G basis (ζ = 1.24) at each internuclear distance R. Five ways to compute the same molecule, and the further the bond is stretched, the more they diverge. Choose R with the slider or by clicking on the plot.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>As H₂ is stretched, RHF keeps the ionic structure H⁺H⁻ on a par with the covalent one, and the energy rises too high.</li><li>CI mixes σ<sub>g</sub>² and σ<sub>u</sub>² and describes dissociation correctly — this is static correlation.</li><li>Near equilibrium correlation is dynamic, and MP2 recovers most of it; at large R MP2 fails: it is not variational.</li><li>UHF gets the correct limit by breaking spin symmetry.</li><li>The error of a calculation splits into three parts: unconverged SCF (addressed by bringing SCF to convergence), the method (compared with full CI in the same basis) and the basis (full CI against the exact energy). The decomposition is meaningful only under fixed conditions: the method error itself depends on the basis.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> full CI is the exact solution in the given basis</summary><dl><dt>What is computed</dt><dd>RHF, UHF, full CI, MP2 and the triplet for H₂ in a minimal basis at any R; splitting of the error into three parts in basis sets up to 6-31G**.</dd><dt>Which approximations are made</dt><dd>The minimal STO-3G basis (up to 6-31G** in the section on errors); the non-relativistic Hamiltonian, Born–Oppenheimer.</dd><dt>What can be concluded</dt><dd>The qualitative picture of static and dynamic correlation is correct; the energies in a minimal basis are far from exact.</dd></dl></details><!--lim:end-->
+<section class="controls" aria-label="Parameters">
+  <div class="crow"><span class="l">Distance R</span><input type="range" id="R" min="0.5" max="8" step="0.05" style="width:300px"><span class="val" id="Rv"></span></div>
+  <div class="crow"><span class="l">Show on plot</span><span id="show" role="group" aria-label="Methods on the plot"></span></div>
+</section>
+<div class="work">
+  <div class="panel">
+    <div class="ptitle">Total energy E(R), a.u.</div>
+    <svg id="ech" viewBox="0 0 560 380" role="img" aria-label="Energy curves from different methods" style="cursor:pointer"></svg>
+    <div class="legend" id="eleg"></div>
+  </div>
+  <div class="panel">
+    <div class="ptitle" id="atR"></div>
+    <div class="tablewrap"><table class="mtab"><thead><tr><th>Method</th><th>E</th><th>E − E<sub>CI</sub></th><th>what it is</th></tr></thead><tbody id="etab"></tbody></table></div>
+    <div class="ptitle" style="margin-top:4px">Configuration interaction</div>
+    <div id="ci" style="font-size:14.5px;display:flex;flex-direction:column;gap:6px"></div>
+    <div class="ptitle" style="margin-top:4px">Signs of static correlation</div>
+    <div class="tablewrap"><table class="mtab"><thead><tr><th>Indicator</th><th>value</th><th>alarm threshold</th></tr></thead><tbody id="diag"></tbody></table></div>
+  </div>
+</div>
+<div class="status" id="explain" style="font-size:15px"></div>
+<div class="two">
+  <div class="panel">
+    <div class="ptitle">Diagnostics along R</div>
+    <svg id="dch" viewBox="0 0 540 250" role="img" aria-label="Leading-configuration coefficient, σu population, and spin contamination"></svg>
+    <div class="legend"><span><i class="sw c"></i>c₀: coefficient of |σ<sub>g</sub>σ̄<sub>g</sub>| in CI</span><span><i class="sw" style="border-color:var(--mp2)"></i>n(σ<sub>u</sub>): natural orbital population</span><span><i class="sw" style="border-color:var(--rho-l)"></i>⟨S²⟩ UHF</span><span><i class="sw" style="border-color:var(--muted);border-top-style:dashed"></i>thresholds 0.9 and 0.1</span></div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">Orbitals along the axis at the selected R</div>
+    <svg id="och" viewBox="0 0 540 250" role="img" aria-label="RHF and UHF orbitals"></svg>
+    <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>σ<sub>g</sub> (RHF): both electrons</span><span><i class="sw" style="border-color:var(--virt);border-top-style:dashed"></i>σ<sub>u</sub></span><span><i class="sw" style="border-color:var(--rho-l)"></i>UHF: α orbital</span><span><i class="sw" style="border-color:var(--rho-l);border-top-style:dotted"></i>UHF: β orbital</span></div>
+  </div>
+</div>
+<section class="panel" aria-labelledby="hV">
+  <h2 id="hV">Covalent and ionic structures</h2>
+  <p class="hint" style="font-size:14px">Expand the wave functions in the atomic orbitals A and B. The covalent structure A(1)B(2) + B(1)A(2) has one electron on each atom (Heitler–London). The ionic structure A(1)A(2) + B(1)B(2) has both electrons on the same atom, H⁻H⁺ or H⁺H⁻. λ is the ratio of their coefficients.</p>
+  <div id="vb" style="display:flex;flex-direction:column;gap:8px"></div>
+</section>
+
+<section class="panel" aria-labelledby="hErr">
+  <h2 id="hErr">Three kinds of error</h2>
+  <p class="hint" style="font-size:14px">At fixed R and basis the deviation from the exact energy splits into three parts, and each has its own remedy. <b>An unconverged calculation</b>: SCF was stopped before convergence, and it has to be converged (more iterations, and for poor convergence DIIS, damping or another initial guess; see the “SCF iterations” page). <b>The limitation of the method</b>: RHF or MP2 differ from full CI in the same basis, and a method that describes correlation better is needed. <b>The limitation of the basis</b>: even full CI (the exact solution in the given basis) differs from the exact energy, and a larger basis is needed. The parts are not independent: the method error itself depends on the basis, so the decomposition is meaningful only under the chosen conditions. The energies were computed in advance with the same Gaussian-basis HF, MP2 and CI program as on the Bader theory page; RHF starts from the core Hamiltonian, without DIIS acceleration. The exact energy at R = 1.4 bohr is −1.174475 E<sub>h</sub> (Kołos and Wolniewicz), at R = 10 bohr it is the energy of two H atoms, −1 E<sub>h</sub>.</p>
+  <div class="crow"><span class="l">Distance</span><span class="grp" id="eR" role="group" aria-label="Distance"></span></div>
+  <div class="crow"><span class="l">Basis</span><span class="grp" id="eB" role="group" aria-label="Basis"></span></div>
+  <div class="crow"><span class="l">Method</span><span class="grp" id="eM" role="group" aria-label="Method"></span></div>
+  <div class="crow"><span class="l">SCF iterations</span><span class="grp" id="eI" role="group" aria-label="SCF iterations"></span></div>
+  <div class="tablewrap"><table class="mtab"><thead><tr><th class="l">Quantity</th><th>mE<sub>h</sub></th><th>kJ/mol</th><th class="l">what addresses it</th></tr></thead><tbody id="eTab"></tbody></table></div>
+  <div class="status" id="eSt"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">In H₂ correlation grows as the bond is stretched. Is it present in an atom with two electrons?</span><a class="nqA" href="helium.html" data-goto="he">Helium atom →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Stretch H₂. What does it mean when the weight of the main configuration c₀ drops below 0.9?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Dynamic correlation grows</button><button type="button" class="opt" data-ok="1">One configuration is not enough — static correlation</button><button type="button" class="opt">RHF becomes exact</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>One configuration is no longer enough: σ<sub>u</sub>² is needed with a large weight — this is static correlation. It happens from about 3.2 bohr (≈ 1.7 Å), that is, at a moderately stretched bond.</div></div>
+<div class="tq"><p class="qt"><span>Near equilibrium (R = 1.4 bohr): how much of the correlation energy does MP2 give, and why?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Almost none</button><button type="button" class="opt" data-ok="1">Most of it: the correlation is dynamic</button><button type="button" class="opt">More than 100%</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>About two thirds (64% of −0.0206 a.u.): near equilibrium the correlation is dynamic, and perturbation theory handles it.</div></div>
+<div class="tq"><p class="qt"><span>Turn on MP2. Why does the MP2 energy fall below the exact one at large R?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">MP2 includes more correlation than CI</button><button type="button" class="opt">It is a basis-set error</button><button type="button" class="opt" data-ok="1">MP2 is not variational, and the denominator tends to zero</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>MP2 is not variational, and the denominator ε<sub>σu</sub> − ε<sub>σg</sub> tends to zero on stretching, so the correction grows without bound (below CI after about 6.6 bohr, below the exact limit −1 E<sub>h</sub> after 7.6 bohr).</div></div>
+<div class="tq"><p class="qt"><span>How does the RHF function differ from CI in the coefficient of the ionic structure H⁺H⁻?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">In RHF the ionic and covalent structures always enter with equal coefficients</button><button type="button" class="opt">RHF has no ionic structure at all</button><button type="button" class="opt">λ is the same in both methods</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>In RHF the ionic and covalent structures always enter with equal coefficients (λ = 1) at any R. In CI, λ ≈ 0.29 at R = 1.4 bohr, and λ → 0 as the bond is stretched. λ is a ratio of coefficients, not a probability: at finite R the structures overlap.</div></div>
+<div class="tq"><p class="qt"><span>Why does the UHF energy become close to the triplet energy at R = 6 bohr?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">The singlet and triplet are almost degenerate, and the UHF function is their mixture</button><button type="button" class="opt">UHF coincides with the triplet at any R</button><button type="button" class="opt">It is an error of the minimal basis</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>At large R both describe almost independent H atoms, and the singlet and triplet become almost degenerate. The UHF function is their mixture (⟨S²⟩ ≈ 1), so its energy is close to the common energy. The equality is only approximate: at 6 bohr UHF lies 0.5 kJ/mol above CI and 0.5 kJ/mol below the triplet, and at 4 bohr it differs from CI by about 21 kJ/mol.</div></div>
+<div class="tq"><p class="qt"><span>Section “Three kinds of error”: R = 1.4 bohr, the 6-31G** basis, RHF, 1 iteration. What does the error consist of? What does each next step remove: “until convergence”, then full CI, then switching to STO-3G?</span></p>
+<p class="olab">Error of the unconverged SCF, mE<sub>h</sub></p><div class="opts" role="group"><button type="button" class="opt">9.3</button><button type="button" class="opt">33.9</button><button type="button" class="opt">105.3</button><button type="button" class="opt" data-ok="1">62.1</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>105.3 mE<sub>h</sub> in total: unconverged SCF 62.1, method 33.9 (the correlation energy in this basis), basis 9.3. Iterating to convergence removes 62.1 mE<sub>h</sub>, full CI another 33.9; the basis error remains. Switching to STO-3G increases it to 37.2 mE<sub>h</sub>, while the RHF method error in STO-3G is smaller, 20.6 mE<sub>h</sub>: the parts of the error depend on each other. Each part has its own remedy.</div></div>
+<div class="tq"><p class="qt"><span>Now R = 10 bohr, RHF, converged. Will the method error decrease on going from 6-31G to 6-31G**?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">No: this is a method error, the basis will not fix it</button><button type="button" class="opt">Yes, roughly by half</button><button type="button" class="opt">Yes, to zero</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>No: about 248 mE<sub>h</sub> (650 kJ/mol) in both bases. A single RHF determinant cannot describe two separate H atoms; this is static correlation, and enlarging the basis does not remove it (in STO-3G the error is even larger, 337 mE<sub>h</sub>). A method that captures static correlation is needed, here full CI.</div></div>
+</div></details></section>
+<script src="js/h2.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="h2";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/h2.js"></script>
+
+</body>
+</html>

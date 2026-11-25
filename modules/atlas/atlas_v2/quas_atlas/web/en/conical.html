@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Conical intersections and biradicals</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>Conical intersections and biradicals</h1>
+<p class="lead">Where two electronic states come together, the Born–Oppenheimer approximation stops working: the molecule passes from one surface to another within tens of femtoseconds. And in a biradical two electrons are almost unpaired, and one determinant cannot even say whether the singlet or the triplet lies lower.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>Two states: E± = H̄ ± √(Δ² + H₁₂²). They are degenerate only if Δ = 0 and H₁₂ = 0 — two independent conditions. A diatomic has one coordinate: terms of the same symmetry do not cross, of different symmetry they do (H₁₂ ≡ 0).</li><li>A polyatomic has 3N − 6 coordinates, and two conditions single out a seam of dimension 3N − 8 (Wigner and von Neumann, 1929). Near a point of the seam E± ≈ Ē ± √(g²x² + h²y²) — a double cone in the branching plane (g the gradient difference, h the coupling vector).</li><li>A conical intersection is the funnel of photochemistry: internal conversion within tens to hundreds of femtoseconds, faster than fluorescence (retinal — 200 fs). One looks for the point of the seam with the lowest energy (MECI) with state-averaged CASSCF. In TD-DFT the S₀–S₁ coupling is zero: a seam of the wrong dimension; if S₁ and S₀ are closer than 0.5 eV, do not trust TD-DFT.</li><li>The two-centre model: the triplet −K, the covalent singlet +K, coupled by the hopping 2t to the ionic one at U. ΔE(T − S) ≈ 4t²/U − 2K: hopping pays only for electrons of opposite spins. Benzynes: o- 157, m- 88, p- 16 kJ/mol — t falls as the centres move apart.</li><li>Broken-symmetry DFT: the solution is a mixture of the singlet and the triplet, ⟨S²⟩_BS = 2(1 − w). The Yamaguchi formula ΔE = 2(E_T − E_BS)/(⟨S²⟩_T − ⟨S²⟩_BS); at ⟨S²⟩_BS = 1 the Ziegler sum rule E_S = 2E_BS − E_T. Restricted DFT gives the wrong sign for p-benzyne.</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">The non-crossing rule</h2>
+  <div class="crow"><span class="l">Coupling of the states H₁₂</span><input type="range" id="cc" min="0" max="0.5" step="0.01" value="0.1" aria-label="H12"><span class="val" id="ccv"></span></div>
+  <div class="crow"><span class="l">States of</span><span class="grp" id="sG" role="group" aria-label="States of"></span></div>
+  <svg id="xchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Diabatic and adiabatic curves of two states"></svg>
+  <div class="legend" id="xleg"></div>
+  <div class="cards" id="xcards"></div>
+  <p class="status" id="xNote"></p>
+  <p class="hint">Two diabatic configurations: H₁₁ = ½(R + 1)², H₂₂ = ½(R − 1)², the coupling H₁₂ constant; the adiabatic states are the eigenvalues of the 2 × 2 matrix. Arbitrary units.</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">The double cone and the branching plane</h2>
+  <div class="crow"><span class="l">Gradient difference |g|</span><input type="range" id="gg" min="0.2" max="2" step="0.05" value="1" aria-label="g"><span class="val" id="ggv"></span></div>
+  <div class="crow"><span class="l">Coupling vector |h|</span><input type="range" id="hh" min="0" max="2" step="0.05" value="0.6" aria-label="h"><span class="val" id="hhv"></span></div>
+  <div class="crow"><span class="l">Section y₀</span><input type="range" id="yy" min="-1" max="1" step="0.05" value="0.3" aria-label="y0"><span class="val" id="yyv"></span></div>
+  <div class="crow"><span class="l">Tilt of Ē along x</span><input type="range" id="tl" min="-1" max="1" step="0.05" value="0" aria-label="tilt"><span class="val" id="tlv"></span></div>
+  <div class="crow"><span class="l">Method</span><span class="grp" id="dG" role="group" aria-label="Method"></span></div>
+  <div class="crow"><span class="l">Atoms in the molecule</span><input type="range" id="na" min="2" max="30" step="1" value="6" aria-label="N"><span class="val" id="nav"></span></div>
+  <svg id="cmap" class="ch" viewBox="0 0 960 300" role="img" aria-label="The gap between the surfaces in the branching plane"></svg>
+  <svg id="csec" class="ch" viewBox="0 0 960 280" role="img" aria-label="Sections of the cone"></svg>
+  <div class="legend" id="cleg"></div>
+  <div class="cards" id="ccards"></div>
+  <p class="status" id="cNote"></p>
+  <p class="hint">E± = Ē + tilt·x ± √(g²x² + h²y²) near a point of the seam; the map shows the gap E₊ − E₋, the lines are the sections drawn below. The lecture's demonstration: at h = 0.6 and y₀ = 0.3 the gap 2|hy₀| = 0.36. Ethylene (6 atoms): 12 internal coordinates, a ten-dimensional seam.</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">A biradical: the two-centre model</h2>
+  <div class="crow"><span class="l">Hopping t, eV</span><input type="range" id="tt" min="0" max="2" step="0.01" value="0.5" aria-label="t"><span class="val" id="ttv"></span></div>
+  <div class="crow"><span class="l">Repulsion U, eV</span><input type="range" id="uu" min="1" max="10" step="0.1" value="4" aria-label="U"><span class="val" id="uuv"></span></div>
+  <div class="crow"><span class="l">Direct exchange K, eV</span><input type="range" id="kk" min="0" max="0.3" step="0.01" value="0.02" aria-label="K"><span class="val" id="kkv"></span></div>
+  <svg id="bchart" class="ch" viewBox="0 0 960 320" role="img" aria-label="The singlet–triplet splitting against the hopping"></svg>
+  <div class="legend" id="bleg"></div>
+  <div class="cards" id="bcards"></div>
+  <p class="status" id="bNote"></p>
+  <p class="hint">Exactly: E_S = (K + U)/2 − √(((U − K)/2)² + 4t²), E_T = −K. The points on the lines of the experiment are the hopping t at which the model with these U and K reproduces the splitting of a benzyne. Experiment: Wenthold, Squires, Lineberger, JACS 120, 5279 (1998); CASSCF(2,2) and NEVPT2/def2-SVP — ORCA 6.0.1, 21.11.2026.</p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">Broken symmetry and the Yamaguchi formula</h2>
+  <div class="crow"><span class="l">E_T − E_BS, kJ/mol</span><input type="range" id="de" min="0" max="40" step="0.1" value="10.3" aria-label="dE"><span class="val" id="dev"></span></div>
+  <div class="crow"><span class="l">⟨S²⟩ of the BS solution</span><input type="range" id="s2" min="0" max="1.5" step="0.01" value="1" aria-label="S2"><span class="val" id="s2v"></span></div>
+  <svg id="ychart" class="ch" viewBox="0 0 960 300" role="img" aria-label="The splitting of p-benzyne by several methods"></svg>
+  <div class="legend" id="yleg"></div>
+  <div class="cards" id="ycards"></div>
+  <p class="status" id="yNote"></p>
+  <p class="hint">p-Benzyne, B3LYP/def2-SVP at the singlet geometry, vertical: E_T − E_BS = 10.3 kJ/mol, RKS puts the singlet 90 above the triplet. ⟨S²⟩_T = 2. The experiment (adiabatic) — 16 kJ/mol.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">Broken symmetry is the main way DFT handles biradicals and metal complexes. Why does the answer depend so much on the functional?</span><a class="nqA" href="dft.html" data-goto="dft">Density functional →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>In a diatomic, two terms of the same symmetry come close as the bond stretches. What happens to them?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">They cross at one point</button><button type="button" class="opt" data-ok="1">They avoid crossing: the gap 2|H₁₂|</button><button type="button" class="opt">They merge over the whole region</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Degeneracy needs two conditions (Δ = 0 and H₁₂ = 0), and there is one coordinate. Terms of different symmetry do cross: their H₁₂ ≡ 0.</div></div>
+<div class="tq"><p class="qt"><span>What is the dimension of the seam of a conical intersection in ethylene C₂H₄?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">0 — a point</button><button type="button" class="opt" data-ok="1">10</button><button type="button" class="opt">12</button><button type="button" class="opt">11</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>10: 3·6 − 6 = 12 internal coordinates, two conditions remove two. In TD-DFT the S₁/S₀ seam comes out 11-dimensional — wrong.</div></div>
+<div class="tq"><p class="qt"><span>In the two-centre model t = 0.5 eV, U = 4 eV, K = 0. What is the splitting ΔE(T − S) by perturbation theory?</span></p>
+<p class="olab">eV</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">0.25</button><button type="button" class="opt">0.125</button><button type="button" class="opt">1.0</button><button type="button" class="opt">0.5</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>4t²/U = 4·0.25/4 = 0.25 eV ≈ 24 kJ/mol; the exact 2×2 gives 0.24 eV. The singlet is lower: hopping pays only for electrons of opposite spins.</div></div>
+<div class="tq"><p class="qt"><span>The BS solution of p-benzyne lies 10.3 kJ/mol below the triplet, ⟨S²⟩_BS = 1. What splitting does the Yamaguchi formula give?</span></p>
+<p class="olab">kJ/mol</p><div class="opts" role="group"><button type="button" class="opt">10.3</button><button type="button" class="opt" data-ok="1">about 21</button><button type="button" class="opt">5.2</button><button type="button" class="opt">−90</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>2·10.3/(2 − 1) ≈ 21 kJ/mol (the experiment 16). At ⟨S²⟩_BS = 1 this is the Ziegler sum rule: E_S = 2E_BS − E_T.</div></div>
+</div></details></section>
+<script src="js/conical.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="conical";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/conical.js"></script>
+
+</body>
+</html>

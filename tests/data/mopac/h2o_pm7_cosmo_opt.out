@@ -1,0 +1,189 @@
+ *******************************************************************************
+ **                                                                           **
+ **                              MOPAC v23.2.5                                **
+ **                                                                           **
+ *******************************************************************************
+ ** MOPAC's Digital Object Identifier: https://doi.org/10.5281/zenodo.6511958 **
+ **                                                                           **
+ ** Please cite the open-source release paper for use of this MOPAC version:  **
+ ** J. E. Moussa and J. J. P. Stewart (2026)                                  **
+ ** MOPAC: An open-source semiempirical molecular orbital program             **
+ ** J. Open Source Softw., 11(119), 8025, https://doi.org/10.21105/joss.08025 **
+ *******************************************************************************
+
+                              PM7 CALCULATION RESULTS
+
+ *******************************************************************************
+ *  CALCULATION DONE: (MAX THREADS = 1)              Sun Nov  1 17:37:36 2026  *
+ *  PM7        - The PM7 Hamiltonian to be used
+ *  EPS=78.4   - USE ANDREAS KLAMT'S COSMO IMPLICIT SOLVATION MODEL
+ *  PRECISE    - TIGHTER CRITERIA TO BE USED
+ *  T=         - A TIME OF 172800.0 SECONDS REQUESTED
+ *  DUMP=N     - RESTART FILE WRITTEN EVERY 7200.0 SECONDS REQUESTED
+ *  AUX        - OUTPUT AUXILIARY INFORMATION
+ *******************************************************************************
+PM7 EPS=78.4 PRECISE AUX
+ water, PM7 optimization in COSMO water
+ Azimuth reference input (0.91)
+   ATOM   CHEMICAL          X               Y               Z
+  NUMBER   SYMBOL      (ANGSTROMS)     (ANGSTROMS)     (ANGSTROMS)
+
+     1       O          0.00000000  *   0.00000000  *   0.11700000  *
+     2       H          0.00000000  *   0.75700000  *  -0.46700000  *
+     3       H          0.00000000  *  -0.75700000  *  -0.46700000  *
+
+
+
+          CARTESIAN COORDINATES 
+
+    NO.       ATOM           X           Y           Z
+
+     1         O          0.0000      0.0000      0.1170
+     2         H          0.0000      0.7570     -0.4670
+     3         H          0.0000     -0.7570     -0.4670
+
+ General Reference for PM7:
+ "Optimization of Parameters for Semiempirical Methods VI: More Modifications to the 
+ NDDO Approximations and Re-optimization of Parameters", J. J. P. Stewart, J. Mol. Mod., 1:32, 19 (2013)
+ https://link.springer.com/article/10.1007/s00894-012-1667-x
+
+           Empirical Formula: H2 O  =     3 atoms
+
+
+
+      MOLECULAR POINT GROUP   :   C2v 
+
+
+      RHF CALCULATION, NO. OF DOUBLY OCCUPIED LEVELS = 4
+
+
+          Geometry optimization using EF
+
+          DIAGONAL MATRIX USED AS START HESSIAN
+
+ CYCLE:     1 TIME:   0.004 TIME LEFT:  2.00D  GRAD.:     9.753 HEAT: -65.21482
+ CYCLE:     2 TIME:   0.008 TIME LEFT:  2.00D  GRAD.:     9.260 HEAT: -65.22058
+ CYCLE:     3 TIME:   0.004 TIME LEFT:  2.00D  GRAD.:     8.917 HEAT: -65.22458
+
+     TRUST RADIUS NOW LESS THAN  0.00010 OPTIMIZATION TERMINATING
+      THE GEOMETRY MAY NOT BE COMPLETELY OPTIMIZED
+      (TO CONTINUE, ADD 'LET DDMIN=0.0' TO THE KEYWORD LINE)
+
+ -------------------------------------------------------------------------------
+ PM7 EPS=78.4 PRECISE AUX
+ water, PM7 optimization in COSMO water
+ Azimuth reference input (0.91)
+
+
+     GEOMETRY OPTIMISED USING EIGENVECTOR FOLLOWING (EF).     
+     SCF FIELD WAS ACHIEVED                                   
+
+
+                              PM7 CALCULATION
+                                                       MOPAC v23.2.5 MacOS
+                                                       Sun Nov  1 17:37:36 2026
+
+
+
+
+          FINAL HEAT OF FORMATION =        -65.22458 KCAL/MOL =    -272.89962 KJ/MOL
+          VAN DER WAALS AREA      =         42.45 SQUARE ANGSTROMS
+
+
+
+          DIELECTRIC ENERGY       =         -0.36151 EV
+          COSMO AREA              =         42.45 SQUARE ANGSTROMS
+          COSMO VOLUME            =         25.20 CUBIC ANGSTROMS
+
+          GRADIENT NORM           =          8.91701          =       5.14824 PER ATOM
+          IONIZATION POTENTIAL    =         12.444572 EV
+          HOMO LUMO ENERGIES (EV) =        -12.445  4.416
+          NO. OF FILLED LEVELS    =          4
+          MOLECULAR WEIGHT        =         18.0152         POINT GROUP:  C2v 
+
+          MOLECULAR DIMENSIONS (Angstroms)
+
+            Atom       Atom       Distance
+            H     3    H     2     1.51481
+            H     2    O     1     0.58475
+            O     1    H     3     0.00000
+
+
+          SCF CALCULATIONS        =         15
+
+          WALL-CLOCK TIME         =      0.023 SECONDS
+          COMPUTATION TIME        =      0.022 SECONDS
+
+
+
+       FINAL  POINT  AND  DERIVATIVES
+
+   PARAMETER     ATOM    TYPE            VALUE        GRADIENT
+      1          1  O    CARTESIAN X     0.000000      0.000614  KCAL/ANGSTROM
+      2          1  O    CARTESIAN Y    -0.000002      0.017038  KCAL/ANGSTROM
+      3          1  O    CARTESIAN Z     0.117249     -6.182910  KCAL/ANGSTROM
+      4          2  H    CARTESIAN X     0.000000     -0.017427  KCAL/ANGSTROM
+      5          2  H    CARTESIAN Y     0.757406     -3.337606  KCAL/ANGSTROM
+      6          2  H    CARTESIAN Z    -0.467499      3.135594  KCAL/ANGSTROM
+      7          3  H    CARTESIAN X    -0.000000      0.016813  KCAL/ANGSTROM
+      8          3  H    CARTESIAN Y    -0.757400      3.320568  KCAL/ANGSTROM
+      9          3  H    CARTESIAN Z    -0.467494      3.047315  KCAL/ANGSTROM
+
+
+
+
+   ATOM   CHEMICAL          X               Y               Z
+  NUMBER   SYMBOL      (ANGSTROMS)     (ANGSTROMS)     (ANGSTROMS)
+
+     1       O          0.00000000  *  -0.00000164  *   0.11724930  *
+     2       H          0.00000000  *   0.75740633  *  -0.46749915  *
+     3       H         -0.00000000  *  -0.75739979  *  -0.46749411  *
+
+                             CARTESIAN COORDINATES
+
+   1    O        0.000000000    -0.000001641     0.117249298
+   2    H        0.000000000     0.757406329    -0.467499150
+   3    H       -0.000000000    -0.757399791    -0.467494107
+
+
+           Empirical Formula: H2 O  =     3 atoms
+
+
+
+      MOLECULAR POINT GROUP   :   C2v 
+
+
+                  EIGENVALUES  
+ -29.39975 -17.76983 -14.43021 -12.44457   4.41580   6.64946
+
+
+              NET ATOMIC CHARGES AND DIPOLE CONTRIBUTIONS
+
+  ATOM NO.   TYPE          CHARGE      No. of ELECS.   s-Pop       p-Pop       
+    1          O          -0.748286        6.7483     1.80795     4.94034
+    2          H           0.374161        0.6258     0.62584
+    3          H           0.374125        0.6259     0.62588
+ DIPOLE           X         Y         Z       TOTAL
+ POINT-CHG.    -0.000     0.000    -2.102     2.102
+ HYBRID        -0.000    -0.000    -0.311     0.311
+ SUM           -0.000     0.000    -2.413     2.413
+
+
+          ATOMIC ORBITAL ELECTRON POPULATIONS
+
+     Atom    s        px        py        pz   
+    1  O   1.80795   2.00000   1.40406   1.53628
+    2  H   0.62584
+    3  H   0.62588
+
+ **********************
+ *                    *
+ * JOB ENDED NORMALLY *
+ *                    *
+ **********************
+
+
+
+ TOTAL JOB TIME:             0.02 SECONDS
+
+ == MOPAC DONE ==

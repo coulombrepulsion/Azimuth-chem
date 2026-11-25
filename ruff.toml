@@ -1,0 +1,30 @@
+# Code style for Azimuth (added 2026-10-22). `ruff format` keeps the existing quote style;
+# `ruff check` runs the pyflakes rules (F), bugbear (B) and syntax errors (E9) — with the tests
+# (tests/core/test_lint.py; ruff — requirements-dev.txt).
+line-length = 120
+target-version = "py313"
+extend-exclude = [
+    "modules/atlas/atlas_v2",   # the Atlas is the author's separate project with its own style
+    "modules/atlas/Отдельные_страницы",
+    "modules/atlas/QuAS_Атлас_сайт",
+]
+
+[format]
+quote-style = "preserve"
+
+[lint]
+select = ["F", "B", "E9"]
+# looked at 2026-11-22 and kept as they are:
+ignore = [
+    "B905",  # zip() without strict=: the program zips sequences of one length or wants the shorter one
+    "B007",  # an unused loop variable keeps its name when it says what is iterated
+    "B023",  # closures in loops are all called within their iteration (sort keys, retries, helpers)
+    "B020",  # a loop variable named as its iterable: the tuple is built before the loop (core.orca_input, cleanup)
+]
+
+[lint.per-file-ignores]
+"tests/*" = ["F403", "F405",  # test_core/test_builder import the module under test with *
+             "F811", "F401",  # the fixtures (window, app, server) imported and then taken as arguments;
+             # tests/gui_support.py hands its imports on to the tests by «import *»
+             "B017", "B018", "B008"]
+"tools/*" = ["B008"]

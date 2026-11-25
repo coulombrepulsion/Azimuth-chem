@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>晶体场与配体场</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/cf.css">
+
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-cf-g.webp"><!--pose:end-->
+<h1>晶体场与配体场</h1>
+<p class="lead">在配合物中，金属的五个 d 轨道不再简并：指向配体的轨道升高，其余的降低。能级如何分裂由配位环境的对称性决定。这里的能量用角重叠模型（AOM）计算：每个配体使 d 轨道升高 e<sub>σ</sub>F<sub>σ</sub>² + e<sub>π</sub>F<sub>π</sub>²，其中 F 是轨道与配体的 σ 型和 π 型重叠。参数 e<sub>σ</sub> 和 e<sub>π</sub> 为 3d 系列 M³⁺ 离子的示意值。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>配体解除金属 d 轨道的简并；分裂图样由配位环境的对称性决定。</li><li>八面体中 e<sub>g</sub> 比 t<sub>2g</sub> 高 Δ<sub>o</sub>；Δ<sub>o</sub> 取决于配体（光谱化学序列）和金属。</li><li>自旋态由分裂能 Δ 与成对能 P 的竞争决定。</li><li>简并能级上电子不均匀占据会引起配合物畸变（Jahn–Teller 效应）。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>采用示意性参数的角重叠模型</summary><dl><dt>计算的是什么</dt><dd>不同几何构型中 d 能级的分裂、自旋态、Jahn–Teller 效应。</dd><dt>采用了哪些近似</dt><dd>金属的 d 轨道及其与 s 轨道的混合（e<sub>ds</sub> = 0.25 e<sub>σ</sub>；它使平面正方形和线形配合物中的 d<sub>z²</sub> 降低）；参数 e<sub>σ</sub>、e<sub>π</sub> 和成对能是示意性的、针对 3d 金属，并未针对具体配合物拟合。</dd><dt>能得出什么结论</dt><dd>能级的顺序和对称性、高自旋与低自旋的趋势——可以；定量的 Δ——不可以。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. d 能级的分裂</h2>
+  <div class="crow"><span class="l">构型</span><span class="row" id="gG" role="group" aria-label="构型"></span></div>
+  <div class="crow" id="tRow"><span class="l">四方畸变</span><input type="range" id="tet" min="0" max="1.4" step="0.01" style="width:240px" aria-label="轴向配体的强度"><span class="val" id="tetV"></span></div>
+  <div class="crow"><span class="l">配体</span><span class="row" id="lG" role="group" aria-label="配体"></span></div>
+  <div class="crow"><span class="l">d 电子数</span><span class="row" id="dG" role="group" aria-label="d 电子数"></span></div>
+  <div class="crow"><span class="l">成对能 P</span><input type="range" id="pp" min="8000" max="32000" step="100" style="width:240px" aria-label="成对能"><span class="val" id="ppV"></span></div>
+  <div class="work">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="geo"><svg id="geo" viewBox="0 0 150 150" role="img" aria-label="配合物的构型"></svg><div class="hint" id="geoT"></div></div>
+      <svg id="dia" viewBox="0 0 460 380" role="img" aria-label="d 能级分裂图"></svg>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="tablewrap" id="lvTab"></div>
+      <div class="tablewrap" id="sumTab"></div>
+      <div class="status" id="st1"></div>
+    </div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. 高自旋还是低自旋</h2>
+  <p class="small">对于八面体 d⁴–d⁷ 配合物，有两种可能的组态。当分裂能 Δ<sub>o</sub> 小于成对能 P 时高自旋有利，大于 P 时低自旋有利。直线表示两种组态的 d 电子能量随 Δ<sub>o</sub> 的变化；竖线为所选配体。</p>
+  <div class="two">
+    <svg id="hsSvg" viewBox="0 0 520 300" role="img" aria-label="高自旋与低自旋组态的能量"></svg>
+    <div class="status" id="st2"></div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">3. 姜–泰勒效应</h2>
+  <p class="small">若八面体中的简并能级填充不均匀，畸变会消除简并并降低电子能量——与畸变大小成线性关系。弹性能则按二次方增长，因此能量极小出现在非零畸变处。当 e<sub>g</sub> 填充不均匀时效应最强：d⁹（Cu²⁺）、高自旋 d⁴（Cr²⁺、Mn³⁺）、低自旋 d⁷。</p>
+  <div class="two">
+    <svg id="jtSvg" viewBox="0 0 520 300" role="img" aria-label="能量随四方畸变的变化"></svg>
+    <div class="status" id="st3"></div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">4. 对称性：能级标记与相关</h2>
+  <p class="small">能级标记就是 d 轨道所属的点群不可约表示（特征标表中的二次函数列）。对称性由 O<sub>h</sub> 降低到 D<sub>4h</sub> 时，简并能级分裂：e<sub>g</sub> → a<sub>1g</sub> + b<sub>1g</sub>，t<sub>2g</sub> → b<sub>2g</sub> + e<sub>g</sub>。</p>
+  <div class="tablewrap" id="corTab"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">一个组态（例如 d² 或 p²）会给出多少个不同的状态？</span><a class="nqA" href="terms.html" data-goto="terms">原子光谱项 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面探索练习与训练器。在页面上完成操作并作答——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>低自旋 [Fe(CN)₆]⁴⁻ 的 CFSE 以 Δ<sub>o</sub> 为单位是多少？</span></p>
+<p class="olab">CFSE，Δₒ</p><div class="opts" role="group"><button type="button" class="opt">0</button><button type="button" class="opt">-0.4</button><button type="button" class="opt">-1.6</button><button type="button" class="opt" data-ok="1">-2.4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>Fe²⁺ 为 d⁶，低自旋：t<sub>2g</sub>⁶e<sub>g</sub>⁰，CFSE = 6 · (−0.4Δ<sub>o</sub>) = −2.4Δ<sub>o</sub>（不计成对能）。所有电子都已配对——配合物为抗磁性。</div></div>
+<div class="tq"><p class="qt"><span>[Fe(H₂O)₆]²⁺ 有几个未成对电子？</span></p>
+<p class="olab">未成对电子</p><div class="opts" role="group"><button type="button" class="opt">0</button><button type="button" class="opt" data-ok="1">4</button><button type="button" class="opt">2</button><button type="button" class="opt">6</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>四个：H₂O 是弱场配体，Δ<sub>o</sub> &lt; P，组态 t<sub>2g</sub>⁴e<sub>g</sub>²（高自旋）。选择 d⁶ 和 H₂O，再换成 CN⁻——就能看到向低自旋的转变。</div></div>
+<div class="tq"><p class="qt"><span>切换到四面体。为什么四面体配合物几乎总是高自旋？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">分裂能比成对能小</button><button type="button" class="opt">四面体中 d 轨道不分裂</button><button type="button" class="opt">四面体中的配体总是弱场配体</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>分裂能 Δ<sub>t</sub> ≈ <span class=fr><span>4</span><span>9</span></span>Δ<sub>o</sub>：配体是四个而不是六个，而且没有 d 轨道直接指向配体。Δ<sub>t</sub> 几乎总是小于成对能 P。</div></div>
+<div class="tq"><p class="qt"><span>哪种构型使强场配体的 d⁸ 配合物成为抗磁性？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">平面正方形</button><button type="button" class="opt">四面体</button><button type="button" class="opt">八面体</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>平面正方形：d<sub>x²−y²</sub> 升得很高，八个电子全部在下面四个轨道上配对——如 [Ni(CN)₄]²⁻ 和 [PtCl₄]²⁻（Pt(II) 是 5d 金属，其分裂远大于本模型 3d 参数给出的值：在此模型中 Cl⁻ 只有在 P 小于约 12 500 cm⁻¹ 时电子才配对）。八面体中 d⁸ 在 e<sub>g</sub> 上总有两个未成对电子。</div></div>
+<div class="tq"><p class="qt"><span>为什么 CO 和 CN⁻ 给出最大的分裂？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">它们是 π 受体，使 t₂g 降低</button><button type="button" class="opt">它们的电负性最大</button><button type="button" class="opt">它们的体积最大</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>它们是 π 受体（模型中 e<sub>π</sub> &lt; 0）：它们的空 π* 轨道使 t<sub>2g</sub> 降低，于是 Δ<sub>o</sub> = 3e<sub>σ</sub> − 4e<sub>π</sub> 增大。卤离子是 π 给体（e<sub>π</sub> &gt; 0），它们使 t<sub>2g</sub> 升高、Δ<sub>o</sub> 减小。</div></div>
+<div class="tq"><p class="qt"><span>对称性由 O<sub>h</sub> 降低到 D<sub>4h</sub> 时，八面体的 e<sub>g</sub> 能级变成什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">a₁g + b₁g</button><button type="button" class="opt">b₂g + eg</button><button type="button" class="opt">a₁g + eg</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>e<sub>g</sub> → a<sub>1g</sub>（d<sub>z²</sub>）+ b<sub>1g</sub>（d<sub>x²−y²</sub>），而 t<sub>2g</sub> → e<sub>g</sub>（d<sub>xz</sub>、d<sub>yz</sub>）+ b<sub>2g</sub>（d<sub>xy</sub>）。这可以从第 4 部分的相关表以及开启畸变后能级图上的标记看出。</div></div>
+<!--self:start--><div class="selfBox"><h3 id="h5s">自我检测</h3>
+  <p class="small">对下面的八面体配合物，求出 d 电子数、未成对电子数以及以 Δ<sub>o</sub> 为单位的晶体场稳定化能（CFSE），不计成对能。自旋态按实验给出。</p>
+  <div class="row"><b id="qCx" style="font-family:var(--f-display);font-size:19px"></b><button class="btn" id="qNew" type="button">换一个配合物</button></div>
+  <div class="quiz">
+    <label><span>d 电子数</span><input id="q0" inputmode="numeric" autocomplete="off"></label>
+    <label><span>未成对电子数</span><input id="q1" inputmode="numeric" autocomplete="off"></label>
+    <label><span>CFSE，Δ<sub>o</sub></span><input id="q2" inputmode="decimal" autocomplete="off"></label>
+  </div>
+  <div class="row"><button class="btn primary" id="qChk" type="button">检查</button><button class="btn" id="qShow" type="button">显示解答</button></div>
+  <div class="status" id="qRes">输入答案并点击“检查”。</div>
+</div><!--self:end--></div></details></section>
+<script src="js/crystal-field.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="cf";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/crystal-field.js"></script>
+
+</body>
+</html>

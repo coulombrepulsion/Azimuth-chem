@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Density functional theory</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/dft.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-dft-g.webp"><!--pose:end-->
+<h1>Density functional theory</h1>
+<p class="lead">In the Kohn–Sham method the energy is E = T<sub>s</sub> + V<sub>ne</sub> + J[ρ] + E<sub>xc</sub>[ρ], where J is the classical repulsion of the cloud with itself, and E<sub>xc</sub> must correct everything else. The exact E<sub>xc</sub> is unknown. Here are three problems where the exact answer is known; they show where approximate functionals go wrong and why hybrid functionals are needed.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>In DFT the energy is a functional of the density; approximations (LDA, GGA, hybrids) differ in the exchange–correlation part.</li><li>Self-interaction error: in LDA an electron partly repels itself.</li><li>The exact E(N) is piecewise linear, and its slope jump is the fundamental gap I − A = (ε<sub>LUMO</sub> − ε<sub>HOMO</sub>) + Δ<sub>xc</sub>; for LDA and GGA E(N) is convex (delocalization error), and there is no Δ<sub>xc</sub>.</li><li>A fraction of exact exchange reduces this error but does not remove it completely.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> model problems with a known answer</summary><dl><dt>What is computed</dt><dd>The self-interaction error, E(N) at fractional N, the delocalisation error for H and H₂⁺.</dd><dt>Which approximations are made</dt><dd>A single function e<sup>−ζr</sup> with the optimal ζ instead of the full self-consistent solution; the LSDA and Hartree–Fock functionals and their mixture.</dd><dt>What can be concluded</dt><dd>The sign and character of the functional errors are shown correctly; the numbers depend on the simplified form of the function.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Hydrogen atom: self-interaction error</h2>
+  <p class="small">A single electron has no electron–electron repulsion, so one must have E<sub>x</sub> = −J and E<sub>c</sub> = 0. For the exact density ρ = <span class=fr><span>e<sup>−2r</sup></span><span>π</span></span>: J = <span class=fr><span>5</span><span>16</span></span> = 0.3125. In Hartree–Fock, exchange cancels J exactly. Approximate functionals cancel it only partially; the remainder is the <b>self-interaction error</b>.</p>
+  <div class="two">
+    <svg id="sieBar" viewBox="0 0 540 300" role="img" aria-label="Coulomb, exchange and correlation energies of the H atom for different functionals"></svg>
+    <div class="status" id="t1"></div>
+  </div>
+  <div class="tablewrap" id="sieTab"></div>
+  <div class="legend"><span><i class="box" style="background:var(--muted)"></i>J (repulsion of the electron from its own cloud)</span><span><i class="box" style="background:var(--accent)"></i>E<sub>x</sub></span><span><i class="box" style="background:var(--rho-l)"></i>E<sub>c</sub></span><span>◆ J + E<sub>x</sub> + E<sub>c</sub>, should be 0</span></div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. Fractional electron number: E(N) must be piecewise linear</h2>
+  <p class="small">The exact energy at fractional N (a statistical mixture of H⁺, H and H⁻) is linear between integer N, and the slope <span class=fr><span>dE</span><span>dN</span></span> equals the energy of the highest occupied orbital. To the left of N = 1 the slope must be −I = −0.5, to the right −A = −0.0277: the jump at N = 1 is the fundamental gap. Do not confuse it with the orbital gap: in exact Kohn–Sham theory I − A = (ε<sub>LUMO</sub> − ε<sub>HOMO</sub>) + Δ<sub>xc</sub>, where Δ<sub>xc</sub> is the derivative discontinuity of the exchange-correlation energy with respect to the number of electrons (as N crosses an integer, the potential v<sub>xc</sub> itself jumps by Δ<sub>xc</sub>), so even the exact KS gap is usually smaller than I − A. Calculation: an H atom with N electrons in 1s, the exponent ζ optimised at each N.</p>
+  <div class="crow"><span class="l">Fraction of exact exchange a</span><input type="range" class="aS" min="0" max="20" step="1" style="width:280px" aria-label="Fraction of exact exchange"><span class="val aV"></span><span class="hint">E<sub>xc</sub> = a·E<sub>x</sub><sup>HF</sup> + (1 − a)·E<sub>x</sub><sup>LSDA</sup> + E<sub>c</sub><sup>LSDA</sup>; a = 0 — LSDA</span></div>
+  <div class="two">
+    <div><div class="ptitle">E(N), a.u.</div><svg id="enChart" viewBox="0 0 540 300" role="img" aria-label="Energy versus number of electrons"></svg></div>
+    <div><div class="ptitle">Deviation from the straight line between integer N, a.u.</div><svg id="devChart" viewBox="0 0 540 300" role="img" aria-label="Deviation of E(N) from linearity"></svg></div>
+  </div>
+  <div class="legend"><span><i class="sw" style="border-color:var(--ink)"></i>exact</span><span><i class="sw" style="border-color:var(--muted);border-top-style:dashed"></i>Hartree–Fock</span><span><i class="sw" style="border-color:var(--accent)"></i>functional at the chosen a</span><span><i class="sw" style="border-color:var(--rho-l);border-top-style:dotted"></i>tangents at N = 1 (slope = ε<sub>HOMO</sub>)</span></div>
+  <div class="kvt" id="enKv"></div>
+  <div class="status" id="t2"></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">3. H₂⁺: delocalization error</h2>
+  <p class="small">H₂⁺ has one electron, so Hartree–Fock is exact here (within the STO-3G basis with optimal ζ). As the nuclei are pulled apart the exact energy tends to E(H) = −0.5. A symmetric delocalized density is acceptable in itself: in the limit the descriptions “the electron on one atom” and “half an electron on each atom” must be degenerate. The error of a functional with convex E(N) is elsewhere: two halves of an electron give 2·E(½) — below the correct limit, i.e. the functional artificially favors fractional charges.</p>
+  <div class="crow"><span class="l">Fraction of exact exchange a</span><input type="range" class="aS" min="0" max="20" step="1" style="width:280px" aria-label="Fraction of exact exchange"><span class="val aV"></span></div>
+  <div class="two">
+    <div><svg id="h2Chart" viewBox="0 0 540 320" role="img" aria-label="Energy curves of H2+"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--ink)"></i>Hartree–Fock = exact for one electron</span><span><i class="sw" style="border-color:var(--accent)"></i>functional: electron in σ<sub>g</sub> (shared equally by both atoms)</span><span><i class="sw" style="border-color:var(--rho-l);border-top-style:dashed"></i>functional: electron on one atom</span></div></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><div class="crow"><span class="l" style="min-width:auto">R</span><input type="range" id="Rs" min="0" max="94" step="1" style="width:220px" aria-label="Internuclear distance"><span class="val" id="Rv"></span></div><div class="kvt" id="h2Kv"></div><div class="status" id="t3"></div></div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">How are molecular orbitals built from atomic ones, and how is the bond order predicted?</span><a class="nqA" href="diatomics.html" data-goto="mo">MOs of diatomic molecules →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>The H atom in LSDA: what should the correlation energy be, and what comes out?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Negative, and LSDA gets it right</button><button type="button" class="opt" data-ok="1">Zero, while LSDA gives a spurious negative value</button><button type="button" class="opt">Positive</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>A single electron has no correlation, exactly E<sub>c</sub> = 0. LSDA gives E<sub>c</sub> = −0.022, and exchange E<sub>x</sub> = −0.268 instead of −0.3125: the electron “repels itself” by about 58 kJ/mol.</div></div>
+<div class="tq"><p class="qt"><span>Why is “LDA without spin” worse than LSDA for the H atom?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">LDA ignores correlation</button><button type="button" class="opt" data-ok="1">The formula splits the density equally between spins — a larger self-interaction error</button><button type="button" class="opt">LDA overestimates exchange</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>For a single electron ρ<sub>β</sub> = 0, so the system is fully spin-polarized. The formula for the unpolarized gas splits the density equally between the spins and gives E<sub>x</sub> = −0.213, a self-interaction error almost three times larger.</div></div>
+<div class="tq"><p class="qt"><span>LSDA, a = 0: how does ε<sub>HOMO</sub> of the H atom compare with the ionization potential?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Almost half of I in magnitude</button><button type="button" class="opt">Equal to I</button><button type="button" class="opt">Larger than I in magnitude</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>ε<sub>HOMO</sub> ≈ −0.27, while I = 0.5: Koopmans’ theorem does not hold for LDA. The reason is that E(N) is convex: the slope at N → 1⁻ is smaller in magnitude than the secant. So LDA and GGA orbital energies cannot be used as ionization potentials.</div></div>
+<div class="tq"><p class="qt"><span>The exact slope jump of E(N) at N = 1 is the fundamental gap I − A. How is it related to the Kohn–Sham orbital gap?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">I − A = KS gap + Δ<sub>xc</sub></button><button type="button" class="opt">The exact KS gap always equals I − A</button><button type="button" class="opt">They are unrelated</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>In the exact theory I − A = (ε<sub>LUMO</sub> − ε<sub>HOMO</sub>) + Δ<sub>xc</sub>: even the exact KS gap is smaller than I − A by the derivative discontinuity of E<sub>xc</sub> with respect to the number of electrons, Δ<sub>xc</sub> (the potential v<sub>xc</sub> jumps by the same amount). For a smooth approximate functional (LDA, GGA) Δ<sub>xc</sub> = 0, and the jump in the slope of E(N) simply equals its orbital gap (here 0.17 for LSDA against the exact 0.472).</div></div>
+<div class="tq"><p class="qt"><span>H₂⁺ at R = 10 bohr: which description does LSDA favor, and why is this an error?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Localized: the electron on one atom</button><button type="button" class="opt">Both the same, as it should be</button><button type="button" class="opt" data-ok="1">Delocalized: fractional charges are artificially too low in energy</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Delocalized: σ<sub>g</sub> −0.549 versus −0.473 on one atom, although the exact limit in this basis is −0.495. In exact theory both descriptions are degenerate in the limit, while LSDA artificially lowers the energy of fractional charges: 2·E(½) &lt; E(1). The error is ≈ 140 kJ/mol.</div></div>
+<div class="tq"><p class="qt"><span>Move the fraction of exact exchange a. How do the curvature of E(N) and the H₂⁺ error change?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">They grow</button><button type="button" class="opt">They do not change</button><button type="button" class="opt" data-ok="1">They decrease</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The curvature and the delocalization error decrease: exact exchange bends E(N) upwards (concave), LSDA downwards (convex). At a = 0.25 (25 % exact exchange, as in PBE0; here it is mixed with LSDA, not with PBE) E(½) − ½E(1) = −0.037 instead of −0.050, and the error for H₂⁺ at R = 10 bohr is 118 kJ/mol. Even at a = 1 the self-interaction of LSDA correlation remains.</div></div>
+</div></details></section>
+<script src="js/dft.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="dft";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/dft.js"></script>
+
+</body>
+</html>

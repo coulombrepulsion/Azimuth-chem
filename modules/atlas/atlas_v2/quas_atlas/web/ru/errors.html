@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Погрешность расчёта: от ошибки метода к выводу</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>Погрешность расчёта: от ошибки метода к выводу</h1>
+<p class="lead">Число из расчёта без погрешности — не результат. Здесь — как складываются ошибки метода, базиса и сходимости, как от средней ошибки на тестовом наборе перейти к интервалу для своей величины, как изодесмические реакции и родственная система сокращают ошибку и почему доли конформеров так чувствительны к ней.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Независимые погрешности складываются в квадратах: σ = √(σ²_метод + σ²_базис + σ²_сходимость). Итог определяет самая большая, поэтому численная погрешность должна быть в несколько раз меньше ошибки метода — тогда её не видно.</li><li>Ошибку метода берут из тестовых наборов (GMTKN55, S66) — для своего типа величины. MAE = 0,80σ, σ = 1,25·MAE; 95 % ошибок в пределах ±2σ: MAE 8 кДж/моль → ±20. Константа скорости при этом известна до множителя e^{2σ/RT} ≈ 3000.</li><li>Изодесмическая реакция — связей каждого типа слева и справа поровну, и систематические ошибки по связям сокращаются. Энтальпия образования этанола через C₂H₅OH + CH₄ → CH₃OH + C₂H₆: −232,9 кДж/моль при опыте −234 ± 2.</li><li>Поправка по родственной системе: ΔE_испр = ΔE_цель + (ΔE_эт^опыт − ΔE_эт^расч), σ² = 2σ²(1 − ρ). Похожая реакция (ρ = 0,8) уменьшает ошибку с 8 до 5 кДж/моль, непохожая (ρ = 0) увеличивает до 11.</li><li>Последнее звено цепочки к наблюдаемой — экспонента. ΔG = 2 ± 4 кДж/моль между конформерами — доля второго от 8 до 69 %: расчёт не говорит, какой основной. Ещё одна частая поправка — стандартное состояние: 1 атм → 1 моль/л даёт RT ln 24,5 = 7,9 кДж/моль на каждую частицу.</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Как складываются погрешности</h2>
+  <div class="crow"><span class="l">Ошибка метода, кДж/моль</span><input type="range" id="sm" min="0" max="30" step="0.5" value="8" aria-label="method"><span class="val" id="smv"></span></div>
+  <div class="crow"><span class="l">Ошибка базиса, кДж/моль</span><input type="range" id="sb" min="0" max="30" step="0.5" value="3" aria-label="basis"><span class="val" id="sbv"></span></div>
+  <div class="crow"><span class="l">Несходимость, кДж/моль</span><input type="range" id="sc" min="0" max="30" step="0.5" value="1" aria-label="convergence"><span class="val" id="scv"></span></div>
+  <svg id="schart" class="ch" viewBox="0 0 960 280" role="img" aria-label="Вклады и итоговая погрешность"></svg>
+  <div class="cards" id="scards"></div>
+  <p class="status" id="sNote"></p>
+  <p class="hint">Лекция 18, вывод 2: метод 8, базис 3, сходимость 1 кДж/моль — итог 8,6; без сходимости 8,5; несходимость 10 — итог 13. Сложение в квадратах — для независимых ошибок.</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">От средней ошибки к интервалу</h2>
+  <div class="crow"><span class="l">MAE метода для вашего типа величины, кДж/моль</span><input type="range" id="mae" min="0.5" max="30" step="0.5" value="8" aria-label="MAE"><span class="val" id="maev"></span></div>
+  <div class="crow"><span class="l">Температура, K</span><input type="range" id="tt" min="200" max="1000" step="10" value="298" aria-label="T"><span class="val" id="ttv"></span></div>
+  <svg id="ichart" class="ch" viewBox="0 0 960 260" role="img" aria-label="Нормальное распределение ошибок с σ = 1,25·MAE"></svg>
+  <div class="legend" id="ileg"></div>
+  <div class="cards" id="icards"></div>
+  <p class="status" id="iNote"></p>
+  <p class="hint">MAE = σ√(2/π). Множитель константы скорости — e^{2σ/RT}: на столько может ошибиться k при ошибке барьера 2σ.</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Сокращение ошибок: изодесмическая реакция и родственная система</h2>
+  <div class="crow"><span class="l">Ошибка на связь C–H, кДж/моль</span><input type="range" id="ch" min="0" max="20" step="0.5" value="2" aria-label="CH"><span class="val" id="chv"></span></div>
+  <div class="crow"><span class="l">Ошибка на связь C–C</span><input type="range" id="cc" min="0" max="20" step="0.5" value="5" aria-label="CC"><span class="val" id="ccv"></span></div>
+  <div class="crow"><span class="l">Ошибка на связь C–O</span><input type="range" id="co" min="0" max="20" step="0.5" value="6" aria-label="CO"><span class="val" id="cov"></span></div>
+  <div class="crow"><span class="l">Ошибка на связь O–H</span><input type="range" id="oh" min="0" max="20" step="0.5" value="3" aria-label="OH"><span class="val" id="ohv"></span></div>
+  <svg id="dchart" class="ch" viewBox="0 0 960 280" role="img" aria-label="Накопленная ошибка через атомизацию и в изодесмической реакции"></svg>
+  <div class="legend" id="dleg"></div>
+  <div class="crow"><span class="l">σ метода для поправки, кДж/моль</span><input type="range" id="sg" min="0" max="30" step="0.5" value="8" aria-label="sigma"><span class="val" id="sgv"></span></div>
+  <div class="crow"><span class="l">Корреляция ошибок цели и эталона ρ</span><input type="range" id="rh" min="-1" max="1" step="0.05" value="0.8" aria-label="rho"><span class="val" id="rhv"></span></div>
+  <svg id="rchart" class="ch" viewBox="0 0 960 220" role="img" aria-label="Погрешность после поправки по родственной системе"></svg>
+  <div class="cards" id="dcards"></div>
+  <p class="status" id="dNote"></p>
+  <p class="hint">Ошибки по связям условные (лекция 18, вывод 4). Опытные ΔfH(298, газ) — NIST WebBook; ΔrH = 23,0 кДж/моль — расчёт B3LYP-D3(BJ)/def2-TZVP с частотами при 298,15 K (ORCA 6.0.1). Средние столбцы: реагенты и продукты изодесмической реакции — суммы одинаковы, разность — ноль.</p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">Доли конформеров и их погрешность</h2>
+  <div class="crow"><span class="l">ΔG = G₂ − G₁, кДж/моль</span><input type="range" id="dg" min="-10" max="10" step="0.1" value="2" aria-label="dG"><span class="val" id="dgv"></span></div>
+  <div class="crow"><span class="l">Погрешность метода σ, кДж/моль</span><input type="range" id="ss" min="0" max="10" step="0.1" value="4" aria-label="sigma"><span class="val" id="ssv"></span></div>
+  <div class="crow"><span class="l">Температура, K</span><input type="range" id="t4" min="200" max="1000" step="10" value="298" aria-label="T"><span class="val" id="t4v"></span></div>
+  <svg id="cchart" class="ch" viewBox="0 0 960 280" role="img" aria-label="Доля второго конформера против ΔG"></svg>
+  <div class="cards" id="ccards"></div>
+  <p class="status" id="cNote"></p>
+  <p class="hint">Два конформера, x₂/x₁ = e^{−ΔG/RT}. Зелёная полоса — ΔG ± σ, оранжевая — соответствующий интервал доли. Лекция 18, вывод 10.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Доли конформеров зависят от того, все ли минимумы найдены. Как искать конформеры?</span><a class="nqA" href="conformers.html" data-goto="conf">Конформеры: какие минимумы искать →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Ошибка метода 8, базиса 3, сходимости 1 кДж/моль. Сходимость улучшили до 0,01. Как изменится итог?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">С 8,6 на 8,5 — почти никак</button><button type="button" class="opt">С 12 на 11</button><button type="button" class="opt">Вдвое</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>√(64 + 9 + 1) = 8,6, √(64 + 9) = 8,5. Итог определяет самая большая погрешность.</div></div>
+<div class="tq"><p class="qt"><span>MAE функционала для барьеров — 8 кДж/моль. В каком интервале с вероятностью 95 % ошибка вашего барьера?</span></p>
+<p class="olab">кДж/моль</p><div class="opts" role="group"><button type="button" class="opt">±8</button><button type="button" class="opt">±10</button><button type="button" class="opt" data-ok="1">±20</button><button type="button" class="opt">±4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>σ = 1,25·MAE = 10, ±2σ = ±20. Средняя ошибка — не граница: 42 % реакций ошибаются больше MAE.</div></div>
+<div class="tq"><p class="qt"><span>Почему энтальпия образования этанола через изодесмическую реакцию точнее, чем через атомизацию?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Связей каждого типа слева и справа поровну — систематические ошибки по связям сокращаются</button><button type="button" class="opt">В ней меньше атомов</button><button type="button" class="opt">Её считают более точным методом</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Через атомизацию ошибки всех восьми связей складываются (24 кДж/моль в условных числах лекции), в изодесмической — сокращаются.</div></div>
+<div class="tq"><p class="qt"><span>Расчёт дал ΔG = 2 ± 4 кДж/моль между двумя конформерами. Что честно написать?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Конформер 1 — 69 %</button><button type="button" class="opt" data-ok="1">Близки по энергии, оба присутствуют (доля второго 8–69 %)</button><button type="button" class="opt">Конформер 2 не существует</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Экспонента превращает ±4 кДж/моль в интервал 8–69 %. Сузить его может более точный метод для одной разности: при σ = 1 — 23–40 %.</div></div>
+</div></details></section>
+<script src="js/errors.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="errors";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/errors.js"></script>
+
+</body>
+</html>

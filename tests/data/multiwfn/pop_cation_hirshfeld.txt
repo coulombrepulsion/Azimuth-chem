@@ -1,0 +1,204 @@
+answers: 7 | 1 | 1 | n | 0 | q
+
+ WARNING: "settings.ini" was found neither in current folder nor in the path defined by "Multiwfnpath" environment variable. Now using default settings instead, and all your modifications (if any) on settings.ini will not take effect!
+
+[95m Multiwfn -- A Multifunctional Wavefunction Analyzer
+[0m[32m Version 2026.7.15 (release date is the same as version name)
+[0m Developer: Tian Lu (Beijing Kein Research Center for Natural Sciences)
+ Multiwfn official website: http://sobereva.com/multiwfn
+ Multiwfn English forum: http://sobereva.com/wfnbbs
+ Multiwfn Chinese forum: http://bbs.keinsci.com/wfn
+ ( Number of parallel threads:   4  Current date: 2026-11-02  Time: 13:43:42 )
+
+ Both following papers ***MUST BE CITED IN MAIN TEXT*** if Multiwfn is used:
+[36m  Tian Lu, Feiwu Chen, J. Comput. Chem., 33, 580 (2012) DOI: 10.1002/jcc.22885
+  Tian Lu, J. Chem. Phys., 161, 082503 (2024) DOI: 10.1063/5.0216272
+[0m See "How to cite Multiwfn.pdf" in Multiwfn binary package for more information
+
+ Warning: You should set OMP_STACKSIZE environment variable as mentioned in Section 2.1.2 of Multiwfn manual!
+
+ Please wait...
+ Loading various information of the wavefunction
+ Loading basis set definition...
+ The highest angular moment basis functions is P
+ All basis functions are Cartesian type
+ Loading orbitals...
+ The actual number of Alpha/Beta orbitals read:        60  /        60
+ Converting basis function information to GTF information...
+ Generating density matrix...
+ Generating overlap matrix...
+
+ Total/Alpha/Beta electrons:     69.0000     35.0000     34.0000
+ Net charge:     1.00000      Expected multiplicity:    2
+ Atoms:     20,  Basis functions:     60,  GTFs:    180
+ This is an unrestricted single-determinant wavefunction
+ Orbitals from      1 to    60 are alpha, from     1 to    35 are occupied
+ Orbitals from     61 to   120 are beta,  from    61 to    94 are occupied
+
+ Loaded input.molden successfully!
+
+ Formula: H10 C10      Total atoms:      20
+ Molecule weight:       130.18677 Da
+ Point group: C2h
+
+ "q": Exit program gracefully          "r": Load a new file
+                    ************ Main function menu ************
+ 0 Show molecular structure and view orbitals
+ 1 Output all properties at a point       2 Topology analysis
+ 3 Output and plot specific property in a line
+ 4 Output and plot specific property in a plane
+ 5 Output and plot specific property within a spatial region (calc. grid data)
+ 6 Check & modify wavefunction
+ 7 Population analysis and calculation of atomic charges
+ 8 Orbital composition analysis           9 Bond order analysis
+ 10 Plot total DOS, PDOS, OPDOS, local DOS, COHP and photoelectron spectrum
+ 11 Plot IR/Raman/UV-Vis/ECD/VCD/ROA/NMR spectrum
+ 12 Quantitative analysis of molecular surface
+ 13 Process grid data (No grid data is presented currently)
+ 14 Adaptive natural density partitioning (AdNDP) analysis
+ 15 Fuzzy atomic space analysis
+ 16 Charge decomposition analysis (CDA) and plot orbital interaction diagram
+ 17 Basin analysis                       18 Electron excitation analysis
+ 19 Orbital localization analysis        20 Visual study of weak interaction
+ 21 Energy decomposition analysis        22 Conceptual DFT (CDFT) analysis
+ 23 ETS-NOCV analysis                    24 (Hyper)polarizability analysis
+ 25 Electron delocalization and aromaticity analyses
+ 26 Structure and geometry related analyses
+ 100 Other functions (Part 1)            200 Other functions (Part 2)
+ 300 Other functions (Part 3)
+ NOTE: There is a review comprehensively introducing various atomic charges:
+ Tian Lu, Qinxue Chen, Partial Charges, In Exploring Chemical Concepts Through Theory and Computation. WILEY-VCH GmbH: Weinheim (2024); pp. 161-187. DOI: 10.1002/9783527843435.ch6
+
+      ============== Population analysis and atomic charges ==============
+ -2 Calculate interaction energy between fragments based on atomic charges
+ -1 Define fragment
+ 0 Return
+ 1 Hirshfeld atomic charge
+ 2 Voronoi deformation density (VDD) atom population
+ 5 Mulliken atom & basis function population analysis
+ 6 Lowdin atom & basis function population analysis
+ 7 Modified Mulliken atom population defined by Ros & Schuit (SCPA)
+ 8 Modified Mulliken atom population defined by Stout & Politzer
+ 9 Modified Mulliken atom population defined by Bickelhaupt
+ 10 Becke atomic charge with atomic dipole moment correction
+ 11 Atomic dipole corrected Hirshfeld atomic charge (ADCH) (recommended)
+ 12 CHELPG ESP fitting atomic charge
+ 13 Merz-Kollmann (MK) ESP fitting atomic charge
+ 14 AIM atomic charge
+ 15 Hirshfeld-I atomic charge
+ 16 CM5 atomic charge    -16 Generate 1.2*CM5 atomic charge
+ 17 Electronegativity Equalization Method (EEM) atomic charge
+ 18 Restrained ElectroStatic Potential (RESP) atomic charge
+ 19 Gasteiger (PEOE) charge
+ 20 Minimal Basis Iterative Stockholder (MBIS) charge
+ Citation of Hirshfeld method: Theor. Chim. Acta. (Berl), 44, 129-138 (1977)
+ This task requests atomic densities, please select how to obtain them
+ 1 Use build-in sphericalized atomic densities in free-states (more convenient)
+ 2 Provide wavefunction file of involved elements by yourself or invoke Gaussian to automatically calculate them
+ Radial grids:   75    Angular grids:  434   Total:     32550
+ Calculating, please wait...
+
+ Hirshfeld charge of atom     1(C ) is  0.06860021
+ Hirshfeld charge of atom     2(C ) is  0.06860497
+ Hirshfeld charge of atom     3(C ) is  0.00999590
+ Hirshfeld charge of atom     4(C ) is  0.01000197
+ Hirshfeld charge of atom     5(C ) is  0.00956961
+ Hirshfeld charge of atom     6(C ) is  0.00956273
+ Hirshfeld charge of atom     7(H ) is  0.07321927
+ Hirshfeld charge of atom     8(H ) is  0.07321904
+ Hirshfeld charge of atom     9(H ) is  0.07016627
+ Hirshfeld charge of atom    10(H ) is  0.07016520
+ Hirshfeld charge of atom    11(C ) is  0.01273863
+ Hirshfeld charge of atom    12(C ) is  0.01273220
+ Hirshfeld charge of atom    13(H ) is  0.06992219
+ Hirshfeld charge of atom    14(H ) is  0.06992269
+ Hirshfeld charge of atom    15(C ) is  0.03041312
+ Hirshfeld charge of atom    16(C ) is  0.03041015
+ Hirshfeld charge of atom    17(H ) is  0.07216818
+ Hirshfeld charge of atom    18(H ) is  0.07216941
+ Hirshfeld charge of atom    19(H ) is  0.08312931
+ Hirshfeld charge of atom    20(H ) is  0.08313060
+ Summing up all charges:     0.99984167
+
+ Total dipole moment from atomic charges:    0.000066 a.u.
+ X/Y/Z of dipole moment vector:    0.000066   -0.000004    0.000000 a.u.
+
+ Normalize sum of atomic populations to actual number of electrons...
+
+ Final atomic charges:
+ Atom    1(C ):     0.06861382
+ Atom    2(C ):     0.06861858
+ Atom    3(C ):     0.01000965
+ Atom    4(C ):     0.01001572
+ Atom    5(C ):     0.00958336
+ Atom    6(C ):     0.00957648
+ Atom    7(H ):     0.07322140
+ Atom    8(H ):     0.07322117
+ Atom    9(H ):     0.07016840
+ Atom   10(H ):     0.07016734
+ Atom   11(C ):     0.01275236
+ Atom   12(C ):     0.01274594
+ Atom   13(H ):     0.06992432
+ Atom   14(H ):     0.06992482
+ Atom   15(C ):     0.03042682
+ Atom   16(C ):     0.03042385
+ Atom   17(H ):     0.07217031
+ Atom   18(H ):     0.07217154
+ Atom   19(H ):     0.08313141
+ Atom   20(H ):     0.08313271
+
+ Calculation took up       3 seconds wall clock time
+
+ If outputting atom coordinates with charges to input.chg in current folder? (y/n)
+
+      ============== Population analysis and atomic charges ==============
+ -2 Calculate interaction energy between fragments based on atomic charges
+ -1 Define fragment
+ 0 Return
+ 1 Hirshfeld atomic charge
+ 2 Voronoi deformation density (VDD) atom population
+ 5 Mulliken atom & basis function population analysis
+ 6 Lowdin atom & basis function population analysis
+ 7 Modified Mulliken atom population defined by Ros & Schuit (SCPA)
+ 8 Modified Mulliken atom population defined by Stout & Politzer
+ 9 Modified Mulliken atom population defined by Bickelhaupt
+ 10 Becke atomic charge with atomic dipole moment correction
+ 11 Atomic dipole corrected Hirshfeld atomic charge (ADCH) (recommended)
+ 12 CHELPG ESP fitting atomic charge
+ 13 Merz-Kollmann (MK) ESP fitting atomic charge
+ 14 AIM atomic charge
+ 15 Hirshfeld-I atomic charge
+ 16 CM5 atomic charge    -16 Generate 1.2*CM5 atomic charge
+ 17 Electronegativity Equalization Method (EEM) atomic charge
+ 18 Restrained ElectroStatic Potential (RESP) atomic charge
+ 19 Gasteiger (PEOE) charge
+ 20 Minimal Basis Iterative Stockholder (MBIS) charge
+
+ "q": Exit program gracefully          "r": Load a new file
+                    ************ Main function menu ************
+ 0 Show molecular structure and view orbitals
+ 1 Output all properties at a point       2 Topology analysis
+ 3 Output and plot specific property in a line
+ 4 Output and plot specific property in a plane
+ 5 Output and plot specific property within a spatial region (calc. grid data)
+ 6 Check & modify wavefunction
+ 7 Population analysis and calculation of atomic charges
+ 8 Orbital composition analysis           9 Bond order analysis
+ 10 Plot total DOS, PDOS, OPDOS, local DOS, COHP and photoelectron spectrum
+ 11 Plot IR/Raman/UV-Vis/ECD/VCD/ROA/NMR spectrum
+ 12 Quantitative analysis of molecular surface
+ 13 Process grid data (No grid data is presented currently)
+ 14 Adaptive natural density partitioning (AdNDP) analysis
+ 15 Fuzzy atomic space analysis
+ 16 Charge decomposition analysis (CDA) and plot orbital interaction diagram
+ 17 Basin analysis                       18 Electron excitation analysis
+ 19 Orbital localization analysis        20 Visual study of weak interaction
+ 21 Energy decomposition analysis        22 Conceptual DFT (CDFT) analysis
+ 23 ETS-NOCV analysis                    24 (Hyper)polarizability analysis
+ 25 Electron delocalization and aromaticity analyses
+ 26 Structure and geometry related analyses
+ 100 Other functions (Part 1)            200 Other functions (Part 2)
+ 300 Other functions (Part 3)
+
+--- stderr ---
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_UNDERFLOW_FLAG

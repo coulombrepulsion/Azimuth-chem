@@ -1,0 +1,7 @@
+Normalization vs Decimal(100), absolute bound 32*epsilon
+  case             verdict bits=   max_ulp    max|D|      relF     |D|/B det layout pure  reason
+  ordinary         PASS    yes           0  0.00e+00  0.00e+00         0 yes    yes  yes  max |D|/B = 0 <= 1
+  overflow         PASS    no            1  1.11e-16  1.82e-16    0.0156 yes    yes  yes  max |D|/B = 0.0156 <= 1
+  subnormal        PASS    yes           0  0.00e+00  0.00e+00         0 yes    yes  yes  max |D|/B = 0 <= 1
+  mixed            PASS    yes           0  0.00e+00  0.00e+00         0 yes    yes  yes  max |D|/B = 0 <= 1
+  -> 4/4 cases pass

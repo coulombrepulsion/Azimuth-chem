@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="hf,hcl">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Борн–Оппенгеймер и колебательные уровни</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/bo.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-bo-g.webp"><!--pose:end-->
+<h1>Борн–Оппенгеймер и колебательные уровни</h1>
+<p class="lead">В приближении Борна–Оппенгеймера электроны мгновенно подстраиваются под положение ядер, и для ядер получается потенциальная кривая U(R) — одна и та же для всех изотопов. По этой кривой ядра движутся уже как квантовые частицы: у них есть дискретные колебательные уровни и нулевые колебания. Модель — молекула водорода с потенциалом Морзе, подобранным по опытным D<sub>e</sub>, R<sub>e</sub> и ω<sub>e</sub>.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Ядра в тысячи раз тяжелее электронов, поэтому электронную задачу решают при фиксированных ядрах и получают ППЭ U(R).</li><li>Одной массы мало: приближение нарушается, где электронные термы сближаются и велики неадиабатические связи (избегаемые и конические пересечения).</li><li>U(R) не зависит от масс ядер: изотопологи различаются только колебательными уровнями.</li><li>Даже в основном состоянии молекула колеблется: энергия нулевых колебаний отличает D₀ от D<sub>e</sub>.</li><li>Уровни реальной (ангармонической) ямы сгущаются к пределу диссоциации.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> модельный потенциал Морзе для H₂</summary><dl><dt>Что вычисляется</dt><dd>Колебательные уровни и нулевые колебания H₂ и его изотопов на одной кривой U(R).</dd><dt>Какие приближения приняты</dt><dd>Приближение Борна–Оппенгеймера; потенциал Морзе, подобранный по опытным D<sub>e</sub>, R<sub>e</sub>, ω<sub>e</sub>; вращение не учитывается.</dd><dt>Какой вывод можно сделать</dt><dd>Картина уровней и изотопный эффект верны качественно; точные числа — свойство модели Морзе.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Уровни на потенциальной кривой</h2>
+  <div class="crow"><span class="l">Молекула (изотопы)</span><span class="row" id="isoG" role="group" aria-label="Изотопный состав"></span></div>
+  <div class="crow"><span class="l">Приведённая масса μ</span><input type="range" id="mu" min="0.3" max="4.7" step="0.005" style="width:260px" aria-label="Приведённая масса, логарифм"><span class="val" id="muV"></span></div>
+  <div class="crow"><span class="l">Потенциал</span><span class="row" id="potG" role="group" aria-label="Потенциал"></span></div>
+  <div class="crow"><span class="l">Выбранный уровень v</span><button class="btn" id="vDn" type="button" aria-label="Уровень ниже">◀</button><button class="btn" id="vUp" type="button" aria-label="Уровень выше">▶</button><span class="val" id="vV"></span>
+    <label class="hint" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="prob"> показывать |ψ|²</label></div>
+  <div class="work">
+    <div class="panel" style="padding:8px 10px">
+      <div class="ptitle">U(R) и колебательные уровни</div>
+      <svg id="pot" viewBox="0 0 560 380" role="img" aria-label="Потенциальная кривая и колебательные уровни"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>потенциал Морзе</span><span><i class="sw" style="border-color:var(--warn);border-top-style:dashed"></i>гармоническое приближение</span><span><i class="sw" style="border-color:var(--ok)"></i>волновая функция выбранного уровня</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="tablewrap" id="kvTab"></div>
+      <div class="tablewrap" id="lvTab"></div>
+      <div class="status" id="st1"></div>
+    </div>
+  </div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. Почему ядра можно «остановить»</h2>
+  <p class="small">Главная мотивация приближения — ядра тяжёлые: их колебания медленнее движения электронов, а амплитуда нулевых колебаний мала по сравнению с длиной связи. Обе величины определяются отношением масс <span class=fr><span>m<sub>e</sub></span><span>μ</span></span>: период колебаний <span class=fr><span>2π</span><span>ω</span></span> растёт как μ<sup>1/2</sup>, а амплитуда падает как μ<sup>−1/4</sup>. Двигайте массу выше — для «ядер» лёгких, как электрон, разделения уже нет. Но большая масса — не достаточное условие: нужно ещё, чтобы электронные состояния были далеко друг от друга по энергии. Где термы сближаются (избегаемое или коническое пересечение), неадиабатические связи смешивают их, и приближение нарушается даже для тяжёлых ядер — см. избегаемое пересечение на странице о ППЭ.</p>
+  <div class="tablewrap" id="tsTab"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Для двух атомов получается кривая U(R). Что получится, если атомов три?</span><a class="nqA" href="pes.html" data-goto="pes">Поверхность потенциальной энергии →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Как изменится энергия нулевых колебаний при замене H₂ на D₂?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Увеличится в 2 раза</button><button type="button" class="opt" data-ok="1">Уменьшится примерно в √2 раз</button><button type="button" class="opt">Не изменится: яма та же</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Уменьшится примерно в √2 раз: ω ∝ <span class=fr><span>1</span><span>√μ</span></span>, а приведённая масса D₂ вдвое больше. У H₂ E₀ ≈ 26 кДж/моль, у D₂ — около 18,4 кДж/моль.</div></div>
+<div class="tq"><p class="qt"><span>У какой молекулы больше энергия диссоциации D₀ — у H₂ или у D₂?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">У H₂: лёгкие ядра связаны прочнее</button><button type="button" class="opt">Одинаковая: U(R) одна и та же</button><button type="button" class="opt" data-ok="1">У D₂: меньше нулевые колебания</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>У D₂ (4,56 эВ против 4,48 эВ): яма та же, а нулевые колебания меньше, поэтому дно, от которого отсчитывается D₀, лежит ниже.</div></div>
+<div class="tq"><p class="qt"><span>Почему у H₂ и D₂ одинаковая D<sub>e</sub>, но разная D₀?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">У D₂ глубже потенциальная яма</button><button type="button" class="opt" data-ok="1">U(R) не зависит от масс ядер; у D₂ меньше нулевые колебания</button><button type="button" class="opt">У D₂ длиннее связь</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>В приближении Борна–Оппенгеймера U(R) определяется только электронами и зарядами ядер, а массы ядер в электронную задачу не входят. Массы влияют лишь на движение ядер: на частоту и нулевые колебания, а значит, на D₀ = D<sub>e</sub> − E₀.</div></div>
+<div class="tq"><p class="qt"><span>Как изменится число связанных колебательных уровней при переходе от H₂ к D₂?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Увеличится примерно в √2 раз</button><button type="button" class="opt">Уменьшится</button><button type="button" class="opt">Не изменится: яма та же</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Увеличится примерно в √2 раз (у H₂ в модели Морзе 17 уровней, у D₂ — 25; у настоящих молекул — 15 и 22): уровни тяжёлой молекулы расположены плотнее, а глубина ямы та же.</div></div>
+<div class="tq"><p class="qt"><span>Как меняется расстояние между соседними колебательными уровнями с ростом v?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Не меняется</button><button type="button" class="opt">Растёт</button><button type="button" class="opt" data-ok="1">Уменьшается</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Уменьшается: у Морзе ΔE<sub>v→v+1</sub> = ω<sub>e</sub> − 2ω<sub>e</sub>x<sub>e</sub>(v + 1), уровни сгущаются к границе диссоциации. У гармонического осциллятора интервал постоянен и равен ω<sub>e</sub>.</div></div>
+<div class="tq"><p class="qt"><span>Уменьшайте массу μ ползунком. Почему для очень лёгких «ядер» приближение Борна–Оппенгеймера перестаёт работать?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Меняется сама кривая U(R)</button><button type="button" class="opt" data-ok="1">Нулевые колебания сравнимы с глубиной ямы, и движения нельзя разделить по скоростям</button><button type="button" class="opt">Ядра становятся неподвижными</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Энергия нулевых колебаний становится сравнимой с глубиной ямы, а при μ ≲ 7 m<sub>e</sub> в ней остаётся меньше двух уровней: «ядро» движется так же быстро, как электроны, и движения уже нельзя разделить.</div></div>
+</div></details></section>
+<script src="js/bo.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="bo";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/bo.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>微扰理论与 MP2</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/mp2.css">
+
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261028-mp2-g.webp"><!--pose:end-->
+<h1>微扰理论与 MP2</h1>
+<p class="lead">Møller–Plesset 方法把哈密顿量分为“简单”部分——Fock 算符之和，对它而言哈特里-福克行列式是精确的——和微扰，即 Fock 算符遗漏的一切。第一个相关修正 MP2（二阶微扰理论）以 N⁵ 的代价恢复大部分相关能，并满足大小一致性。这里可以看到它的公式从何而来，微扰级数何时收敛得快、何时收敛得差，以及 MP2 对真实分子能给出多少相关能。最小基组中的 H₂ 模型直接在页面上求解，其余用 PySCF 计算。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>在 Møller–Plesset 方法中零级近似是 Fock 算符之和；一级修正给回哈特里-福克能量，二级（MP2）是第一个相关修正。</li><li>MP2 的每一项都除以轨道能之差；能隙小时（拉长的键、双自由基）MP2 会高估相关能。</li><li>Møller–Plesset 级数并不总是收敛良好：键拉长时 MP3 可能比 MP2 更差，级数振荡，在含弥散函数的基组中甚至可能发散。</li><li>MP2 满足大小一致性，代价约 N⁵；对普通分子它给出同一基组中 CCSD(T) 相关能的约 86–99 %。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型边界：</b>小分子，小基组</summary><dl><dt>计算的是什么</dt><dd>STO-3G 中任意 R 下 H₂ 的修正 E⁽⁰⁾、E⁽¹⁾、E⁽²⁾；6-31G 中水分子在三个键长下直到 25 阶的 Møller–Plesset 级数（在完全 CI 空间中计算）；九个分子在 cc-pVDZ 中的 MP2、CCSD 和 CCSD(T) 相关能。</dd><dt>采用了哪些近似</dt><dd>几何构型固定并接近实验值；cc-pVDZ 中冻结了内层；相关能比例的参照是 CCSD(T)，而不是完全 CI。</dd><dt>能得出什么结论</dt><dd>MP2 公式从何而来、级数何时收敛、为什么 MP2 在小能隙时失效——可以；MP2 对反应能的精度——不行：这由“方法层级与雅各布天梯”一页说明。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">最小基组中的 H₂：逐阶修正</h2>
+  <p class="hint">零阶是占据轨道能之和 2ε<sub>g</sub>。一阶修正给回哈特里-福克能量。二阶是唯一的双激发 σ<sub>g</sub>² → σ<sub>u</sub>² 的贡献：E<sup>(2)</sup> = −K² / 2(ε<sub>u</sub> − ε<sub>g</sub>)。分子中是在 CI 中联系两个组态的同一个交换积分，分母是轨道能之差。</p>
+  <div class="crow"><span class="l">距离 R</span><input type="range" id="R" min="0" max="72" step="1" value="7" aria-label="距离 R"><span class="val" id="Rv"></span></div>
+  <div class="two">
+    <svg id="h2C" viewBox="0 0 560 330" role="img" aria-label="H₂ 的能量：哈特里-福克、MP2 与精确解"></svg>
+    <div><div class="mbox" id="h2M"></div></div>
+  </div>
+  <p class="hint" id="h2N"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">微扰级数：它收敛吗？</h2>
+  <p class="hint">MP2、MP3、MP4 是一个无穷级数的前几项，其和应给出该基组中的精确能量（完全 CI）。这里水分子在 6-31G 基组中的级数直接在全部 166 万个行列式的空间中计算到 25 阶。拉长两根 O–H 键，可以看到收敛如何变差。</p>
+  <div class="crow"><span class="l">O–H 键长</span><span class="grp" id="geoG" role="group" aria-label="键长"></span></div>
+  <div class="crow"><span class="l">微扰阶数 n</span><input type="range" id="ord" min="2" max="25" step="1" value="2" aria-label="微扰阶数"><span class="val" id="ordV"></span></div>
+  <div class="two">
+    <svg id="serC" viewBox="0 0 560 330" role="img" aria-label="Møller–Plesset 级数部分和按阶数的误差"></svg>
+    <div class="tablewrap" id="serT"></div>
+  </div>
+  <p class="hint" id="serN"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">MP2 给出多少相关能</h2>
+  <p class="hint">九个分子在 cc-pVDZ 基组中 MP2 与 CCSD(T) 相关能的比较（冻结内层电子，几何构型接近实验值）。这里 CCSD(T) 是参照：对这些分子它与完全 CI 只相差 1–2 % 的相关能。</p>
+  <svg id="tabC" viewBox="0 0 960 300" role="img" aria-label="MP2 给出的 CCSD(T) 相关能比例"></svg>
+  <div class="tablewrap" id="tabT"></div>
+  <p class="hint" id="tabN"></p>
+  <div class="eq">
+    <div class="eqb"><div class="t">为什么 MP2 满足大小一致性</div>MP2 能量是各电子对贡献之和，不需要对整个波函数归一化。对于无相互作用的分子，不同分子的电子对没有贡献，能量直接相加：6-31G 中的 (H₂)ₙ 在 n = 1、2、3、4 时每个分子的贡献都是 −17.397 mEₕ。</div>
+    <div class="eqb"><div class="t">代价</div>MP2 最昂贵的步骤是把双电子积分变换到分子轨道基，约 N⁵。这比 CCSD（N⁶）便宜一个数量级，比 CCSD(T)（N⁷）更便宜；借助 RI 近似，MP2 可以计算含数百个原子的分子。</div>
+    <div class="eqb"><div class="t">小分母</div>每一项都除以轨道能之差。若它很小（拉长的键、双自由基、金属、具有低位激发的芳香体系），贡献会无限增大——就像大距离处的 H₂。</div>
+    <div class="eqb"><div class="t">MP2 的用途</div>分子间相互作用、构象能、几何构型；在 DFT 双杂化泛函（例如 B2PLYP）中把 MP2 贡献加到泛函上。SCS-MP2 等变体分别缩放同自旋和反自旋电子对的贡献。</div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">当一个行列式不够用时——键断裂或双自由基——该怎么办？</span><a class="nqA" href="casscf.html" data-goto="cas">多组态方法：CASSCF →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>STO-3G 中的 H₂，R = 0.75 Å：MP2 给出精确相关能的多少，%？</span></p>
+<p class="olab">MP2 比例，%</p><div class="opts" role="group"><button type="button" class="opt">36</button><button type="button" class="opt">100</button><button type="button" class="opt">98</button><button type="button" class="opt" data-ok="1">64</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>约 64 %。在最小基组中 H₂ 只有一个激发 σg² → σu²，其二阶贡献明显小于精确值：其余来自更高阶。在实际基组中，普通分子的 MP2 比例要高得多（第 3 节）。</div></div>
+<div class="tq"><p class="qt"><span>拉长 H₂ 的键：在什么 R（精确到 0.05 Å）时 MP2 恰好给出 100 % 的相关能，之后更多？</span></p>
+<p class="olab">R, Å</p><div class="opts" role="group"><button type="button" class="opt">6.0</button><button type="button" class="opt">0.75</button><button type="button" class="opt" data-ok="1">3.5</button><button type="button" class="opt">1.5</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>约 3.5 Å。能隙 εu − εg 减小，而它位于 E⁽²⁾ 的分母中，因此修正增长得比精确相关能更快，之后就“过量”了。这里与 100 % 重合纯属偶然，并非精确的标志。</div></div>
+<div class="tq"><p class="qt"><span>键长加倍的水：MP3 相对于完全 CI 的误差是多少 mEₕ？</span></p>
+<p class="olab">MP3 误差，mEₕ</p><div class="opts" role="group"><button type="button" class="opt">45</button><button type="button" class="opt">0</button><button type="button" class="opt" data-ok="1">64</button><button type="button" class="opt">6.4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>约 64 mEₕ——比 MP2（45 mEₕ）还大。这里三阶使结果变差，级数振荡且收敛缓慢：对微扰理论来说，“阶数越高越好”并无保证。</div></div>
+<div class="tq"><p class="qt"><span>为什么 MP2 与 CISD 不同，满足大小一致性？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">MP2 能量是电子对贡献之和，不需要对整个波函数归一化</button><button type="button" class="opt">MP2 包含四重激发</button><button type="button" class="opt">MP2 是变分的</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>MP2 能量是各电子对贡献之和，不需要对整个波函数归一化。对于无相互作用的分子，来自不同分子的电子对没有贡献，能量直接相加：(H₂)ₙ 中每个分子的贡献在任意 n 下都相同。</div></div>
+<div class="tq"><p class="qt"><span>在 cc-pVDZ 中 MP2 给出甲烷 CCSD(T) 相关能的多少，%？</span></p>
+<p class="olab">比例，%</p><div class="opts" role="group"><button type="button" class="opt">100</button><button type="button" class="opt" data-ok="1">86</button><button type="button" class="opt">64</button><button type="button" class="opt">50</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>约 86 %——在这些分子中最少。其余是更高阶的贡献；因此对于涉及 C–H 键断裂的反应能，MP2 的误差可达几 kcal/mol。</div></div>
+</div></details></section>
+<script src="js/mp2.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="mp2";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/mp2.js"></script>
+
+</body>
+</html>

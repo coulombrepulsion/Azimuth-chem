@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Зонная структура и плотность состояний</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>Зонная структура и плотность состояний</h1>
+<p class="lead">Уровни всех точек k складываются в зоны. По зонам и плотности состояний (DOS) видно, металл перед нами или диэлектрик, какова запрещённая зона и из орбиталей каких атомов она состоит (PDOS). Это то, что строят по расчёту Quantum ESPRESSO.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Зонная структура — E(k) вдоль пути через особые точки зоны (Γ, X, M, K…); DOS g(E) — сколько состояний приходится на интервал энергии.</li><li>Уровень Ферми внутри зоны — металл; в щели — диэлектрик или полупроводник. Ширина щели — от потолка валентной зоны до дна зоны проводимости.</li><li>PDOS раскладывает DOS по атомам и орбиталям: зона проводимости обычно на атомах с более высокой энергией орбиталей.</li><li>Графен: зоны касаются в точке K (конус Дирака); разные атомы в узлах (h-BN) открывают щель.</li><li>Почти свободные электроны: слабый потенциал открывает щель 2|V| на границе зоны; базис из плоских волн сходится с ростом их числа.</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Цепочка из двух атомов: зоны, DOS и PDOS</h2>
+  <div class="crow"><span class="l">Разность энергий атомов Δ (|β|)</span><input type="range" id="dl" min="0" max="4" step="0.05" value="1" aria-label="Δ"><span class="val" id="dlv"></span></div>
+  <div class="crow"><span class="l">Перескок в ячейке β₁ (|β|)</span><input type="range" id="b1" min="-2" max="-0.2" step="0.05" value="-1" aria-label="β1"><span class="val" id="b1v"></span></div>
+  <div class="crow"><span class="l">Перескок между ячейками β₂ (|β|)</span><input type="range" id="b2" min="-2" max="-0.2" step="0.05" value="-1" aria-label="β2"><span class="val" id="b2v"></span></div>
+  <div class="crow"><span class="l">Электронов на ячейку</span><input type="range" id="ne" min="0" max="4" step="0.05" value="2" aria-label="электроны"><span class="val" id="nev"></span></div>
+  <div class="two" style="grid-template-columns:minmax(0,2.07fr) minmax(0,1fr)"><svg id="achart" class="ch" viewBox="0 0 620 300" role="img" aria-label="Зоны цепочки"></svg><svg id="adchart" class="ch" viewBox="0 0 300 300" role="img" aria-label="Плотность состояний"></svg></div>
+  <div class="legend" id="aleg"></div>
+  <div class="cards" id="acards"></div>
+  <p class="status" id="aNote"></p>
+  <p class="hint">E<sub>±</sub>(k) = ±√(Δ²/4 + β₁² + β₂² + 2β₁β₂ cos ka); на границе зоны щель 2√(Δ²/4 + (β₁ − β₂)²). Пунктир — уровень Ферми. Неравные β₁ и β₂ — это чередование коротких и длинных связей (как в полиацетилене).</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Графен и h-BN: конус Дирака</h2>
+  <div class="crow"><span class="l">Разность энергий атомов Δ (эВ)</span><input type="range" id="gd" min="0" max="6" step="0.1" value="0" aria-label="Δ"><span class="val" id="gdv"></span></div>
+  <div class="two" style="grid-template-columns:minmax(0,2.07fr) minmax(0,1fr)"><svg id="gchart" class="ch" viewBox="0 0 620 300" role="img" aria-label="Зоны графена"></svg><svg id="gdchart" class="ch" viewBox="0 0 300 300" role="img" aria-label="Плотность состояний"></svg></div>
+  <div class="cards" id="gcards"></div>
+  <p class="status" id="gNote"></p>
+  <p class="hint">Модель одной pz-орбитали на атом с перескоком β = −2,8 эВ между соседями (Castro Neto и др., 2009). Путь Γ–M–K–Γ — тот же, что строят в расчёте зонной структуры графена.</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Почти свободные электроны и плоские волны</h2>
+  <div class="crow"><span class="l">Потенциал V</span><input type="range" id="vv" min="0" max="3" step="0.05" value="0.3" aria-label="V"><span class="val" id="vvv"></span></div>
+  <div class="crow"><span class="l">Плоских волн 2M + 1, M</span><input type="range" id="mm" min="0" max="6" step="1" value="3" aria-label="M"><span class="val" id="mmv"></span></div>
+  <svg id="nchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Зоны почти свободных электронов"></svg>
+  <div class="cards" id="ncards"></div>
+  <p class="status" id="nNote"></p>
+  <p class="hint">Пунктир — свободный электрон E = (k + G)², сплошные — зоны с потенциалом 2V cos(2πx/a); энергия в единицах ħ²/(2ma²).</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">По зонам видна щель — но в DFT с LDA или PBE она обычно меньше опытной. Почему?</span><a class="nqA" href="dft.html" data-goto="dft">Метод функционала плотности →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Δ = 0, β₁ = β₂, два электрона на ячейку (по одному на атом). Металл или диэлектрик?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Металл: зоны касаются на границе зоны</button><button type="button" class="opt">Диэлектрик: нижняя зона полна</button><button type="button" class="opt">Полупроводник со щелью |β|</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Металл: щель 2√(Δ²/4 + (β₁ − β₂)²) = 0, нижняя зона полна, но верхняя начинается на той же энергии. Неравные β₁ и β₂ открывают щель — так полиацетилен становится полупроводником (переход Пайерлса).</div></div>
+<div class="tq"><p class="qt"><span>Δ = 1, β₁ = β₂ = −1. Какова ширина щели?</span></p>
+<p class="olab">Щель, |β|</p><div class="opts" role="group"><button type="button" class="opt">0</button><button type="button" class="opt">0,5</button><button type="button" class="opt" data-ok="1">1</button><button type="button" class="opt">2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>1: на границе зоны cos ka = −1, и E<sub>±</sub> = ±Δ/2 — щель равна Δ.</div></div>
+<div class="tq"><p class="qt"><span>Графен: какова энергия верхней зоны в точке Γ при β = −2,8 эВ?</span></p>
+<p class="olab">E, эВ</p><div class="opts" role="group"><button type="button" class="opt">2,8</button><button type="button" class="opt">5,6</button><button type="button" class="opt" data-ok="1">8,4</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>8,4 эВ = 3|β|: в Γ все три соседа складываются в фазе. В M энергия ±|β| = 2,8 эВ, в K — ноль (конус Дирака).</div></div>
+<div class="tq"><p class="qt"><span>Почти свободные электроны, V = 0,3. Какова щель между первой и второй зонами на границе зоны?</span></p>
+<p class="olab">Щель</p><div class="opts" role="group"><button type="button" class="opt">0,3</button><button type="button" class="opt" data-ok="1">0,6</button><button type="button" class="opt">0,09</button><button type="button" class="opt">1,2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>0,6 ≈ 2|V|: на границе зоны две волны e<sup>±iπx/a</sup> одной энергии, потенциал их смешивает и раздвигает на 2|V|. При одной плоской волне (M = 0) щели нет.</div></div>
+</div></details></section>
+<script src="js/bands.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="bands";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/bands.js"></script>
+
+</body>
+</html>

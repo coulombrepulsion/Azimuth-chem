@@ -1,0 +1,6 @@
+# 0.85.1: cmd.exe reads batch files with Windows line ends (labels and goto can fail with LF only)
+*.bat text eol=crlf
+*.cmd text eol=crlf
+# 0.194.0: shell scripts keep LF on every checkout (bash reads «\r» as a part of a word)
+*.sh text eol=lf
+*.command text eol=lf

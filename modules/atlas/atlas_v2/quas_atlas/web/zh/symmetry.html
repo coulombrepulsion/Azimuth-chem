@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,ammonia,methane,bf3,benzene,ethene,co2,h2o2">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>分子点群</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/sym.css">
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css">
+<link rel="stylesheet" href="../assets/css/addon.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-sym-g.webp"><!--pose:end-->
+<h1>分子点群</h1>
+<p class="lead">选择一个点群。可用鼠标或手指旋转模型。右侧依次为：带动画的对称操作类、含中心原子轨道的特征标表、按不动原子计算 Γ₃N、分子振动以及乘法表。下方展示取代或畸变时点群如何降低，以及各类对应到哪里。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>点群是分子所有对称操作的集合；根据对称元素确定（Schoenflies 流程）。</li><li>共轭操作组成一个类；不可约表示的数目等于类的数目。</li><li>不可约表示的特征标表明轨道、振动以及函数 x、y、z 在群操作下如何变化。</li><li>约化公式回答“有多少、是哪些”的问题：振动、SALC、分裂后的子能级。</li><li>由配体轨道张成的表示，其特征标是不动的配体数；约化公式把它分解为不可约表示，投影算符给出 SALC。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>刚性分子的精确群论</summary><dl><dt>计算的是什么</dt><dd>对称操作、类、特征标、Γ<sub>3N</sub> 的约化、对称性降低。</dd><dt>采用了哪些近似</dt><dd>理想的平衡几何构型；分子是刚性的。 坐标轴的选取使 H₂O 位于 xz 平面内；按 Mulliken 约定（yz 平面，如“简正振动”页面）B₁ 与 B₂ 的标记互换。</dd><dt>能得出什么结论</dt><dd>选择定则回答“是或否”，但不给出强度。</dd></dl></details><!--lim:end-->
+<details class="sgGuide" id="sgWizard"><summary>如何确定点群——逐步指南</summary><div class="sgContent"><p class="hint">考察固定构象下的整个分子。对称操作必须使同种原子重合。本指南根据你的回答给出结果，不会自动检查几何结构。</p><div id="sgSteps" aria-live="polite"></div></div></details>
+<div class="picker" id="picker" role="group" aria-label="选择点群"></div>
+<details class="mymol" id="myMol">
+  <summary>自定义分子：确定点群</summary>
+  <div class="mrow"><input id="molQ" aria-autocomplete="list" aria-expanded="false" autocomplete="off" spellcheck="false" placeholder="名称或分子式：苯、SF6、二茂铁…" aria-label="分子名称或分子式"><button class="btn primary" id="molGo" type="button">显示</button><button class="btn" id="pcGo" type="button">在 PubChem 中查找</button></div>
+  <p class="hint" style="font-size:13.5px;margin:0">本页库中有 350 多个分子——按点群分类的列表见下方目录。其他任何分子都可以用英文名称在 PubChem 中查找，或者输入原子坐标。</p>
+  <details class="xyzBox" id="catBox"><summary>按点群分类的分子目录</summary><div id="molCat" class="molcat"></div></details>
+  <details class="xyzBox"><summary>粘贴坐标（XYZ 格式，Å）</summary>
+    <textarea id="xyz" rows="6" spellcheck="false" aria-label="XYZ 格式的坐标" placeholder="3&#10;水&#10;O  0.000  0.000  0.117&#10;H  0.000  0.757 -0.469&#10;H  0.000 -0.757 -0.469"></textarea>
+    <div class="mrow"><button class="btn primary" id="xyzGo" type="button">确定点群</button></div>
+    <p class="hint" style="font-size:13.5px;margin:0">可使用 Avogadro、ORCA、Gaussian 等程序导出的 .xyz 文件：第一行是原子数，第二行是注释，之后每行为“元素 x y z”。前两行可以不粘贴。</p>
+  </details>
+  <div class="mrow"><label class="hint" style="font-size:13.5px">寻找对称元素时的容差 <select id="tol"><option value="0.01">0.01 Å——严格</option><option value="0.05">0.05 Å</option><option value="0.1" selected>0.1 Å</option><option value="0.2">0.2 Å——宽松</option></select></label></div>
+  <p id="molMsg" class="hint" aria-live="polite" style="font-size:14px;margin:0"></p>
+</details>
+<div class="work">
+  <div class="stage">
+    <svg id="view" viewBox="0 0 460 420" role="img" aria-label="带对称元素的分子模型"></svg>
+    <div class="row"><button class="btn" id="play" type="button">执行操作</button><button class="btn" id="back" type="button">复原</button><label class="hint" style="display:flex;gap:5px;align-items:center;cursor:pointer"><input type="checkbox" id="nums"> 原子编号</label><span class="hint" id="atomsLegend"></span></div>
+    <div class="msg" id="stageMsg"></div>
+    <div class="legend"><span><i class="dot" style="background:var(--ax-x)"></i><i class="dot" style="background:var(--ax-y)"></i><i class="dot" style="background:var(--ax-z)"></i>坐标轴 x、y、z</span><span><i class="dot" style="background:var(--accent)"></i>所选操作的轴和平面</span><span>虚线圆圈——操作前原子所在位置</span><span id="lobeLegend" hidden><i class="dot" style="background:var(--lp)"></i>轨道瓣“+” <i class="dot" style="background:var(--lm);margin-left:8px"></i>“−”</span></div>
+  </div>
+  <div class="side">
+    <div class="gname"><b id="gName"></b><span id="gMol"></span></div>
+    <p id="gNote" class="hint" style="font-size:14px"></p>
+    <div class="tabs" role="tablist" aria-label="栏目">
+      <button class="tab" role="tab" data-tab="cls" type="button">类</button>
+      <button class="tab" role="tab" data-tab="ct" type="button">特征标表</button>
+      <button class="tab" role="tab" data-tab="gam" type="button">Γ 计数</button>
+      <button class="tab" role="tab" data-tab="vib" type="button">振动</button>
+      <button class="tab" role="tab" data-tab="mul" type="button">乘法</button>
+    </div>
+    <div class="pane" id="pane" role="tabpanel"></div>
+  </div>
+</div>
+<section class="desc" aria-labelledby="hDesc">
+<h2 id="hDesc">对称性降低</h2>
+<p class="hint" style="font-size:14px">只有当改变后的分子在操作后与自身重合时，该操作才保留在群中。因此新群总是原群的子群，而且它的每个类都完整地包含在某个旧类之中。</p>
+<div class="dlist" id="dList" role="group" aria-label="降低方式"></div>
+<div class="res" id="res"></div>
+<details class="sgGuide" id="sgCompare" hidden><summary>比较结构变化前后的对称操作</summary><div class="sgContent" id="sgCompareBody"></div></details>
+</section>
+<section class="panel addon" aria-labelledby="hSalc">
+  <h2 id="hSalc">可约表示与 SALC</h2>
+  <p class="hint">配体轨道（氢的 1s、卤素的 σ 轨道）在对称操作下相互转换。这里给出群的特征标表、这些轨道上的表示 Γ、用约化公式的分解，以及由投影算符得到的对称性匹配线性组合（SALC）。</p>
+  <div class="crow"><span class="l">分子 · 点群</span><span class="grp" id="salcG" role="group" aria-label="分子"></span></div>
+  <div class="salcRow"><div class="tablewrap"><table class="ctab salcT" id="salcTab"></table></div><svg id="salcPic" viewBox="0 0 260 200" role="img" aria-label="配体编号"></svg></div>
+  <p class="status note" id="salcRed"></p>
+  <p class="status note" id="salcList"></p>
+  <p class="hint" id="salcNote"></p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">分子的每种对称类型各有多少个振动？其中哪些在光谱中可见？</span><a class="nqA" href="vibrations.html" data-goto="nm">简正振动 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>打开 O<sub>h</sub> 的“类”选项卡。3C₂（= C₄²）和 6C₂ 都是绕轴旋转 180°，为什么属于不同的类？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">这些旋转是共轭的，但阶不同</button><button type="button" class="opt" data-ok="1">两类轴不等价：群中没有任何操作能把坐标轴变成穿过棱中点的轴</button><button type="button" class="opt">这是同一个操作，划分是约定的</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>3C₂ 是绕坐标轴（即 C₄ 所在的轴）的旋转，而 6C₂ 是绕通过相对棱中点的轴的旋转。群中没有任何操作能把第一类轴变成第二类轴，因此这些旋转不共轭，构成不同的类。</div></div>
+<div class="tq"><p class="qt"><span>O<sub>h</sub> → “沿 z 轴拉长”。3C₂ 类变成什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">仍为一个类</button><button type="button" class="opt" data-ok="1">分裂为 C₂（绕 z）和 2C₂′（绕 x 和 y）</button><button type="button" class="opt">从群中消失</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>变成 C₂（绕 z 旋转）和 2C₂′（绕 x 和 y 旋转）。拉长后 z 轴不再与 x、y 等价，原来的类分裂为两个。</div></div>
+<div class="tq"><p class="qt"><span>T<sub>d</sub>（CH₄），“Γ 计数”选项卡。红外光谱中有几个谱带？拉曼光谱中有几条谱线？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">IR——2，拉曼——4</button><button type="button" class="opt">IR——4，拉曼——2</button><button type="button" class="opt">IR——2，拉曼——2</button><button type="button" class="opt">IR——3，拉曼——4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>Γ<sub>振</sub> = A₁ + E + 2T₂。只有 T₂（与 x、y、z 同）具有红外活性——2 个谱带。A₁、E 和两个 T₂ 均具有拉曼活性——4 条谱线。</div></div>
+<div class="tq"><p class="qt"><span>C<sub>3v</sub>，“乘法”选项卡。比较 C₃·σ<sub>v</sub> 和 σ<sub>v</sub>·C₃ 两个格子。它们说明了什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">同一个反映：操作可交换</button><button type="button" class="opt" data-ok="1">不同平面的反映：群是非阿贝尔的</button><button type="button" class="opt">一个旋转和一个反映</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>两个乘积都是反映，但反映面不同：C₃ 与 σ<sub>v</sub> 不对易，C<sub>3v</sub> 群是非阿贝尔群。书写顺序很重要：在 A·B 中先执行 B。</div></div>
+<div class="tq"><p class="qt"><span>D<sub>4h</sub>（[PtCl₄]²⁻），“特征标表”。哪个 d 轨道属于 b<sub>1g</sub>，哪个属于 b<sub>2g</sub>？这取决于什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">b<sub>1g</sub>——d<sub>x²−y²</sub>，b<sub>2g</sub>——d<sub>xy</sub>；取决于 C₂′ 轴的选取</button><button type="button" class="opt">b<sub>1g</sub>——d<sub>xy</sub>，b<sub>2g</sub>——d<sub>x²−y²</sub>；与轴无关</button><button type="button" class="opt">两个轨道都属于 e<sub>g</sub></button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>d<sub>x²−y²</sub> 属于 b<sub>1g</sub>，d<sub>xy</sub> 属于 b<sub>2g</sub>。这源于约定：C₂′ 轴通过配体，即沿 x 和 y 方向。若将坐标轴旋转 45°，两个标记就会互换。</div></div>
+<div class="tq"><p class="qt"><span>“可约表示与 SALC”：CH₄ 中氢的 1s 轨道分解为哪些不可约表示？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">A₁ + E</button><button type="button" class="opt" data-ok="1">A₁ + T₂</button><button type="button" class="opt">T₂</button><button type="button" class="opt">2A₁ + E</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>A₁ + T₂：Γ = (4, 1, 0, 0, 2)；约化公式给出 n(A₁) = (4 + 8 + 12)/24 = 1，n(T₂) = (12 + 12)/24 = 1。它们与碳的 2s（A₁）和三个 2p（T₂）成键。</div></div>
+</div></details></section>
+<script src="js/symmetry.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="sym";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="../assets/js/ballstick.js"></script><script src="js/symmetry.js"></script>
+
+<script src="js/symmetry.2.js"></script>
+<script src="js/salc.js"></script>
+</body>
+</html>

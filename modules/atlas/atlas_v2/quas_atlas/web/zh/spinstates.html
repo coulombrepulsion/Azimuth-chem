@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>DFT 中配合物的自旋态</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>DFT 中配合物的自旋态</h1>
+<p class="lead">铁(II) 配合物是高自旋还是低自旋——不同泛函给出不同答案：能量差几乎线性地依赖于精确交换的比例。这里讲这种依赖从何而来、如何用 ⟨S²⟩ 检查所得的解，以及为什么每个自旋态要分别优化。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>每对自旋平行的电子给出交换 −K。d⁶：高自旋（5α + 1β）10 对，低自旋（3α + 3β）6 对。Hartree–Fock（精确交换、无相关）使高自旋过低，纯 GGA（自相互作用、过度离域）使低自旋过低。</li><li>精确交换比例为 a 的杂化泛函：ΔE(a) ≈ ΔE(0) − k·a。对 Fe(II)：k = 1.5（水）、4.7（NCH）、7.8（CO）kJ/mol / 1 %——键越共价越大。[Fe(NCH)₆]²⁺ 约在 19 % 处变号：BP86 给低自旋，B3LYP 给高自旋。</li><li>规则：精确交换 10–15 %（TPSSh、B3LYP*），只有在两三个泛函下都不变的结论才可信；用自旋已知的相关配合物校准；对小模型用 NEVPT2 或 CCSD(T) 作参考。</li><li>自旋污染：精确波函数的 ⟨S²⟩ 为 S(S + 1)（单重态 0、三重态 2、五重态 6），UKS 的 ⟨S²⟩ = S(S + 1) + N_β − Σ|⟨φ^α|φ^β⟩|² ≥ S(S + 1)。S + 1 态的混入为超出量除以到该态的距离：五重态 6.9 即 15 % 七重态。其他检查：金属上的自旋（高自旋 Fe(II) 约 3.6–3.9）和 d 轨道布居。</li><li>高自旋占据反键 e_g*：Fe–L 键长 0.1–0.4 Å（DFT 键长误差为 0.02 Å）。每个态以各自的多重度优化，在各自极小点比较能量——绝热差。</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">精确交换比例决定一切</h2>
+  <div class="crow"><span class="l">精确交换比例 a，%</span><input type="range" id="ax" min="0" max="60" step="1" value="20" aria-label="a"><span class="val" id="axv"></span></div>
+  <svg id="gchart" class="ch" viewBox="0 0 960 340" role="img" aria-label="高低自旋能量差随精确交换比例的变化"></svg>
+  <div class="legend" id="gleg"></div>
+  <div class="cards" id="gcards"></div>
+  <p class="status" id="gNote"></p>
+  <p class="hint">数据点：ORCA 6.0.1，def2-SVP，TPSSh/def2-SVP 几何（五重态和单重态分别优化），2026.11.22：BP86（0 %）、TPSSh（10 %）、B3LYP（20 %）、PBE0（25 %）、BHandHLYP（50 %）。虚线为过五点的直线；负值——基态为高自旋。实验中 [Fe(H₂O)₆]²⁺ 为高自旋，[Fe(CO)₆]²⁺ 为抗磁性。</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">自旋污染与解的检查</h2>
+  <div class="crow"><span class="l">状态</span><span class="grp" id="mG" role="group" aria-label="状态"></span></div>
+  <div class="crow"><span class="l">程序输出的 ⟨S²⟩</span><input type="range" id="s2" min="0" max="15" step="0.01" value="6.9" aria-label="S2"><span class="val" id="s2v"></span></div>
+  <svg id="cchart" class="ch" viewBox="0 0 960 200" role="img" aria-label="S(S + 1) 的值与所得 ⟨S²⟩"></svg>
+  <div class="cards" id="ccards"></div>
+  <p class="status" id="cNote"></p>
+  <p class="hint">混入比例假定只有最近的更高自旋态造成污染。结论的阈值（3 % 和 10 %）是约定的。对 DFT，Kohn–Sham 行列式的 ⟨S²⟩ 只是一个指标。</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">几何取决于自旋</h2>
+  <div class="crow"><span class="l">配合物</span><span class="grp" id="kG" role="group" aria-label="配合物"></span></div>
+  <svg id="rchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="五重态与单重态中 Fe–L 平均键长"></svg>
+  <div class="legend" id="rleg"></div>
+  <div class="cards" id="rcards"></div>
+  <p class="status" id="rNote"></p>
+  <p class="hint">TPSSh/def2-SVP，ORCA 6.0.1，2026.11.22。柱为六根键的平均长度；虚线为所选配合物五重态的两根短键和四根长键。</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">铁上的自旋布居就是按自旋分的“电荷”。程序如何在原子间分配电子？为什么各种方案结果不同？</span><a class="nqA" href="charges.html" data-goto="chg">原子电荷：方案比较 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>高自旋 d⁶（5α + 1β）的 d 壳层中有多少对自旋平行的电子？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">10</button><button type="button" class="opt">6</button><button type="button" class="opt">4</button><button type="button" class="opt">15</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>10 = C(5,2)：五个 α 电子之间的所有电子对。低自旋（3α + 3β）为 3 + 3 = 6。多出的四对正是精确交换有利于高自旋的原因。</div></div>
+<div class="tq"><p class="qt"><span>对 [Fe(NCH)₆]²⁺，BP86 给出 +100 kJ/mol（低自旋），B3LYP 给出 −17（高自旋）。该怎么办？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">用 B3LYP——它更常用</button><button type="button" class="opt" data-ok="1">再用其他泛函计算，并在相关配合物上校准</button><button type="button" class="opt">取平均：+41，低自旋</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>符号依赖于交换比例（约 19 % 处变号），所以问题悬而未决。需要两三个不同比例的泛函、按实验校准，可能的话用 NEVPT2 或 CCSD(T) 作参考。</div></div>
+<div class="tq"><p class="qt"><span>五重态（S = 2），输出 ⟨S²⟩ = 6.9。七重态的混入是多少？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">15 %</button><button type="button" class="opt">90 %</button><button type="button" class="opt">4.5 %</button><button type="button" class="opt">0——它就是五重态</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>(6.9 − 6)/(12 − 6) = 0.15。这样的解已不可信；高自旋 Fe(II) 通常为 6.00–6.05。</div></div>
+<div class="tq"><p class="qt"><span>为什么高自旋和低自旋态要分别优化？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Fe–L 键长相差 0.1–0.4 Å——否则其中一个态会远离其极小点</button><button type="button" class="opt">否则 SCF 不收敛</button><button type="button" class="opt">输入文件格式要求</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>高自旋时两个电子在反键 e_g* 上，键明显变长。各自极小点的能量差即绝热差。</div></div>
+</div></details></section>
+<script src="js/spinstates.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="spinstates";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/spinstates.js"></script>
+
+</body>
+</html>

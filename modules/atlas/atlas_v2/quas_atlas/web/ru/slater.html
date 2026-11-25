@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Правила Слейтера–Кондона</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/sc.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-sc-g.webp"><!--pose:end-->
+<h1>Правила Слейтера–Кондона</h1>
+<p class="lead">Матричный элемент гамильтониана ⟨Ψ|Ĥ|Ψ′⟩ между двумя определителями Слейтера сводится к нескольким одно- и двухэлектронным интегралам. Соберите два определителя из спин-орбиталей — программа приведёт их к максимальному совпадению, определит случай и распишет ответ через h<sub>ij</sub>, J<sub>ij</sub> и K<sub>ij</sub>.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Матричные элементы между определителями Слейтера сводятся к одно- и двухэлектронным интегралам по правилам Слейтера–Кондона.</li><li>Сначала определители приводят к максимальному совпадению; каждая транспозиция столбцов меняет знак.</li><li>Элемент может быть ненулевым, только если определители отличаются не более чем двумя спин-орбиталями и имеют одинаковое M<sub>S</sub>.</li><li>Обменные интегралы возникают только между спин-орбиталями с одинаковым спином.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> точные правила для определителей</summary><dl><dt>Что вычисляется</dt><dd>Матричные элементы гамильтониана между двумя определителями Слейтера через h<sub>ij</sub>, J<sub>ij</sub>, K<sub>ij</sub>.</dd><dt>Какие приближения приняты</dt><dd>Ортонормированные спин-орбитали; численные значения интегралов не считаются.</dd><dt>Какой вывод можно сделать</dt><dd>Формулы точные; энергия получится только после подстановки интегралов конкретного расчёта.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Два определителя</h2>
+  <div class="crow"><span class="l">Примеры</span><span class="grp" id="preG"></span></div>
+  <div class="two" id="dets"></div>
+  <p class="hint">Стрелки ↑ и ↓ — спин-орбитали φ<sub>k</sub>α и φ<sub>k</sub>β. Порядок столбцов — порядок, в котором вы их добавили; щелчок по столбцу сдвигает его влево. Орбитали φ₁…φ₄ вещественные и ортонормированные.</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Решение по шагам</h2>
+  <div id="sol"></div>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">Шпаргалка</h2>
+  <div class="tablewrap"><table class="mtab bt"><thead><tr><th class="n">определители отличаются</th><th class="n">⟨Ψ|Ĥ|Ψ′⟩</th></tr></thead><tbody>
+  <tr><td class="n">ничем (Ψ′ = Ψ)</td><td class="n">Σ<sub>i</sub> h<sub>ii</sub> + ½ Σ<sub>i,j</sub> (⟨ij|ij⟩ − ⟨ij|ji⟩)</td></tr>
+  <tr><td class="n">одной спин-орбиталью χ<sub>m</sub> → χ<sub>p</sub></td><td class="n">h<sub>mp</sub> + Σ<sub>n</sub> (⟨mn|pn⟩ − ⟨mn|np⟩)</td></tr>
+  <tr><td class="n">двумя: χ<sub>m</sub> → χ<sub>p</sub>, χ<sub>n</sub> → χ<sub>q</sub></td><td class="n">⟨mn|pq⟩ − ⟨mn|qp⟩</td></tr>
+  <tr><td class="n">тремя и более</td><td class="n">0</td></tr></tbody></table></div>
+  <p class="hint">Перед применением определители приводят к максимальному совпадению; каждая перестановка столбцов меняет знак. Связь нотаций: ⟨ij|kl⟩ = (ik|jl), J<sub>ij</sub> = ⟨ij|ij⟩ = (ii|jj), K<sub>ij</sub> = ⟨ij|ji⟩ = (ij|ji). Интеграл по спину обнуляет всё, где спины «входа» и «выхода» электрона различаются.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Одной конфигурации отвечает несколько состояний. Как их найти?</span><a class="nqA" href="terms.html" data-goto="terms">Термы атомов →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания на исследование страницы и тренажёр. Выполните действие на странице и ответьте — ответ проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>He, ⟨1s²|Ĥ|1s²⟩: почему в ответе нет обменного интеграла K?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">K сокращается с h₁₁</button><button type="button" class="opt" data-ok="1">K есть только между спин-орбиталями с одинаковым спином</button><button type="button" class="opt">K₁₁ входит в J₁₁</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Ответ 2h₁₁ + J₁₁. Обменный член есть только между спин-орбиталями с одинаковым спином, а 1sα и 1sβ различаются спином — интегрирование по спину его обнуляет.</div></div>
+<div class="tq"><p class="qt"><span>H₂: чему равен ⟨σ<sub>g</sub>²|Ĥ|σ<sub>u</sub>²⟩ и какую роль он играет?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">J₁₂ — энергия отталкивания</button><button type="button" class="opt">Нуль по теореме Бриллюэна</button><button type="button" class="opt" data-ok="1">K₁₂ = (12|12): смешивает σ<sub>g</sub>² и σ<sub>u</sub>² в КВ</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Отличаются две спин-орбитали, ответ K₁₂ = (12|12) — обменный интеграл между σ<sub>g</sub> и σ<sub>u</sub>. Это недиагональный элемент матрицы КВ, который смешивает σ<sub>g</sub>² и σ<sub>u</sub>² и исправляет диссоциацию.</div></div>
+<div class="tq"><p class="qt"><span>Однократное возбуждение 1β → 2β из замкнутой оболочки 1s²: чему равен элемент и почему для ХФ-орбиталей он нулевой?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Это элемент F₁₂, а орбитали ХФ диагонализуют F</button><button type="button" class="opt">Отличаются спины</button><button type="button" class="opt">Интеграл (11|12) всегда равен нулю</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>h₁₂ + (11|12) — это элемент F₁₂ оператора Фока. Хартри–фоковские орбитали диагонализуют F, поэтому F₁₂ = 0: теорема Бриллюэна.</div></div>
+<div class="tq"><p class="qt"><span>|1α 2α 3β| и |3β 1α 4α|: сколько транспозиций и какой знак?</span></p>
+<p class="olab">Число транспозиций</p><div class="opts" role="group"><button type="button" class="opt">0</button><button type="button" class="opt">1</button><button type="button" class="opt">3</button><button type="button" class="opt" data-ok="1">2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Переносим 3β с первого места на третье — две транспозиции, знак +. После этого отличается одна спин-орбиталь: 2α → 4α.</div></div>
+<div class="tq"><p class="qt"><span>|1α 1β 2α| и |1β 1α 2α| — это один и тот же определитель?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Да, полностью совпадают</button><button type="button" class="opt" data-ok="1">Да, с точностью до множителя −1</button><button type="button" class="opt">Нет, это разные функции</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Одна и та же функция с точностью до знака: одна транспозиция даёт множитель −1, и элемент равен −E. Поэтому порядок столбцов нужно фиксировать до расчёта матрицы КВ.</div></div>
+<div class="tq"><p class="qt"><span>Почему ⟨|1α1β||Ĥ||1α2α|⟩ = 0, хотя отличается всего одна спин-орбиталь?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Ĥ меняет спин</button><button type="button" class="opt">Отличаются две спин-орбитали</button><button type="button" class="opt" data-ok="1">Меняется спин, а ⟨β|α⟩ = 0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Замена 1β → 2α меняет спин. Ĥ на спин не действует, интеграл по спину ⟨β|α⟩ = 0. Смешиваются только определители с одинаковым M<sub>S</sub>.</div></div>
+<!--self:start--><div class="selfBox"><h3 id="h3s">Проверьте себя</h3>
+  <p class="small">Программа загадывает два определителя (они появятся в редакторе выше, решение скрыто). Ответьте на два вопроса — потом решение откроется.</p>
+  <div class="row"><button class="btn primary" type="button" id="qNew">Новая задача</button><span class="hint" id="qScore"></span></div>
+  <div id="quiz" style="display:flex;flex-direction:column;gap:10px"></div>
+</div><!--self:end--></div></details></section>
+<script src="js/slater.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="sc";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/slater.js"></script>
+
+</body>
+</html>

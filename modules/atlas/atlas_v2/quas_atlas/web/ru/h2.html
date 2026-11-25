@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Диссоциация H₂: RHF, UHF, КВ</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/h2.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-h2-g.webp"><!--pose:end-->
+<h1>Диссоциация H₂: RHF, UHF и КВ</h1>
+<p class="lead">Настоящий расчёт H₂ в минимальном базисе STO-3G (ζ = 1,24) при каждом межъядерном расстоянии R. Пять способов посчитать одну и ту же молекулу, и чем дальше растягиваем связь, тем сильнее они расходятся. Выберите R ползунком или щелчком по графику.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>RHF при растяжении H₂ держит ионную структуру H⁺H⁻ наравне с ковалентной, и энергия уходит слишком высоко.</li><li>КВ смешивает σ<sub>g</sub>² и σ<sub>u</sub>² и правильно описывает диссоциацию — это статическая корреляция.</li><li>Около равновесия корреляция динамическая, и MP2 даёт большую её часть; на больших R MP2 не работает: он не вариационный.</li><li>UHF получает правильный предел, нарушая спиновую симметрию.</li><li>Ошибку расчёта раскладывают на три части: несошедшийся SCF (на него направлено доведение SCF до сходимости), метод (сравнение с полным КВ в том же базисе) и базис (полное КВ против точной энергии). Разложение имеет смысл при фиксированных условиях: ошибка метода сама зависит от базиса.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> полное КВ — точное решение в данном базисе</summary><dl><dt>Что вычисляется</dt><dd>RHF, UHF, полное КВ, MP2 и триплет для H₂ в минимальном базисе при любом R; разложение ошибки на три части в базисах до 6-31G**.</dd><dt>Какие приближения приняты</dt><dd>Минимальный базис STO-3G (в разделе об ошибках — до 6-31G**); нерелятивистский гамильтониан, Борн–Оппенгеймер.</dd><dt>Какой вывод можно сделать</dt><dd>Качественная картина статической и динамической корреляции верна; энергии в минимальном базисе далеки от точных.</dd></dl></details><!--lim:end-->
+<section class="controls" aria-label="Параметры">
+  <div class="crow"><span class="l">Расстояние R</span><input type="range" id="R" min="0.5" max="8" step="0.05" style="width:300px"><span class="val" id="Rv"></span></div>
+  <div class="crow"><span class="l">Показывать на графике</span><span id="show" role="group" aria-label="Методы на графике"></span></div>
+</section>
+<div class="work">
+  <div class="panel">
+    <div class="ptitle">Полная энергия E(R), ат. ед.</div>
+    <svg id="ech" viewBox="0 0 560 380" role="img" aria-label="Кривые энергии разными методами" style="cursor:pointer"></svg>
+    <div class="legend" id="eleg"></div>
+  </div>
+  <div class="panel">
+    <div class="ptitle" id="atR"></div>
+    <div class="tablewrap"><table class="mtab"><thead><tr><th>Метод</th><th>E</th><th>E − E<sub>КВ</sub></th><th>что это</th></tr></thead><tbody id="etab"></tbody></table></div>
+    <div class="ptitle" style="margin-top:4px">Конфигурационное взаимодействие</div>
+    <div id="ci" style="font-size:14.5px;display:flex;flex-direction:column;gap:6px"></div>
+    <div class="ptitle" style="margin-top:4px">Признаки статической корреляции</div>
+    <div class="tablewrap"><table class="mtab"><thead><tr><th>Признак</th><th>значение</th><th>порог тревоги</th></tr></thead><tbody id="diag"></tbody></table></div>
+  </div>
+</div>
+<div class="status" id="explain" style="font-size:15px"></div>
+<div class="two">
+  <div class="panel">
+    <div class="ptitle">Диагностика вдоль R</div>
+    <svg id="dch" viewBox="0 0 540 250" role="img" aria-label="Коэффициент главной конфигурации, заселённость σu и спиновое загрязнение"></svg>
+    <div class="legend"><span><i class="sw c"></i>c₀ — коэффициент |σ<sub>g</sub>σ̄<sub>g</sub>| в КВ</span><span><i class="sw" style="border-color:var(--mp2)"></i>n(σ<sub>u</sub>) — заселённость натуральной орбитали</span><span><i class="sw" style="border-color:var(--rho-l)"></i>⟨S²⟩ UHF</span><span><i class="sw" style="border-color:var(--muted);border-top-style:dashed"></i>пороги 0,9 и 0,1</span></div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">Орбитали вдоль оси при выбранном R</div>
+    <svg id="och" viewBox="0 0 540 250" role="img" aria-label="Орбитали RHF и UHF"></svg>
+    <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>σ<sub>g</sub> (RHF): оба электрона</span><span><i class="sw" style="border-color:var(--virt);border-top-style:dashed"></i>σ<sub>u</sub></span><span><i class="sw" style="border-color:var(--rho-l)"></i>UHF: орбиталь α</span><span><i class="sw" style="border-color:var(--rho-l);border-top-style:dotted"></i>UHF: орбиталь β</span></div>
+  </div>
+</div>
+<section class="panel" aria-labelledby="hV">
+  <h2 id="hV">Ковалентная и ионная структуры</h2>
+  <p class="hint" style="font-size:14px">Раскроем функции через атомные орбитали A и B. Ковалентная структура A(1)B(2) + B(1)A(2) — по электрону у каждого атома (Гайтлер–Лондон). Ионная A(1)A(2) + B(1)B(2) — оба электрона у одного атома, H⁻H⁺ или H⁺H⁻. λ — отношение их коэффициентов.</p>
+  <div id="vb" style="display:flex;flex-direction:column;gap:8px"></div>
+</section>
+
+<section class="panel" aria-labelledby="hErr">
+  <h2 id="hErr">Три вида ошибок</h2>
+  <p class="hint" style="font-size:14px">При фиксированных R и базисе отклонение от точной энергии раскладывается на три части, и на каждую направлено своё действие. <b>Несошедшийся расчёт</b>: SCF остановлен до сходимости — нужно довести его до сходимости (больше итераций, а при плохой сходимости — DIIS, демпфирование или другое начальное приближение, см. страницу «Итерации SCF»). <b>Ограниченность метода</b>: RHF или MP2 отличаются от полного КВ в том же базисе — нужен метод, лучше учитывающий корреляцию. <b>Ограниченность базиса</b>: даже полное КВ (точное решение в данном базисе) отличается от точной энергии — нужен больший базис. Части не независимы: ошибка метода сама зависит от базиса, поэтому разложение имеет смысл только при выбранных условиях. Энергии посчитаны заранее той же программой HF, MP2 и КВ в гауссовом базисе, что на странице о теории Бейдера; RHF стартует с гамильтониана остова, без ускорения DIIS. Точная энергия при R = 1,4 бор — −1,174475 E<sub>h</sub> (Колос и Вольневич), при R = 10 бор — энергия двух атомов H, −1 E<sub>h</sub>.</p>
+  <div class="crow"><span class="l">Расстояние</span><span class="grp" id="eR" role="group" aria-label="Расстояние"></span></div>
+  <div class="crow"><span class="l">Базис</span><span class="grp" id="eB" role="group" aria-label="Базис"></span></div>
+  <div class="crow"><span class="l">Метод</span><span class="grp" id="eM" role="group" aria-label="Метод"></span></div>
+  <div class="crow"><span class="l">Итерации SCF</span><span class="grp" id="eI" role="group" aria-label="Итерации SCF"></span></div>
+  <div class="tablewrap"><table class="mtab"><thead><tr><th class="l">Величина</th><th>мE<sub>h</sub></th><th>кДж/моль</th><th class="l">на что направлено устранение</th></tr></thead><tbody id="eTab"></tbody></table></div>
+  <div class="status" id="eSt"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">В H₂ корреляция растёт при растяжении связи. Есть ли она в атоме с двумя электронами?</span><a class="nqA" href="helium.html" data-goto="he">Атом гелия →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Растягивайте H₂. Что означает уменьшение веса основной конфигурации c₀ ниже 0,9?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Растёт динамическая корреляция</button><button type="button" class="opt" data-ok="1">Одной конфигурации недостаточно — статическая корреляция</button><button type="button" class="opt">RHF становится точным</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Одной конфигурации уже недостаточно: σ<sub>u</sub>² нужна с большим весом — это статическая корреляция. Это происходит примерно с 3,2 бор (≈ 1,7 Å), то есть при умеренно растянутой связи.</div></div>
+<div class="tq"><p class="qt"><span>Около равновесия (R = 1,4 бор): какую часть энергии корреляции даёт MP2 и почему?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Почти ничего</button><button type="button" class="opt" data-ok="1">Большую часть: корреляция динамическая</button><button type="button" class="opt">Больше 100 %</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Около двух третей (64 % от −0,0206 ат. ед.): у равновесия корреляция динамическая, и теория возмущений с ней справляется.</div></div>
+<div class="tq"><p class="qt"><span>Включите MP2. Почему на больших R энергия MP2 опускается ниже точной?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">MP2 учитывает больше корреляции, чем КВ</button><button type="button" class="opt">Это ошибка базиса</button><button type="button" class="opt" data-ok="1">MP2 не вариационный, а знаменатель стремится к нулю</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>MP2 не вариационный, а знаменатель ε<sub>σu</sub> − ε<sub>σg</sub> при растяжении стремится к нулю, и поправка неограниченно растёт (ниже КВ примерно после 6,6 бор, ниже точного предела −1 E<sub>h</sub> — после 7,6 бор).</div></div>
+<div class="tq"><p class="qt"><span>Чем функция RHF отличается от КВ по коэффициенту ионной структуры H⁺H⁻?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">У RHF ионная и ковалентная структуры всегда входят с равными коэффициентами</button><button type="button" class="opt">У RHF ионной структуры нет вовсе</button><button type="button" class="opt">λ одинаково у обоих методов</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>У RHF ионная и ковалентная структуры всегда входят с равными коэффициентами (λ = 1) при любом R. У КВ при R = 1,4 бор λ ≈ 0,29, а при растяжении λ → 0. λ — отношение коэффициентов, а не вероятность: при конечном R структуры перекрываются.</div></div>
+<div class="tq"><p class="qt"><span>Почему при R = 6 бор энергия UHF становится близкой к энергии триплета?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Синглет и триплет почти вырождены, а функция UHF — их смесь</button><button type="button" class="opt">UHF совпадает с триплетом при любом R</button><button type="button" class="opt">Это погрешность минимального базиса</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>На больших R оба описывают почти независимые атомы H, и синглет с триплетом становятся почти вырожденными. Функция UHF — их смесь (⟨S²⟩ ≈ 1), поэтому её энергия близка к общей. Равенство приближённое: при 6 бор UHF выше КВ на 0,5 кДж/моль и ниже триплета на 0,5 кДж/моль, а при 4 бор отличие от КВ — около 21 кДж/моль.</div></div>
+<div class="tq"><p class="qt"><span>Раздел «Три вида ошибок»: R = 1,4 бор, базис 6-31G**, RHF, 1 итерация. Из чего складывается ошибка? Что уберёт каждый следующий шаг: «до сходимости», затем полное КВ, затем переход к STO-3G?</span></p>
+<p class="olab">Ошибка несошедшегося SCF, мE<sub>h</sub></p><div class="opts" role="group"><button type="button" class="opt">9,3</button><button type="button" class="opt">33,9</button><button type="button" class="opt">105,3</button><button type="button" class="opt" data-ok="1">62,1</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Всего 105,3 мE<sub>h</sub>: несошедшийся SCF — 62,1, метод — 33,9 (энергия корреляции в этом базисе), базис — 9,3. Итерации до сходимости убирают 62,1 мE<sub>h</sub>, полное КВ — ещё 33,9; остаётся ошибка базиса. Переход к STO-3G увеличивает её до 37,2 мE<sub>h</sub>, а ошибка метода RHF в STO-3G меньше — 20,6 мE<sub>h</sub>: части ошибки зависят друг от друга. На каждую часть направлено своё действие.</div></div>
+<div class="tq"><p class="qt"><span>Теперь R = 10 бор, RHF, сошедшийся. Уменьшится ли ошибка метода, если перейти от 6-31G к 6-31G**?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Нет: это ошибка метода, базис её не исправит</button><button type="button" class="opt">Да, примерно вдвое</button><button type="button" class="opt">Да, до нуля</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Нет: около 248 мE<sub>h</sub> (650 кДж/моль) в обоих базисах. Один определитель RHF не может описать два отдельных атома H — это статическая корреляция, и расширение базиса её не устраняет (в STO-3G ошибка даже больше, 337 мE<sub>h</sub>). Нужен метод, учитывающий статическую корреляцию, — здесь полное КВ.</div></div>
+</div></details></section>
+<script src="js/h2.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="h2";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/h2.js"></script>
+
+</body>
+</html>

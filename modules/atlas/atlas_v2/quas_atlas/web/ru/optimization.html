@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Оптимизация геометрии</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/opt.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-opt-g.webp"><!--pose:end-->
+<h1>Оптимизация геометрии</h1>
+<p class="lead">Почти любой квантово-химический расчёт начинается с поиска равновесной геометрии — минимума на поверхности потенциальной энергии. Программа знает энергию и её градиент в текущей точке и шаг за шагом движется к точке, где градиент равен нулю. Здесь эта задача решается для настоящей поверхности: энергия молекулы H₂O, посчитанная методом HF/6-31G* на сетке длин связей r и углов θ (обе связи O–H равны, симметрия C<sub>2v</sub>). Сравните, сколько шагов нужно разным алгоритмам.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Оптимизация ищет точку, где градиент энергии равен нулю; минимум это или седло, решает гессиан.</li><li>Наискорейший спуск медленен в вытянутых долинах: устойчивую длину шага ограничивает самая жёсткая мода.</li><li>Метод Ньютона сходится за несколько шагов, но требует гессиана; квазиньютоновский BFGS строит его из градиентов — стандарт в программах.</li><li>После оптимизации считают частоты: все вещественные — минимум, одна мнимая — переходное состояние.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> HF/6-31G* для H₂O, только симметричные структуры</summary><dl><dt>Что вычисляется</dt><dd>Пути четырёх алгоритмов оптимизации и гессиан 2 × 2 на сетке энергий H₂O.</dd><dt>Какие приближения приняты</dt><dd>Метод HF без корреляции, базис 6-31G*; энергия интерполирована по сетке; обе связи O–H равны.</dd><dt>Какой вывод можно сделать</dt><dd>Сравнение алгоритмов надёжно; минимум доказан только на карте — третью моду проверяет страница «Проверка расчётов».</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Четыре алгоритма на одной поверхности</h2>
+  <p class="small">Линии — уровни энергии над минимумом (кДж/моль). Щёлкните по карте, чтобы выбрать стартовую геометрию. Оптимизация идёт во внутренних координатах r (бор) и θ (радианы); сходимость — когда длина градиента меньше 10⁻⁵ E<sub>h</sub> на единицу координаты.</p>
+  <div class="crow"><span class="l">Алгоритм</span><span class="grp" id="mG" role="group" aria-label="Алгоритм"></span></div>
+  <div class="crow" id="stepRow"><span class="l">Длина шага α</span><input type="range" id="step" min="0.1" max="2" step="0.05" style="width:240px" aria-label="Длина шага наискорейшего спуска"><span class="val" id="stepV"></span></div>
+  <div class="crow"><span class="l">Ход оптимизации</span><span class="row"><button class="btn" type="button" id="bStep">Шаг</button><button class="btn" type="button" id="bRun">До сходимости</button><button class="btn" type="button" id="bReset">Сначала</button><span class="val" id="kV"></span></span></div>
+  <div class="two">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="ptitle">Поверхность E(r, θ) H₂O, HF/6-31G*: изолинии 1, 2, 5, 10, 20, 50, 100, 200 кДж/моль над минимумом (+)</div>
+      <svg id="map" viewBox="0 0 540 440" role="img" aria-label="Карта поверхности потенциальной энергии и путь оптимизации"></svg>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="ptitle">Длина градиента |g| по шагам (логарифмическая шкала)</div>
+      <svg id="cv" viewBox="0 0 520 250" role="img" aria-label="Сходимость по шагам"></svg>
+      <div class="ptitle">Все алгоритмы с той же стартовой точки</div>
+      <div class="tablewrap" id="cmp"></div>
+    </div>
+  </div>
+  <div class="status" id="st1"></div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. Что найдено: минимум и частоты</h2>
+  <p class="small">Нулевой градиент бывает и в седловой точке, поэтому найденную точку проверяют матрицей вторых производных (гессианом). В минимуме все её собственные значения положительны. Из гессиана и масс атомов получаются гармонические частоты колебаний — это и есть «расчёт частот», который ставят после каждой оптимизации.</p>
+  <div class="tablewrap" id="res"></div>
+  <div class="status" id="st2"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Программа нашла минимум и частоты. Как убедиться, что программа считает правильно?</span><a class="nqA" href="validation.html" data-goto="val">Проверка расчётов →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Наискорейший спуск, α = 0,5: почему путь сначала идёт почти поперёк долины, а потом медленно ползёт вдоль неё?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Кривизна по r намного больше, чем по θ</button><button type="button" class="opt">Градиент всегда направлен на минимум</button><button type="button" class="opt">Алгоритм сначала оптимизирует только r</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Градиент перпендикулярен изолиниям, а они вытянуты: кривизна по r (≈ 1,2 E<sub>h</sub>/бор²) примерно в 6 раз больше, чем по θ (≈ 0,19 E<sub>h</sub>/рад²). Поэтому длина связи исправляется быстро, а угол — медленно.</div></div>
+<div class="tq"><p class="qt"><span>Увеличивайте α у наискорейшего спуска. Что происходит при α ≈ 1,6–2?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Колебания поперёк долины нарастают: шаг слишком велик для жёсткой моды</button><button type="button" class="opt">Сходимость всё быстрее</button><button type="button" class="opt">Ничего не меняется</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Шаг становится больше 2/λ<sub>max</sub> ≈ 1,65: вдоль жёсткого направления (растяжение связи) каждый шаг перелетает минимум всё дальше, путь раскачивается. Устойчивую длину шага ограничивает самая жёсткая мода.</div></div>
+<div class="tq"><p class="qt"><span>Сравните в таблице спуск с поиском по линии и BFGS. Почему поиск по линии невыгоден, хотя шагов у него немного?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Каждый шаг требует многих вычислений энергии</button><button type="button" class="opt">Он находит другой минимум</button><button type="button" class="opt">Он вообще не сходится</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Каждый шаг требует десятков вычислений энергии, чтобы найти минимум вдоль направления, а в настоящем расчёте каждое вычисление — это полный расчёт SCF. BFGS делает мало шагов и почти не тратит лишних энергий.</div></div>
+<div class="tq"><p class="qt"><span>Ньютон–Рафсон сходится за 3–4 шага. Почему программы по умолчанию используют BFGS?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Точный гессиан слишком дорог</button><button type="button" class="opt">Ньютон всегда приходит в седловую точку</button><button type="button" class="opt">BFGS находит более точный минимум</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Шаг Ньютона требует точного гессиана — вторых производных энергии, а они стоят как десятки градиентов. BFGS строит приближённый гессиан из уже посчитанных градиентов и почти не уступает по числу шагов.</div></div>
+<div class="tq"><p class="qt"><span>Как проверить, что найденная точка — минимум, а не переходное состояние?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Все собственные значения гессиана положительны</button><button type="button" class="opt">Градиент равен нулю</button><button type="button" class="opt">Энергия ниже стартовой</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>По гессиану: в минимуме все его собственные значения положительны, то есть все частоты вещественные. В переходном состоянии одно значение отрицательно — одна мнимая частота.</div></div>
+<div class="tq"><p class="qt"><span>Почему гармонические частоты HF/6-31G* для H₂O завышены примерно на 10 %?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Поверхность HF без корреляции слишком крутая, плюс ангармоничность</button><button type="button" class="opt">Ошибка численного дифференцирования</button><button type="button" class="opt">Атомы H слишком лёгкие</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Без корреляции поверхность HF круче настоящей, а связь короче. Кроме того, наблюдаемые частоты ниже гармонических из-за ангармоничности. Поэтому частоты HF умножают на масштабный множитель ≈ 0,9.</div></div>
+<div class="tq"><p class="qt"><span>Алгоритм сошёлся, оба собственных значения гессиана на карте положительны. Можно ли утверждать, что найден самый низкий минимум H₂O?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">По этим данным определить нельзя</button><button type="button" class="opt">Да: положительный гессиан доказывает глобальный минимум</button><button type="button" class="opt">Нет: нужен отрицательный гессиан</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>По этим данным определить нельзя. Карта проверяет только симметричные структуры, поэтому сначала нужно проверить антисимметричное колебание (его делает страница «Проверка расчётов»). И даже настоящий минимум может быть локальным: о других минимумах локальный гессиан ничего не говорит. Для H₂O другого минимума нет, но это знание о молекуле, а не вывод из расчёта.</div></div>
+</div></details></section>
+<script src="js/optimization.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="opt";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/optimization.js"></script>
+
+</body>
+</html>

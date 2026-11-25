@@ -1,0 +1,19 @@
+# Teaching example for Azimuth (2026-10-24); cell parameters are rounded textbook values, not a measurement. No symmetry operations: all four atoms of the cell are listed (P1).
+data_graphite
+_chemical_name_common graphite
+_cell_length_a 2.464
+_cell_length_b 2.464
+_cell_length_c 6.711
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 120
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+C1 C 0 0 0.25
+C2 C 0 0 0.75
+C3 C 0.33333 0.66667 0.25
+C4 C 0.66667 0.33333 0.75

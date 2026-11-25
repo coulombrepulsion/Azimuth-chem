@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>重元素：相对论效应与赝势</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-rel-g.webp"><!--pose:end-->
+<h1>重元素：相对论效应与赝势</h1>
+<p class="lead">薛定谔方程不包含相对论，对轻原子这并不明显。但重原子的内层电子运动速度可与光速相比：其质量增大，s 壳层收缩，化学性质随之改变——金的颜色、液态汞、铅酸电池的工作。计算中有两种处理方式：用赝势代替内层电子，或采用相对论哈密顿量。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>类氢原子 1s 电子的平均速度为 Z 个原子单位，即 v/c = Z/137：金为光速的 0.58。</li><li>质量增大为 γ = 1/√(1 − v²/c²) 倍，s 轨道收缩：金的 1s 小 18%，价层 6s 也收缩并被稳定。</li><li>赝势（ECP）用拟合自相对论原子计算的势代替内层电子：在 def2 中，Rb–Xe 为 28 个电子，Cs–La 为 46 个，Hf–Rn 为 60 个。</li><li>不用 ECP 时，相对论效应通过哈密顿量引入（DKH2、ZORA、X2C），需配专门的全电子基组，例如 ORCA 中的 DKH-def2 或 ZORA-def2。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b> 类氢 1s 电子，点核</summary><dl><dt>计算的是什么</dt><dd>核电荷 Z 场中单个 1s 电子的速度、质量增大、半径收缩和狄拉克能级；def2 赝势核芯的大小。</dd><dt>采用了哪些近似</dt><dd>单电子，无其他电子的屏蔽；点核；半径 ∝ 1/m（玻尔估计）；多电子原子的价层仅作定性描述。</dd><dt>能得出什么结论</dt><dd>为什么相对论对重元素重要、赝势起什么作用——可以；价层和化学性质上的效应大小只能由带 ECP 或相对论哈密顿量的计算给出。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">重原子的 1s 电子</h2>
+  <div class="crow"><span class="l">元素</span><span class="grp" id="zG" role="group" aria-label="元素"></span></div>
+  <div class="crow"><span class="l">核电荷 Z</span><input type="range" id="Z" min="1" max="118" step="1" value="79" aria-label="核电荷"><span class="val" id="Zv"></span></div>
+  <div class="cards" id="acards"></div>
+  <p class="status" id="aNote"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">贯穿周期表的收缩</h2>
+  <svg id="rchart" class="ch" viewBox="0 0 960 280" role="img" aria-label="1s 收缩与核电荷"></svg>
+  <p class="hint">r(相对论)/r(非相对论) = √(1 − (Z/137)²)：Z ≈ 30 以下效应小于 5%，第六周期从 8%（Cs）到 22%（Rn）。1s 的狄拉克能量：E = c²(√(1 − (Z/c)²) − 1)，薛定谔能量 −Z²/2 E<sub>h</sub>。</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">def2 赝势</h2>
+  <div class="crow"><span class="l">元素</span><span class="grp" id="eG" role="group" aria-label="元素"></span></div>
+  <div class="cards" id="ecards"></div>
+  <p class="status" id="eNote"></p>
+  <table class="tbl"><tr><th>方法</th><th>作用</th><th>设置方式（ORCA）</th></tr>
+  <tr><td>ECP + def2</td><td>核芯为势，价电子显式处理；已包含标量相对论效应</td><td><span class="code">! B3LYP D3BJ def2-TZVP</span></td></tr>
+  <tr><td>DKH2</td><td>全电子，二阶 Douglas–Kroll–Hess 相对论哈密顿量</td><td><span class="code">! DKH DKH-def2-TZVP SARC/J</span></td></tr>
+  <tr><td>ZORA</td><td>全电子，零阶正规近似</td><td><span class="code">! ZORA ZORA-def2-TZVP SARC/J</span></td></tr>
+  <tr><td>X2C</td><td>全电子，精确二分量变换</td><td><span class="code">! X2C x2c-TZVPall</span></td></tr></table>
+  <p class="hint">关键词依据 ORCA 6 手册；在 Gaussian 中 def2 赝势随 Def2TZVP 基组一起加入，DKH2 用 Int=DKH。对 4d–5d 金属和卤素 I、At，ECP 通常已足够；自旋–轨道效应（例如重 p 区元素）需要二分量计算。基组 DKH-def2 和 ZORA-def2 只有 H–Kr：重原子的基组需单独指定，例如金用 <span class="code">%basis NewGTO Au "SARC-ZORA-TZVP" end end</span>（DKH 用 SARC-DKH-TZVP）；x2c-TZVPall 覆盖 H–Rn。</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">赝势与价电子基组配套使用。基组是如何构成的，需要多少函数？</span><a class="nqA" href="basis.html" data-goto="basis">基组 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>选择金（Z = 79）。1s 电子以光速的多少运动？</span></p>
+<p class="olab">v/c</p><div class="opts" role="group"><button type="button" class="opt">0.08</button><button type="button" class="opt">0.25</button><button type="button" class="opt" data-ok="1">0.58</button><button type="button" class="opt">0.99</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>0.58：v/c = Z/137 = 79/137。此时质量增大 γ = 1.22 倍。</div></div>
+<div class="tq"><p class="qt"><span>金的 1s 半径比非相对论值小百分之几？</span></p>
+<p class="olab">收缩，%</p><div class="opts" role="group"><button type="button" class="opt">2</button><button type="button" class="opt">8</button><button type="button" class="opt" data-ok="1">18</button><button type="button" class="opt">42</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>小 18%：√(1 − 0.58²) = 0.82。价层 6s 也收缩——它更靠近核、对电子束缚更紧，这就是金“贵”的原因。</div></div>
+<div class="tq"><p class="qt"><span>def2 基组中的金：赝势中有多少电子，显式处理多少？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">28 和 51</button><button type="button" class="opt">46 和 33</button><button type="button" class="opt" data-ok="1">60 和 19</button><button type="button" class="opt">0 和 79</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>核芯 60 个（1s–4f），显式 19 个（5s、5p、5d、6s）：Hf–Rn 的 Stuttgart–Cologne 赝势。</div></div>
+<div class="tq"><p class="qt"><span>def2-TZVP 中的溴（Z = 35）——用不用赝势？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">含 10 个电子的 ECP</button><button type="button" class="opt">含 28 个电子的 ECP</button><button type="button" class="opt" data-ok="1">不用 ECP，全电子</button><button type="button" class="opt">需要 DKH2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>不用 ECP：def2 中 Kr 及之前的元素都是全电子的。赝势从铷开始（核芯 28 个电子）。</div></div>
+</div></details></section>
+<script src="js/relativity.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="rel";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/relativity.js"></script>
+
+</body>
+</html>

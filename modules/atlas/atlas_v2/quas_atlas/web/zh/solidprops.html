@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>晶体的性质：压缩、声子与热容</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>晶体的性质：压缩、声子与热容</h1>
+<p class="lead">由晶体在不同体积下的总能量可得平衡晶格常数和体模量；由能量对原子位移的二阶导数可得声子；由声子可得热容和热化学量。这里可以看到每个量是如何构成的，以及什么会破坏它的计算。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>状态方程 E(V)：用 Birch–Murnaghan 公式拟合不同体积下的一系列计算，得到 V₀、体模量 B₀ = V·d²E/dV² 及其对压力的导数 B₀′。</li><li>B₀ 需要精确的能量：体积范围 ±5–10 %，k 点和 E<sub>cut</sub> 收敛良好。范围窄时几 meV 的噪声就会使 B₀′ 失去意义。</li><li>声子是波矢为 q 的晶格振动。每个晶胞两个原子时有声学支（在 Γ 点 ω → 0）和光学支；两者之间的带隙随质量差增大而变宽。</li><li>热容：T ≪ θ<sub>D</sub> 时 C<sub>v</sub> ∝ T³（德拜模型），T ≳ θ<sub>D</sub> 时为每摩尔原子 3R（杜隆–珀蒂定律）。单一频率的爱因斯坦模型在低温下低估 C<sub>v</sub>。</li><li>Quantum ESPRESSO 中：E(V)——一系列 pw.x 与 ev.x（或 vc-relax）；声子——ph.x、q2r.x 与 matdyn.x；由声子 DOS 得到晶体的热容与熵。</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">状态方程与体模量</h2>
+  <div class="crow"><span class="l">物质</span><span class="grp" id="eG" role="group" aria-label="物质"></span></div>
+  <div class="crow"><span class="l">体积范围 ±，%</span><input type="range" id="sp" min="1" max="20" step="0.5" value="6" aria-label="范围"><span class="val" id="spv"></span></div>
+  <div class="crow"><span class="l">计算次数</span><input type="range" id="np" min="4" max="15" step="1" value="7" aria-label="点数"><span class="val" id="npv"></span></div>
+  <div class="crow"><span class="l">能量噪声，meV</span><input type="range" id="nz" min="0" max="20" step="0.5" value="0" aria-label="噪声"><span class="val" id="nzv"></span></div>
+  <svg id="echart" class="ch" viewBox="0 0 960 300" role="img" aria-label="能量随体积的变化"></svg>
+  <div class="legend" id="eleg"></div>
+  <div class="cards" id="ecards"></div>
+  <p class="status" id="eNote"></p>
+  <p class="hint">E(V) = E₀ + (9V₀B₀/16)·{[(V₀/V)<sup>2/3</sup> − 1]³B₀′ + [(V₀/V)<sup>2/3</sup> − 1]²[6 − 4(V₀/V)<sup>2/3</sup>]}。“计算”是参考曲线上的点，加上至多 ± 噪声的偏移（如同收敛不足）。1 eV/Å³ = 160.2 GPa。参考 B₀ 取自 Kittel。</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">双原子链的声子</h2>
+  <div class="crow"><span class="l">原子 1 质量，amu</span><input type="range" id="m1" min="1" max="200" step="0.1" value="24.3" aria-label="m1"><span class="val" id="m1v"></span></div>
+  <div class="crow"><span class="l">原子 2 质量，amu</span><input type="range" id="m2" min="1" max="200" step="0.1" value="16" aria-label="m2"><span class="val" id="m2v"></span></div>
+  <div class="crow"><span class="l">键的劲度 C，N/m</span><input type="range" id="cc" min="5" max="200" step="1" value="60" aria-label="C"><span class="val" id="ccv"></span></div>
+  <svg id="pchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="声子色散"></svg>
+  <div class="legend" id="pleg"></div>
+  <div class="cards" id="pcards"></div>
+  <p class="status" id="phNote"></p>
+  <p class="hint">ω² = C(1/m₁ + 1/m₂) ∓ C·√[(1/m₁ + 1/m₂)² − 4 sin²(qa/2)/(m₁m₂)]。区边界处各支的边缘：√(2C/m<sub>重</sub>) 与 √(2C/m<sub>轻</sub>)，Γ 点光学支为 √(2C(1/m₁ + 1/m₂))。质量 24.3 与 16 对应 Mg 与 O。</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">热容：德拜与爱因斯坦</h2>
+  <div class="crow"><span class="l">物质</span><span class="grp" id="cG" role="group" aria-label="物质"></span></div>
+  <div class="crow"><span class="l">温度，K</span><input type="range" id="tt" min="5" max="1500" step="5" value="300" aria-label="T"><span class="val" id="ttv"></span></div>
+  <svg id="cchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="热容随温度的变化"></svg>
+  <div class="legend" id="cleg"></div>
+  <div class="cards" id="ccards"></div>
+  <p class="status" id="cNote"></p>
+  <p class="hint">德拜：C<sub>v</sub>/3R = 3(T/θ<sub>D</sub>)³∫₀<sup>θ<sub>D</sub>/T</sup> x⁴eˣ/(eˣ − 1)² dx；爱因斯坦：C<sub>v</sub>/3R = (θ<sub>E</sub>/T)²e<sup>θ<sub>E</sub>/T</sup>/(e<sup>θ<sub>E</sub>/T</sup> − 1)²，θ<sub>E</sub> = 0.806·θ<sub>D</sub>；T³ 定律：C<sub>v</sub>/3R = (4π⁴/5)(T/θ<sub>D</sub>)³。德拜温度取自 Kittel。</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">声子给出晶体的熵和零点振动。那么如何由振动频率得到分子的焓和吉布斯自由能？</span><a class="nqA" href="thermochemistry.html" data-goto="thermo">由频率计算热化学量 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Si，范围 ±1 %，7 次计算，噪声 5 meV。拟合还能合理地求出哪个量？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">V₀</button><button type="button" class="opt">B₀</button><button type="button" class="opt">B₀′</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>V₀：即使点有噪声，也能看出极小值的位置（19.92 Å³，参考值 20.02）。但范围边缘的能量只变化约 0.6 meV——小于噪声，B₀ 会达到数千 GPa。要求 B₀ 需要 ±5–10 % 的范围或更小的噪声。</div></div>
+<div class="tq"><p class="qt"><span>质量为 40 和 10 amu、C = 50 N/m 的原子链。两支之间的带隙有多宽？</span></p>
+<p class="olab">带隙，cm⁻¹</p><div class="opts" role="group"><button type="button" class="opt">0</button><button type="button" class="opt">46</button><button type="button" class="opt" data-ok="1">206</button><button type="button" class="opt">412</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>206 cm⁻¹：声学支顶部 √(2C/m<sub>重</sub>) = 206 cm⁻¹，光学支底部 √(2C/m<sub>轻</sub>) = 412 cm⁻¹——高一倍，因为质量相差四倍。</div></div>
+<div class="tq"><p class="qt"><span>在 Γ 点的光学支中原子如何运动？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">两类原子相向运动</button><button type="button" class="opt">整个晶体平移</button><button type="button" class="opt">只有重原子振动</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>相向运动：晶胞的质心保持不动。整体平移是 Γ 点的声学支（ω = 0）。只有重原子振动的是区边界处的声学支。</div></div>
+<div class="tq"><p class="qt"><span>金刚石（θ<sub>D</sub> = 2230 K）在 300 K。C<sub>v</sub>/3R 约为多少？</span></p>
+<p class="olab">C<sub>v</sub>/3R</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">0.17</button><button type="button" class="opt">0.5</button><button type="button" class="opt">0.94</button><button type="button" class="opt">1.0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>≈ 0.17：室温远低于 θ<sub>D</sub>，金刚石的大部分振动被“冻结”。铜（θ<sub>D</sub> = 343 K）在同一温度下几乎达到杜隆–珀蒂极限：0.94。</div></div>
+</div></details></section>
+<script src="js/solidprops.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="solidprops";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/solidprops.js"></script>
+
+</body>
+</html>

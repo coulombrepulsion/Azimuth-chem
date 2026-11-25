@@ -1,0 +1,350 @@
+ ----------------   CP     1,     Type (3,-3)   ----------------
+ Corresponding nucleus:     3(H )
+ Position (Bohr):       -0.000000000000   -1.368897194617   -0.808799388810
+ Position (Angstrom):   -0.000000000000   -0.724389199460   -0.427998204751
+ Density of all electrons:  0.3710659058E+00
+ Density of Alpha electrons:  0.1855329529E+00
+ Density of Beta electrons:  0.1855329529E+00
+ Spin density of electrons:  0.0000000000E+00
+ Lagrangian kinetic energy G(r):  0.2386350030E-01
+ G(r) in X,Y,Z:  0.7778722303E-02  0.8588642201E-02  0.7496135796E-02
+ Hamiltonian kinetic energy K(r):  0.1401038019E+01
+ Potential energy density V(r): -0.1424901519E+01
+ Energy density E(r) or H(r): -0.1401038019E+01
+ Laplacian of electron density: -0.5508698073E+01
+ Electron localization function (ELF):  0.9981205051E+00
+ Localized orbital locator (LOL):  0.9584274760E+00
+ Local information entropy:  0.1222276504E+00
+ Interaction region indicator (IRI):  0.4526152879E-16
+ Reduced density gradient (RDG):  0.1000000000E+03
+ Reduced density gradient with promolecular approximation:  0.1000000000E+03
+ Sign(lambda2)*rho: -0.3710659058E+00
+ Sign(lambda2)*rho with promolecular approximation: -0.2495120711E+00
+ Corr. hole for alpha, ref.:   0.00000   0.00000   0.00000 : -0.1368600590E-02
+ Source function, ref.:   0.00000   0.00000   0.00000 :  0.2757068017E+00
+ Wavefunction value for orbital       1 : -0.8394152277E-03
+ Average local ionization energy (ALIE):  0.6855081778E+00
+ van der Waals potential (probe atom: C ):  0.1346913156E+19 kcal/mol
+ Delta-g (under promolecular approximation):  0.2730858624E+00
+ Delta-g (under Hirshfeld partition):  0.5149945928E+00
+ User-defined real space function:  0.1000000000E+01
+ ESP from nuclear charges:  0.1145042904E+02
+ ESP from electrons: -0.6050358344E+01
+ Total ESP:  0.5400070701E+01 a.u. ( 0.1469434E+03 eV, 0.3388598E+04 kcal/mol)
+
+ Note: Below information is for electron density
+
+ Components of gradient in x/y/z are:
+  0.2679339681E-31  0.1407102743E-16 -0.5774616774E-17
+ Norm of gradient is:  0.1520986560E-16
+
+ Components of Laplacian in x/y/z are:
+ -0.2189483636E+01 -0.1494298403E+01 -0.1824916034E+01
+ Total: -0.5508698073E+01
+
+ Hessian matrix:
+ -0.2189483636E+01  0.8680112581E-16  0.6303106533E-16
+  0.8680112581E-16 -0.1494298403E+01  0.5186397549E+00
+  0.6303106533E-16  0.5186397549E+00 -0.1824916034E+01
+ Eigenvalues of Hessian: -0.2203954718E+01 -0.2189483636E+01 -0.1115259720E+01
+ Eigenvectors (columns) of Hessian:
+ -0.7170963267E-16  0.1000000000E+01  0.9812050305E-16
+ -0.5900497813E+00 -0.1215314961E-15  0.8073668656E+00
+  0.8073668656E+00  0.0000000000E+00  0.5900497813E+00
+ Determinant of Hessian: -0.5381711192E+01
+ Ellipticity of electron density:    0.006609
+ eta index:   -1.976181
+ Stiffness:   -1.963205
+
+ Stress tensor:
+ -0.5629283535E+00  0.2508959740E-16  0.1838465157E-16
+  0.2508959740E-16 -0.3907518852E+00  0.1239842526E+00
+  0.1838465157E-16  0.1239842526E+00 -0.4712212802E+00
+ Eigenvalues of stress tensor: -0.5629283535E+00 -0.5613358281E+00 -0.3006373373E+00
+ Eigenvectors (columns) of stress tensor:
+  0.1000000000E+01 -0.8718004134E-16  0.1199468068E-15
+ -0.1482821502E-15 -0.5879334851E+00  0.8089092762E+00
+  0.0000000000E+00  0.8089092762E+00  0.5879334851E+00
+ Stress tensor stiffness:    1.872450
+ Stress tensor polarizability:    0.534060
+
+ ----------------   CP     2,     Type (3,-3)   ----------------
+ Corresponding nucleus:     1(O )
+ Position (Bohr):        0.000000000000   -0.000000000000    0.225079225844
+ Position (Angstrom):    0.000000000000   -0.000000000000    0.119106796965
+ Density of all electrons:  0.1933531606E+03
+ Density of Alpha electrons:  0.9667658030E+02
+ Density of Beta electrons:  0.9667658030E+02
+ Spin density of electrons:  0.0000000000E+00
+ Lagrangian kinetic energy G(r):  0.1698142360E+02
+ G(r) in X,Y,Z:  0.8386358546E+01  0.3305774320E+01  0.5289290733E+01
+ Hamiltonian kinetic energy K(r):  0.4006729395E+05
+ Potential energy density V(r): -0.4008427538E+05
+ Energy density E(r) or H(r): -0.4006729395E+05
+ Laplacian of electron density: -0.1602012501E+06
+ Electron localization function (ELF):  0.9999991632E+00
+ Localized orbital locator (LOL):  0.9990860489E+00
+ Local information entropy: -0.5726991596E+02
+ Interaction region indicator (IRI):  0.1371219534E-14
+ Reduced density gradient (RDG):  0.1000000000E+03
+ Reduced density gradient with promolecular approximation:  0.1000000000E+03
+ Sign(lambda2)*rho: -0.1933531606E+03
+ Sign(lambda2)*rho with promolecular approximation: -0.2919650169E+03
+ Corr. hole for alpha, ref.:   0.00000   0.00000   0.00000 : -0.9256423043E+02
+ Source function, ref.:   0.00000   0.00000   0.00000 :  0.5663965821E+05
+ Wavefunction value for orbital       1 :  0.9597435906E+01
+ Average local ionization energy (ALIE):  0.1934080531E+02
+ van der Waals potential (probe atom: C ):  0.1066390475E+58 kcal/mol
+ Delta-g (under promolecular approximation):  0.4844777491E-01
+ Delta-g (under Hirshfeld partition):  0.4150897090E-01
+ User-defined real space function:  0.1000000000E+01
+ ESP from nuclear charges:  0.8051867199E+05
+ ESP from electrons: -0.2312437908E+02
+ Total ESP:  0.8049554761E+05 a.u. ( 0.2190395E+07 eV, 0.5051176E+08 kcal/mol)
+
+ Note: Below information is for electron density
+
+ Components of gradient in x/y/z are:
+  0.5787270335E-32 -0.1057335691E-16 -0.4488419024E-12
+ Norm of gradient is:  0.4488419026E-12
+
+ Components of Laplacian in x/y/z are:
+ -0.5338949363E+05 -0.5340992503E+05 -0.5340183145E+05
+ Total: -0.1602012501E+06
+
+ Hessian matrix:
+ -0.5338949363E+05  0.2496393687E-16  0.2278441017E-16
+  0.2496393687E-16 -0.5340992503E+05 -0.7554491215E-17
+  0.2278441017E-16 -0.7554491215E-17 -0.5340183145E+05
+ Eigenvalues of Hessian: -0.5340992503E+05 -0.5340183145E+05 -0.5338949363E+05
+ Eigenvectors (columns) of Hessian:
+  0.6354964502E-12  0.0000000000E+00 -0.1000000000E+01
+ -0.1000000000E+01  0.0000000000E+00 -0.6354918790E-12
+  0.0000000000E+00  0.1000000000E+01 -0.0000000000E+00
+ Determinant of Hessian: -0.1522768631E+15
+ Ellipticity of electron density:    0.000152
+ eta index:   -1.000383
+ Stiffness:   -1.000231
+
+ Stress tensor:
+ -0.1336414612E+05 -0.9580240960E-17 -0.8261922985E-17
+ -0.9580240960E-17 -0.1335909281E+05  0.1010758980E-17
+ -0.8261922985E-17  0.1010758980E-17 -0.1336103644E+05
+ Eigenvalues of stress tensor: -0.1336414612E+05 -0.1336103644E+05 -0.1335909281E+05
+ Eigenvectors (columns) of stress tensor:
+  0.1000000000E+01  0.0000000000E+00  0.9132093187E-13
+  0.9148755188E-13  0.0000000000E+00 -0.1000000000E+01
+  0.0000000000E+00  0.1000000000E+01  0.0000000000E+00
+ Stress tensor stiffness:    1.000378
+ Stress tensor polarizability:    0.999622
+
+ ----------------   CP     3,     Type (3,-3)   ----------------
+ Corresponding nucleus:     2(H )
+ Position (Bohr):        0.000000000000    1.368897194617   -0.808799388810
+ Position (Angstrom):    0.000000000000    0.724389199460   -0.427998204751
+ Density of all electrons:  0.3710659058E+00
+ Density of Alpha electrons:  0.1855329529E+00
+ Density of Beta electrons:  0.1855329529E+00
+ Spin density of electrons:  0.0000000000E+00
+ Lagrangian kinetic energy G(r):  0.2386350030E-01
+ G(r) in X,Y,Z:  0.7778722303E-02  0.8588642201E-02  0.7496135796E-02
+ Hamiltonian kinetic energy K(r):  0.1401038019E+01
+ Potential energy density V(r): -0.1424901519E+01
+ Energy density E(r) or H(r): -0.1401038019E+01
+ Laplacian of electron density: -0.5508698073E+01
+ Electron localization function (ELF):  0.9981205051E+00
+ Localized orbital locator (LOL):  0.9584274760E+00
+ Local information entropy:  0.1222276504E+00
+ Interaction region indicator (IRI):  0.5305913962E-16
+ Reduced density gradient (RDG):  0.1000000000E+03
+ Reduced density gradient with promolecular approximation:  0.1000000000E+03
+ Sign(lambda2)*rho: -0.3710659058E+00
+ Sign(lambda2)*rho with promolecular approximation: -0.2495120711E+00
+ Corr. hole for alpha, ref.:   0.00000   0.00000   0.00000 : -0.1368600590E-02
+ Source function, ref.:   0.00000   0.00000   0.00000 :  0.2757068017E+00
+ Wavefunction value for orbital       1 : -0.8394152277E-03
+ Average local ionization energy (ALIE):  0.6855081778E+00
+ van der Waals potential (probe atom: C ):  0.1346913156E+19 kcal/mol
+ Delta-g (under promolecular approximation):  0.2730858624E+00
+ Delta-g (under Hirshfeld partition):  0.5149945928E+00
+ User-defined real space function:  0.1000000000E+01
+ ESP from nuclear charges:  0.1145042904E+02
+ ESP from electrons: -0.6050358344E+01
+ Total ESP:  0.5400070701E+01 a.u. ( 0.1469434E+03 eV, 0.3388598E+04 kcal/mol)
+
+ Note: Below information is for electron density
+
+ Components of gradient in x/y/z are:
+  0.2815824207E-33 -0.1628633024E-16  0.7257526689E-17
+ Norm of gradient is:  0.1783020601E-16
+
+ Components of Laplacian in x/y/z are:
+ -0.2189483636E+01 -0.1494298403E+01 -0.1824916034E+01
+ Total: -0.5508698073E+01
+
+ Hessian matrix:
+ -0.2189483636E+01 -0.5980911912E-18  0.2700253360E-18
+ -0.5980911912E-18 -0.1494298403E+01 -0.5186397549E+00
+  0.2700253360E-18 -0.5186397549E+00 -0.1824916034E+01
+ Eigenvalues of Hessian: -0.2203954718E+01 -0.2189483636E+01 -0.1115259720E+01
+ Eigenvectors (columns) of Hessian:
+ -0.3072043532E-18  0.1000000000E+01 -0.4203486275E-18
+  0.5900497813E+00  0.5206414152E-18  0.8073668656E+00
+  0.8073668656E+00  0.0000000000E+00 -0.5900497813E+00
+ Determinant of Hessian: -0.5381711192E+01
+ Ellipticity of electron density:    0.006609
+ eta index:   -1.976181
+ Stiffness:   -1.963205
+
+ Stress tensor:
+ -0.5629283535E+00 -0.2527102132E-18 -0.7104114958E-20
+ -0.2527102132E-18 -0.3907518852E+00 -0.1239842526E+00
+ -0.7104114958E-20 -0.1239842526E+00 -0.4712212802E+00
+ Eigenvalues of stress tensor: -0.5629283535E+00 -0.5613358281E+00 -0.3006373373E+00
+ Eigenvectors (columns) of stress tensor:
+  0.1000000000E+01  0.3368772225E-19  0.4634930943E-19
+ -0.5729852629E-19  0.5879334851E+00  0.8089092762E+00
+  0.0000000000E+00  0.8089092762E+00 -0.5879334851E+00
+ Stress tensor stiffness:    1.872450
+ Stress tensor polarizability:    0.534060
+
+ ----------------   CP     4,     Type (3,-1)   ----------------
+ Connected atoms:     3(H   --     1(O 
+ Position (Bohr):       -0.000000000000   -1.101593831841   -0.613548280650
+ Position (Angstrom):   -0.000000000000   -0.582938351481   -0.324675767909
+ Density of all electrons:  0.3515442357E+00
+ Density of Alpha electrons:  0.1757721178E+00
+ Density of Beta electrons:  0.1757721178E+00
+ Spin density of electrons:  0.0000000000E+00
+ Lagrangian kinetic energy G(r):  0.8952059733E-01
+ G(r) in X,Y,Z:  0.3706888636E-01  0.2571365896E-01  0.2673805201E-01
+ Hamiltonian kinetic energy K(r):  0.5722588084E+00
+ Potential energy density V(r): -0.6617794058E+00
+ Energy density E(r) or H(r): -0.5722588084E+00
+ Laplacian of electron density: -0.1930952844E+01
+ Electron localization function (ELF):  0.9692639598E+00
+ Localized orbital locator (LOL):  0.8488567309E+00
+ Local information entropy:  0.1176971796E+00
+ Interaction region indicator (IRI):  0.1029951920E-13
+ Reduced density gradient (RDG):  0.1000000000E+03
+ Reduced density gradient with promolecular approximation:  0.1000000000E+03
+ Sign(lambda2)*rho: -0.3515442357E+00
+ Sign(lambda2)*rho with promolecular approximation: -0.2025709533E+00
+ Corr. hole for alpha, ref.:   0.00000   0.00000   0.00000 : -0.1049299393E-02
+ Source function, ref.:   0.00000   0.00000   0.00000 :  0.1218624786E+00
+ Wavefunction value for orbital       1 :  0.1937684987E-02
+ Average local ionization energy (ALIE):  0.7508501785E+00
+ van der Waals potential (probe atom: C ):  0.1516964067E+13 kcal/mol
+ Delta-g (under promolecular approximation):  0.4916977641E+00
+ Delta-g (under Hirshfeld partition):  0.8508431656E+00
+ User-defined real space function:  0.1000000000E+01
+ ESP from nuclear charges:  0.8217121275E+01
+ ESP from electrons: -0.6931157880E+01
+ Total ESP:  0.1285963395E+01 a.u. ( 0.3499284E+02 eV, 0.8069549E+03 kcal/mol)
+
+ Note: Below information is for electron density
+
+ Components of gradient in x/y/z are:
+ -0.2843780105E-29  0.2589453633E-14  0.1982678070E-14
+ Norm of gradient is:  0.3261331392E-14
+
+ Components of Laplacian in x/y/z are:
+ -0.1395580913E+01  0.9441437521E-01 -0.6297863070E+00
+ Total: -0.1930952844E+01
+
+ Hessian matrix:
+ -0.1395580913E+01  0.1509335540E-15  0.1075451141E-15
+  0.1509335540E-15  0.9441437521E-01  0.1134750806E+01
+  0.1075451141E-15  0.1134750806E+01 -0.6297863070E+00
+ Eigenvalues of Hessian: -0.1458809825E+01 -0.1395580913E+01  0.9234378933E+00
+ Eigenvectors (columns) of Hessian:
+ -0.5590879739E-16  0.1000000000E+01  0.7652684332E-16
+ -0.5899157150E+00 -0.9477421260E-16  0.8074648285E+00
+  0.8074648285E+00  0.0000000000E+00  0.5899157150E+00
+ Determinant of Hessian:  0.1880015338E+01
+ Ellipticity of electron density:    0.045307
+ eta index:    1.579760
+ Stiffness:    1.511288
+
+ Stress tensor:
+ -0.4230330009E+00  0.5334906615E-16  0.3911991657E-16
+  0.5334906615E-16 -0.2782372412E-01  0.2764145907E+00
+  0.3911991657E-16  0.2764145907E+00 -0.2109226808E+00
+ Eigenvalues of stress tensor: -0.4230330009E+00 -0.4105541306E+00  0.1718077257E+00
+ Eigenvectors (columns) of stress tensor:
+  0.1000000000E+01 -0.8286191687E-16  0.1147326378E-15
+ -0.1415262359E-15 -0.5854880287E+00  0.8106810521E+00
+  0.0000000000E+00  0.8106810521E+00  0.5854880287E+00
+ Stress tensor stiffness:    2.462247
+ Stress tensor polarizability:    0.406133
+
+ ----------------   CP     5,     Type (3,-1)   ----------------
+ Connected atoms:     1(O   --     2(H 
+ Position (Bohr):        0.000000000000    1.101593831841   -0.613548280650
+ Position (Angstrom):    0.000000000000    0.582938351481   -0.324675767909
+ Density of all electrons:  0.3515442357E+00
+ Density of Alpha electrons:  0.1757721178E+00
+ Density of Beta electrons:  0.1757721178E+00
+ Spin density of electrons:  0.0000000000E+00
+ Lagrangian kinetic energy G(r):  0.8952059733E-01
+ G(r) in X,Y,Z:  0.3706888636E-01  0.2571365896E-01  0.2673805201E-01
+ Hamiltonian kinetic energy K(r):  0.5722588084E+00
+ Potential energy density V(r): -0.6617794058E+00
+ Energy density E(r) or H(r): -0.5722588084E+00
+ Laplacian of electron density: -0.1930952844E+01
+ Electron localization function (ELF):  0.9692639598E+00
+ Localized orbital locator (LOL):  0.8488567309E+00
+ Local information entropy:  0.1176971796E+00
+ Interaction region indicator (IRI):  0.1044234109E-13
+ Reduced density gradient (RDG):  0.1000000000E+03
+ Reduced density gradient with promolecular approximation:  0.1000000000E+03
+ Sign(lambda2)*rho: -0.3515442357E+00
+ Sign(lambda2)*rho with promolecular approximation: -0.2025709533E+00
+ Corr. hole for alpha, ref.:   0.00000   0.00000   0.00000 : -0.1049299393E-02
+ Source function, ref.:   0.00000   0.00000   0.00000 :  0.1218624786E+00
+ Wavefunction value for orbital       1 :  0.1937684987E-02
+ Average local ionization energy (ALIE):  0.7508501785E+00
+ van der Waals potential (probe atom: C ):  0.1516964067E+13 kcal/mol
+ Delta-g (under promolecular approximation):  0.4916977641E+00
+ Delta-g (under Hirshfeld partition):  0.8508431656E+00
+ User-defined real space function:  0.1000000000E+01
+ ESP from nuclear charges:  0.8217121275E+01
+ ESP from electrons: -0.6931157880E+01
+ Total ESP:  0.1285963395E+01 a.u. ( 0.3499284E+02 eV, 0.8069549E+03 kcal/mol)
+
+ Note: Below information is for electron density
+
+ Components of gradient in x/y/z are:
+  0.1308399156E-33 -0.2575085321E-14  0.2074185805E-14
+ Norm of gradient is:  0.3306555786E-14
+
+ Components of Laplacian in x/y/z are:
+ -0.1395580913E+01  0.9441437521E-01 -0.6297863070E+00
+ Total: -0.1930952844E+01
+
+ Hessian matrix:
+ -0.1395580913E+01 -0.8983583061E-18  0.8835540909E-18
+ -0.8983583061E-18  0.9441437521E-01 -0.1134750806E+01
+  0.8835540909E-18 -0.1134750806E+01 -0.6297863070E+00
+ Eigenvalues of Hessian: -0.1458809825E+01 -0.1395580913E+01  0.9234378933E+00
+ Eigenvectors (columns) of Hessian:
+ -0.4593276697E-18  0.1000000000E+01 -0.6287185247E-18
+  0.5899157150E+00  0.7786327064E-18  0.8074648285E+00
+  0.8074648285E+00  0.0000000000E+00 -0.5899157150E+00
+ Determinant of Hessian:  0.1880015338E+01
+ Ellipticity of electron density:    0.045307
+ eta index:    1.579760
+ Stiffness:    1.511288
+
+ Stress tensor:
+ -0.4230330009E+00 -0.4965991592E-18 -0.5691449193E-19
+ -0.4965991592E-18 -0.2782372412E-01 -0.2764145907E+00
+ -0.5691449193E-19 -0.2764145907E+00 -0.2109226808E+00
+ Eigenvalues of stress tensor: -0.4230330009E+00 -0.4105541306E+00  0.1718077257E+00
+ Eigenvectors (columns) of stress tensor:
+  0.1000000000E+01  0.1205535265E-18  0.1669213629E-18
+ -0.2059026327E-18  0.5854880287E+00  0.8106810521E+00
+  0.0000000000E+00  0.8106810521E+00 -0.5854880287E+00
+ Stress tensor stiffness:    2.462247
+ Stress tensor polarizability:    0.406133
+

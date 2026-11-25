@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>沃尔什图：由轨道决定分子形状</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-walsh-g.webp"><!--pose:end-->
+<h1>沃尔什图：由轨道决定分子形状</h1>
+<p class="lead">为什么水是弯曲的而 BeH₂ 是直线形的，尽管两者都有两个 A–H 键？沃尔什给出的答案无需计算总能量：跟踪每个价轨道的能量如何随弯曲而变化，再把占据轨道的能量相加。分子形状取决于价电子数——以及它们进入哪些轨道。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>AH₂ 弯曲时对称性由 D∞h 降为 C₂ᵥ：σg → 1a₁，σᵤ → 1b₂，πᵤ 对分裂为 2a₁ 和 1b₁。</li><li>弯曲时 2a₁ 大幅下降——中心原子的 s 轨道混入；1b₁（垂直于平面的 p）与角度无关，1b₂ 略有升高。</li><li>四个价电子（BeH₂）只占据 1a₁ 和 1b₂——分子为直线形；从五个（BH₂）起 2a₁ 被占据，分子弯曲。</li><li>沃尔什规则是定性的：轨道能之和不等于总能量，但能正确给出 BeH₂ → H₂O 系列的趋势。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b> 单电子模型，刚性键</summary><dl><dt>计算的是什么</dt><dd>AH₂ 六个价轨道在 80°–180° 键角下的能量、占据轨道能量之和及其极小点对应的角度（4–8 个价电子）。</dd><dt>采用了哪些近似</dt><dd>休克尔型哈密顿量：中心原子 s、p 和 H 1s 各取 α，β 与方向余弦成正比；键长固定；无电子排斥；参数为定性取值，对所有 AH₂ 相同。</dd><dt>能得出什么结论</dt><dd>形状为何取决于电子数、由哪些轨道决定——可以；准确的键角和反转能垒只能由计算总能量的方法（HF、DFT）给出。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">AH₂ 轨道随键角的变化</h2>
+  <div class="crow"><span class="l">分子（价电子数）</span><span class="grp" id="mG" role="group" aria-label="分子"></span></div>
+  <svg id="wchart" class="ch" viewBox="0 0 960 380" role="img" aria-label="沃尔什图"></svg>
+  <p class="hint">实线为占据轨道（括号内为电子数），虚线为空轨道。竖直点线为模型给出的角度。</p>
+  <div class="cards" id="wcards"></div>
+  <p class="status" id="wNote"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">沃尔什能量</h2>
+  <svg id="echart" class="ch" viewBox="0 0 960 200" role="img" aria-label="占据轨道能量之和"></svg>
+  <p class="hint">对占据轨道求 Σ nε；极小点即预测角度。对 CH₂，模型按顺序填充轨道，给出单重态 2a₁²；亚甲基的基态是三重态 2a₁¹1b₁¹，键角 134°，单重态高 38 kJ/mol。</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">曲线从何而来</h2>
+  <table class="tbl"><tr><th>D∞h（180°）</th><th>C₂ᵥ（弯曲）</th><th>组成</th><th>弯曲时</th></tr>
+  <tr><td>σg</td><td>1a₁</td><td>s(A) + (H₁ + H₂)</td><td>略低：H 原子靠近</td></tr>
+  <tr><td>σᵤ</td><td>1b₂</td><td>p<sub>y</sub>(A) + (H₁ − H₂)</td><td>升高：p<sub>y</sub> 对 H 原子的指向变差</td></tr>
+  <tr><td>πᵤ</td><td>2a₁</td><td>p<sub>z</sub>(A) + s(A) + (H₁ + H₂)</td><td>大幅降低：出现与 H 的重叠并混入 s</td></tr>
+  <tr><td>πᵤ</td><td>1b₁</td><td>p<sub>x</sub>(A)，垂直于平面</td><td>不变：非键</td></tr></table>
+  <p class="hint">z 轴为键角平分线，分子位于 yz 平面。同样的推理可解释三角锥形的 NH₃（8 个电子）和平面形的 CH₃⁺（6 个电子）——即 AH₃ 的沃尔什图。</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">沃尔什由轨道能推断形状。最简单的 π 体系模型是如何做的？</span><a class="nqA" href="huckel.html" data-goto="huckel">休克尔方法 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>选择 BeH₂。为什么分子是直线形？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">2a₁ 被占据且弯曲时下降</button><button type="button" class="opt" data-ok="1">只有 1a₁ 和 1b₂ 被占据，而 1b₂ 弯曲时升高</button><button type="button" class="opt">1b₁ 弯曲时升高</button><button type="button" class="opt">铍没有 p 轨道</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>四个价电子填满 1a₁ 和 1b₂。1b₂（来自 σᵤ）弯曲时去稳定，而本可从弯曲中获益的 2a₁ 是空的。</div></div>
+<div class="tq"><p class="qt"><span>AH₂ 弯曲时哪个轨道下降最多？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">1a₁</button><button type="button" class="opt">1b₂</button><button type="button" class="opt" data-ok="1">2a₁</button><button type="button" class="opt">1b₁</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>2a₁：在直线形分子中它是 πᵤ 之一，与 H 原子无重叠；弯曲时开始与 H 成键，并混入中心原子的 s。</div></div>
+<div class="tq"><p class="qt"><span>为什么 NH₂ 和 H₂O 的键角几乎相同（103° 和 104.5°）？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">第七、第八个电子进入 1b₁，其能量与角度无关</button><button type="button" class="opt">N 和 O 的电负性相同</button><button type="button" class="opt">两种分子都是直线形</button><button type="button" class="opt">它们的 2a₁ 是空的</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>第七、第八个价电子进入 1b₁——垂直于分子平面的 p 轨道：它是非键轨道，与角度无关，所以键角几乎不变。</div></div>
+<div class="tq"><p class="qt"><span>AH₂ 需要多少价电子，模型才给出弯曲分子？</span></p>
+<p class="olab">价电子数</p><div class="opts" role="group"><button type="button" class="opt">3</button><button type="button" class="opt">4</button><button type="button" class="opt" data-ok="1">5 个及以上</button><button type="button" class="opt">只有 8</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>从五个起（BH₂，131°）：第五个电子进入弯曲时被稳定的 2a₁。4 个电子（BeH₂）时分子为直线形。</div></div>
+</div></details></section>
+<script src="js/walsh.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="walsh";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/walsh.js"></script>
+
+</body>
+</html>

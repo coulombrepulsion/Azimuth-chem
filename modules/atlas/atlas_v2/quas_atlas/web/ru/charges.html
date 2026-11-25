@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,formaldehyde,ammonia">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Атомные заряды: сравнение схем</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/chg.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-chg-g.webp"><!--pose:end-->
+<h1>Атомные заряды: сравнение схем</h1>
+<p class="lead">Программа печатает «заряды на атомах», но заряд атома в молекуле не измеряется: это результат договорённости о том, как поделить электронную плотность между атомами. Разные схемы делят её по-разному и дают разные числа для одной и той же волновой функции. Здесь заряды по Малликену, Лёвдину и Бейдеру посчитаны тем же расчётом Хартри–Фока в четырёх базисах — видно, какие выводы из зарядов надёжны, а какие нет.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Заряд атома в молекуле не наблюдаем: это результат выбранного способа поделить электронную плотность между атомами.</li><li>Малликен и Лёвдин делят плотность по базисным функциям; Бейдер делит само пространство, поэтому его заряды имеют предел при увеличении базиса. В малых базисах заметно меняются и они: от STO-3G к 6-31G** заряд кислорода в воде по Бейдеру меняется на 0,4 e.</li><li>Сравнивать заряды имеет смысл только в одной схеме и одном базисе: в ряду похожих молекул тенденции надёжнее абсолютных чисел.</li><li>Наблюдаемые величины — дипольный момент, электростатический потенциал — проверяют, насколько заряды передают электростатику молекулы.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> заряды — договорённость, а не наблюдаемая</summary><dl><dt>Что вычисляется</dt><dd>Заряды на атомах по Малликену, Лёвдину и Бейдеру для одной и той же волновой функции RHF в четырёх базисах; дипольный момент точечных зарядов в сравнении с настоящим.</dd><dt>Какие приближения приняты</dt><dd>Метод Хартри–Фока без корреляции; базисы от STO-3G до 6-31G**; схемы NBO, Хиршфельда и подгонки под ЭСП описаны словами, но не рассчитаны. Заряды по Лёвдину в базисах с шестью декартовыми d-функциями (6-31G*, 6-31G**) посчитаны после ортонормировки каждой такой оболочки, поэтому не зависят от ориентации молекулы (при прямом определении эквивалентные атомы H в NH₃ получали 0,2677 / 0,2692 / 0,2692).</dd><dt>Какой вывод можно сделать</dt><dd>Как сильно заряд зависит от схемы и базиса и какие сравнения осмысленны — да; «истинный» заряд атома — нет: такой величины не существует.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Молекула и базис</h2>
+  <div class="crow"><span class="l">Молекула</span><span class="grp" id="molG" role="group" aria-label="Молекула"></span></div>
+  <div class="crow"><span class="l">Базис</span><span class="grp" id="basG" role="group" aria-label="Базис"></span></div>
+  <p class="hint" id="info"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Заряды трёх схем</h2>
+  <div class="tablewrap" id="tab"></div>
+  <svg id="bars" viewBox="0 0 960 260" role="img" aria-label="Заряды атомов"></svg>
+  <div class="legend" id="leg"></div>
+  <p class="hint" id="note"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Зависимость от базиса</h2>
+  <div class="crow"><span class="l">Атом</span><span class="grp" id="atG" role="group" aria-label="Атом"></span></div>
+  <svg id="chart" viewBox="0 0 960 300" role="img" aria-label="Заряд атома в разных базисах"></svg>
+  <p class="hint">Энергия и дипольный момент при расширении базиса сходятся к пределу; заряд по Малликену и Лёвдину может меняться немонотонно — у него нет предела, к которому он должен сходиться.</p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">Проверка дипольным моментом</h2>
+  <p class="hint">Дипольный момент — наблюдаемая величина: его можно измерить и посчитать из полной электронной плотности. Если поставить на ядра только точечные заряды схемы, получится «дипольный момент зарядов» μ<sub>q</sub> = Σ q<sub>A</sub>R<sub>A</sub>. Чем ближе μ<sub>q</sub> к настоящему, тем лучше заряды передают электростатику молекулы.</p>
+  <div class="tablewrap" id="dip"></div>
+  <p class="hint" id="dipNote"></p>
+</section>
+<section class="panel" aria-labelledby="h5s">
+  <h2 id="h5s">Как устроены схемы</h2>
+  <div class="eq">
+    <div class="eqb"><div class="t">Малликен</div>Заселённость атома — диагональные элементы (<b>PS</b>)<sub>μμ</sub> его базисных функций; плотность перекрывания делится между двумя атомами поровну. Просто и быстро, но сильно зависит от базиса, особенно с диффузными функциями.</div>
+    <div class="eqb"><div class="t">Лёвдин</div>Базис сначала симметрично ортогонализуют (<b>S</b><sup>1/2</sup><b>PS</b><sup>1/2</sup>), потом считают заселённости. Перекрывания уже нет, делить нечего; зависимость от базиса меньше, но остаётся.</div>
+    <div class="eqb"><div class="t">Бейдер (QTAIM)</div>Пространство делят поверхностями нулевого потока градиента плотности; заряд — интеграл плотности по бассейну атома. Схема определяется самой плотностью, а не базисом, и сходится с базисом; заряды обычно больше по модулю.</div>
+    <div class="eqb"><div class="t">Другие схемы</div>NBO (натуральные орбитали), Хиршфельд (доля плотности свободного атома), заряды по электростатическому потенциалу (CHELPG, RESP — подгоняются под ЭСП и используются в силовых полях). Для сравнения между собой берут одну схему и один базис.</div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Как именно делит плотность схема Бейдера и что ещё можно извлечь из её бассейнов?</span><a class="nqA" href="aim.html" data-goto="aim">Атомы в молекулах (Бейдер) →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Вода, 6-31G**: насколько различаются заряды кислорода по Малликену и по Бейдеру для одной и той же волновой функции?</span></p>
+<p class="olab">Разница зарядов O, e</p><div class="opts" role="group"><button type="button" class="opt">0,81</button><button type="button" class="opt" data-ok="1">0,55</button><button type="button" class="opt">0</button><button type="button" class="opt">0,25</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>На 0,55: −0,67 по Малликену и −1,23 по Бейдеру (по Лёвдину −0,42). Волновая функция одна, различается только правило деления плотности между атомами.</div></div>
+<div class="tq"><p class="qt"><span>LiH в STO-3G: какой знак у лития по Малликену? Чему верить?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Близок к нулю и даже отрицателен — артефакт схемы</button><button type="button" class="opt">Около +0,9, как у Бейдера</button><button type="button" class="opt">Около −1</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Почти нулевой и даже чуть отрицательный (−0,02) — вопреки химии: литий отдаёт электрон водороду, что видно и по дипольному моменту (около 4,9 Д), и по заряду Бейдера (+0,84). Малликен делит плотность перекрывания поровну и в минимальном базисе может давать такие артефакты.</div></div>
+<div class="tq"><p class="qt"><span>Вода: добавьте p-функции на водороде (6-31G* → 6-31G**). Как изменился заряд кислорода по Малликену и почему?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Стал менее отрицательным: часть плотности связи O–H отнесена к водороду</button><button type="button" class="opt">Стал более отрицательным</button><button type="button" class="opt">Не изменился</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>С −0,87 до −0,67: новые функции центрированы на водороде, и часть плотности связи O–H по правилу Малликена теперь приписывается водороду. Энергия при этом изменилась всего на 0,013 E<sub>h</sub>, а дипольный момент — на 0,04 Д: меняется не молекула, а бухгалтерия.</div></div>
+<div class="tq"><p class="qt"><span>Метан, 6-31G**: какой знак у заряда углерода по Бейдеру и по Малликену?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">По Бейдеру +, по Малликену −</button><button type="button" class="opt">В обеих схемах −</button><button type="button" class="opt">В обеих схемах +</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>По Бейдеру углерод положителен (+0,24), по Малликену отрицателен (−0,47). Обе схемы правильны в своих определениях; вывод «углерод в метане несёт отрицательный заряд» от схемы зависит, а значит, ничего не говорит о молекуле.</div></div>
+<div class="tq"><p class="qt"><span>CO, 6-31G*: совпадает ли направление дипольного момента по расчёту Хартри–Фока с экспериментом?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Нет: HF даёт обратное направление</button><button type="button" class="opt">Да, совпадает</button><button type="button" class="opt">Дипольный момент CO равен нулю</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Нет. В эксперименте μ = 0,11 Д с отрицательным концом на углероде, а Хартри–Фок в 6-31G* даёт C⁺O⁻. Правильный знак получают только с учётом корреляции. В STO-3G знак верный, но случайно.</div></div>
+<div class="tq"><p class="qt"><span>Вода, 6-31G**: какой дипольный момент дают точечные заряды Бейдера (в дебаях)? Почему он больше настоящего?</span></p>
+<p class="olab">μ<sub>q</sub> по Бейдеру, Д</p><div class="opts" role="group"><button type="button" class="opt">2,19</button><button type="button" class="opt" data-ok="1">3,45</button><button type="button" class="opt">1,85</button><button type="button" class="opt">0,73</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Около 3,45 Д против 2,19 Д по полной плотности (эксперимент 1,85 Д). Бассейны атомов ещё и поляризованы: их собственные дипольные моменты частично компенсируют перенос заряда, а точечные заряды этого не учитывают.</div></div>
+</div></details></section>
+<script src="js/charges.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="chg";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/charges.js"></script>
+
+</body>
+</html>

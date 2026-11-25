@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Принцип Паули и обменная дырка</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/pauli.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-pauli-g.webp"><!--pose:end-->
+<h1>Принцип Паули и обменная дырка</h1>
+<p class="lead">Два электрона в одномерном ящике, каждый на своей орбитали φ<sub>n</sub>(x) = √2·sin(nπx). Слева — карта вероятности найти первый электрон в точке x₁, а второй — в x₂. Справа — где окажется второй электрон, если первый закреплён в x₁ (передвиньте x₁ по карте или ползунком).</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Волновая функция электронов антисимметрична относительно их перестановки: Ψ(1, 2) = −Ψ(2, 1).</li><li>Отсюда запрет Паули: два электрона с одинаковым спином не могут занимать одну орбиталь.</li><li>Электроны с одинаковым спином избегают друг друга даже без отталкивания — это обменная (фермиевская) дырка.</li><li>Поэтому триплет обычно ниже синглета той же конфигурации (правило Хунда); разность определяет обменный интеграл K.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> два электрона в одномерном ящике</summary><dl><dt>Что вычисляется</dt><dd>Карты вероятности для симметричной и антисимметричной функций, кулоновский и обменный интегралы, смешивание конфигураций.</dd><dt>Какие приближения приняты</dt><dd>Одно измерение; сглаженное кулоновское отталкивание; несколько конфигураций.</dd><dt>Какой вывод можно сделать</dt><dd>Обменная дырка, знак 2K и правило Хунда видны качественно верно; числа относятся к модели.</dd></dl></details><!--lim:end-->
+<section class="controls" aria-label="Параметры">
+  <div class="crow"><span class="l">Волновая функция</span><span id="modes" role="group" aria-label="Волновая функция"></span></div>
+  <div class="crow" id="msRow"><span class="l">Проекция спина M<sub>S</sub></span><span id="ms" role="group" aria-label="Проекция спина"></span><span class="hint">пространственная часть у всех трёх компонент одна и та же</span></div>
+  <div class="crow"><span class="l">Орбиталь φ<sub>a</sub></span><span id="oa" role="group" aria-label="Орбиталь a"></span><span class="l" style="min-width:auto;margin-left:14px">Орбиталь φ<sub>b</sub></span><span id="ob" role="group" aria-label="Орбиталь b"></span></div>
+  <div class="crow"><span class="l">На карте</span><span id="views" role="group" aria-label="Что показывать"></span></div>
+</section>
+<div class="det" id="formula"></div>
+<div class="work">
+  <div class="panel">
+    <div class="ptitle" id="mapTitle"></div>
+    <div class="mapwrap"><svg id="map" viewBox="0 0 400 400" role="img" aria-label="Карта двухэлектронной функции"></svg></div>
+    <div class="row" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="btn" id="bFlip" type="button">P₁₂: переставить электроны</button><span class="hint" id="flipMsg" style="font-size:13.5px"></span></div>
+    <label class="hint" for="x1">Положение первого электрона x₁ = <b id="x1v" style="font-family:var(--f-mono)"></b></label>
+    <input type="range" id="x1" min="0.01" max="0.99" step="0.005" value="0.3">
+    <div class="legend" id="mapLegend"></div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">Условная плотность второго электрона при первом в x₁</div>
+    <svg id="cond" viewBox="0 0 560 300" role="img" aria-label="Условная плотность и дырка"></svg>
+    <div class="legend" id="condLegend"></div>
+    <div class="nums" id="nums"></div>
+    <div class="ptitle" style="margin-top:4px">Сами орбитали</div>
+    <svg id="orbs" viewBox="0 0 560 120" role="img" aria-label="Орбитали"></svg>
+  </div>
+</div>
+<div class="explain" id="explain"></div>
+<section class="panel" aria-labelledby="hE" style="gap:10px">
+  <h2 id="hE">Энергия отталкивания электронов: J и K</h2>
+  <p class="hint" style="font-size:14px">J — кулоновский интеграл: отталкивание облаков φ<sub>a</sub>² и φ<sub>b</sub>². K — обменный интеграл, у него нет классического аналога; он появляется из антисимметрии. Отталкивание здесь одномерное и сглаженное, поэтому сами числа условные; важны соотношения между ними.</p>
+  <div class="nums" id="jk"></div>
+  <div class="bars" id="bars"></div>
+  <p class="hint" style="font-size:14px" id="hund"></p>
+</section>
+<section class="panel" aria-labelledby="hC" style="gap:12px">
+  <h2 id="hC">Кулоновская дырка: смешивание конфигураций</h2>
+  <p style="font-size:14.5px">Синглет из двух электронов на φ₁ — это один определитель |φ₁φ̄₁|, как в Хартри–Фоке. Электроны в нём с разными спинами, и в этой функции нет корреляции их мгновенных положений: кулоновской дырки нет. Среднее кулоновское отталкивание при этом учтено — оно входит в среднее поле и определяет форму орбиталей. Добавим к нему вторую конфигурацию:</p>
+  <div class="det"><span>Ψ = c₁·φ₁(1)φ₁(2) + c₂·φ₂(1)φ₂(2), &nbsp; c₁ = cos θ, c₂ = sin θ &nbsp; (спиновая часть — синглетная)</span></div>
+  <div class="crow"><span class="l">Доля второй конфигурации θ</span><input type="range" id="th" min="-45" max="45" step="0.5" style="width:260px"><b class="val" id="thv" style="font-family:var(--f-mono)"></b>
+    <button class="btn" id="bMin" type="button">Минимум энергии (КВ)</button><button class="btn" id="bZero" type="button">Один определитель (θ = 0)</button></div>
+  <div class="crow"><span class="l">Сила отталкивания λ</span><input type="range" id="lam" min="0.5" max="8" step="0.1" style="width:260px"><b class="val" id="lamv" style="font-family:var(--f-mono)"></b><span class="hint">больше λ — то же, что ящик пошире: отталкивание важнее кинетической энергии</span></div>
+  <div class="work">
+    <div class="panel" style="border:none;padding:0">
+      <div class="ptitle">|Ψ(x₁, x₂)|² (спины просуммированы)</div>
+      <svg id="ciMap" viewBox="0 0 400 400" role="img" aria-label="Карта плотности для смешанной функции"></svg>
+      <div class="hint">Положение первого электрона x₁ — то же, что выше; его можно двигать и по этой карте.</div>
+    </div>
+    <div class="panel" style="border:none;padding:0">
+      <div class="ptitle">Где второй электрон (спин ↓), если первый (↑) в x₁</div>
+      <svg id="ciCond" viewBox="0 0 560 250" role="img" aria-label="Условная плотность и кулоновская дырка"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>c(x₂)</span><span><i class="sw" style="border-color:var(--ref);border-top-style:dashed"></i>плотность электронов ↓ без учёта корреляции</span><span><i class="box" style="background:var(--hole);border:1px solid var(--neg)"></i>кулоновская дырка</span></div>
+      <div class="ptitle" style="margin-top:6px">Энергия E(θ), усл. ед.</div>
+      <svg id="ciE" viewBox="0 0 560 170" role="img" aria-label="Энергия в зависимости от доли второй конфигурации"></svg>
+      <div class="nums" id="ciNums"></div>
+    </div>
+  </div>
+  <div class="explain" id="ciText"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Как посчитать энергию определителя Слейтера, не раскрывая его?</span><a class="nqA" href="slater.html" data-goto="sc">Правила Слейтера–Кондона →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Выберите «Триплет» и φ<sub>a</sub> = φ<sub>b</sub>. Что видно и почему?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Ψ ≡ 0 — запрет Паули</button><button type="button" class="opt">Ψ максимальна при x₁ = x₂</button><button type="button" class="opt">Картина такая же, как у синглета</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Ψ ≡ 0: пространственная часть триплета антисимметрична и при одинаковых орбиталях обращается в нуль тождественно. Два электрона с одинаковым спином на одной орбитали — запрет Паули.</div></div>
+<div class="tq"><p class="qt"><span>Триплет с M<sub>S</sub> = 0: спины у электронов разные. Есть ли провал в точке x₂ = x₁?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Нет: при разных спинах провала нет</button><button type="button" class="opt" data-ok="1">Да: c(x₁) = 0, как у других компонент триплета</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Есть, c(x₁) = 0. Провал определяется антисимметричной пространственной частью, а она одна и та же у всех трёх компонент триплета.</div></div>
+<div class="tq"><p class="qt"><span>Для φ₁ и φ₂ сравните энергии отталкивания синглета и триплета. Почему у триплета она ниже?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">У триплета электроны с одинаковым спином избегают друг друга</button><button type="button" class="opt">Синглет всегда ниже</button><button type="button" class="opt">У них одинаковая энергия</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Триплет ниже на 2K: при одинаковых спинах пространственная функция антисимметрична, электроны избегают друг друга (обменная дырка), и отталкивание меньше. Это основа правила Хунда.</div></div>
+<div class="tq"><p class="qt"><span>Включите «Ψ со знаком» и нажмите P₁₂ для триплета и для синглета. Чем отличается результат?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">У синглета Ψ меняет знак, у триплета — нет</button><button type="button" class="opt">У обоих Ψ меняет знак</button><button type="button" class="opt" data-ok="1">У триплета Ψ меняет знак, у синглета — нет</button><button type="button" class="opt">Ни у одного ничего не меняется</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>У триплета все цвета меняются на противоположные: P₁₂Ψ = −Ψ. У синглета картинка не меняется: пространственная часть симметрична, а антисимметрию даёт спиновый множитель.</div></div>
+<div class="tq"><p class="qt"><span>Блок КВ: нажмите «Минимум энергии» при λ = 3 и при λ = 8. Как меняются c₂ и провал плотности?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">|c₂| растёт, провал углубляется</button><button type="button" class="opt">|c₂| уменьшается, провал исчезает</button><button type="button" class="opt">Ничего не меняется</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>c₂ ≈ −0,27 и провал ≈ 68 % при λ = 3; c₂ ≈ −0,52 и провал ≈ 99 % при λ = 8. Чем сильнее отталкивание, тем больше вес второй конфигурации и глубже кулоновская дырка.</div></div>
+</div></details></section>
+<script src="js/pauli.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="pauli";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+<script src="js/pauli.js"></script>
+
+</body>
+</html>

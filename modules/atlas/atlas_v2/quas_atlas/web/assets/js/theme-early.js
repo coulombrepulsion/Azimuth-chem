@@ -1,0 +1,1 @@
+(function(){try{var R=document.documentElement,t=null;if(window.parent!==window){t=window.parent.document.documentElement.getAttribute('data-theme')}else{t=localStorage.getItem('qc-theme')}if(t==='light'||t==='dark')R.setAttribute('data-theme',t)}catch(e){}})()

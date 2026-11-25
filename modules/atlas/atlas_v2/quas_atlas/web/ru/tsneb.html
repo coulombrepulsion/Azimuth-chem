@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Поиск переходного состояния и путь реакции</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>Поиск переходного состояния и путь реакции</h1>
+<p class="lead">Минимум оптимизатор находит сам: катится вниз и останавливается. Переходное состояние — перевал между ямами, и скатиться к нему нельзя. Здесь на модельных поверхностях видно, как идут к седлу следованием моде, как упругая лента находит путь реакции, почему скан может обмануть и как доказать, что найдено то самое седло.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Переходное состояние — седловая точка первого порядка: градиент ноль, у гессиана ровно одно отрицательное собственное значение (одна мнимая частота). BFGS держит гессиан положительным и из окрестности седла скатывается в минимум.</li><li>Следование собственному вектору: в базисе мод вдоль координаты реакции шаг идёт вверх, вдоль остальных — вниз; шаг ограничен доверительным радиусом. Нужен хороший старт: область сходимости к седлу уже чаши минимума.</li><li>Метод упругой ленты (NEB): цепочка образов между реагентом и продуктом; от истинной силы берут поперечную часть, от пружин — продольную. Карабкающийся образ (CI-NEB) без пружины идёт вверх вдоль пути и сходится в седло.</li><li>Релаксированный скан требует выбрать координату. Если реакция идёт по двум координатам сразу, профиль рвётся, и скан вперёд и назад расходятся. Максимум скана — старт, а не переходное состояние.</li><li>Три проверки найденной точки: одна мнимая частота; её мода — движение реакции; IRC из седла приходит в реагент и в продукт.</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Седло и следование собственному вектору</h2>
+  <div class="crow"><span class="l">Старт x</span><input type="range" id="fx" min="-1.5" max="1.5" step="0.01" value="0.8" aria-label="x"><span class="val" id="fxv"></span></div>
+  <div class="crow"><span class="l">Старт y</span><input type="range" id="fy" min="-1.1" max="1.1" step="0.01" value="0.3" aria-label="y"><span class="val" id="fyv"></span></div>
+  <div class="crow"><span class="l">Доверительный радиус</span><input type="range" id="rr" min="0.05" max="1" step="0.01" value="0.3" aria-label="радиус"><span class="val" id="rrv"></span></div>
+  <div class="crow"><span class="l">Вверх по моде</span><span class="grp" id="mG" role="group" aria-label="Вверх по моде"></span></div>
+  <div class="two" style="grid-template-columns:minmax(0,1.55fr) minmax(0,1fr)"><svg id="fchart" class="ch" viewBox="0 0 560 440" role="img" aria-label="Поверхность (x² − 1)² + y² и шаги"></svg><svg id="feprof" class="ch" viewBox="0 0 360 440" role="img" aria-label="Энергия по шагам"></svg></div>
+  <div class="legend" id="fleg"></div>
+  <div class="cards" id="fcards"></div>
+  <p class="status" id="fNote"></p>
+  <p class="hint">Поверхность лекции E = (x² − 1)² + y²: минимумы (±1, 0), седло (0, 0) с E = 1, гессиан diag(12x² − 4, 2). Шаг в базисе мод: вдоль выбранной +g/|λ|, вдоль остальных −g/|λ|, каждая составляющая не больше радиуса. Ньютон: −g/λ по всем модам. IRC — спуск по градиенту из седла, сдвинутого на 0,02 вдоль отрицательной моды.</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Упругая лента: NEB и карабкающийся образ</h2>
+  <div class="crow"><span class="l">Силы на образах</span><span class="grp" id="kG" role="group" aria-label="Силы на образах"></span></div>
+  <div class="crow"><span class="l">Образов (с концами)</span><input type="range" id="ni" min="3" max="21" step="2" value="9" aria-label="n"><span class="val" id="niv"></span></div>
+  <div class="crow"><span class="l">Жёсткость пружин k</span><input type="range" id="ks" min="1" max="300" step="1" value="50" aria-label="k"><span class="val" id="ksv"></span></div>
+  <div class="two" style="grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)"><svg id="nchart" class="ch" viewBox="0 0 480 440" role="img" aria-label="Поверхность Мюллера–Брауна и лента"></svg><svg id="nprof" class="ch" viewBox="0 0 440 440" role="img" aria-label="Энергия образов"></svg></div>
+  <div class="legend" id="nleg"></div>
+  <div class="cards" id="ncards"></div>
+  <p class="status" id="nNote"></p>
+  <p class="hint">Поверхность Мюллера–Брауна (1979): реагент A (−0,56; 1,44), продукт C (−0,05; 0,47), седло между ними (−0,82; 0,62), барьер 106,0 в её единицах. F<sub>i</sub> = −∇E + (∇E·τ)τ + k(|R<sub>i+1</sub> − R<sub>i</sub>| − |R<sub>i</sub> − R<sub>i−1</sub>|)τ; карабкающийся образ: F = −∇E + 2(∇E·τ)τ. 1500 шагов наискорейшего спуска; концы закреплены.</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Релаксированный скан против седла</h2>
+  <div class="crow"><span class="l">Координата</span><span class="grp" id="cG" role="group" aria-label="Координата"></span></div>
+  <div class="two" style="grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)"><svg id="schart" class="ch" viewBox="0 0 480 440" role="img" aria-label="Путь скана на поверхности"></svg><svg id="sprof" class="ch" viewBox="0 0 440 440" role="img" aria-label="Профиль скана"></svg></div>
+  <div class="legend" id="sleg"></div>
+  <div class="cards" id="scards"></div>
+  <p class="status" id="sNote"></p>
+  <p class="hint">41 значение координаты от A до C; при каждом вторая координата оптимизирована, начиная с предыдущей точки. «Вперёд» — от A, «назад» — от C. Кружок — настоящее седло.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Седло найдено и проверено. Как из высоты барьера получить константу скорости?</span><a class="nqA" href="kinetics.html" data-goto="kin">Скорость реакции: переходное состояние →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>E = (x² − 1)² + y². Каковы собственные значения гессиана в седле (0, 0)?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">−4 и 2</button><button type="button" class="opt">4 и 2</button><button type="button" class="opt">−4 и −2</button><button type="button" class="opt">0 и 2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>−4 и 2: гессиан diag(12x² − 4, 2), при x = 0 это (−4, 2). Одно отрицательное — седло первого порядка; два отрицательных были бы вершиной.</div></div>
+<div class="tq"><p class="qt"><span>Почему BFGS, запущенный рядом с седлом, не находит переходное состояние?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Он держит гессиан положительным и всегда идёт вниз</button><button type="button" class="opt">Ему не хватает доверительного радиуса</button><button type="button" class="opt">В седле градиент не равен нулю</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>BFGS «считает», что он в яме, и идёт вниз — в реагент или продукт. Алгоритму поиска седла нужен гессиан с одним отрицательным значением и знание, какая мода — координата реакции.</div></div>
+<div class="tq"><p class="qt"><span>Ленту оптимизировали без проекций: истинная сила и пружины сложены целиком. Каким вышел барьер?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Заниженным: путь срезает угол, образы сползают к концам</button><button type="button" class="opt">Точным</button><button type="button" class="opt">Завышенным</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Заниженным: пружины поперёк пути тянут образы с дна долины, а истинная сила вдоль пути стаскивает их к концам — у вершины никого. На странице 68 вместо 106.</div></div>
+<div class="tq"><p class="qt"><span>Что доказывает, что найдено то самое переходное состояние?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Одна мнимая частота, её мода — движение реакции, IRC приходит в реагент и продукт</button><button type="button" class="opt">Градиент равен нулю</button><button type="button" class="opt">Это максимум релаксированного скана</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Все три проверки: градиент ноль бывает и в минимуме, и в седле высшего порядка; максимум скана гессианом не проверен. Только IRC связывает седло с нужными реагентом и продуктом.</div></div>
+</div></details></section>
+<script src="js/tsneb.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="tsneb";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/tsneb.js"></script>
+
+</body>
+</html>

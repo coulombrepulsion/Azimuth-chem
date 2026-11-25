@@ -1,0 +1,371 @@
+answers: 2 | 2 | 3 | 4 | 5 | 8 | 7 | 0 | -10 | q | q
+
+ WARNING: "settings.ini" was found neither in current folder nor in the path defined by "Multiwfnpath" environment variable. Now using default settings instead, and all your modifications (if any) on settings.ini will not take effect!
+
+[95m Multiwfn -- A Multifunctional Wavefunction Analyzer
+[0m[32m Version 2026.7.15 (release date is the same as version name)
+[0m Developer: Tian Lu (Beijing Kein Research Center for Natural Sciences)
+ Multiwfn official website: http://sobereva.com/multiwfn
+ Multiwfn English forum: http://sobereva.com/wfnbbs
+ Multiwfn Chinese forum: http://bbs.keinsci.com/wfn
+ ( Number of parallel threads:   4  Current date: 2026-11-12  Time: 14:58:16 )
+
+ Both following papers ***MUST BE CITED IN MAIN TEXT*** if Multiwfn is used:
+[36m  Tian Lu, Feiwu Chen, J. Comput. Chem., 33, 580 (2012) DOI: 10.1002/jcc.22885
+  Tian Lu, J. Chem. Phys., 161, 082503 (2024) DOI: 10.1063/5.0216272
+[0m See "How to cite Multiwfn.pdf" in Multiwfn binary package for more information
+
+ Warning: You should set OMP_STACKSIZE environment variable as mentioned in Section 2.1.2 of Multiwfn manual!
+
+ Please wait...
+ Loading various information of the wavefunction
+ Note: Nuclear charge of Cs has been set to   9
+ Note: Nuclear charge of Cl has been set to   7
+ Loading basis set definition...
+ The highest angular moment basis functions is D
+ All D basis functions are spherical harmonic type
+ Loading orbitals...
+ The actual number of orbitals read:        27
+ Converting basis function information to GTF information...
+ Back converting basis function information from Cartesian to spherical type...
+ Generating density matrix...
+
+ Total/Alpha/Beta electrons:     16.0000      8.0000      8.0000
+ Net charge:     0.00000      Expected multiplicity:    1
+ Atoms:      2,  Basis functions:     27,  GTFs:    146
+ This is a restricted single-determinant wavefunction
+ Orbitals from 1 to     8 are occupied
+ Loading electron density functions (EDF) information from built-in EDF library
+ (The library is available at https://github.com/zorkzou/Molden2AIM)
+ Cs(    1)      Core electrons: 46     EDF primitive GTFs: 36
+ Cl(    2)      Core electrons: 10     EDF primitive GTFs: 25
+ The number of total inner-core electrons:    56
+ The number of total EDF primitive GTFs:    61
+ Loading EDF library finished!
+
+ Loaded input.molden successfully!
+
+ Cell information
+ In Bohr:
+ Cell vector 1,  X=    9.98551  Y=    0.00000  Z=    0.00000  Norm:    9.98551
+ Cell vector 2,  X=    0.00000  Y=    9.98551  Z=    0.00000  Norm:    9.98551
+ Cell vector 3,  X=   -0.00000  Y=   -0.00000  Z=    9.98551  Norm:    9.98551
+ In Angstrom:
+ Cell vector 1,  X=    5.28410  Y=    0.00000  Z=    0.00000  Norm:    5.28410
+ Cell vector 2,  X=    0.00000  Y=    5.28410  Z=    0.00000  Norm:    5.28410
+ Cell vector 3,  X=   -0.00000  Y=   -0.00000  Z=    5.28410  Norm:    5.28410
+ Reciprocal vectors in Angstrom^-1:
+ Vector 1,  X=    1.18907  Y=   -0.00000  Z=    0.00000  Norm:    1.18907
+ Vector 2,  X=    0.00000  Y=   -1.18907  Z=    0.00000  Norm:    1.18907
+ Vector 3,  X=    0.00000  Y=   -0.00000  Z=    1.18907  Norm:    1.18907
+ Cell angles:  Alpha=  90.0000  Beta=  90.0000  Gamma=  90.0000 degree
+ Area between a and b:     27.9218 Angstrom^2
+ Area between b and c:     27.9218 Angstrom^2
+ Area between a and c:     27.9218 Angstrom^2
+ Cell volume:        995.6592 Bohr^3    (        147.5415 Angstrom^3 )
+ Density:   1.89483 g/cm^3    (  1894.827 kg/m^3 )
+
+ Command of showing box in VMD program: (then run "pbc box")
+ pbc set {   5.28410   5.28410   5.28410  90.000  90.000  90.000 } -all
+
+ Vertex 1 of the cell:    0.0000    0.0000    0.0000 Bohr
+ Vertex 2 of the cell:    9.9855    0.0000    0.0000 Bohr
+ Vertex 3 of the cell:    9.9855    9.9855    0.0000 Bohr
+ Vertex 4 of the cell:    0.0000    9.9855    0.0000 Bohr
+ Vertex 5 of the cell:    0.0000    0.0000    9.9855 Bohr
+ Vertex 6 of the cell:    9.9855    0.0000    9.9855 Bohr
+ Vertex 7 of the cell:    9.9855    9.9855    9.9855 Bohr
+ Vertex 8 of the cell:    0.0000    9.9855    9.9855 Bohr
+
+ Warning: Because size of a axis of the cell is relatively small, in order to guarantee analysis accuracy, it is suggested to increase the first index of "PBCnxnynz" in settings.ini to  3
+
+ Warning: Because size of b axis of the cell is relatively small, in order to guarantee analysis accuracy, it is suggested to increase the second index of "PBCnxnynz" in settings.ini to  3
+
+ Warning: Because size of c axis of the cell is relatively small, in order to guarantee analysis accuracy, it is suggested to increase the third index of "PBCnxnynz" in settings.ini to  3
+
+ Formula: Cl1 Cs1      Total atoms:       2
+ Molecule weight:       168.35839 Da
+
+ "q": Exit program gracefully          "r": Load a new file
+                    ************ Main function menu ************
+ 0 Show molecular structure and view orbitals
+ 1 Output all properties at a point       2 Topology analysis
+ 3 Output and plot specific property in a line
+ 4 Output and plot specific property in a plane
+ 5 Output and plot specific property within a spatial region (calc. grid data)
+ 6 Check & modify wavefunction
+ 7 Population analysis and calculation of atomic charges
+ 8 Orbital composition analysis           9 Bond order analysis
+ 10 Plot total DOS, PDOS, OPDOS, local DOS, COHP and photoelectron spectrum
+ 11 Plot IR/Raman/UV-Vis/ECD/VCD/ROA/NMR spectrum
+ 12 Quantitative analysis of molecular surface
+ 13 Process grid data (No grid data is presented currently)
+ 14 Adaptive natural density partitioning (AdNDP) analysis
+ 15 Fuzzy atomic space analysis
+ 16 Charge decomposition analysis (CDA) and plot orbital interaction diagram
+ 17 Basin analysis                       18 Electron excitation analysis
+ 19 Orbital localization analysis        20 Visual study of weak interaction
+ 21 Energy decomposition analysis        22 Conceptual DFT (CDFT) analysis
+ 23 ETS-NOCV analysis                    24 (Hyper)polarizability analysis
+ 25 Electron delocalization and aromaticity analyses
+ 26 Structure and geometry related analyses
+ 100 Other functions (Part 1)            200 Other functions (Part 2)
+ 300 Other functions (Part 3)
+ Note: Virtual orbitals higher than LUMO+9 have been temporarily discarded for saving computational time
+
+ Unique GTFs have been constructed. Number of unique GTFs:     100
+
+          !!! Note: All length units in this module are Bohr !!!
+
+              ================ Topology analysis ===============
+ -11 Select real space function, current:    1
+ -10 Return to main menu
+ -9 Measure distances, angles and dihedral angles between CPs or atoms
+ -5 Modify or print detail or export paths, or plot property along a path
+ -4 Modify or export CPs (critical points)
+ -3 Set interbasin surface generating parameters
+ -2 Set path generating parameters
+ -1 Set CP searching parameters
+ 0 Print and visualize all generated CPs, paths and interbasin surfaces
+ 1 Search CPs from given starting points
+ 2 Search CPs from nuclear positions
+ 3 Search CPs from midpoint of atomic pairs
+ 4 Search CPs from triangle center of three atoms
+ 5 Search CPs from pyramid center of four atoms
+ 6 Search CPs from a batch of points within sphere(s)
+ 7 Show real space function values at specific CP or all CPs
+ 8 Generating the paths connecting (3,-3) and (3,-1) CPs
+ 9 Generating the paths connecting (3,+1) and (3,+3) CPs
+ 10 Add or delete interbasin surfaces
+ 20 Calculate Shannon aromaticity index
+ 21 Calculate gradient and curvature of electron density along a direction
+ Progress: [#########################-------------------------]    50.0 %     -
+ Progress: [##################################################]   100.0 %     \
+                             ---- Summary ----
+  Index                       Coordinate               Type
+     1     0.00000000     0.00000000     0.00000000   (3,-3)
+     2     4.99275500     4.99275500     4.99275500   (3,-3)
+ Totally find     2 new critical points
+
+              ================ Topology analysis ===============
+ -11 Delete results and reselect real space function, current:    1
+ -10 Return to main menu
+ -9 Measure distances, angles and dihedral angles between CPs or atoms
+ -5 Modify or print detail or export paths, or plot property along a path
+ -4 Modify or export CPs (critical points)
+ -3 Set interbasin surface generating parameters
+ -2 Set path generating parameters
+ -1 Set CP searching parameters
+ 0 Print and visualize all generated CPs, paths and interbasin surfaces
+ 1 Search CPs from given starting points
+ 2 Search CPs from nuclear positions
+ 3 Search CPs from midpoint of atomic pairs
+ 4 Search CPs from triangle center of three atoms
+ 5 Search CPs from pyramid center of four atoms
+ 6 Search CPs from a batch of points within sphere(s)
+ 7 Show real space function values at specific CP or all CPs
+ 8 Generating the paths connecting (3,-3) and (3,-1) CPs
+ 9 Generating the paths connecting (3,+1) and (3,+3) CPs
+ 10 Add or delete interbasin surfaces
+ 20 Calculate Shannon aromaticity index
+ 21 Calculate gradient and curvature of electron density along a direction
+ Note: Looping atoms in this mode considers image ones
+ Number of atom pairs:       3
+ Progress: [################----------------------------------]    33.3 %     |
+ Progress: [#################################-----------------]    66.7 %     /
+ Progress: [##################################################]   100.0 %     -
+                             ---- Summary ----
+  Index                       Coordinate               Type
+     3     0.00000002     0.00000002     4.99347424   (3,+3)
+     4     4.99347424     0.00000002     0.00000002   (3,+3)
+     5     2.42391034     2.42391034     7.48391363   (3,-1)
+     6     7.50467889     2.40256412     7.50467885   (3,-1)
+     7     2.44516954     2.44516954     2.44516952   (3,-1)
+     8     7.48391364     2.42391035     2.42391033   (3,-1)
+     9     0.00000002     4.99347424     0.00000002   (3,+3)
+    10     2.40256412     7.50467889     7.50467885   (3,-1)
+    11     7.52552751     7.52552751     7.52552747   (3,-1)
+    12     2.42391035     7.48391364     2.42391033   (3,-1)
+    13     7.50467887     7.50467887     2.40256411   (3,-1)
+ Totally find    11 new critical points
+
+              ================ Topology analysis ===============
+ -11 Delete results and reselect real space function, current:    1
+ -10 Return to main menu
+ -9 Measure distances, angles and dihedral angles between CPs or atoms
+ -5 Modify or print detail or export paths, or plot property along a path
+ -4 Modify or export CPs (critical points)
+ -3 Set interbasin surface generating parameters
+ -2 Set path generating parameters
+ -1 Set CP searching parameters
+ 0 Print and visualize all generated CPs, paths and interbasin surfaces
+ 1 Search CPs from given starting points
+ 2 Search CPs from nuclear positions
+ 3 Search CPs from midpoint of atomic pairs
+ 4 Search CPs from triangle center of three atoms
+ 5 Search CPs from pyramid center of four atoms
+ 6 Search CPs from a batch of points within sphere(s)
+ 7 Show real space function values at specific CP or all CPs
+ 8 Generating the paths connecting (3,-3) and (3,-1) CPs
+ 9 Generating the paths connecting (3,+1) and (3,+3) CPs
+ 10 Add or delete interbasin surfaces
+ 20 Calculate Shannon aromaticity index
+ 21 Calculate gradient and curvature of electron density along a direction
+ Note: Looping atoms in this mode does not consider image ones
+ Number of starting points:       0
+ Totally find     0 new critical points
+
+              ================ Topology analysis ===============
+ -11 Delete results and reselect real space function, current:    1
+ -10 Return to main menu
+ -9 Measure distances, angles and dihedral angles between CPs or atoms
+ -5 Modify or print detail or export paths, or plot property along a path
+ -4 Modify or export CPs (critical points)
+ -3 Set interbasin surface generating parameters
+ -2 Set path generating parameters
+ -1 Set CP searching parameters
+ 0 Print and visualize all generated CPs, paths and interbasin surfaces
+ 1 Search CPs from given starting points
+ 2 Search CPs from nuclear positions
+ 3 Search CPs from midpoint of atomic pairs
+ 4 Search CPs from triangle center of three atoms
+ 5 Search CPs from pyramid center of four atoms
+ 6 Search CPs from a batch of points within sphere(s)
+ 7 Show real space function values at specific CP or all CPs
+ 8 Generating the paths connecting (3,-3) and (3,-1) CPs
+ 9 Generating the paths connecting (3,+1) and (3,+3) CPs
+ 10 Add or delete interbasin surfaces
+ 20 Calculate Shannon aromaticity index
+ 21 Calculate gradient and curvature of electron density along a direction
+ Note: Looping atoms in this mode does not consider image ones
+ Number of starting points:       0
+ Totally found     0 new critical points
+
+              ================ Topology analysis ===============
+ -11 Delete results and reselect real space function, current:    1
+ -10 Return to main menu
+ -9 Measure distances, angles and dihedral angles between CPs or atoms
+ -5 Modify or print detail or export paths, or plot property along a path
+ -4 Modify or export CPs (critical points)
+ -3 Set interbasin surface generating parameters
+ -2 Set path generating parameters
+ -1 Set CP searching parameters
+ 0 Print and visualize all generated CPs, paths and interbasin surfaces
+ 1 Search CPs from given starting points
+ 2 Search CPs from nuclear positions
+ 3 Search CPs from midpoint of atomic pairs
+ 4 Search CPs from triangle center of three atoms
+ 5 Search CPs from pyramid center of four atoms
+ 6 Search CPs from a batch of points within sphere(s)
+ 7 Show real space function values at specific CP or all CPs
+ 8 Generating the paths connecting (3,-3) and (3,-1) CPs
+ 9 Generating the paths connecting (3,+1) and (3,+3) CPs
+ 10 Add or delete interbasin surfaces
+ 20 Calculate Shannon aromaticity index
+ 21 Calculate gradient and curvature of electron density along a direction
+ Number of (3,-1) CPs:     8    Generating topology paths...
+ Progress: [--------------------------------------------------]     0.0 %     \
+ Progress: [######--------------------------------------------]    12.5 %     |
+ Progress: [############--------------------------------------]    25.0 %     /
+ Progress: [##################--------------------------------]    37.5 %     -
+ Progress: [#########################-------------------------]    50.0 %     \
+ Progress: [###############################-------------------]    62.5 %     |
+ Progress: [#####################################-------------]    75.0 %     /
+ Progress: [###########################################-------]    87.5 %     -
+ Progress: [##################################################]   100.0 %     \
+ Totally found    16 new paths
+
+              ================ Topology analysis ===============
+ -11 Delete results and reselect real space function, current:    1
+ -10 Return to main menu
+ -9 Measure distances, angles and dihedral angles between CPs or atoms
+ -5 Modify or print detail or export paths, or plot property along a path
+ -4 Modify or export CPs (critical points)
+ -3 Set interbasin surface generating parameters
+ -2 Set path generating parameters
+ -1 Set CP searching parameters
+ 0 Print and visualize all generated CPs, paths and interbasin surfaces
+ 1 Search CPs from given starting points
+ 2 Search CPs from nuclear positions
+ 3 Search CPs from midpoint of atomic pairs
+ 4 Search CPs from triangle center of three atoms
+ 5 Search CPs from pyramid center of four atoms
+ 6 Search CPs from a batch of points within sphere(s)
+ 7 Show real space function values at specific CP or all CPs
+ 8 Generating the paths connecting (3,-3) and (3,-1) CPs
+ 9 Generating the paths connecting (3,+1) and (3,+3) CPs
+ 10 Add or delete interbasin surfaces
+ 20 Calculate Shannon aromaticity index
+ 21 Calculate gradient and curvature of electron density along a direction
+ Input the index of the CP that you are interested in, e.g. 3
+ Note 1: If input 0, then properties of all CPs will be outputted to CPprop.txt in current folder (and if you feel the output speed is slow, you can input -1 to avoid outputting ESP, which is the most expensive one)
+ Note 2: If input CP index with "d" suffix, e.g. 17d, then property of this CP can be decomposed into orbital contribution
+ Please wait...
+ Outputting properties of CP     1  /    13
+ Outputting properties of CP     2  /    13
+ Outputting properties of CP     3  /    13
+ Outputting properties of CP     4  /    13
+ Outputting properties of CP     5  /    13
+ Outputting properties of CP     6  /    13
+ Outputting properties of CP     7  /    13
+ Outputting properties of CP     8  /    13
+ Outputting properties of CP     9  /    13
+ Outputting properties of CP    10  /    13
+ Outputting properties of CP    11  /    13
+ Outputting properties of CP    12  /    13
+ Outputting properties of CP    13  /    13
+ Done! The results have been outputted to CPprop.txt in current folder
+ Note: Unless otherwise specified, all units are in a.u.
+
+              ================ Topology analysis ===============
+ -11 Delete results and reselect real space function, current:    1
+ -10 Return to main menu
+ -9 Measure distances, angles and dihedral angles between CPs or atoms
+ -5 Modify or print detail or export paths, or plot property along a path
+ -4 Modify or export CPs (critical points)
+ -3 Set interbasin surface generating parameters
+ -2 Set path generating parameters
+ -1 Set CP searching parameters
+ 0 Print and visualize all generated CPs, paths and interbasin surfaces
+ 1 Search CPs from given starting points
+ 2 Search CPs from nuclear positions
+ 3 Search CPs from midpoint of atomic pairs
+ 4 Search CPs from triangle center of three atoms
+ 5 Search CPs from pyramid center of four atoms
+ 6 Search CPs from a batch of points within sphere(s)
+ 7 Show real space function values at specific CP or all CPs
+ 8 Generating the paths connecting (3,-3) and (3,-1) CPs
+ 9 Generating the paths connecting (3,+1) and (3,+3) CPs
+ 10 Add or delete interbasin surfaces
+ 20 Calculate Shannon aromaticity index
+ 21 Calculate gradient and curvature of electron density along a direction
+ Note: Previous orbital information has been restored
+
+ "q": Exit program gracefully          "r": Load a new file
+                    ************ Main function menu ************
+ 0 Show molecular structure and view orbitals
+ 1 Output all properties at a point       2 Topology analysis
+ 3 Output and plot specific property in a line
+ 4 Output and plot specific property in a plane
+ 5 Output and plot specific property within a spatial region (calc. grid data)
+ 6 Check & modify wavefunction
+ 7 Population analysis and calculation of atomic charges
+ 8 Orbital composition analysis           9 Bond order analysis
+ 10 Plot total DOS, PDOS, OPDOS, local DOS, COHP and photoelectron spectrum
+ 11 Plot IR/Raman/UV-Vis/ECD/VCD/ROA/NMR spectrum
+ 12 Quantitative analysis of molecular surface
+ 13 Process grid data (No grid data is presented currently)
+ 14 Adaptive natural density partitioning (AdNDP) analysis
+ 15 Fuzzy atomic space analysis
+ 16 Charge decomposition analysis (CDA) and plot orbital interaction diagram
+ 17 Basin analysis                       18 Electron excitation analysis
+ 19 Orbital localization analysis        20 Visual study of weak interaction
+ 21 Energy decomposition analysis        22 Conceptual DFT (CDFT) analysis
+ 23 ETS-NOCV analysis                    24 (Hyper)polarizability analysis
+ 25 Electron delocalization and aromaticity analyses
+ 26 Structure and geometry related analyses
+ 100 Other functions (Part 1)            200 Other functions (Part 2)
+ 300 Other functions (Part 3)
+
+--- stderr ---
+Note: The following floating-point exceptions are signalling: IEEE_DIVIDE_BY_ZERO IEEE_OVERFLOW_FLAG IEEE_UNDERFLOW_FLAG

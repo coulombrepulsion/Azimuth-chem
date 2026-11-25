@@ -1,0 +1,14 @@
+# water: relaxed 2D scan of the two O-H bonds 0.85..1.25 A (5 x 5 points); B3LYP/def2-SVP (0.106 reference)
+! B3LYP def2-SVP TightSCF Opt
+%geom
+  MaxIter 200
+  Scan
+  B 0 1 = 0.85, 1.25, 5
+  B 0 2 = 0.85, 1.25, 5
+  end
+end
+* xyz 0 1
+O   0.000000   0.000000   0.117300
+H   0.000000   0.757200  -0.469200
+H   0.000000  -0.757200  -0.469200
+*

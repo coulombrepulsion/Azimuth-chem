@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>π orbitals and pericyclic reactions</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/wh.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-wh-g.webp"><!--pose:end-->
+<h1>π orbitals and pericyclic reactions</h1>
+<p class="lead">Concerted (pericyclic) reactions proceed through a cyclic transition state, and whether they are allowed is decided by the symmetry of the frontier orbitals — the Woodward–Hoffmann rules. The page works in three steps: first we build the π orbitals of polyenes by the Hückel method, then see how the signs at the ends of the HOMO set the direction of rotation on ring closure, and finally how the frontier orbitals of two molecules overlap in a cycloaddition. Lobe color is the sign of the coefficient, size its magnitude.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>The Hückel method is a teaching model of π orbitals: ψ<sub>k</sub> of a polyene has k − 1 nodes, and 4n + 2 π electrons in a ring give a closed shell (aromaticity).</li><li>The course of a pericyclic reaction is set by the symmetry of the frontier orbitals (or by the correlation diagram).</li><li>Electrocyclic reactions: 4n electrons — conrotatory thermally, 4n + 2 — disrotatory; the reverse under irradiation.</li><li>Thermal [2 + 2] cycloaddition is forbidden and photochemical allowed; [4 + 2] is thermally allowed.</li><li>The smaller the HOMO–LUMO gap of the reactants, the faster the reaction.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> the Hückel method and the symmetry of the frontier orbitals</summary><dl><dt>What is computed</dt><dd>π orbitals of polyenes, the signs at the ends of the HOMO, whether pericyclic reactions are allowed.</dd><dt>Which approximations are made</dt><dd>The Hückel method: only π electrons, the parameters α and β; the transition state is not computed.</dd><dt>What can be concluded</dt><dd>Whether a reaction is symmetry-allowed, yes; its rate and barrier, no.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h0s">
+  <h2 id="h0s">1. π orbitals of polyenes: the Hückel method</h2>
+  <p class="small">Each C atom of a conjugated system contributes one p orbital; α is the energy of an electron in the atomic p orbital, β &lt; 0 is the interaction of neighbouring atoms, and everything else is dropped. This gives levels E = α + xβ (the larger x, the lower the level) and the signs of the coefficients — which is exactly what the Woodward–Hoffmann rules need. Today the simple Hückel method is a teaching model: in quantum chemistry programs a similar scheme (the extended Hückel method) is used at most as an initial guess for SCF. But it gets the number of nodes and the symmetry of π orbitals right. Click a level to see the orbital.</p>
+  <div class="crow"><span class="l">System</span><span class="grp" id="hkG" role="group" aria-label="π system"></span></div>
+  <div class="two"><svg id="hkMol" viewBox="0 0 460 300" role="img" aria-label="Orbital of the π system"></svg><svg id="hkLev" viewBox="0 0 460 300" role="img" aria-label="π orbital levels" style="touch-action:manipulation"></svg></div>
+  <div class="status" id="t0"></div>
+</section>
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">2. Electrocyclic reactions</h2>
+  <p class="small">The ends of the polyene rotate and close into a σ bond. Step 1: find the frontier orbital — on heating it is the HOMO, under irradiation the former LUMO that the electron went to. Step 2: look at the signs of its terminal coefficients. A bond forms if lobes of the same sign turn toward each other: with opposite signs at the ends this is conrotation, with equal signs disrotation.</p>
+  <div class="crow"><span class="l">System</span><span class="grp" id="sysG" role="group" aria-label="System"></span></div>
+  <div class="crow"><span class="l">Conditions</span><span class="grp" id="condG" role="group" aria-label="Conditions"></span><span class="hint" id="condHint"></span></div>
+  <div class="crow"><span class="l">Rotation of terminal groups</span><input type="range" id="th" min="0" max="90" step="1" style="width:240px" aria-label="Rotation angle"><span class="val" id="thv"></span><button class="btn primary" type="button" id="play">Close the ring</button></div>
+  <div class="two">
+    <div class="mode"><b>Conrotatory</b><span class="hint">both terminal groups rotate in the same direction; the C₂ axis is preserved</span><svg id="pCon" viewBox="0 0 420 300" role="img" aria-label="Conrotatory closure"></svg><span class="verd" id="vCon"></span></div>
+    <div class="mode"><b>Disrotatory</b><span class="hint">the terminal groups rotate toward each other; the σ plane is preserved</span><svg id="pDis" viewBox="0 0 420 300" role="img" aria-label="Disrotatory closure"></svg><span class="verd" id="vDis"></span></div>
+  </div>
+  <div class="legend"><span><i class="box" style="background:var(--lp-bg);border:1.5px solid var(--lp)"></i>c &gt; 0</span><span><i class="box" style="background:var(--ln-bg);border:1.5px solid var(--ln)"></i>c &lt; 0</span><span>Me — methyl groups on the terminal atoms (E,E isomer): they show which stereoisomer is formed</span></div>
+  <div class="status" id="t1"></div>
+  <details class="more"><summary>More: the correlation diagram — the same conclusion from the symmetry of all orbitals</summary>
+  <div class="crow"><span class="l">Conserved element</span><span class="grp" id="corG" role="group" aria-label="Mode"></span></div>
+  <div class="two"><svg id="corr" viewBox="0 0 520 420" role="img" aria-label="Orbital correlation diagram"></svg><div class="status" id="t2"></div></div>
+  </details>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">3. Cycloaddition: frontier orbitals</h2>
+  <p class="small">The components approach face to face (suprafacial on both sides). New bonds form at the termini; the reaction is allowed if the frontier orbitals overlap in phase <b>at both ends</b> at once.</p>
+  <div class="crow"><span class="l">Component A</span><span class="grp" id="aG" role="group" aria-label="Component A"></span></div>
+  <div class="crow"><span class="l">Component B</span><span class="grp" id="bG" role="group" aria-label="Component B"></span></div>
+  <div class="crow"><span class="l">Conditions</span><span class="grp" id="cond2G" role="group" aria-label="Conditions"></span></div>
+  <div class="two"><svg id="fmo" viewBox="0 0 460 340" role="img" aria-label="Overlap of frontier orbitals"></svg><svg id="lev" viewBox="0 0 460 340" role="img" aria-label="Frontier orbital levels"></svg></div>
+  <div class="status" id="t3"></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">4. Summary of the rules</h2>
+  <div class="tablewrap" id="rules"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">What does the reaction path look like on the potential energy surface?</span><a class="nqA" href="pes.html" data-goto="pes">Potential energy surface →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Benzene and cyclobutadiene in section 1: why is benzene aromatic and cyclobutadiene not?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">In benzene 4n + 2 π electrons fill all bonding levels, in cyclobutadiene two electrons sit on degenerate nonbonding levels</button><button type="button" class="opt">Cyclobutadiene is strained, the orbitals are irrelevant</button><button type="button" class="opt">Both have the same delocalization energy</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>In benzene 6 π electrons (4n + 2) fill three bonding levels, the shell is closed, and the delocalization energy is 2|β|. Cyclobutadiene has 4 π electrons (4n): two of them occupy, one each, a degenerate pair of nonbonding levels E = α, and the delocalization energy is 0 — this is antiaromaticity.</div></div>
+<div class="tq"><p class="qt"><span>(E,E)-2,4-Hexadiene undergoes ring closure on heating. Which stereoisomer of 3,4-dimethylcyclobutene is formed, and why?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">cis isomer</button><button type="button" class="opt" data-ok="1">trans isomer</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Trans: in the butadiene HOMO ψ₂ the signs at the termini are opposite (c₁ = 0.60, c₄ = −0.60), so bonding overlap arises only on conrotation, and conrotation puts the E,E methyls on opposite faces of the ring.</div></div>
+<div class="tq"><p class="qt"><span>Hexatriene under heating and under irradiation: which mode is allowed in each case?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Heating — conrotatory, irradiation — disrotatory</button><button type="button" class="opt" data-ok="1">Heating — disrotatory, irradiation — conrotatory</button><button type="button" class="opt">Disrotatory in both cases</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>On heating, the HOMO ψ₃ with like signs at the termini decides — disrotatory. On irradiation, an electron occupies ψ₄ with opposite signs — conrotatory.</div></div>
+<div class="tq"><p class="qt"><span>Pentadienyl cation (Nazarov reaction) and allyl cation: how do they close thermally?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Both conrotatory</button><button type="button" class="opt" data-ok="1">Pentadienyl — conrotatory, allyl — disrotatory</button><button type="button" class="opt">Pentadienyl — disrotatory, allyl — conrotatory</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Pentadienyl cation — 4 π electrons, conrotatory; allyl cation — 2 π electrons (4n + 2), disrotatory. What matters is the number of electrons, not the number of atoms.</div></div>
+<div class="tq"><p class="qt"><span>Butadiene → cyclobutene correlation diagram: which orbital “spoils” the disrotatory path?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">ψ₁</button><button type="button" class="opt" data-ok="1">ψ₂</button><button type="button" class="opt">ψ₃</button><button type="button" class="opt">ψ₄</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>ψ₂ (antisymmetric with respect to σ) correlates with the unoccupied π* of cyclobutene. The ground state goes over into a doubly excited state — thermally forbidden.</div></div>
+<div class="tq"><p class="qt"><span>Ethylene + ethylene: what changes under irradiation?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">[2+2] becomes allowed</button><button type="button" class="opt">[2+2] stays forbidden</button><button type="button" class="opt">[2+2] is allowed even without light</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Thermally, the HOMO of one molecule and the LUMO of the other overlap in phase at only one end — [2+2] is forbidden. In excited ethylene an electron sits in the former LUMO, and its overlap with the LUMO of the second molecule is in phase at both ends — photochemically allowed.</div></div>
+<div class="tq"><p class="qt"><span>Why does butadiene react faster with acrolein than with ethylene?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Acrolein is larger</button><button type="button" class="opt">The carbonyl raises the diene HOMO</button><button type="button" class="opt" data-ok="1">The carbonyl lowers the dienophile LUMO, and the gap is smaller</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>The carbonyl lowers the dienophile LUMO: the HOMO–LUMO gap is 0.97|β| versus 1.62|β| with ethylene. A smaller gap means stronger frontier-orbital interaction and a faster Diels–Alder reaction.</div></div>
+</div></details></section>
+<script src="js/wh.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="wh";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/wh.js"></script>
+
+</body>
+</html>

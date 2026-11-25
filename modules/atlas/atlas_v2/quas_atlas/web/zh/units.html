@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>原子单位</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/au.css">
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-au-g.webp"><!--pose:end-->
+<h1>原子单位</h1>
+<p class="lead">在原子单位中，电子的质量、电荷、普朗克常数 ħ 以及 4πε₀ 都等于 1。方程中不再出现这些常数，原子和分子中的特征量都成为数量级为 1 的数。量子化学程序采用原子单位进行计算，输出结果通常也用原子单位。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>在原子单位中 ħ = m<sub>e</sub> = e = 4πε₀ = 1，量子化学方程可以不带常数写出。</li><li>长度单位是 bohr（0.529 Å），能量单位是 hartree（27.2 eV ≈ 2625 kJ/mol）。</li><li>化学能量只是 hartree 的一小部分，而分子总能量是几十到几百 hartree。</li><li>单位换算是阅读程序输出文件时的常规操作。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>单位的精确定义</summary><dl><dt>计算的是什么</dt><dd>原子单位与 SI 单位之间的换算，化学中的能量尺度。</dd><dt>采用了哪些近似</dt><dd>这里没有近似：原子单位只是选择一种尺度（把 ħ、m<sub>e</sub>、e 和 4πε₀ 取为 1），而不是模型。换算为 SI 时使用 CODATA 2018 推荐的常数值；误差只可能出现在常数的最后几位。</dd><dt>能得出什么结论</dt><dd>换算是精确的；能量标尺上的“特征”能量是数量级。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">同一个哈密顿量——两种写法</h2>
+  <div class="eq">
+    <div class="eqb"><div class="t">SI 单位下的氢原子</div><span class="big">Ĥ = −<span class=fr><span>ħ²</span><span>2m<sub>e</sub></span></span> ∇² − <span class=fr><span>e²</span><span>4πε₀r</span></span></span></div>
+    <div class="eqb"><div class="t">原子单位下</div><span class="big">Ĥ = −<span class=fr><span>1</span><span>2</span></span> ∇² − <span class=fr><span>1</span><span>r</span></span></span></div>
+  </div>
+  <div class="tablewrap" id="baseTab"></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">玻尔和哈特里从何而来</h2>
+  <p class="small">由不确定关系估计氢原子的大小：如果电子被限制在半径为 r 的区域内，其动量 p ~ <span class=fr><span>ħ</span><span>r</span></span>，动能 ~ <span class=fr><span>ħ²</span><span>2m<sub>e</sub>r²</span></span>。收缩使吸引能 −<span class=fr><span>e²</span><span>4πε₀r</span></span> 降低，但动能升高。总和的极小值出现在 r = a₀ = <span class=fr><span>4πε₀ħ²</span><span>m<sub>e</sub>e²</span></span> 处：这就是玻尔，而极小值处的能量为 −½ 哈特里。</p>
+  <div class="crow"><span class="l">核电荷 Z</span><input type="range" id="Z" min="1" max="6" step="1" style="width:200px" aria-label="核电荷"><span class="val" id="Zv"></span></div>
+  <div class="crow"><span class="l">半径 r</span><input type="range" id="r" min="0.05" max="2" step="0.005" style="width:280px" aria-label="半径"><span class="val" id="rv"></span><button class="btn primary" type="button" id="rMin">到最小值</button></div>
+  <div class="crow"><span class="l">图的单位</span><span class="grp" id="uG" role="group" aria-label="单位"></span></div>
+  <div class="two"><svg id="eChart" viewBox="0 0 540 300" role="img" aria-label="能量随半径的变化"></svg><div style="display:flex;flex-direction:column;gap:8px"><div class="kvt" id="eKv"></div><div class="status" id="t3"></div></div></div>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">化学中的能量标尺</h2>
+  <div class="crow"><span class="l">显示单位</span><span class="grp" id="sG" role="group" aria-label="标尺单位"></span></div>
+  <svg id="scale" viewBox="0 0 900 420" role="img" aria-label="对数标尺上的特征能量"></svg>
+  <p class="hint">对数标尺：每一格相差 10 倍。能量取绝对值；数值仅供参考。橙色标出的是 kT 和“化学精度”——用它们来比较其他能量很方便。</p>
+</section>
+<section class="panel convP" aria-labelledby="h2s">
+  <details class="convD"><summary><h2 id="h2s">换算器</h2></summary>
+<!-- below the energy scale and collapsed by default -->
+  <div class="crow"><span class="l">物理量</span><span class="grp" id="catG" role="group" aria-label="物理量"></span></div>
+  <div class="conv"><input id="cv" value="1" inputmode="decimal" aria-label="数值"><select id="cu" aria-label="单位"></select></div>
+  <div class="tablewrap" id="convTab"></div>
+  <p class="hint">常数值取自 CODATA 2018。小数分隔符可用逗号或点。</p>
+  </details>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">哪个体系能精确求解，由此能得出什么？</span><a class="nqA" href="hydrogen.html" data-goto="hat">氢原子 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>将 1 哈特里换算为 eV 和 kJ/mol。</span></p>
+<p class="olab">1 哈特里，eV</p><div class="opts" role="group"><button type="button" class="opt">627.5</button><button type="button" class="opt" data-ok="1">27.211</button><button type="button" class="opt">2625.5</button><button type="button" class="opt">13.606</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>27.211 eV 和 2625.5 kJ/mol（627.5 kcal/mol）。值得记住：1 eV ≈ 96.5 kJ/mol。</div></div>
+<div class="tq"><p class="qt"><span>C–C 键能 ≈ 348 kJ/mol。这相当于多少哈特里？</span></p>
+<p class="olab">键能，哈特里</p><div class="opts" role="group"><button type="button" class="opt">133</button><button type="button" class="opt">0.0133</button><button type="button" class="opt">3.6</button><button type="button" class="opt" data-ok="1">0.133</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>≈ 0.133 E<sub>h</sub>。化学能量是哈特里的百分之几到十分之几，而分子的总能量是几十到几百哈特里。因此总能量要打印到小数点后 6–8 位。</div></div>
+<div class="tq"><p class="qt"><span>298 K 时的 kT 等于多少哈特里和多少 kJ/mol？</span></p>
+<p class="olab">kT，kJ/mol</p><div class="opts" role="group"><button type="button" class="opt">0.025</button><button type="button" class="opt">8.31</button><button type="button" class="opt" data-ok="1">2.48</button><button type="button" class="opt">0.59</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>9.4·10⁻⁴ E<sub>h</sub> = 2.48 kJ/mol。“化学精度” 1 kcal/mol = 1.6·10⁻³ E<sub>h</sub>——小于 2 mE<sub>h</sub>。</div></div>
+<div class="tq"><p class="qt"><span>在“玻尔和哈特里从何而来”部分中，分别对 Z = 1 和 Z = 2 点击“到极小值”。大小和能量如何变化？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">尺寸 ∝ Z，能量 ∝ Z</button><button type="button" class="opt" data-ok="1">尺寸 ∝ <span class=fr><span>1</span><span>Z</span></span>，能量 ∝ Z²</button><button type="button" class="opt">尺寸不变，能量 ∝ Z²</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>Z = 1：r = 1 玻尔，E = −0.5 E<sub>h</sub> = −13.6 eV。Z = 2（He⁺）：r = 0.5 玻尔，E = −2 E<sub>h</sub> = −54.4 eV。大小 ∝ <span class=fr><span>1</span><span>Z</span></span>，能量 ∝ Z²。</div></div>
+<div class="tq"><p class="qt"><span>水的偶极矩为 1.85 D。这相当于多少原子单位？</span></p>
+<p class="olab">偶极矩，原子单位</p><div class="opts" role="group"><button type="button" class="opt">4.70</button><button type="button" class="opt" data-ok="1">0.73</button><button type="button" class="opt">0.39</button><button type="button" class="opt">1.85</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>≈ 0.73 a.u.（1 a.u. = e·a₀ = 2.54 D）。程序会用两种单位打印偶极矩。</div></div>
+<div class="tq"><p class="qt"><span>1 个原子质量单位等于多少个电子质量？这与玻恩–奥本海默近似有什么关系？</span></p>
+<p class="olab">电子质量的倍数</p><div class="opts" role="group"><button type="button" class="opt">931.5</button><button type="button" class="opt">1</button><button type="button" class="opt">1836.2</button><button type="button" class="opt" data-ok="1">1822.9</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>1822.9。即使是质子也比电子重 1836 倍，因此原子核的运动慢得多，电子来得及适应原子核的位置。</div></div>
+</div></details></section>
+<script src="js/units.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="au";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/units.js"></script>
+
+</body>
+</html>

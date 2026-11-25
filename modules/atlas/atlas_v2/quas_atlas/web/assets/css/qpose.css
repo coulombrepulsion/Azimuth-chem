@@ -1,0 +1,16 @@
+/* Quail's pose at the top of a topic page. Larger (280x262 instead of 210x196), and the
+   header no longer reserves its height: the picture hangs over the top right of «Что нужно понять»,
+   whose text flows around a spacer of the overlapping height (--qpo, set by assets/js/nav.js), so the
+   gap between the lead and the box is gone. Without the script the box simply starts below the picture. */
+.qPoseH{position:relative;padding-right:300px;min-height:0}
+.qPose{position:absolute;right:0;top:-4px;width:280px;height:262px;object-fit:contain;object-position:right top;pointer-events:none;user-select:none;z-index:2}
+.qPoseH~.keys{display:block}
+.qPoseH~.keys::before{content:"";float:right;width:var(--qpw,0px);height:var(--qpo,0px);margin:-10px -16px 0 12px}
+/* the text follows the outline of Quill (--qps from assets/js/nav.js), not the rectangle of her picture */
+.qPoseH~.keys::before{shape-outside:var(--qps,none)}
+.qPoseH~.keys h2{margin:0 0 6px}.qPoseH~.keys li+li{margin-top:4px}
+.qPoseH~.keys ul{display:block}
+@media (max-width:1024px){.qPoseH{padding-right:216px}.qPose{width:200px;height:187px}}
+@media (max-width:640px){.qPoseH{padding-right:100px}.qPose{width:96px;height:90px}}
+@media (max-width:380px){.qPoseH{padding-right:0}.qPose{display:none}}
+@media print{.qPose{display:none}.qPoseH{padding-right:0}}

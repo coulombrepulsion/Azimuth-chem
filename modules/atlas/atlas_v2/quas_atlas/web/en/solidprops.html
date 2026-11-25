@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Properties of crystals: compression, phonons, heat capacity</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>Properties of crystals: compression, phonons, heat capacity</h1>
+<p class="lead">The total energy of a crystal at several volumes gives the equilibrium lattice constant and the bulk modulus; the second derivatives of the energy over the displacements of the atoms give the phonons; the phonons give the heat capacity and the thermochemistry. Here you see how each of these quantities is built and what spoils its calculation.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>The equation of state E(V): a series of calculations at several volumes is fitted by the Birch–Murnaghan formula, giving V₀, the bulk modulus B₀ = V·d²E/dV² and its pressure derivative B₀′.</li><li>B₀ needs an accurate energy: a range of volumes of ±5–10 %, a good convergence in k-points and E<sub>cut</sub>. A noise of a few meV over a narrow range makes B₀′ meaningless.</li><li>Phonons are the vibrations of the lattice with a wave vector q. With two atoms per cell there is an acoustic branch (ω → 0 at Γ) and an optical one; the gap between them grows with the difference of the masses.</li><li>The heat capacity: at T ≪ θ<sub>D</sub> C<sub>v</sub> ∝ T³ (the Debye model), at T ≳ θ<sub>D</sub> it is 3R per mole of atoms (the Dulong–Petit law). The Einstein model with one frequency gives too small a C<sub>v</sub> at low T.</li><li>In Quantum ESPRESSO: E(V) — a series of pw.x and ev.x (or vc-relax); phonons — ph.x, q2r.x and matdyn.x; the phonon DOS gives the heat capacity and the entropy of the crystal.</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">The equation of state and the bulk modulus</h2>
+  <div class="crow"><span class="l">Material</span><span class="grp" id="eG" role="group" aria-label="Material"></span></div>
+  <div class="crow"><span class="l">Range of volumes ±, %</span><input type="range" id="sp" min="1" max="20" step="0.5" value="6" aria-label="range"><span class="val" id="spv"></span></div>
+  <div class="crow"><span class="l">Number of calculations</span><input type="range" id="np" min="4" max="15" step="1" value="7" aria-label="points"><span class="val" id="npv"></span></div>
+  <div class="crow"><span class="l">Noise of the energy, meV</span><input type="range" id="nz" min="0" max="20" step="0.5" value="0" aria-label="noise"><span class="val" id="nzv"></span></div>
+  <svg id="echart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Energy against volume"></svg>
+  <div class="legend" id="eleg"></div>
+  <div class="cards" id="ecards"></div>
+  <p class="status" id="eNote"></p>
+  <p class="hint">E(V) = E₀ + (9V₀B₀/16)·{[(V₀/V)<sup>2/3</sup> − 1]³B₀′ + [(V₀/V)<sup>2/3</sup> − 1]²[6 − 4(V₀/V)<sup>2/3</sup>]}. The «calculations» are points of the reference curve shifted by up to ± the noise (as from loose convergence). 1 eV/Å³ = 160.2 GPa. The reference B₀ are from Kittel.</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">The phonons of a chain of two atoms</h2>
+  <div class="crow"><span class="l">Mass of atom 1, amu</span><input type="range" id="m1" min="1" max="200" step="0.1" value="24.3" aria-label="m1"><span class="val" id="m1v"></span></div>
+  <div class="crow"><span class="l">Mass of atom 2, amu</span><input type="range" id="m2" min="1" max="200" step="0.1" value="16" aria-label="m2"><span class="val" id="m2v"></span></div>
+  <div class="crow"><span class="l">Stiffness of the bond C, N/m</span><input type="range" id="cc" min="5" max="200" step="1" value="60" aria-label="C"><span class="val" id="ccv"></span></div>
+  <svg id="pchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Phonon dispersion"></svg>
+  <div class="legend" id="pleg"></div>
+  <div class="cards" id="pcards"></div>
+  <p class="status" id="phNote"></p>
+  <p class="hint">ω² = C(1/m₁ + 1/m₂) ∓ C·√[(1/m₁ + 1/m₂)² − 4 sin²(qa/2)/(m₁m₂)]. The edges of the branches at the zone boundary: √(2C/m<sub>heavy</sub>) and √(2C/m<sub>light</sub>), the optical one at Γ — √(2C(1/m₁ + 1/m₂)). The masses 24.3 and 16 are those of Mg and O.</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Heat capacity: Debye and Einstein</h2>
+  <div class="crow"><span class="l">Material</span><span class="grp" id="cG" role="group" aria-label="Material"></span></div>
+  <div class="crow"><span class="l">Temperature, K</span><input type="range" id="tt" min="5" max="1500" step="5" value="300" aria-label="T"><span class="val" id="ttv"></span></div>
+  <svg id="cchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Heat capacity against temperature"></svg>
+  <div class="legend" id="cleg"></div>
+  <div class="cards" id="ccards"></div>
+  <p class="status" id="cNote"></p>
+  <p class="hint">Debye: C<sub>v</sub>/3R = 3(T/θ<sub>D</sub>)³∫₀<sup>θ<sub>D</sub>/T</sup> x⁴eˣ/(eˣ − 1)² dx; Einstein: C<sub>v</sub>/3R = (θ<sub>E</sub>/T)²e<sup>θ<sub>E</sub>/T</sup>/(e<sup>θ<sub>E</sub>/T</sup> − 1)², θ<sub>E</sub> = 0.806·θ<sub>D</sub>; the T³ law: C<sub>v</sub>/3R = (4π⁴/5)(T/θ<sub>D</sub>)³. The Debye temperatures are from Kittel.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">Phonons give the entropy and the zero-point vibrations of a crystal. And how do the vibrational frequencies give the enthalpy and the Gibbs energy of a molecule?</span><a class="nqA" href="thermochemistry.html" data-goto="thermo">Thermochemistry from frequencies →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Si, a range of ±1 %, 7 calculations, a noise of 5 meV. Which quantity does the fit still find sensibly?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">V₀</button><button type="button" class="opt">B₀</button><button type="button" class="opt">B₀′</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>V₀: the position of the minimum shows even through noisy points (19.92 Å³ against the reference 20.02). But the energy at the edge of the range changes by only ~0.6 meV — less than the noise, and B₀ comes out in thousands of GPa. To find B₀ you need a range of ±5–10 % or a smaller noise.</div></div>
+<div class="tq"><p class="qt"><span>A chain with masses 40 and 10 amu, C = 50 N/m. How wide is the gap between the branches?</span></p>
+<p class="olab">Gap, cm⁻¹</p><div class="opts" role="group"><button type="button" class="opt">0</button><button type="button" class="opt">46</button><button type="button" class="opt" data-ok="1">206</button><button type="button" class="opt">412</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>206 cm⁻¹: the top of the acoustic branch √(2C/m<sub>heavy</sub>) = 206 cm⁻¹, the bottom of the optical one √(2C/m<sub>light</sub>) = 412 cm⁻¹ — twice as high, because the masses differ fourfold.</div></div>
+<div class="tq"><p class="qt"><span>How do the atoms move in the optical branch at Γ?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">The two kinds of atoms move against each other</button><button type="button" class="opt">The crystal shifts as a whole</button><button type="button" class="opt">Only the heavy atoms vibrate</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Against each other: the centre of mass of the cell stays in place. The shift as a whole is the acoustic branch at Γ (ω = 0). Only the heavy atoms vibrate in the acoustic branch at the zone boundary.</div></div>
+<div class="tq"><p class="qt"><span>Diamond (θ<sub>D</sub> = 2230 K) at 300 K. What is C<sub>v</sub>/3R roughly?</span></p>
+<p class="olab">C<sub>v</sub>/3R</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">0.17</button><button type="button" class="opt">0.5</button><button type="button" class="opt">0.94</button><button type="button" class="opt">1.0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>≈ 0.17: room temperature is far below θ<sub>D</sub>, and most vibrations of diamond are «frozen». Copper (θ<sub>D</sub> = 343 K) at the same temperature nearly reaches the Dulong–Petit limit: 0.94.</div></div>
+</div></details></section>
+<script src="js/solidprops.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="solidprops";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/solidprops.js"></script>
+
+</body>
+</html>

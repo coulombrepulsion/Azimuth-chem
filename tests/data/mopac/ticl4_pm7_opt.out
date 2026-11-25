@@ -1,0 +1,187 @@
+ *******************************************************************************
+ **                                                                           **
+ **                              MOPAC v23.2.5                                **
+ **                                                                           **
+ *******************************************************************************
+ ** MOPAC's Digital Object Identifier: https://doi.org/10.5281/zenodo.6511958 **
+ **                                                                           **
+ ** Please cite the open-source release paper for use of this MOPAC version:  **
+ ** J. E. Moussa and J. J. P. Stewart (2026)                                  **
+ ** MOPAC: An open-source semiempirical molecular orbital program             **
+ ** J. Open Source Softw., 11(119), 8025, https://doi.org/10.21105/joss.08025 **
+ *******************************************************************************
+
+                              PM7 CALCULATION RESULTS
+
+ *******************************************************************************
+ *  CALCULATION DONE: (MAX THREADS = 1)              Mon Nov  2 01:32:19 2026  *
+ *  PM7        - The PM7 Hamiltonian to be used
+ *  PRECISE    - TIGHTER CRITERIA TO BE USED
+ *  T=         - A TIME OF 172800.0 SECONDS REQUESTED
+ *  DUMP=N     - RESTART FILE WRITTEN EVERY 7200.0 SECONDS REQUESTED
+ *  AUX        - OUTPUT AUXILIARY INFORMATION
+ *******************************************************************************
+PM7 PRECISE AUX
+ titanium tetrachloride, PM7 optimization (3d on Ti, d on Cl)
+ Azimuth reference input (0.91.6)
+   ATOM   CHEMICAL          X               Y               Z
+  NUMBER   SYMBOL      (ANGSTROMS)     (ANGSTROMS)     (ANGSTROMS)
+
+     1      Ti          0.00000000  *   0.00000000  *   0.00000000  *
+     2      Cl          1.25800000  *   1.25800000  *   1.25800000  *
+     3      Cl         -1.25800000  *  -1.25800000  *   1.25800000  *
+     4      Cl         -1.25800000  *   1.25800000  *  -1.25800000  *
+     5      Cl          1.25800000  *  -1.25800000  *  -1.25800000  *
+
+
+
+          CARTESIAN COORDINATES 
+
+    NO.       ATOM           X           Y           Z
+
+     1        Ti          0.0000      0.0000      0.0000
+     2        Cl          1.2580      1.2580      1.2580
+     3        Cl         -1.2580     -1.2580      1.2580
+     4        Cl         -1.2580      1.2580     -1.2580
+     5        Cl          1.2580     -1.2580     -1.2580
+
+ General Reference for PM7:
+ "Optimization of Parameters for Semiempirical Methods VI: More Modifications to the 
+ NDDO Approximations and Re-optimization of Parameters", J. J. P. Stewart, J. Mol. Mod., 1:32, 19 (2013)
+ https://link.springer.com/article/10.1007/s00894-012-1667-x
+
+           Empirical Formula: Ti Cl4  =     5 atoms
+
+
+
+      MOLECULAR POINT GROUP   :   Td  
+
+
+      RHF CALCULATION, NO. OF DOUBLY OCCUPIED LEVELS = 16
+
+
+          Geometry optimization using EF
+
+          DIAGONAL MATRIX USED AS START HESSIAN
+
+ CYCLE:     1 TIME:   0.011 TIME LEFT:  2.00D  GRAD.:     1.029 HEAT: -162.6854
+ CYCLE:     2 TIME:   0.008 TIME LEFT:  2.00D  GRAD.:     0.052 HEAT: -162.6868
+ CYCLE:     3 TIME:   0.006 TIME LEFT:  2.00D  GRAD.:     0.046 HEAT: -162.6868
+
+     GRADIENT =  0.04641 IS LESS THAN CUTOFF =  0.05000
+
+
+
+ -------------------------------------------------------------------------------
+ PM7 PRECISE AUX
+ titanium tetrachloride, PM7 optimization (3d on Ti, d on Cl)
+ Azimuth reference input (0.91.6)
+
+
+     GEOMETRY OPTIMISED USING EIGENVECTOR FOLLOWING (EF).     
+     SCF FIELD WAS ACHIEVED                                   
+
+
+                              PM7 CALCULATION
+                                                       MOPAC v23.2.5 MacOS
+                                                       Mon Nov  2 01:32:19 2026
+
+
+
+
+          FINAL HEAT OF FORMATION =       -162.68684 KCAL/MOL =    -680.68172 KJ/MOL
+
+
+          COSMO AREA              =        152.81 SQUARE ANGSTROMS
+          COSMO VOLUME            =        150.72 CUBIC ANGSTROMS
+
+          GRADIENT NORM           =          0.04641          =       0.02076 PER ATOM
+          IONIZATION POTENTIAL    =         11.411000 EV
+          HOMO LUMO ENERGIES (EV) =        -11.411 -2.265
+          NO. OF FILLED LEVELS    =         16
+          MOLECULAR WEIGHT        =        189.7120         POINT GROUP:  Td  
+
+          MOLECULAR DIMENSIONS (Angstroms)
+
+            Atom       Atom       Distance
+           Cl     4   Cl     3     3.56108
+           Cl     5   Cl     2     3.56108
+           Cl     2   Cl     3     2.51664
+
+
+          SCF CALCULATIONS        =          4
+
+          WALL-CLOCK TIME         =      0.034 SECONDS
+          COMPUTATION TIME        =      0.033 SECONDS
+
+
+
+
+   ATOM   CHEMICAL          X               Y               Z
+  NUMBER   SYMBOL      (ANGSTROMS)     (ANGSTROMS)     (ANGSTROMS)
+
+     1      Ti         -0.00000000  *  -0.00000000  *   0.00000000  *
+     2      Cl          1.25831785  *   1.25862090  *   1.25944097  *
+     3      Cl         -1.25831785  *  -1.25862090  *   1.25944097  *
+     4      Cl         -1.25831785  *   1.25862090  *  -1.25944097  *
+     5      Cl          1.25831785  *  -1.25862090  *  -1.25944097  *
+
+                             CARTESIAN COORDINATES
+
+   1   Ti       -0.000000002    -0.000000003     0.000000003
+   2   Cl        1.258317849     1.258620901     1.259440970
+   3   Cl       -1.258317849    -1.258620900     1.259440973
+   4   Cl       -1.258317850     1.258620904    -1.259440973
+   5   Cl        1.258317853    -1.258620901    -1.259440973
+
+
+           Empirical Formula: Ti Cl4  =     5 atoms
+
+
+
+      MOLECULAR POINT GROUP   :   Td  
+
+
+                  EIGENVALUES  
+ -25.96313 -25.25466 -25.25456 -25.25452 -14.55059 -13.68199 -13.68034 -13.26343
+ -13.26327 -13.26286 -12.13081 -12.12982 -12.12946 -11.41118 -11.41113 -11.41100
+  -2.26476  -2.26396  -2.26367  -2.19648  -2.19512  -0.32542  11.11722  11.11757
+  11.11770  68.54232  68.54325  68.54360  68.57254  68.57257  68.57259  68.66831
+  68.66851  68.66904  68.67616  68.67646  69.36779  69.36794  69.74316  69.74327
+  69.74357  70.13378  70.13407  70.13418  70.59122
+
+
+              NET ATOMIC CHARGES AND DIPOLE CONTRIBUTIONS
+
+  ATOM NO.   TYPE          CHARGE      No. of ELECS.   s-Pop       p-Pop       d-Pop       
+    1         Ti           0.261519        3.7385     0.68508     0.28093     2.77248
+    2         Cl          -0.065380        7.0654     1.98445     5.08007     0.00085
+    3         Cl          -0.065380        7.0654     1.98445     5.08007     0.00085
+    4         Cl          -0.065380        7.0654     1.98445     5.08007     0.00085
+    5         Cl          -0.065380        7.0654     1.98445     5.08007     0.00085
+ DIPOLE           X         Y         Z       TOTAL
+ POINT-CHG.    -0.000    -0.000     0.000     0.000
+ HYBRID        -0.000    -0.000    -0.000     0.000
+ SUM           -0.000    -0.000     0.000     0.000
+
+
+          ATOMIC ORBITAL ELECTRON POPULATIONS
+
+     Atom    s        px        py        pz      x^2-y^2     xz        z^2       yz        xy
+    1 Ti   0.68508   0.09359   0.09363   0.09371   0.55534   0.55392   0.55544   0.55395   0.55383
+    2 Cl   1.98445   1.69347   1.69340   1.69320   0.00017   0.00017   0.00017   0.00017   0.00017
+    3 Cl   1.98445   1.69347   1.69340   1.69320   0.00017   0.00017   0.00017   0.00017   0.00017
+    4 Cl   1.98445   1.69347   1.69340   1.69320   0.00017   0.00017   0.00017   0.00017   0.00017
+    5 Cl   1.98445   1.69347   1.69340   1.69320   0.00017   0.00017   0.00017   0.00017   0.00017
+
+ **********************
+ *                    *
+ * JOB ENDED NORMALLY *
+ *                    *
+ **********************
+
+
+
+ TOTAL JOB TIME:             0.04 SECONDS
+
+ == MOPAC DONE ==

@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Теория возмущений и MP2</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/mp2.css">
+
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261028-mp2-g.webp"><!--pose:end-->
+<h1>Теория возмущений и MP2</h1>
+<p class="lead">Метод Мёллера–Плессета делит гамильтониан на «простую» часть — сумму фокианов, для которой определитель Хартри–Фока точен, — и возмущение, то есть всё, что фокиан упускает. Первая поправка на корреляцию — MP2 (второй порядок теории возмущений) — восстанавливает большую часть корреляции за N⁵ операций и размерно-согласована. Здесь видно, откуда берётся её формула, когда ряд теории возмущений сходится быстро, а когда плохо, и сколько корреляции MP2 даёт для реальных молекул. Модель H₂ в минимальном базисе решается прямо на странице, остальное посчитано в PySCF.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>В методе Мёллера–Плессета нулевое приближение — сумма фокианов; первая поправка возвращает энергию Хартри–Фока, вторая (MP2) — первая поправка на корреляцию.</li><li>Каждый вклад MP2 делится на разность орбитальных энергий; при малой щели (растянутые связи, бирадикалы) MP2 переоценивает корреляцию.</li><li>Ряд Мёллера–Плессета сходится не всегда хорошо: при растянутых связях MP3 бывает хуже MP2, ряд колеблется, а в базисах с диффузными функциями может и расходиться.</li><li>MP2 размерно-согласован и стоит ~N⁵; для обычных молекул он даёт около 86–99 % корреляционной энергии CCSD(T) в том же базисе.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> малые молекулы, небольшие базисы</summary><dl><dt>Что вычисляется</dt><dd>Поправки E⁽⁰⁾, E⁽¹⁾, E⁽²⁾ для H₂ в STO-3G при любом R; ряд Мёллера–Плессета до 25-го порядка для воды в 6-31G при трёх длинах связей (в пространстве полного КВ); корреляционная энергия MP2, CCSD и CCSD(T) для девяти молекул в cc-pVDZ.</dd><dt>Какие приближения приняты</dt><dd>Геометрии фиксированы и близки к экспериментальным; в cc-pVDZ заморожен остов; эталон для доли корреляции — CCSD(T), а не полное КВ.</dd><dt>Какой вывод можно сделать</dt><dd>Откуда берётся формула MP2, когда ряд сходится и почему MP2 ломается при малых щелях — да; точность MP2 для энергий реакций — нет: её показывает страница «Иерархия методов и лестница Якова».</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">H₂ в минимальном базисе: поправки по порядкам</h2>
+  <p class="hint">Нулевой порядок — сумма энергий занятых орбиталей, 2ε<sub>g</sub>. Первая поправка возвращает энергию Хартри–Фока. Вторая — вклад единственного двукратного возбуждения σ<sub>g</sub>² → σ<sub>u</sub>²: E<sup>(2)</sup> = −K² / 2(ε<sub>u</sub> − ε<sub>g</sub>). В числителе — тот же обменный интеграл, что связывает конфигурации в КВ, в знаменателе — разность орбитальных энергий.</p>
+  <div class="crow"><span class="l">Расстояние R</span><input type="range" id="R" min="0" max="72" step="1" value="7" aria-label="Расстояние R"><span class="val" id="Rv"></span></div>
+  <div class="two">
+    <svg id="h2C" viewBox="0 0 560 330" role="img" aria-label="Энергия H₂: Хартри–Фок, MP2 и точное решение"></svg>
+    <div><div class="mbox" id="h2M"></div></div>
+  </div>
+  <p class="hint" id="h2N"></p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Ряд теории возмущений: сходится ли он?</h2>
+  <p class="hint">MP2, MP3, MP4 — первые члены бесконечного ряда, сумма которого должна давать точную энергию в данном базисе (полное КВ). Здесь ряд для молекулы воды в базисе 6-31G посчитан до 25-го порядка прямо в пространстве всех 1,66 миллиона определителей. Растягивая обе связи O–H, можно увидеть, как сходимость ухудшается.</p>
+  <div class="crow"><span class="l">Длина связей O–H</span><span class="grp" id="geoG" role="group" aria-label="Длина связей"></span></div>
+  <div class="crow"><span class="l">Порядок теории возмущений n</span><input type="range" id="ord" min="2" max="25" step="1" value="2" aria-label="Порядок теории возмущений"><span class="val" id="ordV"></span></div>
+  <div class="two">
+    <svg id="serC" viewBox="0 0 560 330" role="img" aria-label="Ошибка суммы ряда Мёллера–Плессета по порядкам"></svg>
+    <div class="tablewrap" id="serT"></div>
+  </div>
+  <p class="hint" id="serN"></p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Сколько корреляции даёт MP2</h2>
+  <p class="hint">Корреляционная энергия MP2 в сравнении с CCSD(T) для девяти молекул в базисе cc-pVDZ (остовные электроны заморожены, геометрии близки к экспериментальным). CCSD(T) здесь — эталон: для этих молекул он отличается от полного КВ на 1–2 % корреляционной энергии.</p>
+  <svg id="tabC" viewBox="0 0 960 300" role="img" aria-label="Доля корреляционной энергии CCSD(T), которую даёт MP2"></svg>
+  <div class="tablewrap" id="tabT"></div>
+  <p class="hint" id="tabN"></p>
+  <div class="eq">
+    <div class="eqb"><div class="t">Почему MP2 размерно-согласован</div>Энергия MP2 — сумма вкладов отдельных пар электронов, без нормировки всей функции. Для невзаимодействующих молекул пары разных молекул не дают вклада, и энергия складывается: для (H₂)ₙ в 6-31G вклад на молекулу равен −17,397 мEₕ при n = 1, 2, 3 и 4.</div>
+    <div class="eqb"><div class="t">Цена</div>Самый дорогой шаг MP2 — перевод двухэлектронных интегралов в базис молекулярных орбиталей, ~N⁵. Это на порядок дешевле CCSD (N⁶) и ещё дешевле CCSD(T) (N⁷); с приближением RI MP2 можно считать для молекул из сотен атомов.</div>
+    <div class="eqb"><div class="t">Малый знаменатель</div>Каждый вклад делится на разность орбитальных энергий. Если она мала (растянутые связи, бирадикалы, металлы, ароматические системы с низко лежащими возбуждениями), вклад растёт без ограничения — как у H₂ на большом расстоянии.</div>
+    <div class="eqb"><div class="t">Где MP2 используют</div>Межмолекулярные взаимодействия, конформационные энергии, геометрии; в двойных гибридных функционалах DFT (например, B2PLYP) вклад MP2 добавляют к функционалу. Варианты SCS-MP2 масштабируют вклады пар с одинаковым и противоположным спином по отдельности.</div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Что делать, когда одного определителя мало, — при разрыве связи или в бирадикале?</span><a class="nqA" href="casscf.html" data-goto="cas">Многоконфигурационные методы: CASSCF →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>H₂ в STO-3G, R = 0,75 Å: какую долю точной корреляционной энергии даёт MP2, %?</span></p>
+<p class="olab">Доля MP2, %</p><div class="opts" role="group"><button type="button" class="opt">36</button><button type="button" class="opt">100</button><button type="button" class="opt">98</button><button type="button" class="opt" data-ok="1">64</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Около 64 %. В минимальном базисе у H₂ одно возбуждение σg² → σu², а его вклад второго порядка заметно меньше точного: остальное приходит в высших порядках. В реальных базисах доля MP2 для обычных молекул намного выше (раздел 3).</div></div>
+<div class="tq"><p class="qt"><span>Растягивайте связь H₂: при каком R (с точностью до 0,05 Å) MP2 даёт ровно 100 % корреляции, а дальше — больше?</span></p>
+<p class="olab">R, Å</p><div class="opts" role="group"><button type="button" class="opt">6,0</button><button type="button" class="opt">0,75</button><button type="button" class="opt" data-ok="1">3,5</button><button type="button" class="opt">1,5</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Около 3,5 Å. Щель εu − εg уменьшается, а она стоит в знаменателе E⁽²⁾, поэтому поправка растёт быстрее точной корреляционной энергии и дальше «перебирает». Совпадение со 100 % здесь случайно, а не признак точности.</div></div>
+<div class="tq"><p class="qt"><span>Вода при двойной длине связей: какова ошибка MP3 относительно полного КВ, мEₕ?</span></p>
+<p class="olab">Ошибка MP3, мEₕ</p><div class="opts" role="group"><button type="button" class="opt">45</button><button type="button" class="opt">0</button><button type="button" class="opt" data-ok="1">64</button><button type="button" class="opt">6,4</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Около 64 мEₕ — больше, чем у MP2 (45 мEₕ). Третий порядок здесь ухудшает результат, ряд колеблется и сходится медленно: «чем выше порядок, тем лучше» для теории возмущений не гарантировано.</div></div>
+<div class="tq"><p class="qt"><span>Почему MP2, в отличие от CISD, размерно-согласован?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Энергия MP2 — сумма вкладов пар электронов без нормировки общей функции</button><button type="button" class="opt">MP2 включает четырёхкратные возбуждения</button><button type="button" class="opt">MP2 вариационный</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Энергия MP2 — сумма вкладов отдельных пар электронов, без нормировки общей функции. Для невзаимодействующих молекул пары из разных молекул ничего не дают, и энергия складывается: для (H₂)ₙ вклад на молекулу один и тот же при любом n.</div></div>
+<div class="tq"><p class="qt"><span>Какую долю корреляционной энергии CCSD(T) даёт MP2 для метана в cc-pVDZ, %?</span></p>
+<p class="olab">Доля, %</p><div class="opts" role="group"><button type="button" class="opt">100</button><button type="button" class="opt" data-ok="1">86</button><button type="button" class="opt">64</button><button type="button" class="opt">50</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Около 86 % — меньше всего среди этих молекул. Остальное — вклады высших порядков; поэтому для энергий реакций с разрывом связей C–H ошибки MP2 могут достигать нескольких ккал/моль.</div></div>
+</div></details></section>
+<script src="js/mp2.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="mp2";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/mp2.js"></script>
+
+</body>
+</html>

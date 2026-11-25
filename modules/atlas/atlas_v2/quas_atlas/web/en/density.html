@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,benzene">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Electron density</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/dens.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.en.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-dens-g.webp"><!--pose:end-->
+<h1>Electron density</h1>
+<p class="lead">The density ρ(r) = Σ P<sub>μν</sub>χ<sub>μ</sub>(r)χ<sub>ν</sub>(r), unlike orbitals and atomic charges, is an observable: it is measured by X-ray diffraction. The maps are built from a converged RHF calculation in the STO-3G basis set (the same H₂ and HeH⁺ as in the SCF tab), in a plane containing the bond axis. Hover over or tap the map to see the values at a point.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">What to understand</h2><ul><li>The electron density ρ(r) is observable: it can be measured (X-ray structure analysis) and calculated.</li><li>The deformation density Δρ shows how electrons redistribute when a bond forms.</li><li>In Bader theory the bond type is judged at the critical point: the sign of ∇²ρ tells whether density is concentrated between the nuclei.</li><li>The electrostatic potential shows where a charged reagent will approach.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Model limits:</b> the RHF density in a minimal basis</summary><dl><dt>What is computed</dt><dd>Maps of ρ, Δρ, ∇²ρ and the potential for H₂ and HeH⁺.</dd><dt>Which approximations are made</dt><dd>The HF method, the STO-3G basis.</dd><dt>What can be concluded</dt><dd>The shape of the density and the sign of the Laplacian, qualitatively; the exact values at the critical point depend on method and basis.</dd></dl></details><!--lim:end-->
+<section class="controls" aria-label="Parameters">
+  <div class="crow"><span class="l">Molecule</span><span class="grp" id="molG" role="group" aria-label="Molecule"></span></div>
+  <div class="crow"><span class="l">Distance R</span><input type="range" id="R" min="0.8" max="5" step="0.01"><span class="val" id="Rv"></span><button class="btn" type="button" id="Req">Equilibrium</button></div>
+  <div class="crow"><span class="l">Show</span><span class="grp" id="viewG" role="group" aria-label="Quantity"></span></div>
+  <div class="crow"><span class="l">Contours</span><label class="chk"><input type="checkbox" id="cont" checked> show</label></div>
+</section>
+<div class="work" style="grid-template-columns:minmax(0,1.25fr) minmax(0,0.75fr)">
+  <div class="panel">
+    <div class="ptitle" id="mapTitle"></div>
+    <div class="mapwrap"><canvas id="map" width="720" height="440" role="img" aria-label="Map in a plane containing the bond axis"></canvas></div>
+    <div><div class="cbar" id="cbar"></div><div class="cbl" id="cbl"></div></div>
+    <div class="legend" id="mapLeg"></div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">At the cursor point</div>
+    <div class="kvt" id="pt"></div>
+    <div class="ptitle" style="margin-top:6px">Bond critical point</div>
+    <div class="kvt" id="bcp"></div>
+    <div class="status" id="txt"></div>
+  </div>
+</div>
+<section class="panel" aria-labelledby="hProf">
+  <h2 id="hProf">Along the bond axis</h2>
+  <svg id="prof" viewBox="0 0 900 260" role="img" aria-label="Profile of the selected quantity along the bond axis"></svg>
+  <div class="legend" id="profLeg"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Next question</span><span class="nqQ">There is only one density: why do the atomic charges come out different?</span><a class="nqA" href="aim.html" data-goto="aim">Atoms in molecules (Bader) →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Check your knowledge</h2>
+<p class="hint" style="font-size:14px;margin:0">Exercises on the page: do the action on the page and choose an answer — it is checked right away.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>H₂ at equilibrium R: what is the sign of ∇²ρ at the bond critical point, and what does it mean?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">∇²ρ &gt; 0: density is concentrated between the nuclei</button><button type="button" class="opt" data-ok="1">∇²ρ &lt; 0: density is concentrated between the nuclei — a covalent bond</button><button type="button" class="opt">∇²ρ = 0 for any bond</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>∇²ρ ≈ −0.84 &lt; 0 (ρ = 0.256): density is concentrated between the nuclei — a covalent bond in the Bader sense. A positive Laplacian is typical of closed-shell interactions.</div></div>
+<div class="tq"><p class="qt"><span>Stretch H₂. What happens to ∇²ρ at the bond critical point?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Becomes more and more negative</button><button type="button" class="opt">Does not change</button><button type="button" class="opt" data-ok="1">Changes sign to positive</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>It becomes positive (from about 3.4 bohr): density between the atoms is no longer concentrated, as in a closed-shell interaction — the atoms are hardly bonded.</div></div>
+<div class="tq"><p class="qt"><span>Compress H₂. Why does the bond critical point disappear under strong compression?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">The density maxima at the nuclei merge, and there is no minimum along the axis</button><button type="button" class="opt">The bond breaks</button><button type="button" class="opt">The nuclei repel more strongly</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Below ≈ 1.0 bohr the density maxima at the nuclei merge, and ρ has no minimum along the axis. Partly this is a property of the Gaussian basis: it has no cusp at the nuclei.</div></div>
+<div class="tq"><p class="qt"><span>Deformation density of H₂: where were electrons gained and where lost? Why does the density increase at the nuclei themselves?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Gained only on the bond</button><button type="button" class="opt" data-ok="1">Gained on the bond and near the nuclei, lost outside</button><button type="button" class="opt">Lost near the nuclei, gained outside</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Gained on the bond and near the nuclei, lost outside the molecule. At the nuclei, because the molecular function is more contracted than the atomic one (ζ = 1.24 versus 1). The integral of Δρ is zero.</div></div>
+<div class="tq"><p class="qt"><span>HeH⁺ at equilibrium R: why is there no bond critical point in a minimal basis?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">The He–H bond is purely ionic</button><button type="button" class="opt" data-ok="1">In a Gaussian basis H has no density maximum of its own</button><button type="button" class="opt">HeH⁺ has no chemical bond at all</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>H carries too few electrons, and in a Gaussian basis it has no density maximum of its own — the point appears only from about 1.74 bohr. The exact density has a maximum (cusp) at every nucleus, so this is a limitation of the basis, not a property of the molecule.</div></div>
+<div class="tq"><p class="qt"><span>Electrostatic potential of H₂: where is it negative?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Along the molecular axis beyond the nuclei</button><button type="button" class="opt">Nowhere: the molecule is neutral</button><button type="button" class="opt" data-ok="1">Far out in the equatorial plane</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Show answer</button>
+<div class="ans" hidden>Only far out in the equatorial plane, beyond about 2.3 bohr from the axis (about −0.003 a.u.) — a sign of the quadrupole moment. Along the axis the potential is positive. For the cation HeH⁺ φ &gt; 0 everywhere.</div></div>
+</div></details></section>
+<script src="js/density.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="dens";</script><script src="../assets/js/glossary.en.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.en.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.en.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.en.js"></script>
+<!--common:end-->
+
+<script src="js/density.js"></script>
+
+</body>
+</html>

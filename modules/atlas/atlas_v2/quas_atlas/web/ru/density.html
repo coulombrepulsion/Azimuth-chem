@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water,benzene">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Электронная плотность</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/dens.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-dens-g.webp"><!--pose:end-->
+<h1>Электронная плотность</h1>
+<p class="lead">Плотность ρ(r) = Σ P<sub>μν</sub>χ<sub>μ</sub>(r)χ<sub>ν</sub>(r) — в отличие от орбиталей и зарядов на атомах, наблюдаемая величина: её измеряют рентгеновской дифракцией. Карты построены по сошедшемуся расчёту RHF в базисе STO-3G (те же H₂ и HeH⁺, что во вкладке SCF), в плоскости, проходящей через ось связи. Наведите курсор или коснитесь карты, чтобы увидеть значения в точке.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Электронная плотность ρ(r) наблюдаема: её можно измерить (рентгеноструктурный анализ) и рассчитать.</li><li>Деформационная плотность Δρ показывает, как электроны перераспределяются при образовании связи.</li><li>В теории Бейдера тип связи судят по критической точке: знак ∇²ρ говорит, сконцентрирована ли плотность между ядрами.</li><li>Электростатический потенциал показывает, куда подойдёт заряженный реагент.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> плотность RHF в минимальном базисе</summary><dl><dt>Что вычисляется</dt><dd>Карты ρ, Δρ, ∇²ρ и потенциала для H₂ и HeH⁺.</dd><dt>Какие приближения приняты</dt><dd>Метод HF, базис STO-3G.</dd><dt>Какой вывод можно сделать</dt><dd>Форма плотности и знак лапласиана — качественно; точные значения в критической точке зависят от метода и базиса.</dd></dl></details><!--lim:end-->
+<section class="controls" aria-label="Параметры">
+  <div class="crow"><span class="l">Молекула</span><span class="grp" id="molG" role="group" aria-label="Молекула"></span></div>
+  <div class="crow"><span class="l">Расстояние R</span><input type="range" id="R" min="0.8" max="5" step="0.01"><span class="val" id="Rv"></span><button class="btn" type="button" id="Req">Равновесное</button></div>
+  <div class="crow"><span class="l">Что показать</span><span class="grp" id="viewG" role="group" aria-label="Величина"></span></div>
+  <div class="crow"><span class="l">Изолинии</span><label class="chk"><input type="checkbox" id="cont" checked> показывать</label></div>
+</section>
+<div class="work" style="grid-template-columns:minmax(0,1.25fr) minmax(0,0.75fr)">
+  <div class="panel">
+    <div class="ptitle" id="mapTitle"></div>
+    <div class="mapwrap"><canvas id="map" width="720" height="440" role="img" aria-label="Карта в плоскости, содержащей ось связи"></canvas></div>
+    <div><div class="cbar" id="cbar"></div><div class="cbl" id="cbl"></div></div>
+    <div class="legend" id="mapLeg"></div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">В точке под курсором</div>
+    <div class="kvt" id="pt"></div>
+    <div class="ptitle" style="margin-top:6px">Критическая точка связи</div>
+    <div class="kvt" id="bcp"></div>
+    <div class="status" id="txt"></div>
+  </div>
+</div>
+<section class="panel" aria-labelledby="hProf">
+  <h2 id="hProf">Вдоль оси связи</h2>
+  <svg id="prof" viewBox="0 0 900 260" role="img" aria-label="Профиль выбранной величины вдоль оси связи"></svg>
+  <div class="legend" id="profLeg"></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Плотность одна — почему заряды атомов получаются разными?</span><a class="nqA" href="aim.html" data-goto="aim">Атомы в молекулах (Бейдер) →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>H₂ при равновесном R: каков знак ∇²ρ в критической точке связи и что он означает?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">∇²ρ &gt; 0: плотность сконцентрирована между ядрами</button><button type="button" class="opt" data-ok="1">∇²ρ &lt; 0: плотность сконцентрирована между ядрами — ковалентная связь</button><button type="button" class="opt">∇²ρ = 0 для любой связи</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>∇²ρ ≈ −0,84 &lt; 0 (ρ = 0,256): плотность сконцентрирована между ядрами — ковалентная связь по Бейдеру. Положительный лапласиан характерен для взаимодействия закрытых оболочек.</div></div>
+<div class="tq"><p class="qt"><span>Растягивайте H₂. Что происходит с ∇²ρ в критической точке связи?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Становится всё более отрицательным</button><button type="button" class="opt">Не меняется</button><button type="button" class="opt" data-ok="1">Меняет знак на положительный</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Он становится положительным (примерно с 3,4 бор): плотность между атомами уже не сконцентрирована, как у взаимодействия закрытых оболочек, — атомы почти не связаны.</div></div>
+<div class="tq"><p class="qt"><span>Сжимайте H₂. Почему при сильном сжатии критическая точка связи исчезает?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Максимумы плотности у ядер сливаются, и минимума вдоль оси нет</button><button type="button" class="opt">Связь разрывается</button><button type="button" class="opt">Ядра начинают отталкиваться сильнее</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Ниже ≈ 1,0 бор максимумы плотности у ядер сливаются, и вдоль оси у ρ уже нет минимума. Отчасти это свойство гауссова базиса: у него нет излома на ядрах.</div></div>
+<div class="tq"><p class="qt"><span>Деформационная плотность H₂: где электроны прибавились и где убыли? Почему растёт плотность и у самих ядер?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Прибавились только на связи</button><button type="button" class="opt" data-ok="1">Прибавились на связи и у ядер, убыли снаружи</button><button type="button" class="opt">Убыли у ядер, прибавились снаружи</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Прибавились на связи и вблизи ядер, убыли снаружи молекулы. У ядер — потому что молекулярная функция сжата сильнее атомной (ζ = 1,24 против 1). Интеграл Δρ равен нулю.</div></div>
+<div class="tq"><p class="qt"><span>HeH⁺ при равновесном R: почему в минимальном базисе нет критической точки связи?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Связь He–H чисто ионная</button><button type="button" class="opt" data-ok="1">У H в гауссовом базисе нет своего максимума плотности</button><button type="button" class="opt">В HeH⁺ вообще нет химической связи</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>У H слишком мало электронов, и в гауссовом базисе у него нет своего максимума плотности — точка появляется только примерно с 1,74 бор. У точной плотности максимум (касп) есть на каждом ядре, так что это ограничение базиса, а не свойство молекулы.</div></div>
+<div class="tq"><p class="qt"><span>Электростатический потенциал H₂: где он отрицателен?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Вдоль оси молекулы за ядрами</button><button type="button" class="opt">Нигде: молекула нейтральна</button><button type="button" class="opt" data-ok="1">Далеко в экваториальной плоскости</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Только далеко в экваториальной плоскости, примерно с 2,3 бор от оси (около −0,003 ат. ед.) — проявление квадрупольного момента. Вдоль оси потенциал положителен. У катиона HeH⁺ φ &gt; 0 везде.</div></div>
+</div></details></section>
+<script src="js/density.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="dens";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/density.js"></script>
+
+</body>
+</html>

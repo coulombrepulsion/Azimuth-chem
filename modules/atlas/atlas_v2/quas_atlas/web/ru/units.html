@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Атомные единицы</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/au.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-au-g.webp"><!--pose:end-->
+<h1>Атомные единицы</h1>
+<p class="lead">В атомных единицах масса электрона, его заряд, постоянная Планка ħ и 4πε₀ равны единице. Уравнения теряют константы, а характерные величины в атомах и молекулах становятся числами порядка единицы. Квантово-химические программы считают в атомных единицах, и выдача, как правило, тоже в них.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>В атомных единицах ħ = m<sub>e</sub> = e = 4πε₀ = 1, и уравнения квантовой химии записываются без констант.</li><li>Единица длины — бор (0,529 Å), энергии — хартри (27,2 эВ ≈ 2625 кДж/моль).</li><li>Химические энергии — малые доли хартри, полные энергии молекул — десятки и сотни хартри.</li><li>Перевод единиц — обычная операция при чтении выходных файлов программ.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> точные определения единиц</summary><dl><dt>Что вычисляется</dt><dd>Перевод величин между атомными единицами и СИ, масштабы энергий в химии.</dd><dt>Какие приближения приняты</dt><dd>Приближений здесь нет: атомные единицы — это просто выбор масштаба (ħ, m<sub>e</sub>, e и 4πε₀ приняты за 1), а не модель. Переводы в СИ используют рекомендованные значения констант CODATA 2018; ошибка возможна только в последних знаках констант.</dd><dt>Какой вывод можно сделать</dt><dd>Переводы точные; «характерные» энергии на шкале — порядки величин.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Один гамильтониан — две записи</h2>
+  <div class="eq">
+    <div class="eqb"><div class="t">атом водорода в СИ</div><span class="big">Ĥ = −<span class=fr><span>ħ²</span><span>2m<sub>e</sub></span></span> ∇² − <span class=fr><span>e²</span><span>4πε₀r</span></span></span></div>
+    <div class="eqb"><div class="t">в атомных единицах</div><span class="big">Ĥ = −<span class=fr><span>1</span><span>2</span></span> ∇² − <span class=fr><span>1</span><span>r</span></span></span></div>
+  </div>
+  <div class="tablewrap" id="baseTab"></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Откуда берутся бор и хартри</h2>
+  <p class="small">Оценка размера атома водорода из соотношения неопределённостей: если электрон заперт в области радиуса r, его импульс p ~ <span class=fr><span>ħ</span><span>r</span></span> и кинетическая энергия ~ <span class=fr><span>ħ²</span><span>2m<sub>e</sub>r²</span></span>. Сжатие выигрывает в притяжении −<span class=fr><span>e²</span><span>4πε₀r</span></span>, но проигрывает в кинетической энергии. Минимум суммы — при r = a₀ = <span class=fr><span>4πε₀ħ²</span><span>m<sub>e</sub>e²</span></span>: это и есть бор, а энергия в минимуме — −½ хартри.</p>
+  <div class="crow"><span class="l">Заряд ядра Z</span><input type="range" id="Z" min="1" max="6" step="1" style="width:200px" aria-label="Заряд ядра"><span class="val" id="Zv"></span></div>
+  <div class="crow"><span class="l">Радиус r</span><input type="range" id="r" min="0.05" max="2" step="0.005" style="width:280px" aria-label="Радиус"><span class="val" id="rv"></span><button class="btn primary" type="button" id="rMin">К минимуму</button></div>
+  <div class="crow"><span class="l">Единицы графика</span><span class="grp" id="uG" role="group" aria-label="Единицы"></span></div>
+  <div class="two"><svg id="eChart" viewBox="0 0 540 300" role="img" aria-label="Энергия от радиуса"></svg><div style="display:flex;flex-direction:column;gap:8px"><div class="kvt" id="eKv"></div><div class="status" id="t3"></div></div></div>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">Шкала энергий в химии</h2>
+  <div class="crow"><span class="l">Показывать в</span><span class="grp" id="sG" role="group" aria-label="Единицы шкалы"></span></div>
+  <svg id="scale" viewBox="0 0 900 420" role="img" aria-label="Характерные энергии на логарифмической шкале"></svg>
+  <p class="hint">Логарифмическая шкала: каждое деление — в 10 раз. Энергии взяты по модулю; значения ориентировочные. Оранжевым выделены kT и «химическая точность» — с ними удобно сравнивать всё остальное.</p>
+</section>
+<section class="panel convP" aria-labelledby="h2s">
+  <details class="convD"><summary><h2 id="h2s">Конвертер</h2></summary>
+<!-- below the energy scale and collapsed by default -->
+  <div class="crow"><span class="l">Величина</span><span class="grp" id="catG" role="group" aria-label="Величина"></span></div>
+  <div class="conv"><input id="cv" value="1" inputmode="decimal" aria-label="Значение"><select id="cu" aria-label="Единица"></select></div>
+  <div class="tablewrap" id="convTab"></div>
+  <p class="hint">Значения констант — CODATA 2018. Десятичный разделитель — запятая или точка.</p>
+  </details>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Какую систему можно решить точно и что из этого следует?</span><a class="nqA" href="hydrogen.html" data-goto="hat">Атом водорода →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Переведите 1 хартри в эВ и кДж/моль.</span></p>
+<p class="olab">1 хартри, эВ</p><div class="opts" role="group"><button type="button" class="opt">627,5</button><button type="button" class="opt" data-ok="1">27,211</button><button type="button" class="opt">2625,5</button><button type="button" class="opt">13,606</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>27,211 эВ и 2625,5 кДж/моль (627,5 ккал/моль). Полезно помнить: 1 эВ ≈ 96,5 кДж/моль.</div></div>
+<div class="tq"><p class="qt"><span>Энергия связи C–C ≈ 348 кДж/моль. Сколько это в хартри?</span></p>
+<p class="olab">Энергия связи, хартри</p><div class="opts" role="group"><button type="button" class="opt">133</button><button type="button" class="opt">0,0133</button><button type="button" class="opt">3,6</button><button type="button" class="opt" data-ok="1">0,133</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>≈ 0,133 E<sub>h</sub>. Химические энергии — сотые и десятые доли хартри, а полные энергии молекул — десятки и сотни хартри. Поэтому полные энергии печатают с 6–8 знаками после запятой.</div></div>
+<div class="tq"><p class="qt"><span>Чему равно kT при 298 K в хартри и в кДж/моль?</span></p>
+<p class="olab">kT, кДж/моль</p><div class="opts" role="group"><button type="button" class="opt">0,025</button><button type="button" class="opt">8,31</button><button type="button" class="opt" data-ok="1">2,48</button><button type="button" class="opt">0,59</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>9,4·10⁻⁴ E<sub>h</sub> = 2,48 кДж/моль. «Химическая точность» 1 ккал/моль = 1,6·10⁻³ E<sub>h</sub> — меньше 2 мE<sub>h</sub>.</div></div>
+<div class="tq"><p class="qt"><span>В разделе «Откуда берутся бор и хартри» нажмите «К минимуму» для Z = 1 и Z = 2. Как растут размер и энергия?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Размер ∝ Z, энергия ∝ Z</button><button type="button" class="opt" data-ok="1">Размер ∝ <span class=fr><span>1</span><span>Z</span></span>, энергия ∝ Z²</button><button type="button" class="opt">Размер не меняется, энергия ∝ Z²</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Z = 1: r = 1 бор, E = −0,5 E<sub>h</sub> = −13,6 эВ. Z = 2 (He⁺): r = 0,5 бор, E = −2 E<sub>h</sub> = −54,4 эВ. Размер ∝ <span class=fr><span>1</span><span>Z</span></span>, энергия ∝ Z².</div></div>
+<div class="tq"><p class="qt"><span>Дипольный момент воды 1,85 Д. Сколько это в атомных единицах?</span></p>
+<p class="olab">Дипольный момент, ат. ед.</p><div class="opts" role="group"><button type="button" class="opt">4,70</button><button type="button" class="opt" data-ok="1">0,73</button><button type="button" class="opt">0,39</button><button type="button" class="opt">1,85</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>≈ 0,73 ат. ед. (1 ат. ед. = e·a₀ = 2,54 Д). Программы печатают дипольный момент в обеих единицах.</div></div>
+<div class="tq"><p class="qt"><span>Сколько масс электрона в 1 а. е. м.? Как это связано с приближением Борна–Оппенгеймера?</span></p>
+<p class="olab">Масс электрона</p><div class="opts" role="group"><button type="button" class="opt">931,5</button><button type="button" class="opt">1</button><button type="button" class="opt">1836,2</button><button type="button" class="opt" data-ok="1">1822,9</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>1822,9. Даже протон в 1836 раз тяжелее электрона, поэтому ядра движутся намного медленнее и электроны успевают подстроиться под их положение.</div></div>
+</div></details></section>
+<script src="js/units.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="au";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/units.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>氦原子与相关</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/he.css">
+<link rel="stylesheet" href="../assets/css/zh-fonts.zh.css"><link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-he-g.webp"><!--pose:end-->
+<h1>氦原子与电子相关</h1>
+<p class="lead">两个电子和一个原子核——电子相关起重要作用的最简单体系。He 的精确能量已知（−2.903724 原子单位），因此可以看出每种近似贡献了多少。按定义，相关能是精确能量与哈特里–福克极限之差：E<sub>corr</sub> = E<sub>exact</sub> − E<sub>HF</sub>。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>电子间排斥使氦原子问题无法精确求解；最简单的近似是有效核电荷（屏蔽）。</li><li>Hartree–Fock 只在平均意义上考虑排斥；剩余的能量误差就是相关能。</li><li>相关是电子之间协调的回避（库仑空穴）；用显含 r₁₂ 的函数来描述。</li><li>有时相关在定性上很重要：没有它，H⁻ 离子就不稳定。</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>模型的适用范围：</b>变分函数；精确能量已知</summary><dl><dt>计算的是什么</dt><dd>He 及类 He 离子的能量，从单参数函数到 Hylleraas 函数；库仑空穴。</dd><dt>采用了哪些近似</dt><dd>非相对论哈密顿量，原子核无限重；函数的项数有限。</dd><dt>能得出什么结论</dt><dd>用完整哈密顿量计算的变分能量是精确能量的上界；不含电子排斥的那一行求解的是另一个问题，不适用这一规则。6 项 Hylleraas 函数与精确值相差不到 0.001 E<sub>h</sub>。</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. 近似的阶梯</h2>
+  <div class="crow"><span class="l">体系</span><span class="grp" id="zG" role="group" aria-label="双电子体系"></span></div>
+  <div class="two"><svg id="ladder" viewBox="0 0 540 396" role="img" aria-label="不同近似的能量"></svg><div style="display:flex;flex-direction:column;gap:8px"><div class="tablewrap" id="lTab"></div><div class="status" id="t1"></div></div></div>
+  <p class="hint">海勒拉斯（1929）：试探函数 e<sup>−ζ(r₁+r₂)</sup>·(1 + c₁r₁₂ + …) 显式依赖于电子间距离 r₁₂。系数由线性变分法求得，ζ 进行优化。HF 值和精确值取自文献表格。</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. 有效核电荷：屏蔽</h2>
+  <p class="small">最简单的试探函数是两个 1s 轨道的乘积，用电荷 ζ 代替 Z：ψ = <span class=fr><span>ζ³</span><span>π</span></span> e<sup>−ζ(r₁+r₂)</sup>。于是 T = ζ²，V<sub>ne</sub> = −2Zζ，V<sub>ee</sub> = <span class=fr><span>5ζ</span><span>8</span></span>。每个电子都部分地为另一个电子屏蔽原子核。</p>
+  <div class="crow"><span class="l">ζ</span><input type="range" id="zeta" min="0.3" max="4.5" step="0.005" style="width:280px" aria-label="有效核电荷"><span class="val" id="zv"></span><button class="btn primary" type="button" id="zMin">到最小值</button></div>
+  <div class="two"><svg id="zChart" viewBox="0 0 540 300" role="img" aria-label="能量随有效核电荷的变化"></svg><div style="display:flex;flex-direction:column;gap:8px"><div class="legend"><span><i class="sw" style="border-color:var(--accent)"></i>E(ζ)</span><span><i class="sw" style="border-color:var(--warn);border-top-style:dashed"></i>T</span><span><i class="sw" style="border-color:var(--ok);border-top-style:dashed"></i>V<sub>ne</sub></span><span><i class="sw" style="border-color:var(--virt);border-top-style:dashed"></i>V<sub>ee</sub></span></div><div class="kvt" id="zKv"></div><div class="status" id="t2"></div></div></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">3. 库仑空穴</h2>
+  <p class="small">把电子 1 固定在距核 r₁ 处（z 轴上），观察电子 2 的位置。在乘积函数（无相关）中，电子 2 “不知道”电子 1 的存在——无论电子 1 在哪里，它的分布都相同。在海勒拉斯函数中，电子 2 远离电子 1：在其周围形成库仑空穴。</p>
+  <div class="crow"><span class="l">电子 1 的位置 r₁</span><input type="range" id="r1" min="0.2" max="2" step="0.01" style="width:260px" aria-label="第一个电子的位置"><span class="val" id="r1v"></span></div>
+  <div class="two"><svg id="hole" viewBox="0 0 540 300" role="img" aria-label="第二个电子沿轴的密度"></svg><div style="display:flex;flex-direction:column;gap:8px"><div class="legend"><span><i class="sw" style="border-color:var(--muted);border-top-style:dashed"></i>无相关（哈特里–福克）</span><span><i class="sw" style="border-color:var(--accent)"></i>海勒拉斯，6 项</span><span><i class="box" style="background:var(--rho)"></i>差值：空穴与“凸起”</span></div><div class="kvt" id="hKv"></div><div class="status" id="t3"></div></div></div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">恢复相关能的方法是如何构造的？为什么截断 CI 对大体系效果不好？</span><a class="nqA" href="ci-cc.html" data-goto="cicc">组态相互作用与耦合簇 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>第 2 部分：求 He 的最优有效核电荷。它的含义是什么？</span></p>
+<p class="olab">最优 ζ</p><div class="opts" role="group"><button type="button" class="opt">1.375</button><button type="button" class="opt" data-ok="1">1.6875</button><button type="button" class="opt">2</button><button type="button" class="opt">1</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>ζ = Z − <span class=fr><span>5</span><span>16</span></span> = 1.6875，E = −2.8477。每个电子为另一个电子屏蔽了 <span class=fr><span>5</span><span>16</span></span> 的核电荷；在极小值处 <span class=fr><span>V</span><span>T</span></span> = −2。</div></div>
+<div class="tq"><p class="qt"><span>为什么“无排斥”的能量（−4）低于精确值（−2.9037），而变分原理不允许低于精确值？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">违反了变分原理</button><button type="button" class="opt" data-ok="1">忽略了排斥——解的是另一个问题</button><button type="button" class="opt">这是数值积分误差</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>变分原理针对的是完整的哈密顿量。这里舍弃了电子间排斥，即求解的是另一个问题——这一估计不是变分的。</div></div>
+<div class="tq"><p class="qt"><span>含一个 r₁₂ 项的 Hylleraas 函数给出 He 相关能的多少，为什么？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">约 5%</button><button type="button" class="opt" data-ok="1">约 70%</button><button type="button" class="opt">全部 100%</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>约为 −0.0420 a.u.（≈ −110 kJ/mol）的 70%，三项时为 97%。r₁₂ 项直接描述电子彼此保持距离。</div></div>
+<div class="tq"><p class="qt"><span>选择 H⁻。哪些近似预测该离子稳定？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">所有近似</button><button type="button" class="opt">一个也没有</button><button type="button" class="opt" data-ok="1">只有考虑相关的（含 r₁₂ 项）</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>只有考虑相关的近似。有效核电荷（−0.473）乃至 HF 极限（−0.488）都高于 −0.5（H + e⁻）：多余的电子留不住。含 r₁₂ 项的函数就已给出 −0.509 < −0.5。H⁻ 的稳定性纯粹是相关效应。</div></div>
+<div class="tq"><p class="qt"><span>比较 H⁻、He、Li⁺、Be²⁺ 的 E<sub>corr</sub>。</span></p>
+<div class="opts" role="group"><button type="button" class="opt">按 Z² 增长</button><button type="button" class="opt" data-ok="1">几乎不变，≈ −0.04 原子单位</button><button type="button" class="opt">按 Z 增长</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>−0.040；−0.042；−0.044；−0.044 原子单位。尽管总能量从 −0.53 变到 −13.7，相关能几乎不变：同一轨道上一对电子的相关能 ≈ 1 eV。</div></div>
+<div class="tq"><p class="qt"><span>库仑空穴：相关如何改变在原子核同一侧找到第二个电子的概率？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">增大</button><button type="button" class="opt">不变</button><button type="button" class="opt" data-ok="1">减小：电子相互回避</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>减小：r₁ = 0.6 bohr 时约 45 %，而不是 50 %。⟨r₁₂⟩ 从 1.362 增大到 1.422 bohr。但这本身还不能证明排斥变小：排斥能等于 ⟨1/r₁₂⟩，而不是 1/⟨r₁₂⟩。必须单独计算它：⟨1/r₁₂⟩ 从 1.0258 减小到 0.9460 E<sub>h</sub>（精确值 0.9458）。 参照是哈特里–福克函数——不含相关的最佳函数，因此两条曲线之差就是真正的库仑空穴。</div></div>
+</div></details></section>
+<script src="js/helium.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="he";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/helium.js"></script>
+
+</body>
+</html>

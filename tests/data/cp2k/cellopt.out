@@ -1,0 +1,33 @@
+ DBCSR| CPU Multiplication driver                                           XSMM
+ CP2K| version string:                                        CP2K version 2026.2
+ CP2K| source code revision number:                                   git:abcdef0
+ GLOBAL| Run type                                                          CELL_OPT
+
+ TOTAL NUMBERS AND MAXIMUM NUMBERS
+
+  Total number of            - Atomic kinds:                                   1
+                             - Atoms:                                          8
+
+  *** SCF run converged in     9 steps ***
+
+ ENERGY| Total FORCE_EVAL ( QS ) energy [hartree]              -31.580512345678
+
+ --------  Informations at step =     1 ------------
+  Optimization Method        =                 BFGS
+ OPTIMIZATION STEP:      1
+
+  *** SCF run converged in     9 steps ***
+
+ ENERGY| Total FORCE_EVAL ( QS ) energy [hartree]              -31.581234567890
+
+ OPTIMIZATION STEP:      2
+
+  *** SCF run converged in     9 steps ***
+
+ ENERGY| Total FORCE_EVAL ( QS ) energy [hartree]              -31.581300000000
+
+ *******************************************************************************
+ ***                    GEOMETRY OPTIMIZATION COMPLETED                      ***
+ *******************************************************************************
+
+  **** **** ******  **  PROGRAM ENDED AT                 2026-11-12 01:00:00.000

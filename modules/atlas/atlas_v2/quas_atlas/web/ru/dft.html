@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qc-molecules" content="water">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Метод функционала плотности</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/dft.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261023-dft-g.webp"><!--pose:end-->
+<h1>Метод функционала плотности</h1>
+<p class="lead">В методе Кона–Шэма энергия E = T<sub>s</sub> + V<sub>ne</sub> + J[ρ] + E<sub>xc</sub>[ρ], где J — классическое отталкивание облака самого от себя, а E<sub>xc</sub> должен исправить всё остальное. Точный E<sub>xc</sub> неизвестен. Здесь три задачи, где точный ответ известен, — на них видно, чем ошибаются приближённые функционалы и зачем нужны гибридные.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>В DFT энергия — функционал плотности; приближения (LDA, GGA, гибриды) различаются обменно-корреляционной частью.</li><li>Ошибка самодействия: в LDA электрон частично отталкивается сам от себя.</li><li>Точная E(N) кусочно-линейна, скачок наклона — фундаментальная щель I − A = (ε<sub>НСМО</sub> − ε<sub>ВЗМО</sub>) + Δ<sub>xc</sub>; у LDA и GGA E(N) выпукла (ошибка делокализации), а Δ<sub>xc</sub> нет.</li><li>Доля точного обмена уменьшает эту ошибку, но не устраняет её полностью.</li></ul></section><!--keys:end--><!--lim:start--><details class="limits"><summary><b>Границы модели:</b> модельные задачи с известным ответом</summary><dl><dt>Что вычисляется</dt><dd>Ошибка самодействия, E(N) при дробном N, ошибка делокализации для H и H₂⁺.</dd><dt>Какие приближения приняты</dt><dd>Одна функция e<sup>−ζr</sup> с оптимальным ζ вместо полного самосогласованного решения; функционалы LSDA, Хартри–Фок и их смесь.</dd><dt>Какой вывод можно сделать</dt><dd>Знак и характер ошибок функционалов показаны верно; числа зависят от упрощённой формы функции.</dd></dl></details><!--lim:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">1. Атом водорода: ошибка самодействия</h2>
+  <p class="small">У одного электрона нет межэлектронного отталкивания, поэтому должно быть E<sub>x</sub> = −J и E<sub>c</sub> = 0. Для точной плотности ρ = <span class=fr><span>e<sup>−2r</sup></span><span>π</span></span>: J = <span class=fr><span>5</span><span>16</span></span> = 0,3125. В Хартри–Фоке обмен точно сокращает J. Приближённые функционалы сокращают его лишь частично — остаток и есть <b>ошибка самодействия</b>.</p>
+  <div class="two">
+    <svg id="sieBar" viewBox="0 0 540 300" role="img" aria-label="Кулоновская, обменная и корреляционная энергии атома H для разных функционалов"></svg>
+    <div class="status" id="t1"></div>
+  </div>
+  <div class="tablewrap" id="sieTab"></div>
+  <div class="legend"><span><i class="box" style="background:var(--muted)"></i>J (отталкивание электрона от собственного облака)</span><span><i class="box" style="background:var(--accent)"></i>E<sub>x</sub></span><span><i class="box" style="background:var(--rho-l)"></i>E<sub>c</sub></span><span>◆ J + E<sub>x</sub> + E<sub>c</sub> — должно быть 0</span></div>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">2. Дробное число электронов: E(N) должна быть ломаной</h2>
+  <p class="small">Точная энергия при дробном N (статистическая смесь H⁺, H и H⁻) линейна между целыми N, а наклон <span class=fr><span>dE</span><span>dN</span></span> равен энергии верхней занятой орбитали. Слева от N = 1 наклон должен быть −I = −0,5, справа −A = −0,0277: скачок на N = 1 — это фундаментальная щель. Её нельзя путать с орбитальной: в точной теории Кона–Шэма I − A = (ε<sub>НСМО</sub> − ε<sub>ВЗМО</sub>) + Δ<sub>xc</sub>, где Δ<sub>xc</sub> — разрыв производной обменно-корреляционной энергии по числу электронов (при переходе через целое N сам потенциал v<sub>xc</sub> скачком сдвигается на Δ<sub>xc</sub>), так что даже точная щель КШ обычно меньше I − A. Расчёт: атом H с N электронами на 1s, показатель ζ оптимизируется при каждом N.</p>
+  <div class="crow"><span class="l">Доля точного обмена a</span><input type="range" class="aS" min="0" max="20" step="1" style="width:280px" aria-label="Доля точного обмена"><span class="val aV"></span><span class="hint">E<sub>xc</sub> = a·E<sub>x</sub><sup>HF</sup> + (1 − a)·E<sub>x</sub><sup>LSDA</sup> + E<sub>c</sub><sup>LSDA</sup>; a = 0 — LSDA</span></div>
+  <div class="two">
+    <div><div class="ptitle">E(N), ат. ед.</div><svg id="enChart" viewBox="0 0 540 300" role="img" aria-label="Энергия от числа электронов"></svg></div>
+    <div><div class="ptitle">Отклонение от прямой между целыми N, ат. ед.</div><svg id="devChart" viewBox="0 0 540 300" role="img" aria-label="Отклонение E(N) от линейности"></svg></div>
+  </div>
+  <div class="legend"><span><i class="sw" style="border-color:var(--ink)"></i>точно</span><span><i class="sw" style="border-color:var(--muted);border-top-style:dashed"></i>Хартри–Фок</span><span><i class="sw" style="border-color:var(--accent)"></i>функционал при выбранном a</span><span><i class="sw" style="border-color:var(--rho-l);border-top-style:dotted"></i>касательные в N = 1 (наклон = ε<sub>ВЗМО</sub>)</span></div>
+  <div class="kvt" id="enKv"></div>
+  <div class="status" id="t2"></div>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">3. H₂⁺: ошибка делокализации</h2>
+  <p class="small">В H₂⁺ один электрон, поэтому Хартри–Фок здесь точен (в пределах базиса STO-3G с оптимальным ζ). При разведении ядер точная энергия стремится к E(H) = −0,5. Симметричная делокализованная плотность сама по себе допустима: в пределе описания «электрон на одном атоме» и «по половине электрона на каждом» должны быть вырождены. Ошибка функционала с выпуклой E(N) в другом: две половинки электрона дают 2·E(½) — ниже правильного предела, то есть функционал искусственно предпочитает дробные заряды.</p>
+  <div class="crow"><span class="l">Доля точного обмена a</span><input type="range" class="aS" min="0" max="20" step="1" style="width:280px" aria-label="Доля точного обмена"><span class="val aV"></span></div>
+  <div class="two">
+    <div><svg id="h2Chart" viewBox="0 0 540 320" role="img" aria-label="Кривые энергии H2+"></svg>
+      <div class="legend"><span><i class="sw" style="border-color:var(--ink)"></i>Хартри–Фок = точно для одного электрона</span><span><i class="sw" style="border-color:var(--accent)"></i>функционал: электрон на σ<sub>g</sub> (поровну на обоих атомах)</span><span><i class="sw" style="border-color:var(--rho-l);border-top-style:dashed"></i>функционал: электрон на одном атоме</span></div></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><div class="crow"><span class="l" style="min-width:auto">R</span><input type="range" id="Rs" min="0" max="94" step="1" style="width:220px" aria-label="Межъядерное расстояние"><span class="val" id="Rv"></span></div><div class="kvt" id="h2Kv"></div><div class="status" id="t3"></div></div>
+  </div>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Как из атомных орбиталей построить молекулярные и предсказать порядок связи?</span><a class="nqA" href="diatomics.html" data-goto="mo">МО двухатомных молекул →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Атом H в LSDA: какой должна быть корреляционная энергия и что получается?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Отрицательной, и LSDA даёт её правильно</button><button type="button" class="opt" data-ok="1">Нулевой, а LSDA даёт ложное отрицательное значение</button><button type="button" class="opt">Положительной</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>У одного электрона корреляции нет, точно E<sub>c</sub> = 0. LSDA даёт E<sub>c</sub> = −0,022, а обмен E<sub>x</sub> = −0,268 вместо −0,3125: электрон «отталкивается сам от себя» примерно на 58 кДж/моль.</div></div>
+<div class="tq"><p class="qt"><span>Почему для атома H «LDA без учёта спина» хуже, чем LSDA?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">LDA не учитывает корреляцию</button><button type="button" class="opt" data-ok="1">Формула делит плотность пополам между спинами — ошибка самодействия больше</button><button type="button" class="opt">В LDA обмен завышен</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>У одного электрона ρ<sub>β</sub> = 0, система полностью спин-поляризована. Формула для неполяризованного газа делит плотность пополам между спинами и даёт E<sub>x</sub> = −0,213 — ошибка самодействия почти втрое больше.</div></div>
+<div class="tq"><p class="qt"><span>LSDA, a = 0: как ε<sub>ВЗМО</sub> атома H соотносится с потенциалом ионизации?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Почти вдвое меньше I по модулю</button><button type="button" class="opt">Совпадает с I</button><button type="button" class="opt">Больше I по модулю</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>ε<sub>ВЗМО</sub> ≈ −0,27, а I = 0,5: теорема Купманса для LDA не работает. Причина — выпуклость E(N) вниз: наклон при N → 1⁻ меньше по модулю, чем секущая. Поэтому орбитальные энергии LDA и GGA нельзя использовать как потенциалы ионизации.</div></div>
+<div class="tq"><p class="qt"><span>Точный скачок наклона E(N) при N = 1 — фундаментальная щель I − A. Как она связана с орбитальной щелью Кона–Шэма?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">I − A = щель КШ + Δ<sub>xc</sub></button><button type="button" class="opt">Точная щель КШ всегда равна I − A</button><button type="button" class="opt">Они никак не связаны</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>В точной теории I − A = (ε<sub>НСМО</sub> − ε<sub>ВЗМО</sub>) + Δ<sub>xc</sub>: даже точная щель КШ меньше I − A на разрыв производной E<sub>xc</sub> по числу электронов Δ<sub>xc</sub> (на столько же скачком сдвигается потенциал v<sub>xc</sub>). У гладкого приближённого функционала (LDA, GGA) Δ<sub>xc</sub> = 0, и скачок наклона E(N) просто равен его орбитальной щели (в LSDA здесь 0,17 против точных 0,472).</div></div>
+<div class="tq"><p class="qt"><span>H₂⁺ при R = 10 бор: какое описание LSDA считает выгоднее и почему это ошибка?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Локализованное: электрон на одном атоме</button><button type="button" class="opt">Оба одинаково, как и должно быть</button><button type="button" class="opt" data-ok="1">Делокализованное: дробные заряды искусственно занижены по энергии</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Делокализованное: σ<sub>g</sub> −0,549 против −0,473 на одном атоме, хотя точный предел −0,495 в этом базисе. В точной теории оба описания в пределе вырождены, а LSDA искусственно занижает энергию дробных зарядов: 2·E(½) &lt; E(1). Ошибка ≈ 140 кДж/моль.</div></div>
+<div class="tq"><p class="qt"><span>Двигайте долю точного обмена a. Как меняются кривизна E(N) и ошибка H₂⁺?</span></p>
+<div class="opts" role="group"><button type="button" class="opt">Растут</button><button type="button" class="opt">Не меняются</button><button type="button" class="opt" data-ok="1">Уменьшаются</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Кривизна и ошибка делокализации уменьшаются: точный обмен выгибает E(N) вверх, LSDA — вниз. При a = 0,25 (25 % точного обмена, как в PBE0; здесь он смешан с LSDA, а не с PBE) E(½) − ½E(1) = −0,037 вместо −0,050, ошибка H₂⁺ при R = 10 бор — 118 кДж/моль. Даже при a = 1 остаётся самодействие корреляции LSDA.</div></div>
+</div></details></section>
+<script src="js/dft.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="dft";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/dft.js"></script>
+
+</body>
+</html>

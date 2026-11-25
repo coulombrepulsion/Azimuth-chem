@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>寻找过渡态与反应路径</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>寻找过渡态与反应路径</h1>
+<p class="lead">极小值优化器自己就能找到：向下滚动然后停下。过渡态是两个坑之间的山口，无法滚到那里。这里在模型表面上可以看到如何用模式跟踪走向鞍点、弹性带如何找到反应路径、为什么扫描会误导，以及如何证明找到的就是那个鞍点。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>过渡态是一阶鞍点：梯度为零，Hessian 恰有一个负本征值（一个虚频）。BFGS 保持 Hessian 正定，从鞍点附近会滚入极小值。</li><li>本征矢跟踪：在模式基中沿反应坐标步长向上，沿其余模式向下；步长受信赖半径限制。需要好的起点：收敛到鞍点的区域比极小值的碗窄。</li><li>弹性带方法（NEB）：反应物与产物之间的一串像；真实力取垂直于路径的部分，弹簧力取沿路径的部分。攀爬像（CI-NEB）没有弹簧，沿路径向上并收敛到鞍点。</li><li>弛豫扫描需要选择坐标。如果反应同时沿两个坐标进行，剖面会断裂，正向和反向扫描不一致。扫描最大值是起点，而不是过渡态。</li><li>对所找到点的三项检验：一个虚频；其模式是反应运动；由鞍点出发的 IRC 到达反应物和产物。</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">鞍点与本征矢跟踪</h2>
+  <div class="crow"><span class="l">起点 x</span><input type="range" id="fx" min="-1.5" max="1.5" step="0.01" value="0.8" aria-label="x"><span class="val" id="fxv"></span></div>
+  <div class="crow"><span class="l">起点 y</span><input type="range" id="fy" min="-1.1" max="1.1" step="0.01" value="0.3" aria-label="y"><span class="val" id="fyv"></span></div>
+  <div class="crow"><span class="l">信赖半径</span><input type="range" id="rr" min="0.05" max="1" step="0.01" value="0.3" aria-label="半径"><span class="val" id="rrv"></span></div>
+  <div class="crow"><span class="l">沿该模式向上</span><span class="grp" id="mG" role="group" aria-label="沿该模式向上"></span></div>
+  <div class="two" style="grid-template-columns:minmax(0,1.55fr) minmax(0,1fr)"><svg id="fchart" class="ch" viewBox="0 0 560 440" role="img" aria-label="表面 (x² − 1)² + y² 与步骤"></svg><svg id="feprof" class="ch" viewBox="0 0 360 440" role="img" aria-label="各步能量"></svg></div>
+  <div class="legend" id="fleg"></div>
+  <div class="cards" id="fcards"></div>
+  <p class="status" id="fNote"></p>
+  <p class="hint">讲座中的表面 E = (x² − 1)² + y²：极小值 (±1, 0)，鞍点 (0, 0)，E = 1，Hessian 为 diag(12x² − 4, 2)。模式基中的步长：沿选定模式 +g/|λ|，沿其余 −g/|λ|，每个分量不超过半径。牛顿法：所有模式 −g/λ。IRC 是从沿负模式偏移 0.02 的鞍点出发的梯度下降。</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">弹性带：NEB 与攀爬像</h2>
+  <div class="crow"><span class="l">像上的力</span><span class="grp" id="kG" role="group" aria-label="像上的力"></span></div>
+  <div class="crow"><span class="l">像数（含端点）</span><input type="range" id="ni" min="3" max="21" step="2" value="9" aria-label="n"><span class="val" id="niv"></span></div>
+  <div class="crow"><span class="l">弹簧劲度 k</span><input type="range" id="ks" min="1" max="300" step="1" value="50" aria-label="k"><span class="val" id="ksv"></span></div>
+  <div class="two" style="grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)"><svg id="nchart" class="ch" viewBox="0 0 480 440" role="img" aria-label="Müller–Brown 表面与弹性带"></svg><svg id="nprof" class="ch" viewBox="0 0 440 440" role="img" aria-label="各像能量"></svg></div>
+  <div class="legend" id="nleg"></div>
+  <div class="cards" id="ncards"></div>
+  <p class="status" id="nNote"></p>
+  <p class="hint">Müller–Brown 表面（1979）：反应物 A (−0.56, 1.44)，产物 C (−0.05, 0.47)，两者间鞍点 (−0.82, 0.62)，势垒为其单位下 106.0。F<sub>i</sub> = −∇E + (∇E·τ)τ + k(|R<sub>i+1</sub> − R<sub>i</sub>| − |R<sub>i</sub> − R<sub>i−1</sub>|)τ；攀爬像：F = −∇E + 2(∇E·τ)τ。最速下降 1500 步；端点固定。</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">弛豫扫描与鞍点对比</h2>
+  <div class="crow"><span class="l">坐标</span><span class="grp" id="cG" role="group" aria-label="坐标"></span></div>
+  <div class="two" style="grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)"><svg id="schart" class="ch" viewBox="0 0 480 440" role="img" aria-label="表面上的扫描路径"></svg><svg id="sprof" class="ch" viewBox="0 0 440 440" role="img" aria-label="扫描剖面"></svg></div>
+  <div class="legend" id="sleg"></div>
+  <div class="cards" id="scards"></div>
+  <p class="status" id="sNote"></p>
+  <p class="hint">坐标从 A 到 C 取 41 个值；每个值下从上一点出发优化另一个坐标。“正向”从 A 开始，“反向”从 C 开始。圆圈为真实鞍点。</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">鞍点已找到并检验。如何由势垒高度得到速率常数？</span><a class="nqA" href="kinetics.html" data-goto="kin">反应速率：过渡态 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>E = (x² − 1)² + y²。鞍点 (0, 0) 处 Hessian 的本征值是多少？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">−4 和 2</button><button type="button" class="opt">4 和 2</button><button type="button" class="opt">−4 和 −2</button><button type="button" class="opt">0 和 2</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>−4 和 2：Hessian 为 diag(12x² − 4, 2)，x = 0 时为 (−4, 2)。一个负值——一阶鞍点；两个负值则是山顶。</div></div>
+<div class="tq"><p class="qt"><span>为什么在鞍点附近启动的 BFGS 找不到过渡态？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">它保持 Hessian 正定，总是向下走</button><button type="button" class="opt">它的信赖半径不够</button><button type="button" class="opt">鞍点处梯度不为零</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>BFGS“认为”自己在坑里，向下走——进入反应物或产物。寻找鞍点的算法需要有一个负值的 Hessian，并知道哪个模式是反应坐标。</div></div>
+<div class="tq"><p class="qt"><span>不加投影优化弹性带：真实力与弹簧力整体相加。得到的势垒如何？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">偏低：路径抄近道，像滑向两端</button><button type="button" class="opt">准确</button><button type="button" class="opt">偏高</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>偏低：垂直于路径的弹簧把像拉离谷底，沿路径的真实力把它们拖向两端——顶部没有像。页面上为 68 而不是 106。</div></div>
+<div class="tq"><p class="qt"><span>什么能证明找到的就是那个过渡态？</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">一个虚频，其模式是反应运动，IRC 到达反应物和产物</button><button type="button" class="opt">梯度为零</button><button type="button" class="opt">它是弛豫扫描的最大值</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>三项检验都要：极小值和高阶鞍点处梯度也为零；扫描最大值没有经过 Hessian 检验。只有 IRC 能把鞍点与正确的反应物和产物联系起来。</div></div>
+</div></details></section>
+<script src="js/tsneb.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="tsneb";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/tsneb.js"></script>
+
+</body>
+</html>

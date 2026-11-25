@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>锥形交叉与双自由基</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.zh.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>锥形交叉与双自由基</h1>
+<p class="lead">两个电子态相遇之处，Born–Oppenheimer 近似失效：分子在几十飞秒内从一个势能面跳到另一个。而在双自由基中两个电子几乎不配对，单个行列式甚至无法判断单重态还是三重态更低。</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">需要理解的要点</h2><ul><li>两个态：E± = H̄ ± √(Δ² + H₁₂²)。只有 Δ = 0 且 H₁₂ = 0 时才简并——两个独立条件。双原子分子只有一个坐标：相同对称性的谱项不相交，不同对称性的相交（H₁₂ ≡ 0）。</li><li>多原子分子有 3N − 6 个坐标，两个条件确定一个 3N − 8 维的交叉缝（Wigner 与 von Neumann，1929）。在缝上一点附近 E± ≈ Ē ± √(g²x² + h²y²)——分支平面中的双圆锥（g 为梯度差，h 为耦合矢量）。</li><li>锥形交叉是光化学的漏斗：内转换只需几十到几百飞秒，比荧光快（视黄醛——200 fs）。用态平均 CASSCF 寻找缝上能量最低的点（MECI）。TD-DFT 中 S₀–S₁ 耦合为零：交叉缝维数错误；若 S₁ 与 S₀ 相距小于 0.5 eV，不要相信 TD-DFT。</li><li>双中心模型：三重态 −K，共价单重态 +K，通过跃迁 2t 与能量为 U 的离子单重态耦合。ΔE(T − S) ≈ 4t²/U − 2K：跃迁只对自旋相反的电子有利。苯炔：邻 157、间 88、对 16 kJ/mol——中心相距越远，t 越小。</li><li>破缺对称 DFT：解是单重态与三重态的混合，⟨S²⟩_BS = 2(1 − w)。Yamaguchi 公式 ΔE = 2(E_T − E_BS)/(⟨S²⟩_T − ⟨S²⟩_BS)；⟨S²⟩_BS = 1 时即 Ziegler 求和规则 E_S = 2E_BS − E_T。限制性 DFT 对对苯炔给出错误的符号。</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">不相交规则</h2>
+  <div class="crow"><span class="l">态间耦合 H₁₂</span><input type="range" id="cc" min="0" max="0.5" step="0.01" value="0.1" aria-label="H12"><span class="val" id="ccv"></span></div>
+  <div class="crow"><span class="l">两个态为</span><span class="grp" id="sG" role="group" aria-label="两个态为"></span></div>
+  <svg id="xchart" class="ch" viewBox="0 0 960 300" role="img" aria-label="两个态的透热与绝热曲线"></svg>
+  <div class="legend" id="xleg"></div>
+  <div class="cards" id="xcards"></div>
+  <p class="status" id="xNote"></p>
+  <p class="hint">两个透热组态：H₁₁ = ½(R + 1)²，H₂₂ = ½(R − 1)²，耦合 H₁₂ 为常数；绝热态是 2 × 2 矩阵的本征值。任意单位。</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">双圆锥与分支平面</h2>
+  <div class="crow"><span class="l">梯度差 |g|</span><input type="range" id="gg" min="0.2" max="2" step="0.05" value="1" aria-label="g"><span class="val" id="ggv"></span></div>
+  <div class="crow"><span class="l">耦合矢量 |h|</span><input type="range" id="hh" min="0" max="2" step="0.05" value="0.6" aria-label="h"><span class="val" id="hhv"></span></div>
+  <div class="crow"><span class="l">截面 y₀</span><input type="range" id="yy" min="-1" max="1" step="0.05" value="0.3" aria-label="y0"><span class="val" id="yyv"></span></div>
+  <div class="crow"><span class="l">Ē 沿 x 的倾斜</span><input type="range" id="tl" min="-1" max="1" step="0.05" value="0" aria-label="tilt"><span class="val" id="tlv"></span></div>
+  <div class="crow"><span class="l">方法</span><span class="grp" id="dG" role="group" aria-label="方法"></span></div>
+  <div class="crow"><span class="l">分子中的原子数</span><input type="range" id="na" min="2" max="30" step="1" value="6" aria-label="N"><span class="val" id="nav"></span></div>
+  <svg id="cmap" class="ch" viewBox="0 0 960 300" role="img" aria-label="分支平面中两个势能面之间的能隙"></svg>
+  <svg id="csec" class="ch" viewBox="0 0 960 280" role="img" aria-label="圆锥的截面"></svg>
+  <div class="legend" id="cleg"></div>
+  <div class="cards" id="ccards"></div>
+  <p class="status" id="cNote"></p>
+  <p class="hint">缝上一点附近 E± = Ē + 倾斜·x ± √(g²x² + h²y²)；图中为能隙 E₊ − E₋，两条线是下图所画的截面。讲座演示：h = 0.6、y₀ = 0.3 时能隙 2|hy₀| = 0.36。乙烯（6 个原子）：12 个内坐标，交叉缝为十维。</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">双自由基：双中心模型</h2>
+  <div class="crow"><span class="l">跃迁 t，eV</span><input type="range" id="tt" min="0" max="2" step="0.01" value="0.5" aria-label="t"><span class="val" id="ttv"></span></div>
+  <div class="crow"><span class="l">排斥 U，eV</span><input type="range" id="uu" min="1" max="10" step="0.1" value="4" aria-label="U"><span class="val" id="uuv"></span></div>
+  <div class="crow"><span class="l">直接交换 K，eV</span><input type="range" id="kk" min="0" max="0.3" step="0.01" value="0.02" aria-label="K"><span class="val" id="kkv"></span></div>
+  <svg id="bchart" class="ch" viewBox="0 0 960 320" role="img" aria-label="单重态–三重态分裂随跃迁的变化"></svg>
+  <div class="legend" id="bleg"></div>
+  <div class="cards" id="bcards"></div>
+  <p class="status" id="bNote"></p>
+  <p class="hint">精确：E_S = (K + U)/2 − √(((U − K)/2)² + 4t²)，E_T = −K。实验线上的点是：在给定 U、K 下模型重现某个苯炔分裂所需的 t。实验：Wenthold, Squires, Lineberger, JACS 120, 5279 (1998)；CASSCF(2,2) 与 NEVPT2/def2-SVP——ORCA 6.0.1，2026.11.21。</p>
+</section>
+<section class="panel" aria-labelledby="h4s">
+  <h2 id="h4s">破缺对称与 Yamaguchi 公式</h2>
+  <div class="crow"><span class="l">E_T − E_BS，kJ/mol</span><input type="range" id="de" min="0" max="40" step="0.1" value="10.3" aria-label="dE"><span class="val" id="dev"></span></div>
+  <div class="crow"><span class="l">BS 解的 ⟨S²⟩</span><input type="range" id="s2" min="0" max="1.5" step="0.01" value="1" aria-label="S2"><span class="val" id="s2v"></span></div>
+  <svg id="ychart" class="ch" viewBox="0 0 960 300" role="img" aria-label="不同方法得到的对苯炔分裂"></svg>
+  <div class="legend" id="yleg"></div>
+  <div class="cards" id="ycards"></div>
+  <p class="status" id="yNote"></p>
+  <p class="hint">对苯炔，B3LYP/def2-SVP，单重态几何，垂直：E_T − E_BS = 10.3 kJ/mol，RKS 使单重态比三重态高 90。⟨S²⟩_T = 2。实验（绝热）——16 kJ/mol。</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">下一个问题</span><span class="nqQ">破缺对称是 DFT 处理双自由基和金属配合物的主要方法。为什么结果如此依赖泛函？</span><a class="nqA" href="dft.html" data-goto="dft">密度泛函 →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">检验你的知识</h2>
+<p class="hint" style="font-size:14px;margin:0">页面练习：先在页面上操作，再选择答案——答案会立即检查。</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>双原子分子中，两个相同对称性的谱项在键拉伸时靠近。它们会怎样？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">在一点相交</button><button type="button" class="opt" data-ok="1">避免相交：能隙 2|H₁₂|</button><button type="button" class="opt">在整个区域合并</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>简并需要两个条件（Δ = 0 且 H₁₂ = 0），而坐标只有一个。不同对称性的谱项会相交：它们的 H₁₂ ≡ 0。</div></div>
+<div class="tq"><p class="qt"><span>乙烯 C₂H₄ 锥形交叉缝的维数是多少？</span></p>
+<div class="opts" role="group"><button type="button" class="opt">0——一个点</button><button type="button" class="opt" data-ok="1">10</button><button type="button" class="opt">12</button><button type="button" class="opt">11</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>10：内坐标 3·6 − 6 = 12，两个条件去掉两个。TD-DFT 中 S₁/S₀ 交叉缝为 11 维——错误。</div></div>
+<div class="tq"><p class="qt"><span>双中心模型中 t = 0.5 eV，U = 4 eV，K = 0。按微扰理论 ΔE(T − S) 是多少？</span></p>
+<p class="olab">eV</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">0.25</button><button type="button" class="opt">0.125</button><button type="button" class="opt">1.0</button><button type="button" class="opt">0.5</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>4t²/U = 4·0.25/4 = 0.25 eV ≈ 24 kJ/mol；精确 2×2 为 0.24 eV。单重态更低：跃迁只对自旋相反的电子有利。</div></div>
+<div class="tq"><p class="qt"><span>对苯炔的 BS 解比三重态低 10.3 kJ/mol，⟨S²⟩_BS = 1。Yamaguchi 公式给出的分裂是多少？</span></p>
+<p class="olab">kJ/mol</p><div class="opts" role="group"><button type="button" class="opt">10.3</button><button type="button" class="opt" data-ok="1">约 21</button><button type="button" class="opt">5.2</button><button type="button" class="opt">−90</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">显示答案</button>
+<div class="ans" hidden>2·10.3/(2 − 1) ≈ 21 kJ/mol（实验 16）。⟨S²⟩_BS = 1 时即 Ziegler 求和规则：E_S = 2E_BS − E_T。</div></div>
+</div></details></section>
+<script src="js/conical.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="conical";</script><script src="../assets/js/glossary.zh.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.zh.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.zh.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.zh.js"></script>
+<!--common:end-->
+
+<script src="js/conical.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../assets/js/theme-early.js"></script>
+<script src="../assets/js/qcapi.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/d4fffdebdad3.png"><link rel="icon" type="image/png" sizes="64x64" href="../assets/img/9b516a1bad91.png">
+<title>Адсорбция и магнетизм</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/css/pages/xtra.css">
+<link rel="stylesheet" href="../assets/css/qpose.css"><link rel="stylesheet" href="../assets/css/demobar.ru.css"><link rel="stylesheet" href="../assets/css/formula.css"><link rel="stylesheet" href="../assets/css/limits.css"><link rel="stylesheet" href="../assets/css/projon.css"></head>
+<body>
+<main>
+<header class="qPoseH" style="display:flex;flex-direction:column;gap:8px"><!--pose:start--><img class="qPose" alt="" aria-hidden="true" width="210" height="204" src="../assets/img/quill-20261027-cryst-g.webp"><!--pose:end-->
+<h1>Адсорбция и магнетизм</h1>
+<p class="lead">Почему водород держится на платине и не держится на золоте, почему железо магнитно, а медь нет, и почему PBE превращает изолятор NiO в металл. Три простые модели: уровень адсорбата на d-зоне металла, критерий Стонера и два атома Хаббарда — и поправка DFT+U, которая из них следует.</p>
+</header>
+<!--keys:start--><section class="keys" aria-labelledby="hKeys"><h2 id="hKeys">Что нужно понять</h2><ul><li>Энергия адсорбции: E<sub>адс</sub> = E<sub>слэб+адс</sub> − E<sub>слэб</sub> − E<sub>газ</sub>, все три расчёта с одинаковыми параметрами; отрицательная — адсорбция выгодна. Для атомарного водорода точка отсчёта — половина молекулы H₂.</li><li>Хемосорбция: уровень адсорбата и уровни металла дают связывающие и разрыхляющие состояния. Связь прочная, если разрыхляющие выше уровня Ферми и пусты. Чем выше центр d-зоны, тем прочнее адсорбция (Хаммер и Нёрсков).</li><li>Ферромагнетизм по Стонеру: переворот спинов стоит кинетической энергии, но даёт обменный выигрыш; момент появляется при I·N(E<sub>F</sub>) > 1 — у узких зон с уровнем Ферми внутри (Fe, Co, Ni).</li><li>Модель Хаббарда: перескок t и отталкивание U на атоме. При U ≫ t электроны локализуются, обмен J ≈ 4t²/U антиферромагнитный; вещество, металлическое по зонной теории, становится изолятором Мотта.</li><li>PBE занижает U (ошибка самодействия), и оксиды 3d-металлов выходят с малой щелью или металлами. DFT+U добавляет штраф (U/2)·n(1 − n): занятые орбитали опускаются на U/2, пустые поднимаются, щель растёт на U. U — параметр, энергии с разными U не сравнивают.</li></ul></section><!--keys:end-->
+<section class="panel" aria-labelledby="h1s">
+  <h2 id="h1s">Хемосорбция: уровень адсорбата на d-зоне</h2>
+  <div class="crow"><span class="l">Металл (центр и ширина d-зоны)</span><span class="grp" id="mG" role="group" aria-label="Металл (центр и ширина d-зоны)"></span></div>
+  <div class="crow"><span class="l">Уровень адсорбата εa, эВ</span><input type="range" id="ea" min="-6" max="2" step="0.05" value="-2" aria-label="εa"><span class="val" id="eav"></span></div>
+  <div class="crow"><span class="l">Центр d-зоны εd, эВ</span><input type="range" id="ed" min="-5" max="1" step="0.01" value="-2.25" aria-label="εd"><span class="val" id="edv"></span></div>
+  <div class="crow"><span class="l">Ширина d-зоны W, эВ</span><input type="range" id="ww" min="1" max="10" step="0.1" value="6.5" aria-label="W"><span class="val" id="wwv"></span></div>
+  <div class="crow"><span class="l">Связь V, эВ</span><input type="range" id="vv" min="0" max="4" step="0.05" value="2" aria-label="V"><span class="val" id="vvv"></span></div>
+  <svg id="achart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Плотность состояний на адсорбате и d-зона"></svg>
+  <div class="legend" id="aleg"></div>
+  <div class="cards" id="acards"></div>
+  <svg id="tchart" class="ch" viewBox="0 0 960 200" role="img" aria-label="Энергия связи на разных металлах"></svg>
+  <p class="status" id="aNote"></p>
+  <p class="hint">Модель Ньюнса — Андерсона: уровень εa связан с 80 уровнями полуэллиптической d-зоны. ΔE = 2Σ(занятые с связью) − 2Σ(занятые без неё) + 2αV²·f, где f — заполненная доля d-зоны, α = 0,05 эВ⁻¹ (отталкивание Паули). Центры d-зон — по Хаммеру и Нёрскову, ширины — примерные. sp-зона, одинаковая для всех металлов, не учтена: числа показывают тенденцию, а не опытные энергии.</p>
+</section>
+<section class="panel" aria-labelledby="h2s">
+  <h2 id="h2s">Ферромагнетизм: критерий Стонера</h2>
+  <div class="crow"><span class="l">Металл</span><span class="grp" id="sG" role="group" aria-label="Металл"></span></div>
+  <div class="crow"><span class="l">Число d-электронов</span><input type="range" id="nn" min="0" max="10" step="0.1" value="7.4" aria-label="n"><span class="val" id="nnv"></span></div>
+  <div class="crow"><span class="l">Ширина d-зоны, эВ</span><input type="range" id="sw" min="1" max="12" step="0.1" value="4" aria-label="W"><span class="val" id="swv"></span></div>
+  <div class="crow"><span class="l">Обменный параметр I, эВ</span><input type="range" id="si" min="0" max="2" step="0.01" value="0.93" aria-label="I"><span class="val" id="siv"></span></div>
+  <svg id="schart" class="ch" viewBox="0 0 960 300" role="img" aria-label="Энергия в зависимости от магнитного момента"></svg>
+  <div class="cards" id="scards"></div>
+  <p class="status" id="sNote"></p>
+  <p class="hint">E(m) = E<sub>кин</sub>(n↑) + E<sub>кин</sub>(n↓) − 2E<sub>кин</sub>(n/2) − I·m²/4, m = n↑ − n↓; d-зона каждого спина — полуэллипс из пяти состояний. При малом m: E ≈ (m²/4)·(1/N(E<sub>F</sub>) − I). Параметры металлов подобраны так, чтобы модель давала их моменты: Fe ≈ 2,2–2,6 μB, Ni ≈ 0,6 μB.</p>
+</section>
+<section class="panel" aria-labelledby="h3s">
+  <h2 id="h3s">Модель Хаббарда и поправка DFT+U</h2>
+  <div class="crow"><span class="l">Отталкивание U, в единицах t</span><input type="range" id="uu" min="0" max="20" step="0.1" value="4" aria-label="U"><span class="val" id="uuv"></span></div>
+  <div class="crow"><span class="l">U<sub>eff</sub> для DFT+U, эВ</span><input type="range" id="ue" min="0" max="10" step="0.1" value="5" aria-label="Ueff"><span class="val" id="uev"></span></div>
+  <div class="two" style="grid-template-columns:minmax(0,2.07fr) minmax(0,1fr)"><svg id="hchart" class="ch" viewBox="0 0 620 300" role="img" aria-label="Энергии синглета и триплета"></svg><svg id="pchart" class="ch" viewBox="0 0 300 300" role="img" aria-label="Штраф DFT+U"></svg></div>
+  <div class="legend" id="hleg"></div>
+  <div class="cards" id="hcards"></div>
+  <p class="status" id="hNote"></p>
+  <p class="hint">Два атома, два электрона: E<sub>T</sub> = 0, E<sub>S</sub> = U/2 − √(U²/4 + 4t²); J = E<sub>T</sub> − E<sub>S</sub> → 4t²/U при U ≫ t. DFT+U (Дударев): E<sub>U</sub> = (U/2)Σn<sub>i</sub>(1 − n<sub>i</sub>), V<sub>i</sub> = U(1/2 − n<sub>i</sub>). NiO: опыт — щель больше 4 эВ, PBE — около 1 эВ.</p>
+</section>
+<!--next:start--><aside class="nextQ"><span class="nqL">Следующий вопрос</span><span class="nqQ">Поправка DFT+U лечит ошибку самодействия руками. Откуда эта ошибка в функционале и как с ней справляются гибридные функционалы?</span><a class="nqA" href="dft.html" data-goto="dft">Метод функционала плотности →</a></aside><!--next:end-->
+<!--try:start-->
+<section class="try" aria-labelledby="hTry"><details class="tryD"><summary class="trySum"><span class="tryHd"><h2 id="hTry">Проверьте свои знания</h2>
+<p class="hint" style="font-size:14px;margin:0">Задания по странице: выполните действие на странице и выберите ответ — он проверится сразу.</p></span></summary>
+<div class="tryIn"><p class="tscore" aria-live="polite"></p>
+<div class="tq"><p class="qt"><span>Почему в модели d-зоны водород почти не держится на золоте?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">d-зона глубоко под уровнем Ферми: разрыхляющие состояния заполнены</button><button type="button" class="opt">у золота нет d-электронов</button><button type="button" class="opt">d-зона золота выше уровня Ферми и пуста</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Центр d-зоны золота — −3,6 эВ. И связывающие, и разрыхляющие состояния адсорбата с d-зоной лежат ниже уровня Ферми и заполнены: выигрыша нет, остаётся отталкивание Паули. У никеля (−1,3 эВ) часть разрыхляющих выше уровня Ферми — связь прочная.</div></div>
+<div class="tq"><p class="qt"><span>Палладий: I ≈ 0,7 эВ, N(E<sub>F</sub>) ≈ 1,14 состояния на эВ на спин. Будет ли он ферромагнетиком?</span></p>
+<div class="opts" role="group"><button type="button" class="opt" data-ok="1">Нет: I·N(E<sub>F</sub>) ≈ 0,8 < 1</button><button type="button" class="opt">Да: I·N(E<sub>F</sub>) > 1</button><button type="button" class="opt">Да, если охладить до 0 K</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>Нет: произведение ≈ 0,8, критерий Стонера I·N(E<sub>F</sub>) > 1 не выполнен. Палладий «почти» ферромагнетик: у него сильно увеличена магнитная восприимчивость, и малые примеси железа делают его магнитным.</div></div>
+<div class="tq"><p class="qt"><span>Два атома Хаббарда, U = 20t. Чему примерно равен обмен J = E<sub>T</sub> − E<sub>S</sub>?</span></p>
+<p class="olab">J</p><div class="opts" role="group"><button type="button" class="opt" data-ok="1">0,2t</button><button type="button" class="opt">2t</button><button type="button" class="opt">20t</button><button type="button" class="opt">0</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>≈ 0,2t: при U ≫ t J ≈ 4t²/U = 4/20 = 0,2t (точно 0,198t). Электроны сидят каждый на своём атоме, и синглет ниже триплета только за счёт виртуальных перескоков.</div></div>
+<div class="tq"><p class="qt"><span>DFT+U, U = 5 эВ, орбиталь заселена наполовину (n = ½). Каков штраф E<sub>U</sub> для этой орбитали?</span></p>
+<p class="olab">E<sub>U</sub>, эВ</p><div class="opts" role="group"><button type="button" class="opt">0</button><button type="button" class="opt" data-ok="1">0,63</button><button type="button" class="opt">1,25</button><button type="button" class="opt">2,5</button></div>
+<p class="fb" aria-live="polite"></p><button type="button" class="showA">Показать ответ</button>
+<div class="ans" hidden>0,63 эВ: E<sub>U</sub> = (U/2)·n(1 − n) = 2,5·¼ = U/8. Для n = 0 и n = 1 штраф ноль. Потенциал U(½ − n) опускает занятую орбиталь на U/2 и поднимает пустую на U/2.</div></div>
+</div></details></section>
+<script src="js/adsorption.demo.js"></script>
+<!--try:end-->
+</main>
+<!--gl:start--><script>window.QC_GL_SELF="adsorption";</script><script src="../assets/js/glossary.ru.js"></script><!--gl:end-->
+<!--common:start-->
+
+<script src="../assets/js/theme.ru.js"></script>
+<script src="../assets/js/proj.js"></script>
+
+<script src="../assets/js/try.ru.js"></script>
+
+<script src="../assets/js/nav.js"></script>
+
+<script src="../assets/js/projnav.ru.js"></script>
+<!--common:end-->
+
+<script src="js/adsorption.js"></script>
+
+</body>
+</html>
