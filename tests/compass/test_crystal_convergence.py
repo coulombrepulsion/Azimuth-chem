@@ -32,7 +32,10 @@ def test_the_values_of_the_series():
     assert cv.cutoffs(47.0, 4.0)[0] == (30.0, 120.0)
     assert cv.cutoffs(12.0)[0][0] == 20.0  # never below 20 Ry
     assert cv.grids((5, 5, 5)) == [(2, 2, 2), (4, 4, 4), (5, 5, 5), (6, 6, 6), (8, 8, 8), (10, 10, 10)]
-    assert cv.grids((12, 12, 1)) == [(6, 6, 1), (9, 9, 1), (12, 12, 1), (15, 15, 1), (18, 18, 1), (24, 24, 1)]  # a slab
+    # a layer: N × N × 1 with N that are (9, 12 …) and are not (8, 10) multiples of 3 — the corner K of graphene
+    assert cv.grids((12, 12, 1)) == [(n, n, 1) for n in (6, 8, 9, 10, 12, 15, 18, 24)]
+    assert cv.grids((4, 6, 1))[0] == (4, 6, 1) and cv.grids((4, 6, 1))[-1] == (16, 24, 1)  # a slab keeps its proportion
+    assert cv.grids((1, 1, 1)) == [(1, 1, 1)]  # a molecule in a box
     assert cv.grids((2, 2, 2)) == [(1, 1, 1), (2, 2, 2), (3, 3, 3), (4, 4, 4)]  # repeats left out
     for wrong in ((0, 2, 2), (2, 2), None):
         with pytest.raises(ValueError):

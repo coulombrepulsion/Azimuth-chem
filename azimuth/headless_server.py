@@ -44,6 +44,7 @@
 
 from datetime import datetime
 import json
+import threading
 from pathlib import Path
 
 SHARE = 2  # at most half of the free memory of the node
@@ -332,11 +333,16 @@ def close_unsent(root=None, now=None, alive=_alive):
     return closed
 
 
+_ENDING = threading.Lock()
+
+
 def ended(root, folder, state, code):
-    """The end of a calculation of the journal, written once."""
+    """The end of a calculation of the journal, written once: the watcher of the calculation and a question about its
+    state may come here at the same moment (two lines «ended» were seen), so the look and the note are one step."""
     folder = str(folder)
-    if folder in active(root):
-        _note(root, event='ended', folder=folder, state=state, code=code)
+    with _ENDING:
+        if folder in [row['folder'] for row in _open_rows(root)]:
+            _note(root, event='ended', folder=folder, state=state, code=code)
 
 
 def _mine(root, folder):

@@ -22,7 +22,7 @@ def task_title(title, kind='qe'):
     from modules.sextant import cp2k_inputs, qe_inputs
 
     words = ({k: v for k, v in cp2k_inputs.TASKS.items()} if kind == 'cp2k' else
-             {**qe_inputs.TASKS, qe_inputs.BANDS_TASK: 'bands', qe_inputs.DOS_TASK: 'dos', qe_inputs.EOS_TASK: 'E(V)', qe_inputs.CUTOFF_TASK: 'ecutwfc', qe_inputs.KGRID_TASK: 'K_POINTS', qe_inputs.HUBBARD_TASK: 'HUBBARD', qe_inputs.MAGNETIC_TASK: 'nspin',
+             {**qe_inputs.TASKS, qe_inputs.BANDS_TASK: 'bands', qe_inputs.DOS_TASK: 'dos', qe_inputs.EOS_TASK: 'E(V)', qe_inputs.CUTOFF_TASK: 'ecutwfc', qe_inputs.KGRID_TASK: 'K_POINTS', qe_inputs.VACUUM_TASK: 'CELL_PARAMETERS', qe_inputs.HUBBARD_TASK: 'HUBBARD', qe_inputs.MAGNETIC_TASK: 'nspin',
               qe_inputs.PHONON_TASK: 'ph.x', qe_inputs.DISPERSION_TASK: 'ph.x, matdyn.x'})
     word = words.get(title)
     return f'{tr(title)} ({word})' if word else tr(title)

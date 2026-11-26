@@ -88,10 +88,13 @@ CUTOFF_TASK, KGRID_TASK = 'Сходимость по энергии обреза
 HUBBARD_TASK, MAGNETIC_TASK = 'Ряд по U (DFT+U)', 'Магнитный порядок (без спина, ФМ, АФМ)'
 U_VALUES = (0.0, 2.0, 4.0, 6.0, 8.0)  # eV
 MAGNETIC_STATES = ('без спина', 'ферромагнитный', 'антиферромагнитный')
-SERIES = {CUTOFF_TASK: 'cut', KGRID_TASK: 'kpt', HUBBARD_TASK: 'hub', MAGNETIC_TASK: 'mag'}
+# the vacuum of a layer raised (vac1.in …): the same layer in cells of layer.vacuums, the other settings as they are
+VACUUM_TASK = 'Сходимость по вакууму (слой)'
+SERIES = {CUTOFF_TASK: 'cut', KGRID_TASK: 'kpt', VACUUM_TASK: 'vac', HUBBARD_TASK: 'hub', MAGNETIC_TASK: 'mag'}
 STEPS = {EOS_TASK: tuple((f'eos{n + 1}.in', 'pw.x') for n in range(len(EOS_FACTORS))),
          CUTOFF_TASK: tuple((f'cut{n + 1}.in', 'pw.x') for n in range(7)),
-         KGRID_TASK: tuple((f'kpt{n + 1}.in', 'pw.x') for n in range(6)),
+         KGRID_TASK: tuple((f'kpt{n + 1}.in', 'pw.x') for n in range(8)),
+         VACUUM_TASK: tuple((f'vac{n + 1}.in', 'pw.x') for n in range(7)),
          HUBBARD_TASK: tuple((f'hub{n + 1}.in', 'pw.x') for n in range(len(U_VALUES))),
          MAGNETIC_TASK: tuple((f'mag{n + 1}.in', 'pw.x') for n in range(len(MAGNETIC_STATES))),
          BANDS_TASK: (('scf.in', 'pw.x'), ('bands.in', 'pw.x')),
@@ -170,6 +173,18 @@ def kpoints(cell, spacing=SPACING):
     return tuple(max(1, ceil(2 * pi * float(np.linalg.norm(v)) / spacing - 1e-9)) for v in star)
 
 
+def grid_of(crystal, spacing=SPACING):
+    """The grid of k-points of a crystal: kpoints of its cell, and one point along the vacuum of a layer (graphene, a
+    slab — layer.vacuum_axis): the bands have no dispersion there."""
+    from modules.compass.chemistry import layer
+
+    grid = list(kpoints(crystal.cell, spacing))
+    axis = layer.vacuum_axis(crystal)
+    if axis is not None:
+        grid[axis] = 1
+    return tuple(grid)
+
+
 def _species(atoms):
     order = []
     for a in atoms:
@@ -209,7 +224,7 @@ def pw_input(crystal, task='scf', pseudo=None, pseudo_dir='.', prefix='azimuth',
         metal = False
     elif o.occupations == 'smearing' or (o.spin and not o.magnetic and o.occupations == 'auto'):
         metal = True
-    n = tuple(int(k) for k in o.grid) if o.grid else kpoints(crystal.cell, spacing)
+    n = tuple(int(k) for k in o.grid) if o.grid else grid_of(crystal, spacing)
     control = ['  tprnfor = .true.', '  tstress = .true.'] if calculation in TASKS.values() else ["  verbosity = 'high'"]
     if o.forces and calculation in ('relax', 'vc-relax'):
         control.append(f'  forc_conv_thr = {o.forces:.1e}')
@@ -402,13 +417,24 @@ def steps(crystal, task, pseudo, pseudo_dir='.', prefix='azimuth', spacing=SPACI
             nbnd = bands_count(crystal, pseudo, pseudo_dir)  # empty bands: the gap of the levels
             return [(f'{SERIES[task]}{n + 1}.in', 'pw.x', pw_input(crystal, 'scf', pseudo, pseudo_dir, prefix, spacing,
                                                                    nbnd=nbnd, options=variant)) for n, variant in enumerate(variants)]
+        if task == VACUUM_TASK:
+            from modules.compass.chemistry import layer
+
+            axis = layer.vacuum_axis(crystal)
+            if axis is None:
+                raise ValueError(tr('Ряд по вакууму: в ячейке нет вакуума (пустого промежутка от {:g} Å) — это не слой.')
+                                 .format(layer.LEAST))
+            same = o if o.grid else replace(o, grid=grid_of(crystal, spacing))  # one grid for every cell
+            return [(f'vac{n + 1}.in', 'pw.x', pw_input(layer.with_vacuum(crystal, value, axis), 'scf', pseudo, pseudo_dir,
+                                                       prefix, spacing, options=same))
+                    for n, value in enumerate(layer.vacuums(layer.vacuum(crystal, axis)))]
         if task == CUTOFF_TASK:  # around the cutoffs the plain input would get, with its ratio ecutrho / ecutwfc
             plain = pw_input(crystal, 'scf', pseudo, pseudo_dir, prefix, spacing, options=o)
             wfc, rho = (float(re.search(rf'{key} = ([\d.eE+-]+)', plain).group(1)) for key in ('ecutwfc', 'ecutrho'))
-            grid = o.grid or kpoints(crystal.cell, spacing)
+            grid = o.grid or grid_of(crystal, spacing)
             variants = [replace(o, ecutwfc=w, ecutrho=r, grid=grid) for w, r in convergence.cutoffs(wfc, rho / wfc)]
         else:
-            variants = [replace(o, grid=g) for g in convergence.grids(tuple(o.grid or kpoints(crystal.cell, spacing)))]
+            variants = [replace(o, grid=g) for g in convergence.grids(tuple(o.grid or grid_of(crystal, spacing)))]
         return [(f'{SERIES[task]}{n + 1}.in', 'pw.x', pw_input(crystal, 'scf', pseudo, pseudo_dir, prefix, spacing,
                                                                options=variant)) for n, variant in enumerate(variants)]
     if task == EOS_TASK:
@@ -420,7 +446,7 @@ def steps(crystal, task, pseudo, pseudo_dir='.', prefix='azimuth', spacing=SPACI
         kind = 'scf' if o.functional in HYBRIDS else 'relax'
         # one grid of k-points for every volume (that of the cell as it is): a grid that changed along the series
         # would put a step into E(V)
-        same = o if o.grid else replace(o, grid=kpoints(crystal.cell, spacing))
+        same = o if o.grid else replace(o, grid=grid_of(crystal, spacing))
         return [(name, tool, pw_input(equation_of_state.scaled(crystal, factor), kind, pseudo, pseudo_dir, prefix, spacing,
                                       options=same))
                 for (name, tool), factor in zip(STEPS[EOS_TASK], EOS_FACTORS)]

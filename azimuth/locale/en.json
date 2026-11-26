@@ -6424,5 +6424,22 @@
   "ΔG, кДж/моль": "ΔG, kJ/mol",
   "Запуск CP2K проверен (на этом компьютере и на сервере), но числа ещё не сверены с литературой на известных кристаллах — сверяйте результаты сами. Расчёты Quantum ESPRESSO сверены.": "CP2K runs are checked (on this computer and on a server), but the numbers are not yet compared with the literature on known crystals — check the results yourself. Quantum ESPRESSO calculations are compared.",
   "≈ 90 МБ загрузки, ≈ 140 МБ на диске": "≈ 90 MB to download, ≈ 140 MB on disk",
-  "Quantum ESPRESSO для Windows берётся из репозитория MSYS2 (сборка без MPI: процессы становятся потоками OpenMP) и ставится в .tools/qe.": "Quantum ESPRESSO for Windows is taken from the MSYS2 repository (a build without MPI: the processes become OpenMP threads) and goes into .tools/qe."
+  "Quantum ESPRESSO для Windows берётся из репозитория MSYS2 (сборка без MPI: процессы становятся потоками OpenMP) и ставится в .tools/qe.": "Quantum ESPRESSO for Windows is taken from the MSYS2 repository (a build without MPI: the processes become OpenMP threads) and goes into .tools/qe.",
+  "Сходимость по вакууму (слой)": "Convergence in the vacuum (a layer)",
+  "Сходимость по вакууму · ": "Convergence in the vacuum · ",
+  "Уровень Ферми, эВ": "Fermi level, eV",
+  "Ряд по вакууму: в ячейке нет вакуума (пустого промежутка от {:g} Å) — это не слой.": "Series in the vacuum: the cell has no vacuum (an empty gap of {:g} Å or more) — it is not a layer.",
+  "Ряд по вакууму: ось вакуума должна быть перпендикулярна слою.": "Series in the vacuum: the vacuum axis must be perpendicular to the layer.",
+  "Ряд по вакууму: вакуум должен быть больше нуля.": "Series in the vacuum: the vacuum must be greater than zero.",
+  "Сетки N × N × 1 с N, кратным 3, содержат угол K шестиугольной зоны (на графике — зелёные точки). У графена в K касаются зоны, поэтому энергия и уровень Ферми для двух семейств сеток сходятся по разным кривым.": "Grids N × N × 1 with N a multiple of 3 contain the corner K of the hexagonal zone (green points on the plot). In graphene the bands touch at K, so the energy and the Fermi level of the two families of grids converge along different curves.",
+  "Уровень Ферми — из расчёта с размытием; без размытия в этом столбце верхний занятый уровень.": "The Fermi level is that of a run with smearing; without smearing this column holds the highest occupied level.",
+  "Конус Дирака · ": "Dirac cone · ",
+  "Конус Дирака в точке K: зоны π и π* касаются при {} эВ. Скорость Ферми v_F = {}·10⁶ м/с (ħv_F = {} эВ·Å, среднее наклонов зон у K).": "Dirac cone at the point K: the π and π* bands touch at {} eV. Fermi velocity v_F = {}·10⁶ m/s (ħv_F = {} eV·Å, the mean of the slopes of the bands at K).",
+  "Интеграл перескока модели сильной связи t = 2ħv_F/(√3·a) = {} эВ.": "The hopping integral of the tight-binding model t = 2ħv_F/(√3·a) = {} eV.",
+  "PBE занижает v_F: в опыте около 1.0·10⁶ м/с.": "PBE underestimates v_F: about 1.0·10⁶ m/s in experiment.",
+  "Наклоны зон, эВ·Å: {}.": "Slopes of the bands, eV·Å: {}.",
+  "Штриховые линии — модель сильной связи с этим t.": "Dashed lines — the tight-binding model with this t.",
+  "E − E(K), эВ": "E − E(K), eV",
+  "Модель сильной связи графена: в ячейке должно быть два атома.": "Tight-binding model of graphene: the cell must have two atoms.",
+  "Модель сильной связи графена: у атома должно быть три равноудалённых соседа.": "Tight-binding model of graphene: an atom must have three equidistant neighbours."
 }

@@ -8,7 +8,7 @@
     cell. A point k = f·B of the conventional reciprocal basis B has the fractions f' = f·Pᵀ in the reciprocal basis of
     a primitive cell with rows P (in fractions of the conventional cell): k·a'_j = f·B·(P A)ᵀ_j = 2π (f Pᵀ)_j.
 §2 ALGORITHM lattice(crystal) — the crystal system (crystal_symmetry.analyse) and the centring: 'cP', 'cF', 'cI', 'hP'
-    (γ = 120°), 'tP', 'oP'; any other lattice — 'other', the general path Γ–X–Γ–Y–Γ–Z along the reciprocal axes (X = (½,
+    (γ = 120°; a layer with vacuum along c — Γ–M–K–Γ in its plane only), 'tP', 'oP'; any other lattice — 'other', the general path Γ–X–Γ–Y–Γ–Z along the reciprocal axes (X = (½,
     0, 0) …), said so. path(crystal, basis=None, step=STEP) -> Path: the points of the segments every ≈ step Å⁻¹ (at
     least 2 per segment), their fractions in the basis of the calculation, the distance x along the path (Å⁻¹, a jump
     «|» adds no distance), the ticks (x, label) and the kind.
@@ -82,6 +82,11 @@ def path(crystal, basis=None, step=STEP):
 
     kind = lattice(crystal)
     points, segments = LATTICES[kind]
+    if kind == 'hP':  # a layer with vacuum along c (graphene): the path in its plane only
+        from modules.compass.chemistry import layer
+
+        if layer.vacuum_axis(crystal) == 2:
+            segments = [[G, 'M', 'K', G]]
     reciprocal = 2 * np.pi * np.linalg.inv(np.array(crystal.cell.vectors(), dtype=float)).T  # rows b_i, Å⁻¹
     to_calc = np.eye(3) if basis is None else np.array(basis, dtype=float).T  # f' = f Pᵀ
     result = Path(kind, general=kind == 'other')

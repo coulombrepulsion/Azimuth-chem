@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.235.0 — 26 November 2026
+
+- ### 0.235.0 — Graphene: the Dirac cone
+
+The program recognizes a layer with vacuum by itself and computes it properly: one k-point along the vacuum, the band path in the plane. There is a convergence check in the vacuum, and the k-grid convergence shows the Fermi level. After a band run of graphene the window «Dirac cone» opens with the Fermi velocity and the tight-binding model.
+
 ## 0.234.0 — 26 November 2026
 
 - ### 0.234.0 — Quantum ESPRESSO on Windows

@@ -124,7 +124,8 @@ def series_data(self):
     from modules.compass.chemistry import convergence
     from modules.spectrum.readers import qe
 
-    kind = next((k for k in ('cut', 'kpt') if self.folder is not None and (self.folder / f'{k}1.in').is_file()), None)
+    kind = next((k for k in ('cut', 'kpt', 'vac') if self.folder is not None and (self.folder / f'{k}1.in').is_file()),
+                None)
     if kind is None or not (self.folder / 'pw.out').is_file():
         return None
     runs = qe.runs((self.folder / 'pw.out').read_text(encoding='utf-8', errors='replace'))
@@ -139,11 +140,18 @@ def series_data(self):
             continue
         if kind == 'cut':
             label = re.search(r'ecutwfc\s*=\s*([\d.]+)', text).group(1) + ' Ry'
+        elif kind == 'vac':
+            from modules.compass.chemistry import layer
+
+            size = layer.vacuum_of_input(text)
+            label = '?' if size is None else f'{size:g} Å'
         else:
             label = ' × '.join(text.split('K_POINTS automatic')[1].split()[:3])
         gap = r.lowest - r.highest if r.highest is not None and r.lowest is not None else None
+        # the pressure of a cell with vacuum says nothing of the layer: left out of the series of vacuum
         points.append(convergence.Point(label, r.energy * 13.605693122994, r.nat or 1,
-                                        r.pressures[-1] if r.pressures else None, gap))
+                                        r.pressures[-1] if r.pressures and kind != 'vac' else None, gap,
+                                        r.fermi if r.fermi is not None else r.highest))
     self.series_error = ''
     try:
         return kind, convergence.rows(points)
@@ -158,7 +166,26 @@ def series_lines(self, found):
     kind, table = found
     if table is None:
         return [self.series_error]
-    return convergence.summary(table)
+    return convergence.summary(table) + family_lines(kind, table)
+
+
+SERIES_TITLES = {'cut': ('Сходимость по энергии обрезания · ', 'ecutwfc', 'ecutwfc'),
+                 'kpt': ('Сходимость по k-сетке · ', 'k-сетка', 'k grid'),
+                 'vac': ('Сходимость по вакууму · ', 'Вакуум', 'vacuum')}
+
+
+def with_corner(label):
+    """Does a grid «N × N × 1» of a layer contain the corner K of a hexagonal zone (N a multiple of 3)?"""
+    parts = label.split(' × ')
+    return len(parts) == 3 and parts[2] == '1' and parts[0] == parts[1] and int(parts[0]) % 3 == 0
+
+
+def family_lines(kind, table):
+    """The two families of grids of a layer: those with N a multiple of 3 hold the point K of a hexagonal zone."""
+    if kind != 'kpt' or not all(r.label.endswith('× 1') for r in table) or not any(with_corner(r.label) for r in table):
+        return []
+    return [tr('Сетки N × N × 1 с N, кратным 3, содержат угол K шестиугольной зоны (на графике — зелёные точки). У графена '
+               'в K касаются зоны, поэтому энергия и уровень Ферми для двух семейств сеток сходятся по разным кривым.')]
 
 
 def show_series(self, found):
@@ -169,24 +196,78 @@ def show_series(self, found):
     kind, table = found
     if table is None:
         return None
+    title, axis, column = SERIES_TITLES[kind]
     plot = qe_plots.SeriesPlot()
     plot.labels = [r.label for r in table]
     plot.values = [r.delta for r in table]
     plot.tolerance = convergence.TOLERANCE_MEV
-    plot.axis = 'ecutwfc' if kind == 'cut' else 'k-сетка'
-    rows = [(r.label, r.energy_per_atom, r.delta, '' if r.pressure is None else r.pressure, '' if r.gap is None else r.gap)
-            for r in table]
-    title = tr('Сходимость по энергии обрезания · ') if kind == 'cut' else tr('Сходимость по k-сетке · ')
-    window = qe_plots.QePlotWindow(self, title + self.name, plot, rows,
-                                   ['ecutwfc' if kind == 'cut' else 'k grid', 'E per atom, eV', 'dE, meV per atom',
-                                    'P, kbar', 'gap, eV'], 'convergence.csv')
+    plot.axis = axis
+    plot.marked = [kind == 'kpt' and with_corner(r.label) for r in table]
+    rows = [(r.label, r.energy_per_atom, r.delta, '' if r.pressure is None else r.pressure, '' if r.gap is None else r.gap,
+             '' if r.fermi is None else r.fermi) for r in table]
+    window = qe_plots.QePlotWindow(self, tr(title) + self.name, plot, rows,
+                                   [column, 'E per atom, eV', 'dE, meV per atom', 'P, kbar', 'gap, eV',
+                                    'E_F or highest occupied level, eV'], 'convergence.csv')
     head = '<tr>' + ''.join(f'<th align="right">&nbsp;{tr(h)}&nbsp;</th>' for h in (
-        'ecutwfc' if kind == 'cut' else 'k-сетка', 'ΔE, мэВ на атом', 'Давление, кбар', 'Щель, эВ')) + '</tr>'
+        axis, 'ΔE, мэВ на атом', 'Давление, кбар', 'Щель, эВ', 'Уровень Ферми, эВ')) + '</tr>'
     body = ''.join('<tr>' + ''.join(f'<td align="right">&nbsp;{c}&nbsp;</td>' for c in (
-        r.label, f'{r.delta:+.2f}', '' if r.pressure is None else f'{r.pressure:.2f}', '' if r.gap is None else f'{r.gap:.3f}'))
-        + '</tr>' for r in table)
-    window.note.setText('<table>' + head + body + '</table>' + ' '.join(convergence.summary(table)))
+        r.label, f'{r.delta:+.2f}', '' if r.pressure is None else f'{r.pressure:.2f}', '' if r.gap is None else f'{r.gap:.3f}',
+        '' if r.fermi is None else f'{r.fermi:.4f}')) + '</tr>' for r in table)
+    window.note.setText('<table>' + head + body + '</table>' + ' '.join(convergence.summary(table) + family_lines(kind, table))
+                        + ' ' + tr('Уровень Ферми — из расчёта с размытием; без размытия в этом столбце верхний занятый '
+                                   'уровень.'))
     self.plot_window = window
+    window.show()
+    return window
+
+
+def cone_data(self, found, path, text):
+    """The Dirac cone of the bands of a hexagonal layer (layer.Cone) with the bands of the tight-binding model along
+    the path, or None: (cone, [(E−, E+)] | None)."""
+    from modules.compass.chemistry import band_gap, layer
+
+    if self.crystal is None or 'K' not in [t[1] for t in path['ticks']]:
+        return None
+    ticks = [tuple(t) for t in path['ticks']]
+    cone = layer.cone(found.energies, band_gap.occupied_bands(text), path['x'], ticks, self.crystal.cell.a)
+    if cone is None:
+        return None
+    model = None
+    try:
+        from modules.sextant import qe_paths
+
+        crystal, basis = self.computed()
+        fractions = qe_paths.path(self.crystal, basis).fractions
+        if len(fractions) == len(path['x']):
+            model = layer.tight_binding(fractions, cone.hopping, cone.energy, layer.neighbour_cells(crystal))
+    except (ValueError, AttributeError):
+        model = None
+    return cone, model
+
+
+def show_cone(self, found, path, e0, cone, model):
+    """The neighbourhood of K: the bands, the cone of the slopes found and the tight-binding model (dashed)."""
+    from modules.compass.actions import qe_plots
+    from modules.compass.chemistry import layer
+
+    centre = path['x'][cone.index]
+    plot = qe_plots.BandsPlot()
+    plot.x = path['x']
+    plot.energies = [[e - cone.energy for e in row] for row in found.energies]
+    plot.ticks, plot.breaks = [tuple(t) for t in path['ticks']], path['breaks']
+    plot.xrange = (max(0.0, centre - 0.35), min(path['x'][-1], centre + 0.35))
+    plot.span = (-2.5, 2.5)
+    plot.axis = 'E − E(K), эВ'
+    if model is not None:
+        plot.model = [[low - cone.energy, high - cone.energy] for low, high in model]
+    rows = [(x, *row) for x, row in zip(plot.x, plot.energies) if plot.xrange[0] <= x <= plot.xrange[1]]
+    header = ['k, 1/A'] + [f'E{n + 1} - E(K), eV' for n in range(len(found.energies[0]))]
+    window = qe_plots.QePlotWindow(self, tr('Конус Дирака · ') + self.name, plot, rows, header, 'dirac_cone.csv')
+    slopes = ', '.join(f'{name}, K→{cone.left if side == "left" else cone.right}: {value:.2f}'
+                       for (name, side), value in cone.slopes.items())
+    window.note.setText(layer.text(cone) + ' ' + tr('Наклоны зон, эВ·Å: {}.').format(slopes) + (
+        ' ' + tr('Штриховые линии — модель сильной связи с этим t.') if model is not None else ''))
+    self.cone_window = window
     window.show()
     return window
 
@@ -332,6 +413,14 @@ def show_plot(self):
         self.gap = band_gap.gap(found.energies, band_gap.occupied_bands(text), plot.x, plot.ticks)
         plot.marks = band_gap.marks(self.gap, plot.x, e0)
         window.note.setText(band_gap.text(self.gap))
+        cone = self.cone_data(found, path, text)
+        if cone is not None:  # graphene: the cone at K in a window of its own, the model on both plots
+            from modules.compass.chemistry import layer
+
+            if cone[1] is not None:
+                plot.model = [[low - (e0 or 0.0), high - (e0 or 0.0)] for low, high in cone[1]]
+            window.note.setText(window.note.text() + ' ' + layer.text(cone[0]))
+            self.show_cone(found, path, e0, *cone)
         if path.get('general'):
             window.note.setText((window.note.text() + ' ').lstrip() + tr(
                 'Для этой решётки путь общий: Γ–X, Γ–Y, Γ–Z вдоль осей обратной ячейки файла.'))

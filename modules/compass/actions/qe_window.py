@@ -506,6 +506,8 @@ class QePanel(QWidget):
     phonon_data = _results.phonon_data
     eos_data = _results.eos_data
     series_data = _results.series_data
+    cone_data = _results.cone_data
+    show_cone = _results.show_cone
     states_data = _results.states_data
     states_table = _results.states_table
     series_lines = _results.series_lines

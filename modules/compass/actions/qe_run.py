@@ -483,6 +483,11 @@ def poll(self):
             self.output_path().read_text(encoding='utf-8', errors='replace')), path['x'], [tuple(t) for t in path['ticks']])
         if detail is not None:
             text += '<br>' + band_gap.text(detail)
+        cone = self.cone_data(found, path, self.output_path().read_text(encoding='utf-8', errors='replace'))
+        if cone is not None:
+            from modules.compass.chemistry import layer
+
+            text += '<br>' + layer.text(cone[0])
     series = self.eos_data() if self.program != 'cp2k' else None
     if series is not None:  # the fit first: the energy above is that of the last volume of the series
         text = '<br>'.join(self.eos_lines(series)) + '<br>' + tr('Ниже — последний объём ряда.') + '<br>' + text

@@ -56,3 +56,9 @@
   a = 4.177 Å, PBE, SSSP 1.3.0, k 6 × 11 × 11; the paths replaced). Energies −769.73287092 (no spin), −769.74215935
   (ferromagnetic), −769.78059614 Ry (antiferromagnetic); with U = 0, 2, 4, 6, 8 eV the gap 0.81, 1.83, 2.65, 3.11,
   3.19 eV and the moment of Ni 1.33, 1.51, 1.61, 1.68, 1.73 μB. Used by `tests/compass/test_crystal_states.py`.
+- `graphene_bands_pw76.out` with `graphene_bands_path.json`, `graphene_kpt_pw76.out` with `graphene_kpt1.in` … `kpt8.in`,
+  `graphene_vac_pw76.out` with `graphene_vac1.in` … `vac6.in` — QE 7.6 on the owner's Mac (2026-11-26, 4 processes),
+  graphene (a = 2.46 Å, c = 15 Å, PBE, SSSP 1.3.0; the paths replaced): «Зонная структура» on the path Γ–M–K–Γ of a
+  layer (k 12 × 12 × 1; the π and π* bands touch at K at −1.6887 eV, ħv_F = 5.47 eV·Å), «Сходимость по k-сетке»
+  (N = 6, 8, 9, 10, 12, 15, 18, 24) and «Сходимость по вакууму (слой)» (8 … 20 Å). Used by
+  `tests/compass/test_layer.py`.

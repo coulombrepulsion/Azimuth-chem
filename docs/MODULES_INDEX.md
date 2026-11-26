@@ -233,6 +233,7 @@
 - `modules/compass/chemistry/identity.py` — Compass: the same molecule? — a key of a structure by its atoms and bonds, not its coordinates.
 - `modules/compass/chemistry/iupac.py` — Systematic (IUPAC) names of the structure built in Compass, in Russian, English or Chinese.
 - `modules/compass/chemistry/lattice_planes.py` — The lattice planes (hkl) drawn in a block of cells — the planes of a reflection of the powder pattern seen in the crystal, as Mercury shows «hkl planes».
+- `modules/compass/chemistry/layer.py` — A layer with vacuum (graphene, a slab): its vacuum axis, the series of vacuum, the Dirac cone of graphene.
 - `modules/compass/chemistry/library.py` — Ready molecules and fragments of the Compass menus.
 - `modules/compass/chemistry/molecular_size.py` — The size of a molecule: the van der Waals volume, the surface areas, the effective diameter.
 - `modules/compass/chemistry/names.py` — Names of common molecules for the Compass status line.

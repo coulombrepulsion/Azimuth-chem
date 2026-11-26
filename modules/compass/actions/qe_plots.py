@@ -67,6 +67,8 @@ class BandsPlot(_Plot):
         self.marks = []  # the edges of the gap: [(x, E − E₀, 'v' | 'c')] — the top of the valence band, the bottom of
         # the conduction band (band_gap.gap)
         self.caption = ''  # a line inside the frame, at its top (the gap, where the plot has no note under it)
+        self.xrange = None  # (x from, x to) of the path shown; None — all of it
+        self.model = []  # a model beside the bands, dashed: a row of energies for every point of x
 
     def paintEvent(self, event):
         p = QPainter(self)
@@ -74,10 +76,10 @@ class BandsPlot(_Plot):
         ink = self.palette().text().color()
         left, right, top, bottom = self.frame()
         lo, hi = self.span
-        xmax = self.x[-1] if self.x else 1.0
+        xmin, xmax = self.xrange or (0.0, self.x[-1] if self.x else 1.0)
 
         def X(v):
-            return left + (right - left) * v / (xmax or 1.0)
+            return left + (right - left) * (v - xmin) / ((xmax - xmin) or 1.0)
 
         def Y(e):
             return bottom - (bottom - top) * (e - lo) / (hi - lo)
@@ -101,6 +103,8 @@ class BandsPlot(_Plot):
         grey = QColor(ink)
         grey.setAlpha(90)
         for x, label in self.ticks:
+            if not xmin - 1e-9 <= x <= xmax + 1e-9:
+                continue
             p.setPen(QPen(grey, 1))
             p.drawLine(QPointF(X(x), top), QPointF(X(x), bottom))
             p.setPen(QPen(ink, 1))
@@ -121,6 +125,17 @@ class BandsPlot(_Plot):
                 else:
                     path.lineTo(point)
             p.drawPath(path)
+        if self.model and len(self.model) == len(self.x):
+            p.setPen(QPen(QColor('#2e8b57'), 1.3, Qt.PenStyle.DashLine))
+            for n in range(len(self.model[0])):
+                path = QPainterPath()
+                for k, (x, e) in enumerate(zip(self.x, self.model)):
+                    point = QPointF(X(x), Y(e[n]))
+                    if k == 0 or k in starts:
+                        path.moveTo(point)
+                    else:
+                        path.lineTo(point)
+                p.drawPath(path)
         for x, e, edge in self.marks:  # the edges of the gap on the bands
             colour = QColor(ZERO if edge == 'v' else '#2e8b57')
             p.setPen(QPen(colour.darker(130), 1))
@@ -149,6 +164,7 @@ class SeriesPlot(_Plot):
         self.labels, self.values = [], []
         self.tolerance = 1.0  # meV per atom
         self.axis = ''
+        self.marked = []  # the points drawn green: the grids of a layer that hold the corner K
 
     def paintEvent(self, event):
         p = QPainter(self)
@@ -211,6 +227,9 @@ class SeriesPlot(_Plot):
         p.setPen(QPen(QColor(LINE).darker(140), 1))
         p.setBrush(QColor(LINE))
         for k, value in enumerate(self.values):
+            colour = QColor('#2e8b57' if k < len(self.marked) and self.marked[k] else LINE)
+            p.setPen(QPen(colour.darker(140), 1))
+            p.setBrush(colour)
             p.drawEllipse(QPointF(X(k), Y(value)), 4.0, 4.0)
         p.end()
 

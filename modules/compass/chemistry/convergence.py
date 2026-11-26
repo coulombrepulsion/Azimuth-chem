@@ -11,13 +11,14 @@
     cutoffs(base, dual): seven values of ecutwfc around the base (the value of the library or of the settings), from
     base − 2·STEP to base + 4·STEP in steps of STEP = 10 Ry, not below FLOOR = 20 Ry, each with ecutrho = dual × ecutwfc
     (dual — that of the library, 4 for norm-conserving files, 8–12 for ultrasoft and PAW).
-    grids(base): the grid of the settings multiplied by FACTORS along every axis (an axis of one point — a slab or a
-    molecule in a box — stays one), without repeats, in the order of the number of points.
+    grids(base): the grid of the settings multiplied by FACTORS along every axis (an axis of one point — a
+    molecule in a box — stays one), without repeats, in the order of the number of points. A layer (exactly one
+    axis of one point): N × N × 1 for N of LAYER_N (the shorter in-plane axis in proportion).
     rows(points): ΔE per atom from the last point (meV), the pressure and the gap as given.
     converged(rows, key, tolerance): the index of the first row from which |x − x_last| ≤ tolerance holds to the end;
     None when even the last but one is outside (the series is too short).
 §4 SPECIFICATION
-    Point(label, energy eV per cell, atoms, pressure kbar | None, gap eV | None);
+    Point(label, energy eV per cell, atoms, pressure kbar | None, gap eV | None, fermi eV | None);
     Row(label, energy_per_atom eV, delta meV per atom, pressure, gap); TOLERANCE_MEV = 1.0, TOLERANCE_KBAR = 1.0.
     summary(rows) -> the lines of the conclusion (Russian, keys of tr). ValueError with a message for the user.
 §7 TESTS
@@ -32,6 +33,9 @@ from azimuth.i18n import tr
 
 STEP, FLOOR = 10.0, 20.0  # Ry
 FACTORS = (0.5, 0.75, 1.0, 1.25, 1.5, 2.0)
+# a layer of a hexagonal lattice (graphene): N × N × 1 with N that are and are not multiples of 3 — only the first
+# contain the corner K of the zone, where the bands of graphene touch
+LAYER_N = (6, 8, 9, 10, 12, 15, 18, 24)
 TOLERANCE_MEV, TOLERANCE_KBAR = 1.0, 1.0
 
 
@@ -42,6 +46,7 @@ class Point:
     atoms: int
     pressure: float | None = None
     gap: float | None = None
+    fermi: float | None = None  # the Fermi energy, or the highest occupied level of a run without smearing, eV
 
 
 @dataclass(frozen=True)
@@ -51,6 +56,7 @@ class Row:
     delta: float
     pressure: float | None
     gap: float | None
+    fermi: float | None = None
 
 
 def cutoffs(base, dual=4.0):
@@ -66,6 +72,10 @@ def grids(base):
     """The grids of the series from the grid (n1, n2, n3) of the settings (§2)."""
     if not base or len(base) != 3 or any(type(n) is not int or n < 1 for n in base):
         raise ValueError(tr('Ряд по k-сетке: сетка задана неверно.'))
+    flat = [k for k, n in enumerate(base) if n == 1]
+    if len(flat) == 1:  # a layer: one point along its vacuum
+        ratio = [n / max(base) for n in base]
+        return [tuple(1 if k == flat[0] else max(1, round(count * ratio[k])) for k in range(3)) for count in LAYER_N]
     found = []
     for factor in FACTORS:
         grid = tuple(1 if n == 1 else max(1, round(n * factor)) for n in base)
@@ -80,7 +90,8 @@ def rows(points):
     if len(points) < 3:
         raise ValueError(tr('В ряду меньше трёх посчитанных точек — о сходимости судить не по чему.'))
     last = points[-1].energy / points[-1].atoms
-    return [Row(p.label, p.energy / p.atoms, 1000.0 * (p.energy / p.atoms - last), p.pressure, p.gap) for p in points]
+    return [Row(p.label, p.energy / p.atoms, 1000.0 * (p.energy / p.atoms - last), p.pressure, p.gap, p.fermi)
+            for p in points]
 
 
 def converged(table, key='delta', tolerance=TOLERANCE_MEV):
