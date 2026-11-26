@@ -205,6 +205,8 @@ ICONS = {
     'desktop': '<rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M9 20h6M12 16v4"/>',
     # Linux x86_64: a window of a terminal with its prompt
     'terminal': '<rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M3 8h18"/><path d="M7 12l3 2.5L7 17"/><path d="M12 17h5"/>',
+    # the user manual in PDF: an open book
+    'manual': '<path d="M12 6.5C10 5 7 4.5 3 5v13c4-.5 7 0 9 1.5 2-1.5 5-2 9-1.5V5c-4-.5-7 0-9 1.5z"/><path d="M12 6.5v13"/>',
 }
 
 

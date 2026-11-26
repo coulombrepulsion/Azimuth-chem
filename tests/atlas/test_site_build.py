@@ -662,7 +662,7 @@ def test_the_cards_the_dial_and_the_letters(tmp_path):
     assert len(arts) == 4 and arts.count('cardArt mirror') == 4  # the spectrum too, cut by its corner now
     # the strengths of the window times CARD_STRENGTH 1.6; the strongest mark 0.32
     assert site.CARD_STRENGTH == 1.6 and 'stroke-opacity="0.32"' in home and 'stroke-opacity="0.50"' not in home
-    assert home.count('class="cardIcon"') == 6 and '<!--ICON' not in home and '<!--ART' not in home  # 6: and Linux
+    assert home.count('class="cardIcon"') == 7 and '<!--ICON' not in home and '<!--ART' not in home  # 6: and Linux; 7: the manual
     assert 'id="toValidation" href="atlas/#val"' in home and "'#val'" in home
     # the letter is made by the script only — the HTML holds no address (robots of spam)
     assert 'id="askProgram" href="#download"' in home and "'mailto:' + ADDRESS" in home
@@ -1125,3 +1125,17 @@ def test_a_picture_of_a_section_opens_on_the_page(tmp_path):
     texts = json.loads((ROOT / 'site' / 'texts.json').read_text(encoding='utf-8'))
     for lang in ('ru', 'en', 'zh'):
         assert texts[lang]['dPrev'] and texts[lang]['dNext'] and texts[lang]['dPrev'] != texts[lang]['dNext']
+
+
+def test_the_home_page_of_each_language_gives_the_user_manual_in_its_language(tmp_path):
+    # the three books (docs/manual, tools/manual_pdf.py) are on the site; the button of the page of a language — the
+    # one in the HTML and the one its script sets when the language is switched — gives the book of that language
+    out, _ = _built(tmp_path)
+    for lang in ('ru', 'en', 'zh'):
+        book = out / 'manual' / f'Azimuth-manual-{lang}.pdf'
+        assert book.read_bytes() == (ROOT / 'docs' / 'manual' / book.name).read_bytes()
+    for lang, path in site.HOME_PATHS.items():
+        page = (out / path / 'index.html').read_text(encoding='utf-8')
+        up = '../' if path else ''
+        assert f'id="manualPdf" href="{up}manual/Azimuth-manual-{lang}.pdf" download' in page, lang
+        assert f"'{up}manual/Azimuth-manual-' + lang + '.pdf'" in page, lang
