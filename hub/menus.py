@@ -110,6 +110,7 @@ class HubMenus:
                      own('Множители частот', lambda: handbook('factors')),
                      own('Опытные данные', lambda: handbook('experiment'))),
                 None,
+                own('Проверить обновления…', lambda: self.check_updates()),
                 own('Проверить установку…', lambda: self.verify_installation()),  # a lambda: «triggered» must not reach
                 # «show»
                 own('Папка журналов программы', self.open_log_folder),
@@ -304,6 +305,12 @@ class HubMenus:
         folder.mkdir(parents=True, exist_ok=True)
         QDesktopServices.openUrl(QUrl.fromLocalFile(str(folder)))
         return folder
+
+    def check_updates(self):
+        """«Справка → Проверить обновления…»: the latest release of GitHub, the answer in any case (azimuth/updates.py)."""
+        from azimuth import updates
+
+        return updates.check_now(self, getattr(self, 'language', 'ru'))
 
     def verify_installation(self, show=True):
         """«Справка → Проверить установку…»: verify_install.py of the program folder in a process of its own (the

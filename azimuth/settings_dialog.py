@@ -5,8 +5,8 @@
     the hydrogens of files without H in a menu of the old window, the folder of the calculations behind an icon of
     Sextant, the grid and the program of Multiwfn) in one window, applied at once (no «OK»), kept in the settings of
     the program as before (the same keys: nothing is lost on the update).
-§4 SPECIFICATION SettingsDialog(studio, hub=None, focus=None): sections «Оформление» (language — with the hub only — and
-    theme), «Файлы» (hydrogens), «Таблицы анализа (CSV)» (separator, decimal, sample), «Расчёты» (folder), «Multiwfn»
+§4 SPECIFICATION SettingsDialog(studio, hub=None, focus=None): sections «Оформление» (language — with the hub only —,
+    theme and check_updates — azimuth/updates.py CHECK_KEY), «Файлы» (hydrogens), «Таблицы анализа (CSV)» (separator, decimal, sample), «Расчёты» (folder), «Multiwfn»
     (grid, program), «Ошибки» (the folder of the logs, report_button, logs_button); as Tools → Preferences of Chemcraft
     (values in azimuth/defaults.py, the open windows follow by studio.apply_default): «Связи и шаги» (bond_factor,
     bond_order, common_orientation), «Снимки» (picture_scale, picture_transparent, picture_crop), «Спектры» (ir_style,
@@ -187,6 +187,16 @@ class SettingsDialog(QDialog):
         self.theme.setCurrentIndex(2 if follows else (self.studio.theme.currentIndex() if hasattr(self.studio, 'theme') else 0))
         self.theme.currentIndexChanged.connect(self.set_theme)
         form.addRow(tr('Тема'), self.theme)
+        from azimuth import updates
+        from azimuth.settings import open_settings
+
+        self.check_updates = QCheckBox(tr('Проверять обновления при запуске'))
+        self.check_updates.setToolTip(tr('Раз при запуске программа спрашивает у GitHub номер последней версии (тот '
+                                         'же выпуск, что на сайте) и предлагает скачать новую. Никаких ваших данных '
+                                         'не отправляется.'))
+        self.check_updates.setChecked(updates.enabled(open_settings()))
+        self.check_updates.toggled.connect(lambda on: updates.set_enabled(open_settings(), on))
+        form.addRow(self.check_updates)
         column.addWidget(box)
 
     def _files(self, column):

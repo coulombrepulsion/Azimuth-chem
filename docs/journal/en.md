@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.225.0 — 26 November 2026
+
+- ### 0.225.0 — The program tells you about a new version
+
+At the start Azimuth now looks whether a newer version is out and offers to download it. You can put it off, skip one version, or switch the check off in the settings. To check yourself: «Help → Check for updates…».
+
 ## 0.224.0 — 26 November 2026
 
 - ### 0.224.0 — Reaction rate from the diagram

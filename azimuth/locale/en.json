@@ -6235,5 +6235,17 @@
   "мс": "ms",
   "сут": "days",
   "лет": "years",
-  "Константа скорости: нужны T > 0, P > 0 и молекулярность от 1.": "Rate constant: T > 0, P > 0 and a molecularity of at least 1 are needed."
+  "Константа скорости: нужны T > 0, P > 0 и молекулярность от 1.": "Rate constant: T > 0, P > 0 and a molecularity of at least 1 are needed.",
+  "Проверить обновления…": "Check for updates…",
+  "Проверять обновления при запуске": "Check for updates at start",
+  "Раз при запуске программа спрашивает у GitHub номер последней версии (тот же выпуск, что на сайте) и предлагает скачать новую. Никаких ваших данных не отправляется.": "Once at the start the program asks GitHub for the number of the latest version (the same release as on the site) and offers to download a newer one. None of your data is sent.",
+  "Вышла новая версия «Азимута»: {}. У вас {}.": "A new version of Azimuth is out: {}. You have {}.",
+  "Программа запущена из папки с исходным кодом: обновите её командой git pull.": "The program runs from a source folder: update it with git pull.",
+  "Установщик — на сайте, в разделе «Скачать». Ваши настройки, проекты и расчёты останутся на месте.": "The installer is on the site, in the «Download» section. Your settings, projects and calculations stay in place.",
+  "Обновление": "Update",
+  "Скачать": "Download",
+  "Позже": "Later",
+  "Не напоминать об этой версии": "Don’t remind me of this version",
+  "Не удалось узнать последнюю версию: нет связи с GitHub. Попробуйте позже или загляните на сайт.": "Could not find out the latest version: no connection to GitHub. Try later or look at the site.",
+  "У вас последняя версия «Азимута»: {}.": "You have the latest version of Azimuth: {}."
 }

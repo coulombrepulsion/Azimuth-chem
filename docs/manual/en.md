@@ -251,6 +251,8 @@ A structure by name or from the clipboard goes into an empty tab, otherwise into
 
 **The «Help» menu** begins with a search field in every section. Type a word, and the menu items and window buttons whose name or tooltip contains it appear below, with the path to them («Crystal ▸ Intermolecular interactions ▸ Hirshfeld surface…»). The chosen item is shown in its place: the menus open one after another, the item is highlighted, `Enter` runs it. `Ctrl+?` opens «Help» with the search field at once. The same menu has «Manual», «What's new» (the change journal), «Periodic table», «Handbook», the installation check, the folder of logs, the error report and «About».
 
+**Updates** (0.225.0). At the start the program asks GitHub once for the number of the latest release — the one the site gives out. If a version newer than yours is out, a window appears: «Download» opens the «Download» section of the site, «What’s new» the page of the release, «Later» puts it off till the next start, «Don’t remind me of this version» keeps silent till the next one. Without a network the program says nothing. To check at any time: «Help → Check for updates…». To switch the check off: «File → Settings… → Appearance → Check for updates at start». None of your data is sent.
+
 ### Handbook and periodic table
 
 «Help → Handbook» gathers data needed during work. The field at the top searches the table of the open tab.

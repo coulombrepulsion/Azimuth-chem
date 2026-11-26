@@ -103,6 +103,10 @@ def main(default=None):
     from PySide6.QtCore import QTimer
 
     QTimer.singleShot(2500, lambda: crash_report.ask_after_crash(window))
+    # a newer release on GitHub (the installers of the site) — asked in the background, said only when there is one
+    from azimuth import updates
+
+    updates.check_later(window)
     # Sextant offers the queue or the calculation on a server left unfinished when the program was closed
     studio = getattr(window, 'studio', window)
     if hasattr(studio, 'unfinished'):
