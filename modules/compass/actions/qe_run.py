@@ -231,6 +231,14 @@ def start(self):
     return self._started(tr('Считается… Папка расчёта: ') + str(self.folder))
 
 
+SERIES_FILES = ('eos1.in', 'ela1.in', 'cut1.in', 'kpt1.in', 'vac1.in', 'hub1.in', 'mag1.in')
+
+
+def series_like(folder):
+    """Is the job of the folder a series of runs of pw.x of equal standing (its first input is one of SERIES_FILES)?"""
+    return folder is not None and any((Path(folder) / name).is_file() for name in SERIES_FILES)
+
+
 WINDOWS_SCRIPT = 'run.bat'
 
 
@@ -446,7 +454,10 @@ def poll(self):
 
         result = reader.read(text, self.folder if code is not None else None)
     else:
-        result = qe.read((qe.runs(text) or [text])[0])  # the scf of the steps
+        # the scf of the steps (the bands and the density of states follow it); of a series of runs of equal standing
+        # (volumes, cutoffs, strains …) — the last one: the summary says «ниже — последний расчёт ряда»
+        runs = qe.runs(text) or [text]
+        result = qe.read(runs[-1] if series_like(self.folder) else runs[0])
     if code is None:
         parts = [tr('Считается: {} с').format(int(self.job.elapsed()))]
         message = getattr(self.job, 'message', '')
@@ -516,6 +527,10 @@ def poll(self):
     branches = self.phonon_data()
     if branches is not None:
         self.plot_button.setText(tr('Показать фононные ветви'))
+        self.plot_button.show()
+        self.plot_button.setEnabled(True)
+    elif strained is not None and strained[0] is not None:
+        self.plot_button.setText(tr('Показать E(ε)'))
         self.plot_button.show()
         self.plot_button.setEnabled(True)
     elif series is not None:

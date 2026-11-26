@@ -10,6 +10,8 @@ The outputs of pw.x 7.6 for silicon (tests/data/qe): 297 k-points of 8 bands, th
 from math import pi, sqrt
 from pathlib import Path
 
+import pytest
+
 from modules.compass.chemistry import crystal as cr
 from modules.sextant import qe_inputs, qe_paths
 from modules.spectrum.readers import qe
@@ -68,3 +70,42 @@ def test_the_bands_and_the_dos_of_pw76():
     assert abs(gap - 0.5741) < 1e-4
     dos = qe.read_dos((DATA / 'si_dos_pw76.dos').read_text(encoding='utf-8'))
     assert dos.fermi == 6.651 and len(dos.energies) == 2207 and abs(dos.integrated[-1] - 16.0) < 1e-6
+
+
+def anatase(a=3.785, c=9.514):
+    text = (f'data_anatase\n_cell_length_a {a}\n_cell_length_b {a}\n_cell_length_c {c}\n_cell_angle_alpha 90\n'
+            "_cell_angle_beta 90\n_cell_angle_gamma 90\n_space_group_name_H-M_alt 'I 41/a m d :1'\nloop_\n_atom_site_label\n"
+            '_atom_site_fract_x\n_atom_site_fract_y\n_atom_site_fract_z\nTi1 0 0 0\nO1 0 0 0.2081\n')
+    return cr.parse_cif(text)
+
+
+def test_the_path_of_a_body_centred_tetragonal_lattice():
+    # anatase (c > a): the path of Setyawan & Curtarolo for BCT₂. The oracle is the geometry of the zone, not their
+    # table: a point on a face of the Brillouin zone is as far from Γ as from a neighbouring point G of the
+    # reciprocal lattice — for a body-centred cell the G = h b₁ + k b₂ + l b₃ of the conventional cell with h + k + l
+    # even — and no G is nearer
+    import numpy as np
+
+    crystal = anatase()
+    assert qe_paths.lattice(crystal) == 'tI' and len(cr.unit_cell(cr.primitive(crystal))) == 6
+    a, c = 3.785, 9.514
+    for cell_a, cell_c in ((a, c), (4.0, 3.0)):  # BCT₂ and BCT₁
+        points, segments = qe_paths.body_centred_tetragonal(cell_a, cell_c)
+        scale = np.array([2 * pi / cell_a, 2 * pi / cell_a, 2 * pi / cell_c])
+        lattice = [np.array((h, k, m)) * scale for h in range(-2, 3) for k in range(-2, 3) for m in range(-3, 4)
+                   if (h + k + m) % 2 == 0 and (h, k, m) != (0, 0, 0)]
+        for label, f in points.items():
+            k = np.array(f) * scale
+            nearest = min(float(np.linalg.norm(k - g)) for g in lattice)
+            if label == 'Γ':
+                continue
+            assert nearest == pytest.approx(float(np.linalg.norm(k)), abs=1e-9), label  # on the boundary of the zone
+        assert all(label in points for run in segments for label in run)
+    p = qe_paths.path(crystal, cr.primitive_basis(crystal))
+    assert [label for _, label in p.ticks] == ['Γ', 'X', 'Y', 'Σ', 'Γ', 'Z', 'Σ₁', 'N', 'P', 'Y₁', 'Z|X', 'P'] and not p.general
+    assert p.ticks[1][0] == pytest.approx(2 * pi / a * sqrt(2) / 2)  # X = (½, ½, 0) of the conventional cell
+    assert p.ticks[5][0] - p.ticks[4][0] == pytest.approx(2 * pi / c)  # Γ–Z: to the face along c
+    # the fractions in the primitive cell: integers for a vector of the reciprocal lattice — Z twice is one
+    index = next(k for k, x in enumerate(p.x) if abs(x - p.ticks[5][0]) < 1e-9)
+    assert np.allclose(np.array(p.fractions[index]) * 2, np.round(np.array(p.fractions[index]) * 2), atol=1e-9)
+    assert [label for _, label in qe_paths.path(anatase(4.0, 3.0)).ticks][:4] == ['Γ', 'X', 'M', 'Γ']

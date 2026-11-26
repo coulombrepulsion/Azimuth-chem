@@ -6510,5 +6510,6 @@
   "оптимизация атомов и ячейки (vc-relax)": "optimization of the atoms and the cell (vc-relax)",
   "несамосогласованный расчёт (nscf)": "non-self-consistent calculation (nscf)",
   "зонная структура (bands)": "band structure (bands)",
-  "кбар": "kbar"
+  "кбар": "kbar",
+  "Показать E(ε)": "Show E(ε)"
 }

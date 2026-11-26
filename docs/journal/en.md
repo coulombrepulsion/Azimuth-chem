@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.238.0 — 26 November 2026
+
+- ### 0.238.0 — The bands of anatase and the project sheets
+
+For a body-centred tetragonal lattice (anatase) the bands now follow its standard path. And the folder docs/projects has sheets for the topics of the course: a step of the plan – and where it is done in the program (in Russian).
+
 ## 0.237.0 — 26 November 2026
 
 - ### 0.237.0 — Elastic constants and «Computational details»

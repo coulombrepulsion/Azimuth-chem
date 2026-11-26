@@ -3285,3 +3285,92 @@ def test_the_fields_of_the_crystal_setup_move_into_the_dialog(window, app, tmp_p
     finally:
         rows.reset()
         tool.program_combo.setCurrentIndex(tool.program_combo.findData('qe'))
+
+
+def test_crystal_series_shown_by_the_panel(window, tmp_path, monkeypatch):
+    # the panel of Quantum ESPRESSO with a pw.x that prints, for the n-th input of a series, the n-th real run of
+    # tests/data/qe: the elastic constants of MgO, the grids N × N × 1 of graphene and its Dirac cone — what the
+    # summary says and which plot the button opens
+    import sys
+    import time
+
+    from modules.compass.chemistry import crystal as cr, surface
+    from modules.sextant import install_tools, qe_inputs, qe_pseudo
+    from tests.compass.test_layer import graphene
+
+    data = Path(__file__).resolve().parents[1] / 'data' / 'qe'
+    tools = tmp_path / 'bin'
+    tools.mkdir()
+    fake = tools / 'pw.x'
+    fake.write_text(f"""#!{sys.executable}
+import re, sys
+name = sys.argv[sys.argv.index('-in') + 1]
+source = {{'ela': 'mgo_elastic_pw76.out', 'kpt': 'graphene_kpt_pw76.out', 'scf': 'graphene_bands_pw76.out',
+          'ban': 'graphene_bands_pw76.out'}}[name[:3]]
+runs = open({str(data)!r} + '/' + source, encoding='utf-8').read().split('Program PWSCF')[1:]
+index = 1 if name == 'bands.in' else 0 if name == 'scf.in' else int(re.search(r'\\d+', name).group()) - 1
+sys.stdout.write('     Program PWSCF' + runs[index])
+""", encoding='utf-8')
+    fake.chmod(0o755)
+    monkeypatch.setattr(install_tools, 'qe_program', lambda *a, **k: fake)
+    monkeypatch.setattr(qe_pseudo, 'installed', lambda *a, **k: True)
+    monkeypatch.setattr(qe_pseudo, 'table', lambda *a, **k: {'Mg': ('Mg.upf', 30.0, 240.0), 'O': ('O.upf', 50.0, 400.0),
+                                                           'C': ('C.upf', 45.0, 360.0)})
+    monkeypatch.setattr(qe_inputs, 'valence', lambda *a, **k: 4.0)
+    monkeypatch.setattr(window.run_tool, 'jobs_root', lambda: tmp_path / 'jobs')
+
+    def opened(crystal, name):
+        path = tmp_path / name
+        path.write_text(surface.write_cif(crystal), encoding='utf-8')
+        window.dirty = False
+        window.opening_tool.open_path(str(path))
+        panel = window.crystal_window.show_qe()
+        panel.processes.setValue(1)
+        return panel
+
+    def finish(panel, task):
+        panel.task.setCurrentIndex(panel.task.findData(task))
+        time.sleep(1.1)  # the folder of a run is named to the second: the fake pw.x ends within it
+        assert panel.start() is not None, panel.status.text()
+        deadline = time.monotonic() + 60
+        while panel.result is None and time.monotonic() < deadline:
+            time.sleep(0.1)
+            panel.poll()
+        assert panel.result is not None and panel.result.done and not panel.result.error, panel.status.text()
+
+    magnesia = cr.parse_cif('data_MgO\n_cell_length_a 4.2486\n_cell_length_b 4.2486\n_cell_length_c 4.2486\n'
+                            "_space_group_name_H-M_alt 'F m -3 m'\nloop_\n_atom_site_label\n_atom_site_fract_x\n"
+                            '_atom_site_fract_y\n_atom_site_fract_z\nMg1 0 0 0\nO1 0.5 0.5 0.5\n')
+    panel = opened(magnesia, 'mgo.cif')
+    finish(panel, qe_inputs.ELASTIC_TASK)
+    assert (panel.folder / 'elastic.json').is_file() and (panel.folder / 'ela19.in').is_file()
+    assert 'C₁₁ = 276.3' in panel.summary.text() and '153.5' in panel.summary.text()
+    assert panel.plot_button.isVisible() and panel.plot_button.text() == 'Показать E(ε)'
+    plot = panel.show_plot()
+    assert len(plot.plot.series) == 3 and all(len(points) == 7 for _, _, points, _ in plot.plot.series)
+    plot.plot.resize(640, 420)
+    plot.plot.grab()
+    assert len(Path(plot.save(str(tmp_path / 'elastic.csv'))).read_text(encoding='utf-8').splitlines()) == 22
+    plot.reject()
+    panel.reject()
+
+    panel = opened(graphene(), 'graphene.cif')
+    finish(panel, qe_inputs.KGRID_TASK)
+    assert panel.plot_button.text() == 'Показать сходимость' and 'кратным 3' in panel.summary.text()
+    plot = panel.show_plot()
+    assert plot.plot.labels[0] == '6 × 6 × 1' and plot.plot.marked == [True, False, True, False, True, True, True, True]
+    assert 'Уровень Ферми' in plot.note.text() and '-1.6887' in plot.note.text()
+    plot.plot.resize(640, 420)
+    plot.plot.grab()
+    plot.reject()
+    finish(panel, qe_inputs.BANDS_TASK)
+    assert 'Конус Дирака' in panel.summary.text() and '0.831' in panel.summary.text()
+    plot = panel.show_plot()
+    assert [t[1] for t in plot.plot.ticks] == ['Γ', 'M', 'K', 'Γ'] and len(plot.plot.model) == len(plot.plot.x) == 162
+    cone = panel.cone_window
+    assert cone.plot.xrange is not None and 't = 2ħv_F' in cone.note.text() and 'Наклоны зон' in cone.note.text()
+    for shown in (plot, cone):
+        shown.plot.resize(640, 420)
+        shown.plot.grab()
+        shown.reject()
+    panel.reject()

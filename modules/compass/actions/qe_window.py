@@ -430,7 +430,10 @@ class QePanel(QWidget):
             else:
                 from modules.spectrum.readers import qe
 
-                result = qe.read((qe.runs(text) or [text])[0])
+                from modules.compass.actions.qe_run import series_like
+
+                found = qe.runs(text) or [text]
+                result = qe.read(found[-1] if series_like(folder) else found[0])
             if result.done and not result.error and result.energy is not None:
                 break
         else:

@@ -8,7 +8,7 @@
     cell. A point k = f·B of the conventional reciprocal basis B has the fractions f' = f·Pᵀ in the reciprocal basis of
     a primitive cell with rows P (in fractions of the conventional cell): k·a'_j = f·B·(P A)ᵀ_j = 2π (f Pᵀ)_j.
 §2 ALGORITHM lattice(crystal) — the crystal system (crystal_symmetry.analyse) and the centring: 'cP', 'cF', 'cI', 'hP'
-    (γ = 120°; a layer with vacuum along c — Γ–M–K–Γ in its plane only), 'tP', 'oP'; any other lattice — 'other', the general path Γ–X–Γ–Y–Γ–Z along the reciprocal axes (X = (½,
+    (γ = 120°; a layer with vacuum along c — Γ–M–K–Γ in its plane only), 'tP', 'tI' (body-centred tetragonal — anatase: the points depend on c/a, body_centred_tetragonal), 'oP'; any other lattice — 'other', the general path Γ–X–Γ–Y–Γ–Z along the reciprocal axes (X = (½,
     0, 0) …), said so. path(crystal, basis=None, step=STEP) -> Path: the points of the segments every ≈ step Å⁻¹ (at
     least 2 per segment), their fractions in the basis of the calculation, the distance x along the path (Å⁻¹, a jump
     «|» adds no distance), the ticks (x, label) and the kind.
@@ -49,6 +49,23 @@ LATTICES = {
 }
 
 
+def body_centred_tetragonal(a, c):
+    """(points, segments) of the body-centred tetragonal lattice (anatase): the points depend on c/a. Setyawan &
+    Curtarolo: BCT₁ for c < a (η = (1 + c²/a²)/4), BCT₂ for c > a (η = (1 + a²/c²)/4, ζ = a²/(2c²)). Their fractions
+    (p₁, p₂, p₃) of the primitive reciprocal vectors are written here in those of the conventional cell:
+    f = (p₂ + p₃, p₁ + p₃, p₁ + p₂), since the conventional edges are sums of two primitive vectors."""
+    if c < a:
+        eta = (1 + c * c / (a * a)) / 4
+        points = {G: (0, 0, 0), 'M': (1, 0, 0), 'N': (0.5, 0, 0.5), 'P': (0.5, 0.5, 0.5), 'X': (0.5, 0.5, 0),
+                  'Z': (0, 0, 2 * eta), 'Z₁': (1, 0, 1 - 2 * eta)}
+        return points, [[G, 'X', 'M', G, 'Z', 'P', 'N', 'Z₁', 'M'], ['X', 'P']]
+    eta, zeta = (1 + a * a / (c * c)) / 4, a * a / (2 * c * c)
+    points = {G: (0, 0, 0), 'N': (0.5, 0, 0.5), 'P': (0.5, 0.5, 0.5), 'X': (0.5, 0.5, 0), 'Z': (0, 0, 1),
+              'Σ': (2 * eta, 0, 0), 'Σ₁': (1 - 2 * eta, 0, 1), 'Y': (0.5 + zeta, 0.5 - zeta, 0),
+              'Y₁': (0.5 - zeta, 0.5 - zeta, 1)}
+    return points, [[G, 'X', 'Y', 'Σ', G, 'Z', 'Σ₁', 'N', 'P', 'Y₁', 'Z'], ['X', 'P']]
+
+
 @dataclass
 class Path:
     kind: str
@@ -72,6 +89,8 @@ def lattice(crystal):
         return 'hP'
     if system == 'tetragonal' and centring == 'P':
         return 'tP'
+    if system == 'tetragonal' and centring == 'I':
+        return 'tI'
     if system == 'orthorhombic' and centring == 'P':
         return 'oP'
     return 'other'
@@ -81,7 +100,7 @@ def path(crystal, basis=None, step=STEP):
     import numpy as np
 
     kind = lattice(crystal)
-    points, segments = LATTICES[kind]
+    points, segments = body_centred_tetragonal(crystal.cell.a, crystal.cell.c) if kind == 'tI' else LATTICES[kind]
     if kind == 'hP':  # a layer with vacuum along c (graphene): the path in its plane only
         from modules.compass.chemistry import layer
 
