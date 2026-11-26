@@ -107,7 +107,9 @@ details.first p,details.first li{color:var(--muted);font-size:15px;text-wrap:pre
 details.first ul{margin:8px 0 0;padding-left:20px}
 details.first li{margin:6px 0}
 details.first code{font-size:13px;background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:1px 5px}
-.dl .soon{display:inline-block;margin-top:12px;font-size:13px;padding:3px 10px;border-radius:99px;background:var(--soft);border:1px solid var(--line);color:var(--muted)}
+.dl .card{display:flex;flex-direction:column}
+.dl .get{margin-top:auto;align-self:flex-start}  /* the button at the foot of the card, the three in one line */
+.dl .card p{margin-bottom:14px}
 .author{display:flex;gap:20px;align-items:flex-start}
 /* the cards: a small line picture above the title; the four parts of the program carry the picture of their section
    from the background of the program (hub/chrome.py Ornament, tools/site_scales.py), faint in the lower right corner */
@@ -300,16 +302,17 @@ main,footer{position:relative;z-index:1}
   </section>
 
   <section id="download">
+    <!-- the files of the latest release of GitHub under names without the version (.github/workflows/build-*.yml) -->
     <h2 data-t="dlT"></h2>
     <p class="sub" data-t="dlSub"></p>
     <div class="dl">
-      <div class="card"><!--ICON laptop--><div class="os">macOS</div><p data-t="mac"></p><span class="soon" data-t="soon"></span></div>
-      <div class="card"><!--ICON desktop--><div class="os">Windows</div><p data-t="win"></p><span class="soon" data-t="soon"></span></div>
-      <div class="card"><!--ICON terminal--><div class="os">Linux</div><p data-t="lin"></p><span class="soon" data-t="soon"></span></div>
+      <div class="card"><!--ICON laptop--><div class="os">macOS</div><p data-t="mac"></p><a class="btn primary small get" href="https://github.com/coulombrepulsion/Azimuth-chem/releases/latest/download/Azimuth-macOS-arm64.dmg" rel="noopener" data-t="getMac"></a></div>
+      <div class="card"><!--ICON desktop--><div class="os">Windows</div><p data-t="win"></p><a class="btn primary small get" href="https://github.com/coulombrepulsion/Azimuth-chem/releases/latest/download/Azimuth-Setup-Windows-x64.exe" rel="noopener" data-t="getWin"></a></div>
+      <div class="card"><!--ICON terminal--><div class="os">Linux</div><p data-t="lin"></p><a class="btn primary small get" href="https://github.com/coulombrepulsion/Azimuth-chem/releases/latest" rel="noopener" data-t="getLin"></a></div>
     </div>
     <p class="note" data-t="dlNote"></p>
     <details class="first"><summary data-t="firstT"></summary><p data-t="firstWhy"></p><ul class="firstList"><li data-t="firstMac"></li><li data-t="firstWin"></li><li data-t="firstLin"></li></ul></details>
-    <p style="margin:18px 0 0"><a class="btn primary" id="askProgram" href="#download" data-t="reqBtn"></a></p>
+    <p style="margin:18px 0 0"><a class="btn" id="askProgram" href="#download" data-t="reqBtn"></a></p>
   </section>
 
   <section id="author">

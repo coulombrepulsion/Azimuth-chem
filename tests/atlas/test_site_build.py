@@ -314,7 +314,8 @@ def test_the_home_page_has_its_text_and_the_marks_of_a_preview_in_the_html(tmp_p
     assert not re.search(r'data-t="[A-Za-z0-9]+"[^>]*></', home)  # no element left empty
     # {mail} is put in as a link the script fills; the address itself is nowhere whole (robots of spam)
     assert '<a class="mail" href="#author"></a>' in home.split('</aside>')[0]  # in the page, before its scripts
-    assert 'contact@azimuth-chem.com' not in home and 'coulombrepulsion' not in home  # the address of the site
+    assert 'contact@azimuth-chem.com' not in home  # the address of the site
+    # the buttons «Скачать» lead to the releases of GitHub (the owner, 2026-11-26: «Ссылки на GitHub можно»)
     assert f'alt="{texts["ru"]["heroAlt"]}"' in home
     head = home[:home.index('<style>')]
     for mark in ('og:title', 'og:description', 'og:image', 'og:url', 'twitter:card', 'name="description"'):
@@ -838,7 +839,8 @@ def test_the_home_page_has_an_address_in_every_language(tmp_path):
 
 def test_the_download_part_names_linux(tmp_path):
     """Three cards — macOS, Windows, Linux (its icon a
-    terminal), the text of Linux in the three languages, the letter of the request names it among the systems."""
+    terminal), the text of Linux in the three languages, the letter of the request names it among the systems; each card
+    has its button to the latest release of GitHub."""
     import json
 
     out, _ = _built(tmp_path)
@@ -851,6 +853,13 @@ def test_the_download_part_names_linux(tmp_path):
     for lang in ('ru', 'en', 'zh'):
         assert 'Linux x86_64' in texts[lang]['lin'] and 'Ubuntu 22.04' in texts[lang]['lin']
         assert 'Linux x86_64' in texts[lang]['reqBody']
+    # the files of the latest release under the names without the version, the same names the builds give them
+    latest = 'https://github.com/coulombrepulsion/Azimuth-chem/releases/latest'
+    assert f'href="{latest}/download/Azimuth-macOS-arm64.dmg"' in part and f'href="{latest}/download/Azimuth-Setup-Windows-x64.exe"' in part
+    assert f'href="{latest}"' in part and 'class="soon"' not in part
+    root = Path(__file__).resolve().parents[2] / '.github' / 'workflows'
+    assert 'Azimuth-macOS-arm64.dmg' in (root / 'build-macos.yml').read_text(encoding='utf-8')
+    assert 'Azimuth-Setup-Windows-x64.exe' in (root / 'build-windows.yml').read_text(encoding='utf-8')
 
 
 def test_every_page_says_it_has_both_themes_at_its_first_line(tmp_path):
