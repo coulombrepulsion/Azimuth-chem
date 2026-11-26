@@ -20,6 +20,8 @@ def size_note(package):
     """The approximate size of a large package (download, then on disk), or '' — measured 2026-11-24 on the owner's Mac
     (osx-arm64, conda-meta of .tools/qe, .tools/nwchem, .tools/psi4 and du); ASSUMPTION: about the same on Linux.
     CP2K (Homebrew on a Mac) was not measured."""
+    if package == 'qe' and os.name == 'nt':  # the build of MSYS2 (qe_windows): the mirror, 2026-11-26 — 15 packages
+        return tr('≈ 90 МБ загрузки, ≈ 140 МБ на диске')
     return {
         'qe': tr('≈ 280 МБ загрузки, ≈ 900 МБ на диске'),
         'nwchem': tr('≈ 140 МБ загрузки, ≈ 650 МБ на диске'),
@@ -63,11 +65,12 @@ class InstallTool:
         found = {'openmpi': runner.find_mpirun()}
         for kind in ('xtb', 'crest', 'mopac'):
             found[kind] = runner.find_program(kind, self.w.run_tool.configured_program(kind))
-        packages = ('openmpi', 'xtb', 'mopac') if os.name == 'nt' else ('openmpi', 'xtb', 'crest', 'mopac', 'qe')
-        if os.name != 'nt':  # Quantum ESPRESSO (no Windows build)
-            from modules.sextant import install_tools
+        from modules.sextant import install_tools
 
-            found['qe'] = install_tools.qe_program()
+        # Quantum ESPRESSO on Windows — the native build of MSYS2 (modules/sextant/qe_windows.py)
+        packages = ('openmpi', 'xtb', 'mopac', 'qe') if os.name == 'nt' else ('openmpi', 'xtb', 'crest', 'mopac', 'qe')
+        found['qe'] = install_tools.qe_program()
+        if os.name != 'nt':
             packages += ('nwchem',)  # its own prefix and MPI, as Quantum ESPRESSO
             found['nwchem'] = runner.find_program('nwchem', self.w.run_tool.configured_program('nwchem'))
             packages += ('psi4',)  # its own prefix and Python
@@ -104,7 +107,9 @@ class InstallTool:
                          'интернет. xtb, MOPAC, CREST и MPI вместе — около 30 МБ загрузки и 75 МБ на диске; первая установка '
                          'ещё скачивает менеджер пакетов micromamba (7 МБ). Права администратора не нужны, '
                          'настройки терминала не меняются.') + (' ' + tr('Quantum ESPRESSO, NWChem и Psi4 — в '
-                                                                        'отдельные папки .tools/qe, .tools/nwchem и .tools/psi4.') if os.name != 'nt' else '')
+                                                                        'отдельные папки .tools/qe, .tools/nwchem и .tools/psi4.') if os.name != 'nt' else ' ' + tr(
+                             'Quantum ESPRESSO для Windows берётся из репозитория MSYS2 (сборка без MPI: процессы '
+                             'становятся потоками OpenMP) и ставится в .tools/qe.'))
                      + (' ' + tr('CP2K на Mac ставится через Homebrew (brew install cp2k); если Homebrew нет — '
                                  'сначала установите его с brew.sh.') if sys.platform == 'darwin' else ''))
         note.setWordWrap(True)

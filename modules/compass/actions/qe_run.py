@@ -113,10 +113,7 @@ def refresh(self):
         from modules.sextant import install_tools
 
         program = install_tools.qe_program(self.root())
-        if os.name == 'nt':
-            self.status.setText(tr('Для Windows нет сборки Quantum ESPRESSO: считайте на сервере или в WSL.'))
-            ready = False
-        elif program is None:
+        if program is None:
             self.status.setText(tr('pw.x не найден: «Расчёт → Установить программы для расчёта…» → Quantum ESPRESSO.'))
             ready = False
         else:  # the path in the tooltip, as the program of a molecule
@@ -163,7 +160,8 @@ def start(self):
     except ValueError as exc:
         self.status.setText(str(exc))
         return None
-    if server and not cp2k:  # the pseudopotentials go with the folder
+    beside = os.name == 'nt' and not server and not cp2k  # Windows: see windows_command
+    if (server or beside) and not cp2k:  # the pseudopotentials go with the folder
         import re
 
         steps = [(n, t, re.sub(r"pseudo_dir\s*=\s*'[^']*'", "pseudo_dir = './pseudo'", x)) for n, t, x in steps]
@@ -176,6 +174,23 @@ def start(self):
         return self.start_server(steps, safe)
     if cp2k:
         return self._start_cp2k(program)
+    if beside:
+        try:
+            copy_pseudo(self, steps)
+        except (ValueError, OSError) as exc:
+            self.status.setText(str(exc))
+            return None
+        command, script, changes = windows_command(steps, program, self.processes.value())
+        if script:
+            # the line ends of cmd.exe; the files a server gets are written with «\n» (start_server)
+            (self.folder / WINDOWS_SCRIPT).write_bytes(script.replace('\n', '\r\n').encode('ascii'))
+        spec = runner.JobSpec('qe', self.folder, tuple(command), self.folder / 'pw.out', {**os.environ, **changes})
+        try:
+            self.job = runner.Job(spec).start()
+        except ValueError as exc:
+            self.status.setText(str(exc))
+            return None
+        return self._started(tr('Считается… Папка расчёта: ') + str(self.folder))
     prefix = install_tools.qe_prefix(self.root())
     env = dict(os.environ)
     env['OMP_NUM_THREADS'] = '1'
@@ -207,6 +222,50 @@ def start(self):
         self.status.setText(str(exc))
         return None
     return self._started(tr('Считается… Папка расчёта: ') + str(self.folder))
+
+
+WINDOWS_SCRIPT = 'run.bat'
+
+
+def copy_pseudo(self, steps):
+    """The pseudopotentials of the species of the first input copied into pseudo/ of the job folder (the inputs name
+    them by the relative «./pseudo»: for a server, and on Windows — see windows_command)."""
+    import shutil
+
+    from modules.sextant import qe_pseudo
+
+    pseudo = self.folder / 'pseudo'
+    pseudo.mkdir(exist_ok=True)
+    qe_pseudo.table(self.root(), self.library())  # raises when the library is not there
+    source = qe_pseudo.folder(self.root(), self.library())
+    species = steps[0][2].split('ATOMIC_SPECIES')[1].split('CELL_PARAMETERS')[0].strip().splitlines()
+    for file in {line.split()[2] for line in species}:  # «Si 28.0850 Si.upf»
+        shutil.copy2(source / file, pseudo / file)
+    return pseudo
+
+
+def windows_command(steps, program, processes):
+    """(command, the text of run.bat or '', the changes of the environment) of a run on Windows.
+
+    The Windows build (modules/sextant/qe_windows.py) has no MPI: the processes asked for become OpenMP threads.
+    Nothing in the inputs or in the script names a folder: the programs are found by PATH (their folder put first —
+    their DLLs lie there too), the pseudopotentials are in ./pseudo of the job folder. A path with Russian letters —
+    the name of the user, the folder of the program — would otherwise have to pass through the code page of cmd.exe
+    and through the Fortran run-time, which reads the input as bytes."""
+    from modules.sextant import qe_inputs, qe_windows
+
+    folder = str(Path(program).parent)
+    changes = {'PATH': os.pathsep.join([folder, os.environ.get('PATH', '')]), 'OMP_NUM_THREADS': str(max(1, int(processes)))}
+    if len(steps) == 1:
+        return [str(program), '-in', steps[0][0]], '', changes
+    lines = ['@echo off']
+    for name, tool, _ in steps:
+        line = f'{qe_windows.exe_name(tool)} -in {name}'
+        if tool in qe_inputs.OPTIONAL:  # projwfc.x — its own output, its error not the job's
+            lines.append(f'{line} > {qe_inputs.OPTIONAL[tool]} 2>&1')
+        else:
+            lines.append(f'{line} || exit /b 1')
+    return ['cmd', '/d', '/c', WINDOWS_SCRIPT], '\n'.join(lines) + '\n', changes
 
 
 def batch_idents(self):
@@ -294,10 +353,8 @@ def _started(self, text):
 
 def start_server(self, steps, name):
     """The job sent to the server of «Сервер…» (SLURM) and watched here (remote_job.RemoteJob)."""
-    import shutil
-
     from azimuth.tasks import run_quietly
-    from modules.sextant import cluster, qe_pseudo, remote_job, server_access
+    from modules.sextant import cluster, remote_job, server_access
 
     profile = self.server_profile()
     try:
@@ -309,13 +366,7 @@ def start_server(self, steps, name):
         kind = self.program  # or CP2K
         setup = cluster.server_setup(profile, resources, kind)  # ValueError: the program is not found there
         if kind == 'qe':
-            pseudo = self.folder / 'pseudo'
-            pseudo.mkdir(exist_ok=True)
-            qe_pseudo.table(self.root(), self.library())  # raises when the library is not there
-            source = qe_pseudo.folder(self.root(), self.library())
-            species = steps[0][2].split('ATOMIC_SPECIES')[1].split('CELL_PARAMETERS')[0].strip().splitlines()
-            for file in {line.split()[2] for line in species}:  # «Si 28.0850 Si.upf»
-                shutil.copy2(source / file, pseudo / file)
+            copy_pseudo(self, steps)
         chosen = cluster.server_plan(resources, self.processes.value(), self.memory.value(), profile.title())
         spec = remote_job.prepare_qe(self.folder, [s[:2] for s in steps], chosen, setup, name, kind)
         self.job = remote_job.RemoteJob(spec, profile, connection).start()

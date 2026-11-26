@@ -168,12 +168,26 @@ def qe_prefix(root):
     return Path(root) / '.tools' / 'qe'
 
 
-def qe_program(root=None, name='pw.x'):
-    """Pw.x (or another program of QE) of the prefix of the program, else in PATH, else None."""
+MSYS2_ROOTS = ('C:/msys64', 'C:/tools/msys64')  # where MSYS2 installs itself (and Chocolatey puts it)
+
+
+def qe_program(root=None, name='pw.x', windows=None):
+    """Pw.x (or another program of QE) of the prefix of the program, else in PATH, else None. On Windows — the native
+    build (qe_windows: pw.exe): of the prefix, of an MSYS2 of the user (its ucrt64\\bin), of PATH."""
+    windows = os.name == 'nt' if windows is None else windows
+    if windows:
+        from modules.sextant import qe_windows
+
+        name = qe_windows.exe_name(name)
     for base in ([root] if root else tool_roots()):  # of another version next to this one too
         path = qe_prefix(base) / 'bin' / name
-        if _executable(path):
+        if path.is_file() if windows else _executable(path):
             return path
+    if windows:
+        for base in (os.environ.get('MSYS2_ROOT', ''), *MSYS2_ROOTS):
+            path = Path(base) / 'ucrt64' / 'bin' / name if base else None
+            if path is not None and path.is_file():
+                return path
     found = shutil.which(name)
     return Path(found) if found else None
 
@@ -458,12 +472,12 @@ def main(argv=None):
         packages.remove('crest')
         if not packages:
             return 2
-    if windows and 'qe' in packages:  # no Quantum ESPRESSO for Windows on conda-forge
-        print('[tools] Quantum ESPRESSO has no build for Windows — skipped (it runs on macOS and Linux, or on a server).',
-              flush=True)
-        packages.remove('qe')
-        if not packages:
-            return 2
+    if windows and 'qe' in packages:  # no Quantum ESPRESSO for Windows on conda-forge: the build of MSYS2
+        from modules.sextant import qe_windows
+
+        rest = [p for p in packages if p != 'qe']
+        code = main(rest + ['--root', str(root)]) if rest else 0  # the others first: they bring the package manager
+        return qe_windows.install(root, say=lambda line: print(line, flush=True)) if code == 0 else code
     if windows and 'nwchem' in packages:  # no NWChem for Windows on conda-forge
         print('[tools] NWChem has no build for Windows — skipped (it runs on macOS and Linux, or on a server).', flush=True)
         packages.remove('nwchem')

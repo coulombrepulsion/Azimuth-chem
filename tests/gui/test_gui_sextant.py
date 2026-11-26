@@ -471,9 +471,9 @@ def test_install_menu_offers_mopac_and_ticks_what_is_missing(window, monkeypatch
 
     monkeypatch.setattr(install_tools, 'qe_program', lambda *a, **k: None)
     offered = [p for p, _, _ in tool.offered()]
-    # + Quantum ESPRESSO (not on Windows), not ticked by itself
+    # + Quantum ESPRESSO (on Windows — the build of MSYS2), not ticked by itself
     # CP2K — conda-forge on Linux; Homebrew on a Mac
-    assert offered == (['openmpi', 'xtb', 'mopac'] if os.name == 'nt'
+    assert offered == (['openmpi', 'xtb', 'mopac', 'qe'] if os.name == 'nt'
                        else ['openmpi', 'xtb', 'crest', 'mopac', 'qe', 'nwchem', 'psi4', 'cp2k'])
     assert window.run_tool.install_tools_dialog(chosen=('mopac',)) == 'job' and started == [('mopac',)]
     from PySide6.QtWidgets import QCheckBox

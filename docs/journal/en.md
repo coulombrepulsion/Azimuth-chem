@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.234.0 — 26 November 2026
+
+- ### 0.234.0 — Quantum ESPRESSO on Windows
+
+«Install calculation programs…» now installs Quantum ESPRESSO on Windows too – the build of the MSYS2 repository, without administrator rights. Crystals can be computed on your own laptop. This part has not yet been checked by a run on Windows: if something does not work, use a server and write to us.
+
 ## 0.233.0 — 26 November 2026
 
 - ### 0.233.0 — Crystals in Quantum ESPRESSO are checked

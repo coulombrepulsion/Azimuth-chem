@@ -346,6 +346,7 @@
 - `modules/sextant/qe_inputs.py` — The input of pw.x (Quantum ESPRESSO) for a crystal of Compass.
 - `modules/sextant/qe_paths.py` — The path through the Brillouin zone for a band structure of Quantum ESPRESSO.
 - `modules/sextant/qe_pseudo.py` — The pseudopotentials of Quantum ESPRESSO: the library SSSP downloaded once into the folder of the program.
+- `modules/sextant/qe_windows.py` — Quantum ESPRESSO for Windows: the native build of the MSYS2 project, put into .tools/qe without MSYS2 itself.
 - `modules/sextant/remote.py` — Sextant: the server profile for calculations on a cluster (the environment lines of the job).
 - `modules/sextant/remote_job.py` — Sextant: a calculation on a SLURM server, watched like one on this computer.
 - `modules/sextant/run_actions.py` — RunTool (window.run_tool, a part of the window; was the mixin RunActions of SextantWorkspace, split from it on 2026-11-08): running a calculation of Sextant — where it runs (this computer or a server), the program found or chosen, the fo…
