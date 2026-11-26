@@ -10,7 +10,7 @@
 
 Программа не подписана. Первый запуск: macOS — «Системные настройки → Конфиденциальность и безопасность → Всё равно открыть»; Windows — «Подробнее → Выполнить в любом случае».
 
-Что нового — [CHANGELOG.md](https://github.com/coulombrepulsion/Azimuth-chem/blob/v{version}/CHANGELOG.md). Руководство — `docs/manual/Azimuth-manual-ru.pdf` (`-en`, `-zh`) и меню «Справка → Руководство».
+Что нового — [CHANGELOG.md](https://github.com/coulombrepulsion/Azimuth-chem/blob/v{version}/CHANGELOG.md). Руководство пользователя — `Azimuth-manual-ru.pdf` (`-en`, `-zh`) в этом выпуске и меню программы «Справка → Руководство».
 
 ---
 

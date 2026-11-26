@@ -70,20 +70,16 @@ jobs:
             dist/installer/*.dmg
             dist/installer/*.sha256
           retention-days: 30
-      # The release of GitHub (only for a tag v*): the disk image under its own name and under the name without the
-      # version Azimuth-macOS-arm64.dmg — the button of the site (site/index.html, «Скачать») leads to
-      # releases/latest/download/Azimuth-macOS-arm64.dmg. The two builds add their files to the same release; the one that comes
-      # first makes it, with the words of packaging/release_notes.md.
+      # The release of GitHub (a tag v*, or the tag given to a run by hand): the installer under its own name and
+      # under the name without the version Azimuth-macOS-arm64.dmg — the button of the site (site/index.html, «Скачать») leads
+      # to releases/latest/download/Azimuth-macOS-arm64.dmg. packaging/release.sh: the release stays a draft till both
+      # installers are in it (.github/workflows/release.yml has put the user manual there).
       - name: Release (a tag v*, or the tag given to a run by hand)
         if: startsWith(github.ref, 'refs/tags/v') || inputs.release != ''
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          tag="${{ inputs.release || github.ref_name }}"
           files=(dist/installer/Azimuth-*-macOS-arm64.dmg dist/installer/Azimuth-*-macOS-arm64.dmg.sha256)
           cp "${files[0]}" "dist/installer/Azimuth-macOS-arm64.dmg"
-          sed "s/{version}/${tag#v}/g" packaging/release_notes.md > release-notes.md
-          gh release view "$tag" > /dev/null 2>&1 || \
-            gh release create "$tag" --verify-tag --title "Азимут ${tag#v}" --notes-file release-notes.md || true
-          gh release upload "$tag" "${files[@]}" "dist/installer/Azimuth-macOS-arm64.dmg" --clobber
+          bash packaging/release.sh "${{ inputs.release || github.ref_name }}" "${files[@]}" "dist/installer/Azimuth-macOS-arm64.dmg"

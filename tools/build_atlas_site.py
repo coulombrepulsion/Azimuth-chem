@@ -1185,11 +1185,11 @@ def in_folder(page, lang):
     and the side panel told the language of the page (data-lang, site/rail.js). A reference left pointing into the
     root is a ValueError."""
     page = re.sub(r'\b(src|href)="(?!#|https?:|mailto:|data:|/|\.\./|\./")([^"]*)"', r'\1="../\2"', page)
-    page = re.sub(r"""(['`])(img/|atlas/|manual/|rail\.js)""", r'\1../\2', page)
+    page = re.sub(r"""(['`])(img/|atlas/|rail\.js)""", r'\1../\2', page)
     if page.count('data-root="./"') != 1:
         raise ValueError('the home page: the side panel (rail.js, data-root) was not found once')
     page = page.replace('data-root="./"', f'data-root="../" data-lang="{lang}"')
-    stray = re.findall(r'\b(?:src|href)="((?:img|atlas|manual)/[^"]*)"', page)
+    stray = re.findall(r'\b(?:src|href)="((?:img|atlas)/[^"]*)"', page)
     if stray:
         raise ValueError(f'the home page of {lang}: addresses left in the root: {stray[:5]}')
     return page
@@ -1251,7 +1251,6 @@ def card_pictures(html):
 
 
 SHOT = re.compile(r'<!--SHOT ([a-z-]+) ([A-Za-z0-9]+)-->')
-MANUAL_DIR = ROOT / 'docs' / 'manual'  # Azimuth-manual-LANG.pdf, made by tools/manual_pdf.py
 SHOT_SIZE = (1600, 1000)  # of site/img-program/*.webp, made from the windows of the program (tools/site_screenshots.py)
 
 
@@ -1438,7 +1437,7 @@ def build(out, package=PACKAGE, pyodide=PYODIDE, landing=LANDING, answered=True,
         fonts_css = (web / 'assets' / 'fonts' / 'fonts.css').read_text(encoding='utf-8')
         for lang, path in HOME_PATHS.items():
             page = shot_language(home_page(home, texts, url, path=path, lang=lang), lang)
-            page = page.replace('manual/Azimuth-manual-ru.pdf', f'manual/Azimuth-manual-{lang}.pdf')  # its own book
+            page = page.replace('download/Azimuth-manual-ru.pdf', f'download/Azimuth-manual-{lang}.pdf')  # its own book
             page = page.replace('</head>', RAIL_EARLY + '</head>', 1).replace('/*WORD*/', wordmark_script(web))
             brand = '<a class="brand" href="./" id="brand" aria-label="Азимут"></a>'
             if page.count(brand) != 1:
@@ -1453,14 +1452,6 @@ def build(out, package=PACKAGE, pyodide=PYODIDE, landing=LANDING, answered=True,
         (out / 'sitemap.xml').write_text(sitemap(out, url), encoding='utf-8')
         (out / 'img').mkdir(exist_ok=True)
         shutil.copy2(landing.parent / 'og.jpg', out / 'img' / 'og.jpg')  # the picture of a link's preview, 1200 × 630
-        # the user manual in PDF (docs/manual, tools/manual_pdf.py) — the button «Руководство (PDF)» of the page of each
-        # language gives the book in that language
-        books = [MANUAL_DIR / f'Azimuth-manual-{lang}.pdf' for lang in HOME_PATHS]
-        if not all(book.is_file() for book in books):
-            raise ValueError(f'the user manual in PDF is missing: {[b.name for b in books if not b.is_file()]}')
-        (out / 'manual').mkdir(exist_ok=True)
-        for book in books:
-            shutil.copy2(book, out / 'manual' / book.name)
         (out / 'program').mkdir(exist_ok=True)
         (out / 'program' / 'index.html').write_text(PROGRAM_GONE.replace('{url}', url), encoding='utf-8')
         # the side panel of the program for the whole site (site/rail.js): on the home page and in the Atlas

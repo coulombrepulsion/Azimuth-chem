@@ -1,0 +1,28 @@
+name: Release
+# A tag v* (or a run by hand with the tag): the draft release of GitHub with the user manual in PDF of that version
+# (docs/manual/Azimuth-manual-{ru,en,zh}.pdf). The builds of Windows and macOS add their installers to it, and the
+# release is published once both are there (packaging/release.sh). The buttons of the site lead to
+# releases/latest/download/… — the installers and the manual of the latest published release.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'The tag of the release (v0.222.50)'
+        required: true
+jobs:
+  manual:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release || github.ref }}
+      - name: The draft release and the user manual
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          bash packaging/release.sh "${{ inputs.release || github.ref_name }}" \
+            docs/manual/Azimuth-manual-ru.pdf docs/manual/Azimuth-manual-en.pdf docs/manual/Azimuth-manual-zh.pdf

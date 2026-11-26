@@ -312,8 +312,8 @@ main,footer{position:relative;z-index:1}
       <div class="card"><!--ICON desktop--><div class="os">Windows</div><p data-t="win"></p><a class="btn primary small get" href="https://github.com/coulombrepulsion/Azimuth-chem/releases/latest/download/Azimuth-Setup-Windows-x64.exe" rel="noopener" data-t="getWin"></a></div>
       <div class="card"><!--ICON terminal--><div class="os">Linux</div><p data-t="lin"></p><a class="btn primary small get" href="https://github.com/coulombrepulsion/Azimuth-chem/releases/latest" rel="noopener" data-t="getLin"></a></div>
     </div>
-    <!-- the user manual: the book in the language of the page (tools/build_atlas_site.py puts the three into manual/) -->
-    <div class="manual"><!--ICON manual--><p data-t="manualSub"></p><a class="btn" id="manualPdf" href="manual/Azimuth-manual-ru.pdf" download data-t="manualBtn"></a></div>
+    <!-- the user manual: the book in the language of the page, of the latest release (.github/workflows/release.yml) -->
+    <div class="manual"><!--ICON manual--><p data-t="manualSub"></p><a class="btn" id="manualPdf" href="https://github.com/coulombrepulsion/Azimuth-chem/releases/latest/download/Azimuth-manual-ru.pdf" rel="noopener" data-t="manualBtn"></a></div>
     <p class="note" data-t="dlNote"></p>
     <details class="first"><summary data-t="firstT"></summary><p data-t="firstWhy"></p><ul class="firstList"><li data-t="firstMac"></li><li data-t="firstWin"></li><li data-t="firstLin"></li></ul></details>
     <p style="margin:18px 0 0"><a class="btn" id="askProgram" href="#download" data-t="reqBtn"></a></p>
@@ -426,7 +426,7 @@ function apply(lang) {
   /* «Запросить программу»: a draft of a letter in the mail program of the visitor — nothing is sent by the page */
   document.getElementById('askProgram').href = 'mailto:' + ADDRESS + '?subject=' + encodeURIComponent(u.reqSubj) + '&body=' + encodeURIComponent(u.reqBody);
   document.getElementById('openAtlas3').href = 'atlas/?lang=' + lang;
-  document.getElementById('manualPdf').href = 'manual/Azimuth-manual-' + lang + '.pdf';  // the book in this language
+  document.getElementById('manualPdf').href = 'https://github.com/coulombrepulsion/Azimuth-chem/releases/latest/download/Azimuth-manual-' + lang + '.pdf';  // the book in this language
   document.getElementById('openAtlas4').href = 'atlas/?lang=' + lang;
   /* the pictures of the sections in this language where there are such (data-langs), else the Russian */
   document.querySelectorAll('a[data-shot]').forEach(a => {

@@ -1128,14 +1128,16 @@ def test_a_picture_of_a_section_opens_on_the_page(tmp_path):
 
 
 def test_the_home_page_of_each_language_gives_the_user_manual_in_its_language(tmp_path):
-    # the three books (docs/manual, tools/manual_pdf.py) are on the site; the button of the page of a language — the
-    # one in the HTML and the one its script sets when the language is switched — gives the book of that language
+    # the three books are in every release of GitHub (.github/workflows/release.yml, packaging/release.sh); the button
+    # of the page of a language — the one in the HTML and the one its script sets when the language is switched —
+    # gives the book of that language of the latest release
     out, _ = _built(tmp_path)
-    for lang in ('ru', 'en', 'zh'):
-        book = out / 'manual' / f'Azimuth-manual-{lang}.pdf'
-        assert book.read_bytes() == (ROOT / 'docs' / 'manual' / book.name).read_bytes()
+    latest = 'https://github.com/coulombrepulsion/Azimuth-chem/releases/latest/download/'
     for lang, path in site.HOME_PATHS.items():
         page = (out / path / 'index.html').read_text(encoding='utf-8')
-        up = '../' if path else ''
-        assert f'id="manualPdf" href="{up}manual/Azimuth-manual-{lang}.pdf" download' in page, lang
-        assert f"'{up}manual/Azimuth-manual-' + lang + '.pdf'" in page, lang
+        assert f'id="manualPdf" href="{latest}Azimuth-manual-{lang}.pdf"' in page, lang
+        assert f"'{latest}Azimuth-manual-' + lang + '.pdf'" in page, lang
+    release = (ROOT / '.github' / 'workflows' / 'release.yml').read_text(encoding='utf-8')
+    assert all(f'docs/manual/Azimuth-manual-{lang}.pdf' in release for lang in site.HOME_PATHS)
+    script = (ROOT / 'packaging' / 'release.sh').read_text(encoding='utf-8')  # published with both installers only
+    assert '--draft' in script and 'Azimuth-Setup-Windows-x64.exe' in script and 'Azimuth-macOS-arm64.dmg' in script
