@@ -198,6 +198,7 @@
 - `modules/compass/chemistry/cleanup.py` — «Выровнять геометрию»: a quick, simple force field for a hand-built structure.
 - `modules/compass/chemistry/cod.py` — Crystal structures from the Crystallography Open Database (COD) — the search and the CIF.
 - `modules/compass/chemistry/conformers.py` — Conformer search: turns about the rotatable bonds, steric filter, duplicates, Boltzmann weights.
+- `modules/compass/chemistry/convergence.py` — Convergence series of a plane-wave calculation: the cutoff and the grid of k-points.
 - `modules/compass/chemistry/coordination.py` — Coordination centres from a template: «Правка → Геометрия → Координационный центр…».
 - `modules/compass/chemistry/crystal.py` — Crystals for Compass: CIF files, the unit cell, supercells.
 - `modules/compass/chemistry/crystal_adp.py` — Atomic displacement ellipsoids of a crystal.

@@ -23,6 +23,8 @@
     «K_POINTS crystal») and the density of states («Плотность состояний»: scf, nscf on a grid of the spacing ×
     DOS_DENSER with occupations 'tetrahedra_opt', then dos.x, DeltaE 0.01 eV) run as steps of one job; nbnd = ⌈N/2⌉ +
     max(4, ⌈N/8⌉) bands for N valence electrons (z_valence of the UPF files) so that empty bands are computed too.
+    «Сходимость по энергии обрезания» and «Сходимость по k-сетке» (CUTOFF_TASK, KGRID_TASK): scf runs with the cutoffs
+    or the grids of convergence.py (cut1.in …, kpt1.in …), everything else as in the settings.
     «Уравнение состояния (ряд объёмов)» (EOS_TASK): seven runs of pw.x at EOS_FACTORS of the volume (eos1.in …), the
     atoms relaxed in each cell — for the fit of equation_of_state.py.
     steps(crystal, task, pseudo, pseudo_dir, prefix, spacing, basis) -> [(file, program, text)]; valence(path) -> float
@@ -73,7 +75,13 @@ DISPERSION_TASK = 'Фононные ветви и плотность состо�
 # modules/compass/chemistry/equation_of_state.py
 EOS_TASK = 'Уравнение состояния (ряд объёмов)'
 EOS_FACTORS = (0.94, 0.96, 0.98, 1.0, 1.02, 1.04, 1.06)
+# the convergence series: the same crystal with a row of cutoffs (cut1.in …) or of grids of k-points (kpt1.in …), one
+# scf run of pw.x each — the values and the table: modules/compass/chemistry/convergence.py
+CUTOFF_TASK, KGRID_TASK = 'Сходимость по энергии обрезания', 'Сходимость по k-сетке'
+SERIES = {CUTOFF_TASK: 'cut', KGRID_TASK: 'kpt'}
 STEPS = {EOS_TASK: tuple((f'eos{n + 1}.in', 'pw.x') for n in range(len(EOS_FACTORS))),
+         CUTOFF_TASK: tuple((f'cut{n + 1}.in', 'pw.x') for n in range(7)),
+         KGRID_TASK: tuple((f'kpt{n + 1}.in', 'pw.x') for n in range(6)),
          BANDS_TASK: (('scf.in', 'pw.x'), ('bands.in', 'pw.x')),
          DOS_TASK: (('scf.in', 'pw.x'), ('nscf.in', 'pw.x'), ('dos.in', 'dos.x'), ('projwfc.in', 'projwfc.x')),
          PHONON_TASK: (('scf.in', 'pw.x'), ('ph.in', 'ph.x'), ('dynmat.in', 'dynmat.x')),
@@ -354,6 +362,22 @@ def steps(crystal, task, pseudo, pseudo_dir='.', prefix='azimuth', spacing=SPACI
         return [('pw.in', 'pw.x', pw_input(crystal, task, pseudo, pseudo_dir, prefix, spacing, options=options))]
     if task not in STEPS:
         raise ValueError(tr('Quantum ESPRESSO: задача {} не поддерживается.').format(task))
+    if task in SERIES:
+        import re
+        from dataclasses import replace
+
+        from modules.compass.chemistry import convergence
+
+        o = options or Options()
+        if task == CUTOFF_TASK:  # around the cutoffs the plain input would get, with its ratio ecutrho / ecutwfc
+            plain = pw_input(crystal, 'scf', pseudo, pseudo_dir, prefix, spacing, options=o)
+            wfc, rho = (float(re.search(rf'{key} = ([\d.eE+-]+)', plain).group(1)) for key in ('ecutwfc', 'ecutrho'))
+            grid = o.grid or kpoints(crystal.cell, spacing)
+            variants = [replace(o, ecutwfc=w, ecutrho=r, grid=grid) for w, r in convergence.cutoffs(wfc, rho / wfc)]
+        else:
+            variants = [replace(o, grid=g) for g in convergence.grids(tuple(o.grid or kpoints(crystal.cell, spacing)))]
+        return [(f'{SERIES[task]}{n + 1}.in', 'pw.x', pw_input(crystal, 'scf', pseudo, pseudo_dir, prefix, spacing,
+                                                               options=variant)) for n, variant in enumerate(variants)]
     if task == EOS_TASK:
         from modules.compass.chemistry import equation_of_state
 

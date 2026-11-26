@@ -435,6 +435,9 @@ def poll(self):
     series = self.eos_data() if self.program != 'cp2k' else None
     if series is not None:  # the fit first: the energy above is that of the last volume of the series
         text = '<br>'.join(self.eos_lines(series)) + '<br>' + tr('Ниже — последний объём ряда.') + '<br>' + text
+    converging = self.series_data() if self.program != 'cp2k' else None
+    if converging is not None:
+        text = '<br>'.join(self.series_lines(converging)) + '<br>' + tr('Ниже — последняя точка ряда.') + '<br>' + text
     if self.program == 'cp2k':
         text += self.multiwfn_line()
     self.summary.setText(text)
@@ -448,6 +451,10 @@ def poll(self):
         self.plot_button.setEnabled(True)
     elif series is not None:
         self.plot_button.setText(tr('Показать E(V)'))
+        self.plot_button.show()
+        self.plot_button.setEnabled(True)
+    elif converging is not None and converging[1] is not None:
+        self.plot_button.setText(tr('Показать сходимость'))
         self.plot_button.show()
         self.plot_button.setEnabled(True)
     elif bands is not None or self.dos_data() is not None:

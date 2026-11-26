@@ -44,6 +44,82 @@ def dos_data(self):
     return (found, e0) if found.energies else None
 
 
+def series_data(self):
+    """(kind 'cut' | 'kpt', [convergence.Row]) of a finished convergence series — the runs of pw.out with the values
+    of their input files —, (kind, None) when the series gave too few points (the reason in self.series_error), or
+    None when the job is not such a series."""
+    import re
+
+    from modules.compass.chemistry import convergence
+    from modules.spectrum.readers import qe
+
+    kind = next((k for k in ('cut', 'kpt') if self.folder is not None and (self.folder / f'{k}1.in').is_file()), None)
+    if kind is None or not (self.folder / 'pw.out').is_file():
+        return None
+    runs = qe.runs((self.folder / 'pw.out').read_text(encoding='utf-8', errors='replace'))
+    points = []
+    for n, run in enumerate(runs, 1):
+        source = self.folder / f'{kind}{n}.in'
+        if not source.is_file():
+            break
+        text = source.read_text(encoding='utf-8', errors='replace')
+        r = qe.read(run)
+        if r.energy is None or not r.done:
+            continue
+        if kind == 'cut':
+            label = re.search(r'ecutwfc\s*=\s*([\d.]+)', text).group(1) + ' Ry'
+        else:
+            label = ' × '.join(text.split('K_POINTS automatic')[1].split()[:3])
+        gap = r.lowest - r.highest if r.highest is not None and r.lowest is not None else None
+        points.append(convergence.Point(label, r.energy * 13.605693122994, r.nat or 1,
+                                        r.pressures[-1] if r.pressures else None, gap))
+    self.series_error = ''
+    try:
+        return kind, convergence.rows(points)
+    except ValueError as exc:
+        self.series_error = str(exc)
+        return kind, None
+
+
+def series_lines(self, found):
+    from modules.compass.chemistry import convergence
+
+    kind, table = found
+    if table is None:
+        return [self.series_error]
+    return convergence.summary(table)
+
+
+def show_series(self, found):
+    """ΔE of the series with the band of the tolerance; the table under the plot."""
+    from modules.compass.actions import qe_plots
+    from modules.compass.chemistry import convergence
+
+    kind, table = found
+    if table is None:
+        return None
+    plot = qe_plots.SeriesPlot()
+    plot.labels = [r.label for r in table]
+    plot.values = [r.delta for r in table]
+    plot.tolerance = convergence.TOLERANCE_MEV
+    plot.axis = 'ecutwfc' if kind == 'cut' else 'k-сетка'
+    rows = [(r.label, r.energy_per_atom, r.delta, '' if r.pressure is None else r.pressure, '' if r.gap is None else r.gap)
+            for r in table]
+    title = tr('Сходимость по энергии обрезания · ') if kind == 'cut' else tr('Сходимость по k-сетке · ')
+    window = qe_plots.QePlotWindow(self, title + self.name, plot, rows,
+                                   ['ecutwfc' if kind == 'cut' else 'k grid', 'E per atom, eV', 'dE, meV per atom',
+                                    'P, kbar', 'gap, eV'], 'convergence.csv')
+    head = '<tr>' + ''.join(f'<th align="right">&nbsp;{tr(h)}&nbsp;</th>' for h in (
+        'ecutwfc' if kind == 'cut' else 'k-сетка', 'ΔE, мэВ на атом', 'Давление, кбар', 'Щель, эВ')) + '</tr>'
+    body = ''.join('<tr>' + ''.join(f'<td align="right">&nbsp;{c}&nbsp;</td>' for c in (
+        r.label, f'{r.delta:+.2f}', '' if r.pressure is None else f'{r.pressure:.2f}', '' if r.gap is None else f'{r.gap:.3f}'))
+        + '</tr>' for r in table)
+    window.note.setText('<table>' + head + body + '</table>' + ' '.join(convergence.summary(table)))
+    self.plot_window = window
+    window.show()
+    return window
+
+
 def eos_data(self):
     """(Fit, [(V Å³, E eV)]) of a finished series of volumes («Уравнение состояния»), (None, points) when the points
     do not give a fit (with the reason in self.eos_error), or None when the job is not such a series."""
@@ -166,6 +242,9 @@ def show_plot(self):
     series = self.eos_data()
     if series is not None:
         return self.show_eos(series)
+    convergence = self.series_data()
+    if convergence is not None:
+        return self.show_series(convergence)
     bands = self.band_data()
     if bands is not None:
         found, path, e0 = bands

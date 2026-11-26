@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.230.0 — 26 November 2026
+
+- ### 0.230.0 — A convergence check for crystals
+
+Quantum ESPRESSO has two new tasks: «Convergence in the cutoff energy» and «Convergence in the k-point grid». The program computes the series of values itself, draws the plot and says from which value the energy and the pressure stop changing. The table of this window is what a report needs.
+
 ## 0.229.0 — 26 November 2026
 
 - ### 0.229.0 — The equation of state and the gap on the bands

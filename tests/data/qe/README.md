@@ -40,9 +40,13 @@
   grid» (12 operations, 8 with fractional translations); with it — 6 q, 6 min. Γ 514.41 cm⁻¹; X: TA 141.6, LA/LO 410.1,
   TO 461.8; L: TA 109.1, LA 373.8, LO 413.9, TO 490.4 (experiment X: 150, 410, 463; L: 114, 378, 420, 490 cm⁻¹).
 - `si_eos_pw76.out` — QE 7.6 on the owner's Mac (2026-11-26, 1 process), the task «Уравнение состояния (ряд объёмов)» of
-  `qe_inputs.steps` for silicon (the primitive cell of `crystal.primitive`, PBE, SSSP 1.3.0, ecutwfc 30 Ry, k 8 × 8 × 8):
+  `qe_inputs.steps` for silicon (the primitive cell of `crystal.primitive`, PBE, SSSP 1.3.0, ecutwfc 30 Ry, k 9 × 9 × 9):
   seven runs of pw.x at 0.94 … 1.06 of the volume one after another (the paths replaced). «! total energy»:
   −22.83372303, −22.83649793, −22.83839394, −22.83949545, −22.83987597, −22.83961627, −22.83877497 Ry; the volumes
   pw.x prints: 254.0410 … 286.4718 a.u.³; its pressures 87.85 … −30.53 kbar (zero between the fifth and the sixth).
   The Birch–Murnaghan fit: V₀ = 40.911 Å³ (a₀ = 5.4697 Å of the cubic cell), B₀ = 88.8 GPa, B₀′ = 4.34 (PBE in the
   literature: 5.469 Å, 88–89 GPa; measured 5.431 Å, 99 GPa). Used by `tests/compass/test_equation_of_state.py`.
+- `si_cutoff_pw76.out`, `si_kgrid_pw76.out` — QE 7.6 on the owner's Mac (2026-11-26, 1 process), the tasks «Сходимость по
+  энергии обрезания» and «Сходимость по k-сетке» of `qe_inputs.steps` for silicon (the primitive cell, PBE, SSSP 1.3.0):
+  six scf runs each, one after another (the paths replaced) — ecutwfc 20 … 70 Ry at k 9 × 9 × 9, and the grids 4, 7, 9,
+  11, 14, 18 (those of `convergence.grids` for the grid 9 × 9 × 9 of the primitive cell) at 30 Ry. Used by `tests/compass/test_crystal_convergence.py`.

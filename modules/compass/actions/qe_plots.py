@@ -8,6 +8,7 @@
 §4 SPECIFICATION
     BandsPlot(): x, energies [[eV − E0] per k], ticks [(x, label)], breaks [index], span (lo, hi eV), marks [(x, eV −
     E0, 'v' | 'c')] — the edges of the gap as dots, caption — a line at the top of the frame (band_gap.marks, band_gap.text);
+    SeriesPlot(): labels, values [meV per atom], tolerance, axis — a convergence series (convergence.py);
     EosPlot(): volumes [Å³], energies [meV from E₀ of the fit], curve [(V, meV)], minimum V₀ — the series of volumes
     and its Birch–Murnaghan fit;
     DosPlot(): energies [eV − E0], dos [states/eV]; QePlotWindow(parent, title, plot, rows, header, name):
@@ -134,6 +135,83 @@ class BandsPlot(_Plot):
             p.setPen(QPen(ink, 1))
             p.drawText(box.adjusted(4, 0, -4, 0), Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
                        | Qt.TextFlag.TextWordWrap, self.caption)
+        p.end()
+
+
+class SeriesPlot(_Plot):
+    """A convergence series: ΔE per atom (meV, from the last point) against the values of the parameter, which stand
+    at equal steps under the axis; the band of the tolerance about zero."""
+
+    LEFT = 64
+
+    def __init__(self):
+        super().__init__()
+        self.labels, self.values = [], []
+        self.tolerance = 1.0  # meV per atom
+        self.axis = ''
+
+    def paintEvent(self, event):
+        p = QPainter(self)
+        p.setRenderHint(QPainter.RenderHint.Antialiasing)
+        ink = self.palette().text().color()
+        left, right, top, bottom = self.frame()
+        if not self.values:
+            p.end()
+            return
+        lo, hi = min(self.values + [-self.tolerance]), max(self.values + [self.tolerance])
+        pad = 0.08 * (hi - lo or 1.0)
+        lo, hi = lo - pad, hi + pad
+        count = len(self.values)
+
+        def X(k):
+            return left + (right - left) * (k + 0.5) / count
+
+        def Y(v):
+            return bottom - (bottom - top) * (v - lo) / (hi - lo)
+
+        font = QFont(self.font())
+        font.setPixelSize(11)
+        p.setFont(font)
+        p.setPen(QPen(ink, 1))
+        p.drawRect(QRectF(left, top, right - left, bottom - top))
+        from math import floor, log10
+
+        raw = (hi - lo) / 6
+        power = 10 ** floor(log10(raw))
+        step = next(m * power for m in (1, 2, 5, 10) if m * power >= raw)
+        v = int(lo // step + 1) * step
+        while v < hi:
+            p.drawLine(QPointF(left - 4, Y(v)), QPointF(left, Y(v)))
+            p.drawText(QRectF(0, Y(v) - 7, left - 6, 14), Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter, f'{v:g}')
+            v += step
+        for k, text in enumerate(self.labels):
+            p.drawLine(QPointF(X(k), bottom), QPointF(X(k), bottom + 4))
+            p.drawText(QRectF(X(k) - 45, bottom + 6, 90, 14), Qt.AlignmentFlag.AlignCenter, text)
+        p.drawText(QRectF(right - 200, bottom + 18, 200, 14), Qt.AlignmentFlag.AlignRight, tr(self.axis))
+        p.save()
+        p.translate(12, (top + bottom) / 2)
+        p.rotate(-90)
+        p.drawText(QRectF(-110, -10, 220, 14), Qt.AlignmentFlag.AlignCenter, tr('ΔE, мэВ на атом'))
+        p.restore()
+        p.setClipRect(QRectF(left, top, right - left, bottom - top))
+        band = QColor('#2e8b57')
+        band.setAlpha(45)
+        p.fillRect(QRectF(left, Y(self.tolerance), right - left, Y(-self.tolerance) - Y(self.tolerance)), band)
+        p.setPen(QPen(QColor(ZERO), 1, Qt.PenStyle.DashLine))
+        p.drawLine(QPointF(left, Y(0)), QPointF(right, Y(0)))
+        path = QPainterPath()
+        for k, value in enumerate(self.values):
+            point = QPointF(X(k), Y(value))
+            if k:
+                path.lineTo(point)
+            else:
+                path.moveTo(point)
+        p.setPen(QPen(QColor(LINE), 1.4))
+        p.drawPath(path)
+        p.setPen(QPen(QColor(LINE).darker(140), 1))
+        p.setBrush(QColor(LINE))
+        for k, value in enumerate(self.values):
+            p.drawEllipse(QPointF(X(k), Y(value)), 4.0, 4.0)
         p.end()
 
 
