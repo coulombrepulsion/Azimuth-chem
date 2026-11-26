@@ -8,13 +8,18 @@ name: macOS disk image
 #   (a password of an application from account.apple.com).
 on:
   workflow_dispatch:
+    inputs:
+      release:
+        description: 'The tag of the release to add the files to (v0.222.50); empty — the files stay in the run only'
+        required: false
+        default: ''
   push:
     tags: ['v*']
 jobs:
   build:
     permissions:
       contents: write  # the release of a tag
-    runs-on: macos-14
+    runs-on: macos-latest  # Apple silicon; macos-14 is gone from GitHub (2026-11-26)
     timeout-minutes: 60
     env:
       PYTHONIOENCODING: utf-8
@@ -69,13 +74,13 @@ jobs:
       # version Azimuth-macOS-arm64.dmg — the button of the site (site/index.html, «Скачать») leads to
       # releases/latest/download/Azimuth-macOS-arm64.dmg. The two builds add their files to the same release; the one that comes
       # first makes it, with the words of packaging/release_notes.md.
-      - name: Release (only for a tag v*)
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: Release (a tag v*, or the tag given to a run by hand)
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.release != ''
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          tag="$GITHUB_REF_NAME"
+          tag="${{ inputs.release || github.ref_name }}"
           files=(dist/installer/Azimuth-*-macOS-arm64.dmg dist/installer/Azimuth-*-macOS-arm64.dmg.sha256)
           cp "${files[0]}" "dist/installer/Azimuth-macOS-arm64.dmg"
           sed "s/{version}/${tag#v}/g" packaging/release_notes.md > release-notes.md
