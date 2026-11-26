@@ -9,6 +9,7 @@
 - Fixed: CUTOFF предлагается по элементам кристалла (`cp2k_inputs.cutoff_for`, `SHARPEST` — наибольшие показатели DZVP-MOLOPT-SR-GTH из BASIS_MOLOPT CP2K 2026.2): 40 Ry на bohr⁻², не меньше 400 — 1250 Ry при Mg, 950 при Na, 550 при F, 450 при H и O, 400 для Si. Поле «CUTOFF» панели следует за кристаллом, пока в него не вводили число (`QeWindow.propose_cutoff`).
 - Added: `tools/validate_cp2k.py --cutoffs <кристалл>` — скан сетки; оптимизация ячейки там идёт с предложенной сеткой.
 - Не сделано: правило сверено на MgO, NaCl и Si; для NaCl при 950 Ry остаётся около 1–2 мэВ на атом. Пометка «не проверено» у CP2K остаётся. Уже посчитанные расчёты CP2K с Mg или Na при 400 Ry стоит пересчитать.
+- Проверено настоящим расчётом с предложенной сеткой («Оптимизация с ячейкой», точка Γ, 64 атома; алмаз — 216): Si 5,479 Å, MgO 4,284 Å (6 шагов, сошлась), NaCl 5,708 Å, алмаз 3,576 Å; у Quantum ESPRESSO Si 5,469 и MgO 4,249 Å. Раздел «CP2K: параметры решётки» в `docs/plans/CRYSTAL_VALIDATION.md`.
 - Docs: руководство (ru, en, zh); PDF пересобраны.
 - Tests: `tests/sextant/test_cp2k_inputs.py`, `tests/gui/test_gui_files.py`.
 
