@@ -328,6 +328,23 @@ def test_the_home_page_has_its_text_and_the_marks_of_a_preview_in_the_html(tmp_p
         site.home_page('<p data-t="nothing"></p><!--HEAD-->/*TEXTS*/', texts)
 
 
+def test_the_pictures_of_the_background_move_with_the_scroll(tmp_path):
+    # the dial of the corner turns, the needle of the compass and the arm of the sextant swing, the star runs along the
+    # spectrum, a leaf of the book turns over — each a group of its picture (tools/site_scales.py) moved by the script
+    # of the page; nothing moves for a reader who asked for less motion
+    import site_scales
+
+    out, _ = _built(tmp_path)
+    home = (out / 'index.html').read_text(encoding='utf-8')
+    for mark in ('data-turn="dial"', 'data-turn="needle"', 'data-turn="arm"', 'data-ride="trace"', 'data-flip="leaf"'):
+        assert home.count(mark) == 1, mark
+    assert "matchMedia('(prefers-reduced-motion: reduce)')" in home and 'getPointAtLength' in home
+    assert '<polyline class="trace"' in home and 'style="opacity:0"' in home  # the leaf unseen at rest
+    # the dial of the Atlas and of the program keeps its half of marks; the turning one has them all round
+    assert site_scales.dial().count('<path') + 35 == site_scales.dial(turning=True).count('<path')  # 72 marks, not 37
+    assert 'class="move"' not in site_scales.dial()
+
+
 def test_the_long_calculations_are_answered_by_kept_files(tmp_path):
     # (benzene took 45 s in a browser)
     sys.path.insert(0, str(site.PACKAGE.parent))

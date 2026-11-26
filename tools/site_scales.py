@@ -8,7 +8,11 @@ corner of the window, the corner pictures with theirs at the bottom left. The co
 it; ink(svg, '#2a62b8') puts a
 colour in, for a picture drawn on a canvas).
 
-dial() book() sextant() compass() spectrum() -> str (an <svg> element). The numbers are those of Ornament._azimuth,
+dial() book() sextant() compass() spectrum() -> str (an <svg> element). The parts the home page of the site moves
+while it is scrolled are groups <g class="move"> with what to do in their data (site/index.html): data-turn — turned
+about (data-cx, data-cy) between data-from and data-to degrees as the card crosses the window, or data-rate degrees a
+pixel of the scroll; data-ride — the star rides along the line of that class; data-flip — a page of the book turned
+over about the spine at data-spine. At rest each picture is the one of the program: a group is not drawn otherwise. The numbers are those of Ornament._azimuth,
 ._sextant, ._compass, ._spectrum (and of
 Ornament._book, the corner of the Atlas, until the book is now drawn only here);
 tests/tools/test_site_scales.py checks them against the count of marks and the box.
@@ -45,11 +49,12 @@ def ink(svg, colour):
     return svg.replace('currentColor', colour)
 
 
-def dial():
-    """Ornament._azimuth: marks every 5° (longer every 30°) of the left half, two circles, the cardinal lines."""
+def dial(turning=False):
+    """Ornament._azimuth: marks every 5° (longer every 30°) of the left half, two circles, the cardinal lines.
+    turning: the marks all round and the whole in a group the scroll turns (the home page of the site)."""
     R, cx, cy = 330.0, ZONE - 70.0, 70.0
     parts = []
-    for deg in range(90, 271, 5):
+    for deg in (range(0, 360, 5) if turning else range(90, 271, 5)):
         a = math.radians(deg)
         long = deg % 30 == 0
         r0 = R - (22 if long else 11)
@@ -59,6 +64,8 @@ def dial():
         parts.append(f'<circle cx="{_f(cx)}" cy="{_f(cy)}" r="{_f(r)}" stroke-opacity="0.09" stroke-width="1.2"/>')
     parts.append(_line(cx, cy - R, cx, cy + R, 0.07, 1.0, dash=True))
     parts.append(_line(cx - R, cy, cx + R, cy, 0.07, 1.0, dash=True))
+    if turning:
+        parts = [f'<g class="move" data-turn="dial" data-rate="0.035" data-cx="{_f(cx)}" data-cy="{_f(cy)}">'] + parts + ['</g>']
     return _svg(parts)
 
 
@@ -107,8 +114,10 @@ def sextant():
     for r in (R, R * 0.70):
         parts.append(f'<circle cx="{_f(cx)}" cy="{_f(cy)}" r="{_f(r)}" stroke-opacity="0.11" stroke-width="1.1"/>')
     a = math.radians(-38)
+    parts.append(f'<g class="move" data-turn="arm" data-from="-24" data-to="24" data-cx="{_f(cx)}" data-cy="{_f(cy)}">')
     parts.append(_line(cx, cy, cx + R * 1.06 * math.cos(a), cy + R * 1.06 * math.sin(a), 0.08, 1.0, dash=True))
     parts.append(_star(cx + R * 1.18 * math.cos(a), cy + R * 1.18 * math.sin(a)))
+    parts.append('</g>')
     return _svg(parts)
 
 
@@ -134,6 +143,15 @@ def book():
             yy = y0 - top + i / 8.6 * top
             curve((sp + s * 14, yy - 1), (sp + s * L * 0.45, yy - 12), (ox - s * 16, yy - sag + 2),
                   0.09 if i % 3 == 0 else 0.07)
+    # a leaf: the right page once more, unseen at rest; the scroll turns it over to the left about the spine
+    leaf = [f'<path d="M{_f(sp)} {_f(y0 - top)}Q{_f(sp + L * 0.45)} {_f(y0 - top - sag - 12)} {_f(sp + L)} {_f(y0 - top - sag)}'
+            f'L{_f(sp + L)} {_f(y0 - sag)}Q{_f(sp + L * 0.45)} {_f(y0 - sag - 12)} {_f(sp)} {_f(y0)}" '
+            f'stroke-opacity="0.14" stroke-width="1.2"/>']
+    for i in range(1, 8):
+        yy = y0 - top + i / 8.6 * top
+        leaf.append(f'<path d="M{_f(sp + 14)} {_f(yy - 1)}Q{_f(sp + L * 0.45)} {_f(yy - 12)} {_f(sp + L - 16)} {_f(yy - sag + 2)}" '
+                    f'stroke-opacity="0.07" stroke-width="1"/>')
+    parts.append(f'<g class="move" data-flip="leaf" data-spine="{_f(sp)}" style="opacity:0">' + ''.join(leaf) + '</g>')
     parts.append(_line(sp, y0 - top, sp, y0, 0.16, 1.3))
     ribbon = [(sp + 40, y0 - top - 18), (sp + 40, y0 - top + 70), (sp + 48, y0 - top + 60), (sp + 56, y0 - top + 70),
               (sp + 56, y0 - top - 17)]
@@ -161,10 +179,12 @@ def compass():
     mid = (cx + R * 0.38 * math.cos(a), cy + R * 0.38 * math.sin(a))
     left = (mid[0] + w * math.cos(side), mid[1] + w * math.sin(side))
     right = (mid[0] - w * math.cos(side), mid[1] - w * math.sin(side))
+    parts.append(f'<g class="move" data-turn="needle" data-from="-32" data-to="32" data-cx="{_f(cx)}" data-cy="{_f(cy)}">')
     parts.append('<polygon points="' + ' '.join(f'{_f(x)},{_f(y)}' for x, y in ((cx, cy), left, tip, right))
                  + '" stroke-opacity="0.14" stroke-width="1.1"/>')
     parts.append(_line(cx, cy, tip[0], tip[1], 0.08, 1.0, dash=True))
     parts.append(_star(cx + R * 1.12 * math.cos(a), cy + R * 1.12 * math.sin(a)))
+    parts.append('</g>')
     return _svg(parts)
 
 
@@ -183,11 +203,14 @@ def spectrum():
     for t in range(0, 381, 2):
         y = sum(h * g * g / ((t - c * width) ** 2 + g * g) for c, h, g in bands)
         points.append((x0 + t, y0 - y))
-    parts.append('<polyline points="' + ' '.join(f'{_f(x)},{_f(y)}' for x, y in points)
+    parts.append('<polyline class="trace" points="' + ' '.join(f'{_f(x)},{_f(y)}' for x, y in points)
                  + '" stroke-opacity="0.16" stroke-width="1.2"/>')
     for c, h, _ in bands[::2]:
         parts.append(_line(x0 + c * width, y0, x0 + c * width, y0 - h - 12, 0.07, 1.0, dash=True))
-    parts.append(_star(x0 + 0.47 * width, y0 - 168 - 30))
+    sx, sy = x0 + 0.47 * width, y0 - 168 - 30
+    parts.append(f'<g class="move" data-ride="trace" data-x="{_f(sx)}" data-y="{_f(sy)}" data-lift="30">')
+    parts.append(_star(sx, sy))
+    parts.append('</g>')
     return _svg(parts)
 
 

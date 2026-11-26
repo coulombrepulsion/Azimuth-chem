@@ -1421,7 +1421,7 @@ def build(out, package=PACKAGE, pyodide=PYODIDE, landing=LANDING, answered=True,
             raise ValueError(f'{landing}: no <!--DIAL--> place for the scale of the background')
         # the sextant of the lower left corner is no longer on the home page; the four parts
         # of the program carry the pictures of their sections in their cards (card_pictures)
-        home = card_pictures(home.replace('<!--DIAL-->', site_scales.dial()).replace('<!--CORNER-->', site_scales.sextant()))
+        home = card_pictures(home.replace('<!--DIAL-->', site_scales.dial(turning=True)).replace('<!--CORNER-->', site_scales.sextant()))
         # a click on the title of a section slides out its panel on the right, with the pictures of the section
         program_pictures(landing.parent, out, home)
         topic_pictures(landing.parent, out, home)

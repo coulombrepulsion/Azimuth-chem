@@ -570,6 +570,44 @@ function apply(lang) {
     }
   });
 })();
+/* the pictures of the background follow the scroll (tools/site_scales.py, the groups «move»): the dial of the corner
+   turns, the needle of the compass and the arm of the sextant swing as their card crosses the window, the star runs
+   along the spectrum, the leaves of the book turn over; at rest of the card in the middle — the picture of the
+   program. Nothing moves for a reader who asked the system for less motion */
+(() => {
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const groups = [...document.querySelectorAll('main .move, .scale .move')];
+  if (!groups.length) return;
+  const through = g => {  // 0 — the card comes in at the bottom of the window, 1 — it has gone at the top
+    const box = g.closest('.card, .scale').getBoundingClientRect(), h = window.innerHeight;
+    return Math.min(1, Math.max(0, (h - box.top) / (h + box.height)));
+  };
+  function draw() {
+    waiting = false;
+    for (const g of groups) {
+      const d = g.dataset;
+      if (still.matches) { g.removeAttribute('transform'); if (d.flip) g.style.opacity = 0; continue; }
+      if (d.turn) {
+        const deg = d.rate ? window.scrollY * d.rate : +d.from + through(g) * (d.to - d.from);
+        g.setAttribute('transform', `rotate(${deg.toFixed(2)} ${d.cx} ${d.cy})`);
+      } else if (d.ride) {
+        const line = g.ownerSVGElement.querySelector('.' + d.ride);
+        const at = line.getPointAtLength(line.getTotalLength() * (0.06 + 0.88 * through(g)));
+        g.setAttribute('transform', `translate(${(at.x - d.x).toFixed(1)} ${(at.y - d.lift - d.y).toFixed(1)})`);
+      } else if (d.flip) {  // three leaves while the card crosses the window
+        const phase = (through(g) * 3) % 1;
+        g.setAttribute('transform', `translate(${d.spine} 0) scale(${Math.cos(phase * Math.PI).toFixed(3)} 1) translate(${-d.spine} 0)`);
+        g.style.opacity = Math.sin(phase * Math.PI).toFixed(3);
+      }
+    }
+  }
+  let waiting = false;
+  const ask = () => { if (!waiting) { waiting = true; requestAnimationFrame(draw); } };
+  window.addEventListener('scroll', ask, {passive: true});
+  window.addEventListener('resize', ask);
+  still.addEventListener('change', ask);
+  draw();
+})();
 /* the language and the theme are chosen in the side panel (rail.js), for the whole site */
 apply(window.SiteRail.lang());
 document.addEventListener('rail-lang', e => apply(e.detail));
