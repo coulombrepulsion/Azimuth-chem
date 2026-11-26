@@ -434,6 +434,7 @@
 - `modules/spectrum/analysis/ir_spectrum.py` — Gaussian IR broadening (the lines and the broadened curve). Contract: docs/features/IR_SPECTRUM.md.
 - `modules/spectrum/analysis/isotopes.py` — The isotope pattern of a molecular ion: M, M+1, M+2… with their exact masses.
 - `modules/spectrum/analysis/nci_domains.py` — Weak interactions told apart by NCI: the regions of low RDG split into domains, each named and measured.
+- `modules/spectrum/analysis/nmr_compare.py` — Computed chemical shifts against the measured ones: the errors, the linear correction, the assignment.
 - `modules/spectrum/analysis/nmr_multiplets.py` — NMR multiplets from computed spin-spin couplings: the first-order splitting of every signal.
 - `modules/spectrum/analysis/nmr_reference.py` — The NMR reference «TMS at the level of the result» in one click.
 - `modules/spectrum/analysis/nto.py` — Natural transition orbitals of an ORCA TD-DFT calculation.
@@ -459,6 +460,7 @@
 - `modules/spectrum/views/fukui_view.py` — The window «Функции Фукуи» (the calculation: modules/spectrum/analysis/fukui.py).
 - `modules/spectrum/views/ir_plot.py` — The plot of an IR or Raman spectrum (a Qt widget; moved here from modules/spectrum/analysis/ir_spectrum.py, which keeps the broadening). Contract: docs/features/IR_SPECTRUM.md.
 - `modules/spectrum/views/nist_window.py` — «Найти в NIST…» of the button «Эксперимент и конформеры»: a measured IR or UV-Vis spectrum from the NIST Chemistry WebBook laid over the computed one (modules/spectrum/readers/nist.py).
+- `modules/spectrum/views/nmr_compare_view.py` — «Сравнить с экспериментом…» of the NMR tab: the computed shifts of one nucleus beside the measured ones.
 - `modules/spectrum/views/orbitals_view.py` — The orbital window of the Spectrum module: molecular orbitals of a Molden file, a Gaussian .fchk or an ORCA output (print[p_mos]).
 - `modules/spectrum/views/plot_zoom.py` — Spectrum: moving and zooming a picture of «Карты и профили» — the map and the profile.
 - `modules/spectrum/views/reaction_view.py` — Spectrum: the window «Диаграмма реакции». Numbers: modules/spectrum/analysis/reaction.py.
@@ -514,6 +516,7 @@
 - `tools/uff_reference.py` — RDKit's UFF numbers for the structures of tests/data/uff/structures.json.
 - `tools/untranslated.py` — What waits for its translation (0.108.75+, the process agreed on the journal of Quill and the manual are written in Russian with each version and translated at a release).
 - `tools/upload_site_yandex.py` — Upload the built site to Yandex Object Storage — the mirror for Russia.
+- `tools/validate_crystals.py` — The crystals of the course computed through the inputs of Azimuth and compared with the literature.
 - `tools/vtk_window_check3.py` — Check, round 3: which part of the VTK scene aborts when VTK draws into a Qt OpenGL widget?
 - `tools/watch_programs.py` — Have new versions of the calculation programs come out since Azimuth was checked with them?
 - `tools/workspace_gallery.py` — Снимки Секстанта и Спектра: каждая программа и задача Секстанта, каждая вкладка Спектра на примерах.

@@ -8,6 +8,7 @@ resources are made here by hand: a node of 48 cores), a time limit always, three
 """
 
 import json
+from pathlib import Path
 import os
 import time
 
@@ -287,12 +288,57 @@ def test_a_calculation_sent_long_ago_is_not_open(tmp_path):
     path = headless_server.jobs_root(root) / headless_server.JOURNAL
     path.parent.mkdir(parents=True)
     now = datetime(2026, 11, 24, 12, 0, 0)
-    rows = [{'time': (now - timedelta(hours=26)).isoformat(timespec='seconds'), 'event': 'sent', 'folder': 'old'},
-            {'time': (now - timedelta(hours=1)).isoformat(timespec='seconds'), 'event': 'sent', 'folder': 'new'}]
+    def accepted(name):  # a folder the queue accepted: its job.json is there
+        folder = tmp_path / name
+        folder.mkdir(exist_ok=True)
+        (folder / 'job.json').write_text('{}', encoding='utf-8')
+        return str(folder)
+
+    old, new, a, b = (accepted(name) for name in ('old', 'new', 'a', 'b'))
+    rows = [{'time': (now - timedelta(hours=26)).isoformat(timespec='seconds'), 'event': 'sent', 'folder': old},
+            {'time': (now - timedelta(hours=1)).isoformat(timespec='seconds'), 'event': 'sent', 'folder': new}]
     path.write_text(''.join(json.dumps(r) + '\n' for r in rows), encoding='utf-8')
-    assert headless_server.active(root, now=now) == ['new']
+    assert headless_server.active(root, now=now) == [new]
     # the calculations of one server (Windows check 2026-11-24: those of .101 were listed for .103)
     rows = [{'time': (now - timedelta(hours=1)).isoformat(timespec='seconds'), 'event': 'sent', 'folder': name,
-             'server': server} for name, server in (('a', 'serv1'), ('b', 'serv3'))]
+             'server': server} for name, server in ((a, 'serv1'), (b, 'serv3'))]
     path.write_text(''.join(json.dumps(r) + '\n' for r in rows), encoding='utf-8')
-    assert headless_server.active(root, now=now, server='serv3') == ['b'] and headless_server.active(root, now=now) == ['a', 'b']
+    assert headless_server.active(root, now=now, server='serv3') == [b] and headless_server.active(root, now=now) == [a, b]
+
+
+def test_a_sending_that_never_reached_the_server_takes_no_place(tmp_path):
+    # the queue writes job.json into the folder when it accepts the job: a «sent» of the journal without it, whose
+    # process is gone or which is older than UNSENT_S, was cut during the upload — it held a place of ACTIVE for a day
+    from datetime import datetime, timedelta
+
+    from azimuth import headless_server
+
+    root = tmp_path / 'calc'
+    path = headless_server.jobs_root(root) / headless_server.JOURNAL
+    path.parent.mkdir(parents=True)
+    now = datetime(2026, 11, 26, 12, 0, 0)
+
+    def row(name, minutes, pid=None, accepted=False):
+        folder = tmp_path / name
+        folder.mkdir()
+        if accepted:
+            (folder / 'job.json').write_text('{}', encoding='utf-8')
+        found = {'time': (now - timedelta(minutes=minutes)).isoformat(timespec='seconds'), 'event': 'sent', 'folder': str(folder)}
+        return {**found, 'pid': pid} if pid is not None else found
+
+    rows = [row('lost_long_ago', 11), row('just_sent', 1), row('sender_gone', 1, pid=111), row('sender_alive', 1, pid=222),
+            row('in_the_queue', 300, pid=111, accepted=True)]
+    path.write_text(''.join(json.dumps(r) + '\n' for r in rows), encoding='utf-8')
+    alive = {111: False, 222: True}.get
+    names = lambda folders: [Path(f).name for f in folders]  # noqa: E731
+    assert names(headless_server.active(root, now=now, alive=alive)) == ['just_sent', 'sender_alive', 'in_the_queue']
+    assert names(headless_server.close_unsent(root, now=now, alive=alive)) == ['lost_long_ago', 'sender_gone']
+    ends = [r for r in headless_server.journal(root) if r.get('event') == 'ended']
+    assert [(Path(r['folder']).name, r['state'], r['code']) for r in ends] == [('lost_long_ago', 'not sent', None),
+                                                                              ('sender_gone', 'not sent', None)]
+    assert headless_server.close_unsent(root, now=now, alive=alive) == []  # written once
+    # the process of this test is alive, one that cannot exist is not
+    import os
+
+    assert headless_server._alive(os.getpid()) is True and headless_server._alive('x') is None
+    assert headless_server._alive(2 ** 22 + 12345) in (False, None)

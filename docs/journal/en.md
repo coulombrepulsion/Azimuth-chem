@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.231.0 — 26 November 2026
+
+- ### 0.231.0 — Magnetic crystals and a series in U
+
+For oxides like NiO there are two new Quantum ESPRESSO tasks: «Magnetic order» compares a run without spin, the ferromagnetic and the antiferromagnetic one, and «Series in U» shows how the U correction opens the gap. The result is a table in the summary. The six crystals of the course are checked against the literature: the lattice parameters agree within 0.2 %. The «NMR» tab has a new button «Compare with experiment…»: the mean error, the linear correction and a plot. Also: a calculation that never reached the server no longer holds a place in the queue for a day.
+
 ## 0.230.0 — 26 November 2026
 
 - ### 0.230.0 — A convergence check for crystals

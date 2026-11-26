@@ -157,6 +157,7 @@ def test_methods_and_bases_of_each_program():
     assert 'ωB97X-D' in methods_for('gaussian') and 'ωB97X-D' not in methods_for('orca')
     assert 'ωB97X-D3' in methods_for('orca') and 'r2SCAN' not in methods_for('gaussian')
     assert 'pcseg-1' in bases_for('psi4') and 'pcseg-1' not in bases_for('gaussian') and 'def2-SVPD' not in bases_for('gaussian')
+    assert 'pcSseg-2' in bases_for('orca') and 'pcSseg-2' not in bases_for('psi4')  # a basis for shieldings: ORCA alone
     assert methods_for('xtb') == () and bases_for('crest') == ()
     assert set(methods_for('orca')) <= set(METHODS) and set(bases_for('orca')) == set(BASES)
     first = lambda text: text.splitlines()[1]  # noqa: E731

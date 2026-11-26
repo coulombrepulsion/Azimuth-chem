@@ -150,6 +150,9 @@ def _make_controls(self):
                       tr('conv_thr — сходимость самосогласования'))
     self.forces = spin(0.0, 0.1, 0.0, 0.0001, 4, ' Ry/bohr', tr('forc_conv_thr; 0 — по умолчанию pw.x (10⁻³)'))
     self.pressure = spin(0.0, 10.0, 0.0, 0.1, 1, tr(' кбар'), tr('press_conv_thr; 0 — по умолчанию pw.x (0.5 кбар)'))
+    self.dofree = combo(list(qe_inputs.DOFREE.items()),
+                        tr('cell_dofree — что в ячейке меняет оптимизация. Для слоя (графен, поверхность с вакуумом '
+                           'вдоль c) выберите «только в плоскости ab»: иначе вакуум схлопнется.'))
     self.forces.setSpecialValueText(tr('по умолчанию'))
     self.pressure.setSpecialValueText(tr('по умолчанию'))
     # the editor of the program (azimuth/text_editor.py, as AkelPad); «!» — a comment of pw.x
@@ -187,7 +190,7 @@ def _make_controls(self):
         box.setMinimumWidth(48)
         box.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
     for box in (self.task, self.occupations, self.vdw, self.conv, self.where, self.program_box, self.basis,
-                self.cp2k_vdw, self.eps_scf, self.kmode, self.functional, self.cp2k_functional):  # every list — a
+                self.cp2k_vdw, self.eps_scf, self.kmode, self.functional, self.cp2k_functional, self.dofree):  # every list — a
                 # long item no longer widens the column
         box.setMinimumWidth(60)
         box.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
@@ -219,7 +222,7 @@ def rows(self):
         self.cut_line = line(self.ecutwfc, self.ecutrho)
         self.smear_line = line(self.smearing, self.degauss)
         self.spin_line = line(self.order, self.magnetization_label, self.magnetization)  # + the order
-        self.relax_line = line(self.forces, self.pressure)
+        self.relax_line = line(self.forces, self.pressure, self.dofree)
         self.k_line = line(self.kmode, self.spacing)
         self.cp2k_cut_line = line(self.cutoff, self.rel_cutoff)
         self.temperature_line = line(QLabel(tr('температура')), self.temperature)
@@ -327,6 +330,7 @@ def show_rows(self):
     self.spacing.setVisible(not manual)
 
     self.pressure.setVisible(calculation == 'vc-relax')
+    self.dofree.setVisible(calculation == 'vc-relax' and self.program != 'cp2k')
     smear = self.occupations.currentData() != 'fixed'
     xtb = cp2k and self.cp2k_functional.currentData() == 'GFN1-XTB'  # no basis, grid, D3 choice or U
     shown = {self.grid_line: manual and not cp2k, self.smear_line: smear and not cp2k,

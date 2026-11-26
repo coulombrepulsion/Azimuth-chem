@@ -1,0 +1,41 @@
+&CONTROL
+  calculation = 'scf'
+  prefix = 'azimuth'
+  pseudo_dir = '/pseudo'
+  outdir = './out'
+  tprnfor = .true.
+  tstress = .true.
+/
+&SYSTEM
+  ibrav = 0
+  nat = 4
+  ntyp = 3
+  ecutwfc = 50
+  ecutrho = 400
+  nbnd = 28
+  nspin = 2
+  starting_magnetization(1) = 0.5
+  starting_magnetization(2) = -0.5
+  tot_magnetization = 0
+/
+&ELECTRONS
+  conv_thr = 4.0e-08
+/
+ATOMIC_SPECIES
+  Ni1 58.6930 ni_pbe_v1.4.uspp.F.UPF
+  Ni2 58.6930 ni_pbe_v1.4.uspp.F.UPF
+  O 15.9990 O.pbe-n-kjpaw_psl.0.1.UPF
+CELL_PARAMETERS angstrom
+      5.90717005     0.00000000     0.00000000
+      1.47679251     2.55787966     0.00000000
+      1.47679251     0.85262655     2.41159207
+ATOMIC_POSITIONS crystal
+  Ni1 0.00000000 0.00000000 0.00000000
+  Ni2 0.50000000 0.00000000 0.00000000
+  O 0.25000000 0.50000000 0.50000000
+  O 0.75000000 0.50000000 0.50000000
+K_POINTS automatic
+  6 11 11 0 0 0
+HUBBARD (ortho-atomic)
+  U Ni1-3d 6
+  U Ni2-3d 6

@@ -24,6 +24,8 @@
        1 / SHARE of the memory free there.
     4. A time limit is always written: the «-t» of the profile, else HOURS (asked: at most MAX_HOURS).
     5. At most ACTIVE of these calculations on the servers at once — those of the journal not known to have ended.
+       A sending that never reached the server (no job.json in its folder, and the sending process gone or UNSENT_S
+       passed) is written to the journal as ended («not sent») and takes no place.
     6. Every sending is a line of the journal (JOURNAL in the folder of the calculations: the time, the server, the
        folder, the program, the cores, the memory, the limit); its end is another. Only a calculation of the journal
        is taken up again (resume) or stopped; stop is scancel of its own number (RemoteJob.stop). Nothing is deleted
@@ -33,7 +35,7 @@
     look(profile, connection, vpn_app=None, vpn_wait=None) -> Resources; switch_vpn_on(profile, app=None, wait=None)
     -> bool; ceiling(resources) -> (cores, physical, free);
     choose(resources, cores=None, memory_mb=None) -> cluster.Plan; time_directive(profile, hours=None) -> [str];
-    state(store, name=None, root=None, opener=None) -> dict; journal(root) -> [dict]; active(root, now=None, server=None) -> [folders];
+    state(store, name=None, root=None, opener=None) -> dict; journal(root) -> [dict]; active(root, now=None, server=None) -> [folders]; close_unsent(root, now=None) -> [folders];
     send(kind, made, calc, store, name=None, cores=None, memory_mb=None, hours=None, root=None, opener=None,
     interval=10.0) -> (RemoteJob, chosen, profile); resume(folder, store, root=None, opener=None, interval=10.0) ->
     RemoteJob; ended(root, folder, state, code). store — anything with .value(key, default): the settings of Azimuth.
@@ -235,11 +237,62 @@ def _note(root, **row):
     return row
 
 
-def active(root=None, now=None, server=None):
-    """The folders of the calculations sent from here and not known to have ended. A calculation sent more than
-    MAX_HOURS + 1 h ago is not open whatever the journal says: the time limit of its job has ended it (a watcher whose
-    process ended before the calculation wrote no «ended»; the owner's Windows, 2026-11-24 — yesterday's water
-    still listed as open on both servers). Server — the title of a server: only the calculations sent there."""
+UNSENT_S = 600  # a sending that has not reached the queue in this time never will (the upload and sbatch take seconds)
+
+
+def _alive(pid):
+    """Is the process of this number running? None when that cannot be told."""
+    import os
+    import sys
+
+    try:
+        pid = int(pid)
+    except (TypeError, ValueError):
+        return None
+    if pid <= 0:
+        return None
+    if sys.platform == 'win32':
+        try:
+            import ctypes
+
+            kernel = ctypes.windll.kernel32
+            handle = kernel.OpenProcess(0x1000, False, pid)  # PROCESS_QUERY_LIMITED_INFORMATION
+            if not handle:
+                return False
+            code = ctypes.c_ulong()
+            found = kernel.GetExitCodeProcess(handle, ctypes.byref(code))
+            kernel.CloseHandle(handle)
+            return bool(found) and code.value == 259  # STILL_ACTIVE
+        except (OSError, AttributeError, ValueError):
+            return None
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    except OSError:
+        return None
+    return True
+
+
+def _unsent(row, now, alive=_alive):
+    """A sending of the journal that never reached the server: its folder has no job.json (written when the queue
+    accepts the job) and the process that was sending is gone, or UNSENT_S have passed."""
+    from modules.sextant import remote_job
+
+    folder = row.get('folder')
+    if not folder or (Path(folder) / remote_job.JOB_JSON).is_file():
+        return False
+    try:
+        seconds = (now - datetime.fromisoformat(row.get('time', ''))).total_seconds()
+    except (TypeError, ValueError):
+        return False
+    return seconds > UNSENT_S or (row.get('pid') is not None and alive(row.get('pid')) is False)
+
+
+def _open_rows(root=None, now=None, server=None):
+    """The rows «sent» of the journal without an «ended», not older than the longest time limit."""
     now = now or datetime.now()
     sent, over = [], set()
     for row in journal(root):
@@ -249,10 +302,34 @@ def active(root=None, now=None, server=None):
             except (TypeError, ValueError):
                 age = 0.0
             if age <= MAX_HOURS + 1 and (server is None or row.get('server') == server):
-                sent.append(row.get('folder'))
+                sent.append(row)
         elif row.get('event') == 'ended':
             over.add(row.get('folder'))
-    return [f for f in sent if f and f not in over]
+    return [row for row in sent if row.get('folder') and row.get('folder') not in over]
+
+
+def active(root=None, now=None, server=None, alive=_alive):
+    """The folders of the calculations sent from here and not known to have ended. A calculation sent more than
+    MAX_HOURS + 1 h ago is not open whatever the journal says: the time limit of its job has ended it (a watcher whose
+    process ended before the calculation wrote no «ended»). A sending that never reached the server (_unsent: the
+    process ended or lost the connection during the upload) is not open either — it took a place of ACTIVE for a
+    day. Server — the title of a server: only the calculations sent there."""
+    now = now or datetime.now()
+    return [row['folder'] for row in _open_rows(root, now, server) if not _unsent(row, now, alive)]
+
+
+def close_unsent(root=None, now=None, alive=_alive):
+    """The sendings that never reached a server get their «ended» in the journal (state «not sent»); the folders."""
+    now = now or datetime.now()
+    closed = []
+    for row in _open_rows(root, now):
+        if _unsent(row, now, alive):
+            try:
+                _note(root, event='ended', folder=row['folder'], state='not sent', code=None)
+            except OSError:
+                continue
+            closed.append(row['folder'])
+    return closed
 
 
 def ended(root, folder, state, code):
@@ -281,6 +358,7 @@ def state(store, name=None, root=None, opener=None):
     """What the server says now and what one calculation may take; the calculations of the journal still open."""
     from modules.sextant import cluster, remote, remote_job
 
+    close_unsent(root)
     chosen, connection, resources = _open(store, name, opener, search=True)
     most, physical, free = ceiling(resources, 0 if resources.slurm else just_sent(root, chosen.title()))
     memory = cluster.free_memory(resources)
@@ -317,6 +395,7 @@ def send(kind, made, calc, store, name=None, cores=None, memory_mb=None, hours=N
 
     if kind not in remote_job.REMOTE_KINDS:
         raise ValueError(f'a server runs {", ".join(remote_job.REMOTE_KINDS)}, not {kind}')
+    close_unsent(root)
     open_now = active(root)
     if len(open_now) >= ACTIVE:
         raise ValueError(f'{len(open_now)} calculations sent from here are not known to have ended (at most {ACTIVE} at '
@@ -328,7 +407,9 @@ def send(kind, made, calc, store, name=None, cores=None, memory_mb=None, hours=N
     plan = choose(resources, cores, memory_mb, reserved)
     spec = remote_job.prepare_remote(made, calc, (), jobs_root(root), plan, setup, kind=kind)
     job = remote_job.RemoteJob(spec, chosen, connection, interval)
-    _note(root, event='sent', folder=str(spec.folder), server=chosen.title(), program=kind, title=made.title,
+    import os
+
+    _note(root, event='sent', folder=str(spec.folder), pid=os.getpid(), server=chosen.title(), program=kind, title=made.title,
           formula=made.formula, task=calc.task, cores=plan.processes, memory_mb=plan.maxcore,
           time_limit=chosen.time_limit or limit[0].split()[-1])
     return job.start(), plan, chosen
@@ -343,7 +424,10 @@ def resume(folder, store, root=None, opener=None, interval=10.0):
     folder = _mine(root, folder)
     info = records.read(folder, remote_job.JOB_JSON)
     if not isinstance(info, dict):
-        raise ValueError(f'{folder} has no {remote_job.JOB_JSON}: the calculation never reached the queue')
+        if str(folder) in [row['folder'] for row in _open_rows(root)]:
+            _note(root, event='ended', folder=str(folder), state='not sent', code=None)
+        raise ValueError(f'{folder} has no {remote_job.JOB_JSON}: the calculation never reached the queue — it is '
+                         'written to the journal as ended; send it again')
     outputs = sorted(p for p in folder.glob('*.out') if not p.name.startswith('slurm-'))
     if not outputs:
         raise ValueError(f'no output file in {folder}')

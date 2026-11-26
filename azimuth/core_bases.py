@@ -84,6 +84,11 @@ BASIS_TABLE = {
     'aug-cc-pVTZ': ('Даннинга (cc)', 'aug-cc-pVTZ', 'Aug-cc-pVTZ', 'aug-cc-pvtz', ((1, 18), (31, 36))),
     'pcseg-1': ('Йенсена (pcseg)', 'pcseg-1', None, 'pcseg-1', _HKR),
     'pcseg-2': ('Йенсена (pcseg)', 'pcseg-2', None, 'pcseg-2', _HKR),
+    # pcSseg-n — the pcseg-n of Jensen with tight p functions added for nuclear shieldings (JCTC 11, 132, 2015)
+    # ORCA only: of the programs here it and Gaussian compute shieldings, and Gaussian has no such basis.
+    # ORCA 6.0.1 ran «B3LYP D3BJ pcSseg-1 NMR» for methanol.
+    'pcSseg-1': ('Йенсена (pcseg)', 'pcSseg-1', None, None, _HKR),
+    'pcSseg-2': ('Йенсена (pcseg)', 'pcSseg-2', None, None, _HKR),
     # the extrapolation to the complete basis set of ORCA — two calculations (X = 2/3 or 3/4) and E(CBS) of both:
     # the SCF part by exp(−α√X), the correlation part by X^(−β) (the exponents of Neese and Valeev, JCTC 7, 33,
     # 2011). An energy of a correlated method only (CBS_BASES, Calculation.validate_settings). ORCA 6.0.1 ran

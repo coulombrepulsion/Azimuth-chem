@@ -25,6 +25,9 @@
     max(4, ⌈N/8⌉) bands for N valence electrons (z_valence of the UPF files) so that empty bands are computed too.
     «Сходимость по энергии обрезания» and «Сходимость по k-сетке» (CUTOFF_TASK, KGRID_TASK): scf runs with the cutoffs
     or the grids of convergence.py (cut1.in …, kpt1.in …), everything else as in the settings.
+    «Ряд по U (DFT+U)» (HUBBARD_TASK): scf runs with U = U_VALUES on the elements of Options.hubbard (hub1.in …);
+    «Магнитный порядок…» (MAGNETIC_TASK): the cell of the settings without spin, ferromagnetic and with the
+    antiferromagnetic order of Options.magnetic (mag1.in …) — both with the empty bands of bands_count.
     «Уравнение состояния (ряд объёмов)» (EOS_TASK): seven runs of pw.x at EOS_FACTORS of the volume (eos1.in …), the
     atoms relaxed in each cell — for the fit of equation_of_state.py.
     steps(crystal, task, pseudo, pseudo_dir, prefix, spacing, basis) -> [(file, program, text)]; valence(path) -> float
@@ -78,10 +81,19 @@ EOS_FACTORS = (0.94, 0.96, 0.98, 1.0, 1.02, 1.04, 1.06)
 # the convergence series: the same crystal with a row of cutoffs (cut1.in …) or of grids of k-points (kpt1.in …), one
 # scf run of pw.x each — the values and the table: modules/compass/chemistry/convergence.py
 CUTOFF_TASK, KGRID_TASK = 'Сходимость по энергии обрезания', 'Сходимость по k-сетке'
-SERIES = {CUTOFF_TASK: 'cut', KGRID_TASK: 'kpt'}
+# the series of a magnetic crystal, scf runs with empty bands (the gap of a spin-polarized run is read from the levels):
+# the U of DFT+U from U_VALUES (hub1.in …; the elements and shells of the settings, the same U for all of them), and the
+# magnetic orders of one cell — without spin, ferromagnetic, antiferromagnetic (mag1.in …; the antiferromagnetic
+# order of the settings is needed: it tells which atoms are up and which down)
+HUBBARD_TASK, MAGNETIC_TASK = 'Ряд по U (DFT+U)', 'Магнитный порядок (без спина, ФМ, АФМ)'
+U_VALUES = (0.0, 2.0, 4.0, 6.0, 8.0)  # eV
+MAGNETIC_STATES = ('без спина', 'ферромагнитный', 'антиферромагнитный')
+SERIES = {CUTOFF_TASK: 'cut', KGRID_TASK: 'kpt', HUBBARD_TASK: 'hub', MAGNETIC_TASK: 'mag'}
 STEPS = {EOS_TASK: tuple((f'eos{n + 1}.in', 'pw.x') for n in range(len(EOS_FACTORS))),
          CUTOFF_TASK: tuple((f'cut{n + 1}.in', 'pw.x') for n in range(7)),
          KGRID_TASK: tuple((f'kpt{n + 1}.in', 'pw.x') for n in range(6)),
+         HUBBARD_TASK: tuple((f'hub{n + 1}.in', 'pw.x') for n in range(len(U_VALUES))),
+         MAGNETIC_TASK: tuple((f'mag{n + 1}.in', 'pw.x') for n in range(len(MAGNETIC_STATES))),
          BANDS_TASK: (('scf.in', 'pw.x'), ('bands.in', 'pw.x')),
          DOS_TASK: (('scf.in', 'pw.x'), ('nscf.in', 'pw.x'), ('dos.in', 'dos.x'), ('projwfc.in', 'projwfc.x')),
          PHONON_TASK: (('scf.in', 'pw.x'), ('ph.in', 'ph.x'), ('dynmat.in', 'dynmat.x')),
@@ -141,8 +153,12 @@ class Options:
     hubbard: tuple = ()  # DFT+U — hubbard.parse: ((element, manifold, U eV), …)
     magnetic: tuple = ()  # the antiferromagnetic order — magnetism.afm_signs, +1/−1/0 per atom of the cell
     external: float | None = None  # the pressure on the cell of vc-relax, GPa (press, kbar = 10 × GPa)
+    dofree: str = ''  # what of the cell a vc-relax changes — DOFREE (cell_dofree of pw.x); '' — all of it
 
 
+# cell_dofree of pw.x: a layer (graphene, a slab with vacuum along c) must keep its c — else the vacuum collapses
+DOFREE = {'': 'вся ячейка', '2Dxy': 'только в плоскости ab (слой с вакуумом)', 'volume': 'только объём, форма сохраняется',
+          'shape': 'только форма, объём сохраняется'}
 DOS_DENSER = 0.7  # the spacing of the grid of the density of states, × that of scf
 
 
@@ -239,7 +255,10 @@ def pw_input(crystal, task='scf', pseudo=None, pseudo_dir='.', prefix='azimuth',
     if calculation in ('relax', 'vc-relax'):
         lines += ['&IONS', '/']
     if calculation == 'vc-relax':
-        lines += ['&CELL'] + ([f'  press = {o.external * 10:g}'] if o.external else []) + (
+        if o.dofree not in DOFREE:
+            raise ValueError(tr('Quantum ESPRESSO: неизвестный способ оптимизации ячейки {}.').format(o.dofree))
+        lines += ['&CELL'] + ([f"  cell_dofree = '{o.dofree}'"] if o.dofree else []) + (
+            [f'  press = {o.external * 10:g}'] if o.external else []) + (
             [f'  press_conv_thr = {o.pressure:g}'] if o.pressure else []) + ['/']
     lines += ['ATOMIC_SPECIES']
     lines += [f'  {k} {MASSES.get(element_of[k], 1.0):.4f} {pseudo[element_of[k]][0]}' for k in kinds]
@@ -369,6 +388,20 @@ def steps(crystal, task, pseudo, pseudo_dir='.', prefix='azimuth', spacing=SPACI
         from modules.compass.chemistry import convergence
 
         o = options or Options()
+        if task in (HUBBARD_TASK, MAGNETIC_TASK):
+            if task == HUBBARD_TASK:
+                if not o.hubbard:
+                    raise ValueError(tr('Ряд по U: задайте в настройках DFT+U, к каким элементам ставить U (например, '
+                                        '«Ni 6») — значение в ряду меняется от {:g} до {:g} эВ.').format(U_VALUES[0], U_VALUES[-1]))
+                variants = [replace(o, hubbard=tuple((e, m, u) for e, m, _ in o.hubbard) if u else ()) for u in U_VALUES]
+            else:
+                if not o.magnetic:
+                    raise ValueError(tr('Магнитный порядок: выберите в настройках антиферромагнитный порядок (и суперячейку, '
+                                        'в которой он помещается) — ряд сравнит его с ферромагнитным и с расчётом без спина.'))
+                variants = [replace(o, spin=False, magnetic=()), replace(o, spin=True, magnetic=()), replace(o, spin=True)]
+            nbnd = bands_count(crystal, pseudo, pseudo_dir)  # empty bands: the gap of the levels
+            return [(f'{SERIES[task]}{n + 1}.in', 'pw.x', pw_input(crystal, 'scf', pseudo, pseudo_dir, prefix, spacing,
+                                                                   nbnd=nbnd, options=variant)) for n, variant in enumerate(variants)]
         if task == CUTOFF_TASK:  # around the cutoffs the plain input would get, with its ratio ecutrho / ecutwfc
             plain = pw_input(crystal, 'scf', pseudo, pseudo_dir, prefix, spacing, options=o)
             wfc, rho = (float(re.search(rf'{key} = ([\d.eE+-]+)', plain).group(1)) for key in ('ecutwfc', 'ecutrho'))

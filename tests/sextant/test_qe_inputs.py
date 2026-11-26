@@ -149,3 +149,16 @@ def test_the_pressure_on_the_cell():
     text = qi.pw_input(silicon(), 'vc-relax', pseudo=pseudo, options=qi.Options(external=3.5))
     assert '  press = 35' in text
     assert 'press =' not in qi.pw_input(silicon(), 'vc-relax', pseudo=pseudo)
+
+
+def test_what_of_the_cell_a_vc_relax_changes():
+    # cell_dofree of pw.x (INPUT_PW: 'all' by default, '2Dxy' — the cell in its xy plane only): a layer keeps its vacuum
+    pseudo = {'Si': ('Si.upf', 30.0, 240.0)}
+    plain = qi.pw_input(silicon(), 'Оптимизация с ячейкой', pseudo)
+    assert '&CELL\n/' in plain and 'cell_dofree' not in plain
+    layer = qi.pw_input(silicon(), 'Оптимизация с ячейкой', pseudo, options=qi.Options(dofree='2Dxy', external=1.0))
+    assert "&CELL\n  cell_dofree = '2Dxy'\n  press = 10\n/" in layer
+    assert 'cell_dofree' not in qi.pw_input(silicon(), 'Оптимизация атомов', pseudo, options=qi.Options(dofree='2Dxy'))
+    assert set(qi.DOFREE) == {'', '2Dxy', 'volume', 'shape'}
+    with pytest.raises(ValueError):
+        qi.pw_input(silicon(), 'Оптимизация с ячейкой', pseudo, options=qi.Options(dofree='sideways'))

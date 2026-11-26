@@ -44,6 +44,77 @@ def dos_data(self):
     return (found, e0) if found.energies else None
 
 
+def magnetic_lines(r):
+    """The magnetization of a spin-polarized run for the summary: per cell and the moments of the atoms that have one."""
+    if r.magnetization is None and not r.moments:
+        return []
+    lines = []
+    if r.magnetization is not None:
+        lines.append(tr('Намагниченность ячейки: полная {} μB, абсолютная {} μB').format(
+            f'{r.magnetization:.2f}', '—' if r.absolute_magnetization is None else f'{r.absolute_magnetization:.2f}'))
+    shown = [(n, m) for n, m in r.moments if abs(m) >= 0.05]
+    if shown:
+        symbols = [a[0] for a in r.atoms] if r.atoms else []
+        names = [f'{symbols[n - 1] if n - 1 < len(symbols) else "№ "}{n} {m:+.2f}' for n, m in shown[:12]]
+        lines.append(tr('Магнитные моменты атомов, μB: {}').format(', '.join(names)) + (' …' if len(shown) > 12 else ''))
+    return lines
+
+
+def states_data(self):
+    """(kind 'hub' | 'mag', rows) of a finished series of U or of magnetic orders: a row — (label, E eV per cell, gap eV
+    | None — a metal, the largest |moment| μB | None, the absolute magnetization | None); None when the job is not
+    such a series."""
+    import re
+
+    from modules.sextant import qe_inputs
+    from modules.spectrum.readers import qe
+
+    kind = next((k for k in ('hub', 'mag') if self.folder is not None and (self.folder / f'{k}1.in').is_file()), None)
+    if kind is None or not (self.folder / 'pw.out').is_file():
+        return None
+    rows = []
+    for n, run in enumerate(qe.runs((self.folder / 'pw.out').read_text(encoding='utf-8', errors='replace')), 1):
+        source = self.folder / f'{kind}{n}.in'
+        if not source.is_file():
+            break
+        r = qe.read(run)
+        if r.energy is None:
+            continue
+        if kind == 'hub':
+            found = re.search(r'^\s*U\s+\S+\s+([\d.]+)', source.read_text(encoding='utf-8', errors='replace'), re.M)
+            label = f'U = {float(found.group(1)) if found else 0.0:g} ' + tr('эВ')
+        else:
+            label = tr(qe_inputs.MAGNETIC_STATES[n - 1]) if n <= len(qe_inputs.MAGNETIC_STATES) else str(n)
+        gap = r.lowest - r.highest if r.highest is not None and r.lowest is not None else None
+        moment = max((abs(m) for _, m in r.moments), default=None)
+        rows.append((label, r.energy * 13.605693122994, gap, moment, r.absolute_magnetization))
+    return kind, rows
+
+
+def states_table(self, found):
+    """The table of the series as HTML for the summary."""
+    kind, rows = found
+    if not rows:
+        return ''
+    low = min(row[1] for row in rows)
+    heads = [tr('Состояние') if kind == 'mag' else 'U', tr('Щель, эВ'), tr('Наибольший момент, μB'),
+             tr('Абсолютная намагниченность, μB')]
+    if kind == 'mag':  # one cell and one U: the energies compare
+        heads.insert(1, tr('ΔE, мэВ на ячейку'))
+    html = '<table><tr>' + ''.join(f'<th align="right">&nbsp;{h}&nbsp;</th>' for h in heads) + '</tr>'
+    for label, energy, gap, moment, absolute in rows:
+        cells = [label, '—' if gap is None else tr('металл') if gap <= 0 else f'{gap:.2f}', '—' if moment is None else f'{moment:.2f}',
+                 '—' if absolute is None else f'{absolute:.2f}']
+        if kind == 'mag':
+            cells.insert(1, f'{1000 * (energy - low):.1f}')
+        html += '<tr>' + ''.join(f'<td align="right">&nbsp;{c}&nbsp;</td>' for c in cells) + '</tr>'
+    note = tr('Энергии с разным U между собой не сравнивают: смотрите на щель и момент.') if kind == 'hub' else tr(
+        'Основное состояние — с наименьшей энергией.')
+    note += ' ' + tr('Щель — по уровням расчёта scf на его k-сетке; прочерк — расчёт с размытием (металл или состояние, '
+                     'заселённости которого программа подбирала сама): уровни краёв щели в нём не печатаются.')
+    return html + '</table>' + note
+
+
 def series_data(self):
     """(kind 'cut' | 'kpt', [convergence.Row]) of a finished convergence series — the runs of pw.out with the values
     of their input files —, (kind, None) when the series gave too few points (the reason in self.series_error), or
@@ -388,6 +459,8 @@ def summary_text(self, r):
         if file_cell is not None:  # the primitive cell (Si: 3.87 Å) differs from the CIF cell (5.47 Å)
             lines.append(tr('В ячейке файла (как в CIF): a = {}, b = {}, c = {} Å').format(
                 *(f'{x:.4f}' for x in file_cell)))
+    if self.program != 'cp2k':
+        lines += magnetic_lines(r)
     if self.program != 'cp2k' and getattr(self, 'folder', None) is not None:
         from modules.spectrum.readers import qe
 

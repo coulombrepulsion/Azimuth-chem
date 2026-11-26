@@ -14,7 +14,8 @@
 §4 SPECIFICATION
     is_qe(text) -> bool; Result(version, calculation, nat, energies (Ry), energy (Ry), energy_hartree, highest, lowest,
     fermi (eV), pressures (kbar), forces (Ry/bohr), steps, converged, done, error, cell (3 × 3 Å), atoms [(symbol,
-    (fx, fy, fz))], enthalpy (Ry)); read(text) -> Result; final_crystal(result, title) -> crystal.Crystal or None.
+    (fx, fy, fz))], enthalpy (Ry), magnetization and absolute_magnetization (μB per cell), moments ((atom, μB), …) of
+    a spin-polarized run); read(text) -> Result; final_crystal(result, title) -> crystal.Crystal or None.
     Runs(text) — the texts of the runs of pw.x one after another (the steps of one job, «Program PWSCF»);
     bands(text) -> Bands(k (Å⁻¹ … in 2π/alat as printed), energies [[eV] per k-point]) of the run of calculation 'bands'
     (verbosity 'high': «k = … bands (ev):» and the eigenvalues, which may run together as «-10.1234-9.8765»);
@@ -62,6 +63,11 @@ class Result:
     cell: tuple | None = None
     atoms: tuple = ()
     enthalpy: float | None = None
+    # a spin-polarized run: «total magnetization», «absolute magnetization» (Bohr magnetons per cell) and the last
+    # table «Magnetic moment per site» — ((atom number from 1, moment), …)
+    magnetization: float | None = None
+    absolute_magnetization: float | None = None
+    moments: tuple = ()
 
 
 def is_qe(text):
@@ -157,6 +163,14 @@ def read(text):
         r.highest = _f(high[-1]) if high else None
     fermi = re.findall(r'the Fermi energy is\s*(' + _FLOAT + r')\s*ev', text)
     r.fermi = _f(fermi[-1]) if fermi else None
+    total = re.findall(r'total magnetization\s*=\s*(' + _FLOAT + r')\s*Bohr mag/cell', text)
+    absolute = re.findall(r'absolute magnetization\s*=\s*(' + _FLOAT + r')\s*Bohr mag/cell', text)
+    r.magnetization = _f(total[-1]) if total else None
+    r.absolute_magnetization = _f(absolute[-1]) if absolute else None
+    tables = text.split('Magnetic moment per site')
+    if len(tables) > 1:
+        r.moments = tuple((int(n), _f(m)) for n, m in re.findall(
+            r'atom\s+(\d+)\s+\(R=[\d.]+\)\s+charge=\s*' + _FLOAT + r'\s+magn=\s*(' + _FLOAT + ')', tables[-1]))
     r.pressures = [_f(x) for x in re.findall(r'P=\s*(' + _FLOAT + ')', text)]
     r.forces = [_f(x) for x in re.findall(r'Total force\s*=\s*(' + _FLOAT + ')', text)]
     steps = re.findall(r'number of bfgs steps\s*=\s*(\d+)', text)

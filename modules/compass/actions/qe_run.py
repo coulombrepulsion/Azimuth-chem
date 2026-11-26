@@ -438,6 +438,9 @@ def poll(self):
     converging = self.series_data() if self.program != 'cp2k' else None
     if converging is not None:
         text = '<br>'.join(self.series_lines(converging)) + '<br>' + tr('Ниже — последняя точка ряда.') + '<br>' + text
+    states = self.states_data() if self.program != 'cp2k' else None
+    if states is not None and states[1]:
+        text = self.states_table(states) + '<br>' + tr('Ниже — последний расчёт ряда.') + '<br>' + text
     if self.program == 'cp2k':
         text += self.multiwfn_line()
     self.summary.setText(text)

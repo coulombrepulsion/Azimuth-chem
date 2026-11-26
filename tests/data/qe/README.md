@@ -50,3 +50,9 @@
   энергии обрезания» and «Сходимость по k-сетке» of `qe_inputs.steps` for silicon (the primitive cell, PBE, SSSP 1.3.0):
   six scf runs each, one after another (the paths replaced) — ecutwfc 20 … 70 Ry at k 9 × 9 × 9, and the grids 4, 7, 9,
   11, 14, 18 (those of `convergence.grids` for the grid 9 × 9 × 9 of the primitive cell) at 30 Ry. Used by `tests/compass/test_crystal_convergence.py`.
+- `nio_magnetic_pw76.out` with `nio_magnetic_mag1.in` … `mag3.in`, `nio_hubbard_pw76.out` with `nio_hubbard_hub1.in` …
+  `hub5.in` — QE 7.6 on the owner's Mac (2026-11-26, 4 processes), the tasks «Магнитный порядок (без спина, ФМ, АФМ)» and
+  «Ряд по U (DFT+U)» of `qe_inputs.steps` for NiO (two formula units, the antiferromagnetic order along [111],
+  a = 4.177 Å, PBE, SSSP 1.3.0, k 6 × 11 × 11; the paths replaced). Energies −769.73287092 (no spin), −769.74215935
+  (ferromagnetic), −769.78059614 Ry (antiferromagnetic); with U = 0, 2, 4, 6, 8 eV the gap 0.81, 1.83, 2.65, 3.11,
+  3.19 eV and the moment of Ni 1.33, 1.51, 1.61, 1.68, 1.73 μB. Used by `tests/compass/test_crystal_states.py`.

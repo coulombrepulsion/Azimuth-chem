@@ -216,6 +216,11 @@ class NMRPanel(QWidget):
         self.decoupled.toggled.connect(self.refresh)
         split_row.addWidget(self.decoupled)
         split_row.addStretch(1)
+        self.compare_button = QPushButton(tr('Сравнить с экспериментом…'))
+        self.compare_button.setToolTip(tr('Расчётные сдвиги этого ядра рядом с экспериментальными: средняя ошибка, '
+                                          'наибольшее отклонение, линейная поправка и график'))
+        self.compare_button.clicked.connect(lambda: self.compare())
+        split_row.addWidget(self.compare_button)
         column.addLayout(split_row)
         self.plot = NMRPlot()
         column.addWidget(self.plot, 1)
@@ -235,6 +240,21 @@ class NMRPanel(QWidget):
         self.rows = []
         self.couplings = ()
         self.splittings = {}  # atoms tuple -> [(n, J)]
+        self.measured = {}  # element -> the text of the measured shifts typed into «Сравнить с экспериментом…»
+
+    def compare(self, show=True):
+        """The window of the comparison with the measured shifts for the element shown (nmr_compare_view)."""
+        from modules.spectrum.views.nmr_compare_view import NMRCompareDialog
+
+        element = self.element.currentText()
+        if not element or not self.rows:
+            return None
+        dialog = NMRCompareDialog(self, self.rows, element, self.measured.get(element, ''))
+        dialog.text.textChanged.connect(lambda: self.measured.__setitem__(element, dialog.text.toPlainText()))
+        self.compare_dialog = dialog
+        if show:
+            dialog.show()
+        return dialog
 
     # -- the stored references: «nmr_reference_C@B3LYP DEF2-SVP» per level, «nmr_reference_C» without one --------
     @staticmethod
@@ -404,6 +424,7 @@ class NMRPanel(QWidget):
                            for atoms, _, delta, _ in rows if delta is not None and self.splittings.get(atoms)}
         self.plot.update()
         self.export_button.setEnabled(bool(rows))
+        self.compare_button.setEnabled(bool(rows))
         if rows and not self.table.selectedItems():
             self.table.selectRow(0)
         self.show_multiplet()

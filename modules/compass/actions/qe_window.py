@@ -73,7 +73,7 @@ class QePanel(QWidget):
         self.timer.setInterval(1000)
         self.timer.timeout.connect(self.poll)
         for combo in (self.task, self.kmode, self.occupations, self.smearing, self.vdw, self.conv, self.basis,
-                      self.cp2k_vdw, self.eps_scf, self.functional, self.cp2k_functional, self.order):
+                      self.cp2k_vdw, self.eps_scf, self.functional, self.cp2k_functional, self.order, self.dofree):
             combo.currentIndexChanged.connect(lambda _: self.settings_changed())
         self.program_box.currentIndexChanged.connect(lambda _: self.set_program(self.program_box.currentData()))
         for box in (self.spacing, self.degauss, self.ecutwfc, self.ecutrho, self.magnetization, self.forces, self.pressure,
@@ -150,7 +150,8 @@ class QePanel(QWidget):
             vdw=self.vdw.currentData(), spin=self.spin.isChecked(), magnetization=self.magnetization.value(),
             conv=float(self.conv.currentData()), forces=self.forces.value() or None, pressure=self.pressure.value() or None,
             functional=self.functional.currentData() or '', charge=float(self.charge.value()),
-            hubbard=hubbard.parse(self.hubbard.text()), magnetic=self.magnetic_signs(), external=self.external)
+            hubbard=hubbard.parse(self.hubbard.text()), magnetic=self.magnetic_signs(), external=self.external,
+            dofree=self.dofree.currentData() or '')
 
     def magnetic_signs(self):
         """The signs of the antiferromagnetic order of the cell computed (magnetism.afm_signs), otherwise;
@@ -505,6 +506,8 @@ class QePanel(QWidget):
     phonon_data = _results.phonon_data
     eos_data = _results.eos_data
     series_data = _results.series_data
+    states_data = _results.states_data
+    states_table = _results.states_table
     series_lines = _results.series_lines
     show_series = _results.show_series
     eos_lines = _results.eos_lines

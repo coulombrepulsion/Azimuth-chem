@@ -1201,3 +1201,37 @@ def test_vcd_and_emission(window, tmp_path):
     assert rows[0][:3] == ['wavelength_nm', 'absorption_relative', 'emission_relative'] and len(rows) > 100
     uv.kind.setCurrentIndex(0)
     assert uv.plot.isVisibleTo(uv) and not uv.emission_plot.isVisibleTo(uv)
+
+
+def test_nmr_compare_dialog(window, app, tmp_path):
+    # «Сравнить с экспериментом…» of the NMR tab: four carbon signals by hand (tests/spectrum/test_nmr_compare.py
+    # has the arithmetic: MAE 1.075, the largest −1.5 at the atom of δ 60.0)
+    from modules.spectrum.views.nmr_compare_view import NMRCompareDialog
+    from modules.spectrum.views.spectra_view import NMRPanel
+
+    rows = [((0,), 'C', 170.0, 14.0), ((1,), 'C', 130.0, 54.0), ((2, 3), 'C', 20.5, 163.5), ((4,), 'C', 60.0, 124.0)]
+    dialog = NMRCompareDialog(window, rows, 'C')
+    assert dialog.table.rowCount() == 0 and dialog.found is None
+    dialog.text.setPlainText('171.2\n128.9\n61.5\n21.0')
+    pairs, stats, fit = dialog.found
+    assert dialog.table.rowCount() == 4 and abs(stats.mae - 1.075) < 1e-9 and fit.stats.mae < stats.mae
+    assert [dialog.table.item(r, 0).text() for r in range(4)] == ['C1', 'C2', 'C5', 'C3, C4']
+    assert dialog.table.item(2, 4).text() == '-1.50' and '1.07' in dialog.note.text() and 'C5' in dialog.note.text()
+    assert len(dialog.plot.points) == 4 and len(dialog.plot.corrected) == 4
+    dialog.plot.resize(520, 300)
+    dialog.plot.grab()
+    assert 'C3, C4' in dialog.copy() and dialog.save_csv(tmp_path / 'nmr.csv')
+    dialog.text.setPlainText('171.2\n128.9')
+    assert dialog.found is None and '4' in dialog.note.text() and dialog.table.rowCount() == 0
+    dialog.text.setPlainText('C1 171.2\nC3 21.0')  # a part of the spectrum by the numbers: no line through two points
+    pairs, stats, fit = dialog.found
+    assert fit is None and stats.count == 2 and dialog.table.item(1, 0).text() == 'C3, C4'
+    without = NMRCompareDialog(window, [(a, s, None, sigma) for a, s, _, sigma in rows], 'C', '171.2\n128.9\n61.5\n21.0')
+    assert without.found[1] is None and without.found[2] is not None and without.table.item(0, 2).text() == '—'
+    panel = NMRPanel()
+    assert panel.compare(show=False) is None  # nothing loaded
+    panel.element.addItem('C')
+    panel.rows = rows  # after the element: choosing it fills the rows from the shieldings loaded (none here)
+    opened = panel.compare(show=False)
+    opened.text.setPlainText('1\n2\n3\n4')
+    assert panel.measured == {'C': '1\n2\n3\n4'} and panel.compare(show=False).text.toPlainText() == '1\n2\n3\n4'
