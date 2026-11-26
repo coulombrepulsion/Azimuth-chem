@@ -42,6 +42,7 @@ from azimuth.core import (
     DISPERSION_METHODS,
     METHOD_TABLE,
     NEB_TASK,
+    XTB_ORCA,
     Calculation,
     bases_for,
     methods_for,
@@ -878,6 +879,10 @@ class SextantWorkspace:
         """D3(BJ)/D4 only for a functional that takes it (core.DISPERSION_METHODS); off for xtb."""
         method = self.method.currentData() or self.method.currentText()
         fits = self.program_kind() != 'xtb' and method in DISPERSION_METHODS
+        if self.program_kind() == 'orca':  # GFN2-xTB through ORCA has no basis set
+            self.basis.setEnabled(method != XTB_ORCA)
+            self.basis.setToolTip(tr('У GFN2-xTB нет базиса: это полуэмпирический метод со своим набором функций')
+                                  if method == XTB_ORCA else '')
         self.dispersion.setEnabled(fits)
         self.dispersion.setToolTip(
             '' if fits else tr('Для этого метода поправка не добавляется: HF, MP2, своя дисперсия (ωB97X-D…) или нет параметров (M06-2X)')

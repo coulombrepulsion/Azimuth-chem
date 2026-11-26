@@ -41,3 +41,9 @@ the transition state found by «Переходное состояние + час
 40, InitHess calc_anfreq`. Both directions converged: forward to HNC (−34.21 kcal/mol from the TS), backward to HCN
 (−47.77). `hcn_irc.out` — the whole output, `hcn_irc_IRC_Full_trj.xyz` — the 61 geometries of the path (renamed after
 the output, as ORCA names it). Used by `tests/sextant/test_irc_task.py`.
+
+`xtb_neb_hcn/` — ORCA 6.0.1 with xtb 6.7.1 behind it on the owner's Mac (2026-11-26, 1 process): «Путь реакции
+(NEB-CI)» of HCN → HNC with the method GFN2-xTB, the input Sextant writes (`! XTB2 NEB-CI`, 6 images), XTBEXE set by
+Sextant. Converged in 20 iterations; the climbing image 72.40 kcal/mol over HCN (the ends not optimized).
+`hcn_xtb_neb.out`, `hcn_xtb_neb_MEP_trj.xyz` — the output and the path; `hcn_xtb_neb_no_xtb.out` — the same task
+without XTBEXE: «Please set the XTBEXE environment variable», code 52. Used by `tests/sextant/test_orca_xtb.py`.

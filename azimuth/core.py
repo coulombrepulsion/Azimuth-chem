@@ -151,6 +151,7 @@ def read_xyz(text):
 
 
 CC_METHODS = frozenset(('CCSD(T)', 'DLPNO-CCSD(T)'))  # the energy only
+XTB_ORCA = 'GFN2-xTB'  # the method «! XTB2» of ORCA: no basis set, the program xtb behind it
 CBS_METHODS = frozenset(('MP2', 'CCSD(T)', 'DLPNO-CCSD(T)'))  # a basis of CBS_BASES: the correlation energy extrapolated
 WAVEFUNCTION = ('HF', 'MP2', 'CCSD(T)', 'DLPNO-CCSD(T)')  # no grid of DFT, the reference of the SCF is HF
 # a D3(BJ) / D4 correction is added only to functionals without their own dispersion and with parameters for it
@@ -227,6 +228,9 @@ RELATIVISTIC = {'': 'Нет', 'DKH': 'DKH2 (Дуглас — Кролл — Хе
 SLOW_CONV = {'': 'Обычная', 'SlowConv': 'Трудная (SlowConv)', 'VerySlowConv': 'Очень трудная (VerySlowConv)'}
 TDDFT_MODES = {'': 'Как в программе', 'tda': 'TDA (Тамм — Данков)', 'full': 'Полное TD-DFT (RPA)'}
 NEB_TASK = 'Путь реакции (NEB-CI)'
+# what GFN2-xTB through ORCA is offered for: a quick path and its ends (the frequencies and the rest — the program
+# xtb itself, or DFT)
+XTB_ORCA_TASKS = ('Энергия', 'Оптимизация', NEB_TASK)
 IRC_TASK = 'Путь от переходного состояния (IRC)'
 SCAN_TASK = 'Скан ППЭ с релаксацией'
 SCAN_LIMITS = {'B': (0.3, 10.0), 'A': (1.0, 179.0), 'D': (-360.0, 360.0)}  # Å, °, °: the end value of a scan
@@ -343,7 +347,7 @@ class Calculation:
         if self.method in CC_METHODS and self.task != 'Энергия':
             raise ValueError(tr('CCSD(T) здесь считает только энергию (без градиентов): оптимизируйте геометрию '
                                 'функционалом DFT, затем посчитайте на ней «Энергию» этим методом.'))
-        if self.basis in CBS_BASES:
+        if self.basis in CBS_BASES and self.method != XTB_ORCA:  # GFN2-xTB has no basis set at all
             if self.method not in CBS_METHODS or self.task != 'Энергия':
                 raise ValueError(tr('Экстраполяция к полному базису (CBS) — для «Энергии» методами MP2, CCSD(T) и '
                                     'DLPNO-CCSD(T): геометрию и частоты считайте функционалом DFT в обычном базисе.'))
@@ -422,6 +426,8 @@ class Calculation:
         if not molecule.atoms:
             raise ValueError(tr('Добавьте атомы перед созданием входного файла.'))
         molecule.validate_state(self.charge, self.multiplicity)
+        if self.method == XTB_ORCA:  # no basis set to check the elements against (orca_xtb_input, the program xtb)
+            return
         # heavier than Kr — def2 with its ECP up to Rn; with DKH, ZORA, X2C — the all-electron bases of
         # relativistic_basis (a student's report: «Элементы тяжелее Kr не поддерживаются вообще», for Y, Bi, Ac, Ln)
         # each element by its own basis (basis_of)
@@ -537,7 +543,8 @@ def auto_title(molecule, calculation, kind='orca'):
     """formula_method_basis[_solvent], e.g. «H2O_B3LYP_def2-SVP_water»; xtb and CREST: formula_GFN2-xTB[_solvent]."""
     c = calculation
     parts = [molecule.formula or 'molecule']
-    parts += ['GFN2-xTB'] if kind in XTB_KINDS else [c.method] if kind == 'mopac' else [c.method, c.basis]  # no basis
+    parts += ['GFN2-xTB'] if kind in XTB_KINDS else [c.method] if kind == 'mopac' or c.method == XTB_ORCA \
+        else [c.method, c.basis]  # no basis
     if c.solvent:
         parts.append(c.solvent)
     return '_'.join(p for p in parts if p)
@@ -605,9 +612,46 @@ def neb_block(molecule, end, images):
 META_GGA = frozenset(('TPSS', 'r2SCAN', 'TPSSh', 'M06-2X'))  # meta-GGA and meta-hybrid functionals
 
 
+def orca_xtb_input(molecule, c, constraints, neb_end, neb_images):
+    """«! XTB2 …»: GFN2-xTB of the program xtb driven by ORCA — no basis set, no RI, no grid; the solvent is ALPB
+    of xtb. ORCA 6.0.1 ran «! XTB2 NEB-CI» with XTBEXE set (tests/data/orca601/xtb_neb_hcn)."""
+    if c.task not in XTB_ORCA_TASKS:
+        raise ValueError(tr('GFN2-xTB в ORCA здесь — для «Энергии», «Оптимизации» и «Пути реакции (NEB-CI)»: '
+                            'частоты и остальное считайте программой xtb или функционалом DFT.'))
+    if c.element_basis.strip() or c.relativistic or c.ts:
+        raise ValueError(tr('С GFN2-xTB свои базисы элементов, релятивистский гамильтониан и поиск переходного '
+                            'состояния здесь не сочетаются — уберите их.'))
+    if c.solvent and SOLVENTS[c.solvent][3] is None:
+        raise ValueError(tr(f'Для растворителя «{SOLVENTS[c.solvent][0]}» в модели ALPB метода GFN2-xTB нет '
+                            'параметров — выберите другой растворитель или газовую фазу.'))
+    task = TASKS[c.task]
+    optimizing = 'Opt' in task
+    solvent = f'ALPB({SOLVENTS[c.solvent][3]})' if c.solvent else ''
+    keywords = ' '.join(filter(None, ('XTB2', task, 'TightOpt' if optimizing and c.opt_conv == 'tight' else '', solvent)))
+    rows = ''
+    if optimizing:
+        fixed = validate_constraints(constraints, len(molecule.atoms))
+        if fixed:
+            rows += '  Constraints\n' + ''.join(f'    {{ {kind} {" ".join(map(str, atoms))} C }}\n' for kind, atoms in fixed) + '  end\n'
+        if c.max_cycles:
+            rows += f'  MaxIter {c.max_cycles}\n'
+    blocks = '%geom\n' + rows + 'end\n' if rows else ''
+    if c.task == NEB_TASK:
+        blocks += neb_block(molecule, neb_end, neb_images)
+    if c.extra.strip():
+        blocks += c.extra.strip() + '\n'
+    return (
+        f'# {calculation_title(molecule, c)}\n! {keywords}\n'
+        f'%pal nprocs {c.cores} end\n%maxcore {c.memory_mb}\n' + (blocks and '\n' + blocks) + '\n'
+        f'* xyz {c.charge} {c.multiplicity}\n' + coordinate_lines(molecule, c) + '\n*\n'
+    )
+
+
 def orca_input(molecule, calculation, constraints=(), neb_end=None, neb_images=8):
     calculation.validate(molecule)
     c = calculation
+    if c.method == XTB_ORCA:
+        return orca_xtb_input(molecule, c, constraints, neb_end, neb_images)
     if c.task == EXCITED_OPT_TASK and c.method in META_GGA:
         # ORCA 6.0.1 stops at once — «Meta-GGA functionals can only be used in combination with the
         # excited-state gradient if the functional is defined via the %method block» (the user's run, TPSSh)

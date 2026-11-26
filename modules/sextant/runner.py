@@ -73,7 +73,7 @@ import sys
 import time
 
 from modules.sextant.inputs import KINDS, crest_arguments, input_files, validate_xtb, xcontrol, xtb_arguments, xtb_preview  # noqa: F401
-from azimuth.core import TASKS, validate_constraints
+from azimuth.core import TASKS, XTB_ORCA, validate_constraints
 from azimuth.i18n import tr
 
 # the files are named after the calculation (core.file_base); here the output and what the program prints, by
@@ -387,6 +387,28 @@ def environment(program, kind, cores, mpirun=None, base=None, folder=None):
     return env
 
 
+def xtb_for_orca(orca, configured=None, environ=None):
+    """The program xtb ORCA is to call for «! XTB2», or None when ORCA finds it by itself (otool_xtb next to ORCA, or
+    XTBEXE already set). ORCA 6.0.1 without either: «otool_xtb not available. Trying xtb instead ... failed! Please set
+    the XTBEXE environment variable» (code 52). ValueError when there is no xtb on this computer."""
+    environ = os.environ if environ is None else environ
+    here = Path(orca).parent
+    if environ.get('XTBEXE') or any((here / name).is_file() for name in ('otool_xtb', 'otool_xtb.exe')):
+        return None
+    if configured is None:
+        try:
+            from azimuth.settings import open_settings
+
+            configured = open_settings().value('programs/xtb', '') or None
+        except Exception:  # noqa: BLE001 — no settings (no Qt): the usual folders
+            configured = None
+    found = find_program('xtb', configured)
+    if found is None:
+        raise ValueError(tr('Для GFN2-xTB в ORCA нужна программа xtb, она не найдена: «Расчёт → Установить программы для '
+                            'расчёта…» ставит её.'))
+    return found
+
+
 MPI_WRAPPER = '.azimuth-mpi'
 
 
@@ -436,6 +458,7 @@ def prepare(kind, program, molecule, calculation, constraints, root, now=None, m
             tr('Для нескольких процессов ORCA нужен Open MPI (программа mpirun), он не найден. Поставьте 1 процесс или установите Open MPI.')
         )
     guess = start_orbitals(kind, calculation)  # checked before the folder is made
+    xtb = xtb_for_orca(program) if kind == 'orca' and getattr(calculation, 'method', '') == XTB_ORCA else None
     folder = job_folder(root, molecule, kind, now or datetime.now())
     for name, text in files.items():
         (folder / name).write_text(text, encoding='utf-8')
@@ -468,6 +491,8 @@ def prepare(kind, program, molecule, calculation, constraints, root, now=None, m
         fixed = validate_constraints(constraints, len(molecule.atoms)) if 'Opt' in TASKS[calculation.task] else ()
         command = (str(program), *xtb_arguments(calculation, fixed, xyz=main))
     env = environment(program, kind, calculation.cores, mpirun if kind == 'orca' else None, folder=folder)
+    if xtb is not None:  # ORCA starts the program xtb for «! XTB2» by this variable
+        env['XTBEXE'] = str(xtb)
     if kind == 'orca' and mpirun is not None and calculation.cores > 1 and os.name != 'nt':
         env = mpi_wrapper(folder, mpirun, env)
     return JobSpec(kind, folder, command, folder / OUTPUT[kind].format(base), env, folder / STDOUT[kind].format(base))
@@ -712,6 +737,13 @@ PROBLEMS = (
      'друг от друга или атом по прямой проходит сквозь другой атом (как H в HCN → HNC, если обе молекулы строго '
      'линейны). Сдвиньте этот атом в обеих структурах в ту сторону, где он пойдёт, или возьмите конечную структуру '
      'ближе к начальной.'),
+    # ORCA 6.0.1, «! XTB2» with neither otool_xtb next to ORCA nor XTBEXE: «otool_xtb not available. Trying xtb instead
+    # ... failed!», code 52 (tests/data/orca601/xtb_neb_hcn). Sextant sets XTBEXE itself (xtb_for_orca); this is for an
+    # input run elsewhere or a server without xtb
+    ({'orca': ('Please set the XTBEXE environment variable',)},
+     'ORCA не нашла программу xtb для метода GFN2-xTB.',
+     'Метод «XTB2» считает программа xtb, а ORCA только управляет расчётом. На этом компьютере поставьте xtb через '
+     '«Расчёт → Установить программы для расчёта…»; на сервере xtb должна быть в PATH или задана переменной XTBEXE.'),
     ({'mopac': ('GEOMETRY IN ERROR',)},  # MOPAC 23.2.5: «ATOMS 3 AND 2 ARE SEPARATED BY 0.1487 ANGSTROMS»
      'MOPAC не стал считать: два атома слишком близко друг к другу.',
      'Расстояние между какими-то двумя атомами меньше 0,8 Å (в конце вывода MOPAC названы их номера и расстояние) — '

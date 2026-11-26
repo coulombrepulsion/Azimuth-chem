@@ -512,4 +512,5 @@
 - `tools/untranslated.py` — What waits for its translation (0.108.75+, the process agreed on the journal of Quill and the manual are written in Russian with each version and translated at a release).
 - `tools/upload_site_yandex.py` — Upload the built site to Yandex Object Storage — the mirror for Russia.
 - `tools/vtk_window_check3.py` — Check, round 3: which part of the VTK scene aborts when VTK draws into a Qt OpenGL widget?
+- `tools/watch_programs.py` — Have new versions of the calculation programs come out since Azimuth was checked with them?
 - `tools/workspace_gallery.py` — Снимки Секстанта и Спектра: каждая программа и задача Секстанта, каждая вкладка Спектра на примерах.

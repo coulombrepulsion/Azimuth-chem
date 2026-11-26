@@ -1,0 +1,15 @@
+# CHN_GFN2-xTB
+! XTB2 NEB-CI
+%pal nprocs 1 end
+%maxcore 1000
+
+%neb
+  neb_end_xyzfile "end.xyz"
+  nimages 6
+end
+
+* xyz 0 1
+C   0.00000000  0.00000000  0.00000000
+N   1.15600000  0.00000000  0.00000000
+H  -1.06400000  0.12000000  0.00000000
+*

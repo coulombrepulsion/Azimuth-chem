@@ -1,0 +1,13 @@
+{
+ "ORCA": {"checked": "6.0.1", "page": "https://www.faccts.de/orca/ (форум: https://orcaforum.kofo.mpg.de)"},
+ "xtb": {"checked": "6.7.1", "source": {"github": "grimme-lab/xtb"}, "page": "https://github.com/grimme-lab/xtb/releases"},
+ "CREST": {"checked": "3.0.2", "source": {"github": "crest-lab/crest"}, "page": "https://github.com/crest-lab/crest/releases"},
+ "MOPAC": {"checked": "23.2.5", "source": {"github": "openmopac/mopac"}, "page": "https://github.com/openmopac/mopac/releases"},
+ "Psi4": {"checked": "1.11", "source": {"github": "psi4/psi4"}, "page": "https://github.com/psi4/psi4/releases"},
+ "NWChem": {"checked": "7.3.0", "source": {"github": "nwchemgit/nwchem"}, "page": "https://github.com/nwchemgit/nwchem/releases"},
+ "Quantum ESPRESSO": {"checked": "7.6", "source": {"gitlab": "QEF/q-e"}, "page": "https://gitlab.com/QEF/q-e/-/releases"},
+ "CP2K": {"checked": "2026.2", "source": {"github": "cp2k/cp2k"}, "page": "https://github.com/cp2k/cp2k/releases"},
+ "Multiwfn": {"checked": "2026.7.15", "page": "http://sobereva.com/multiwfn/"},
+ "Gaussian": {"checked": "16", "page": "https://gaussian.com/relnotes/"},
+ "GAMESS (US)": {"checked": "2017", "page": "https://www.msg.chem.iastate.edu/gamess/versions.html"}
+}

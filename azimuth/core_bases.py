@@ -42,6 +42,9 @@ METHOD_TABLE = {
     # ORCA's local approximation of it (with an auxiliary basis, AutoAux), for molecules of tens of atoms
     'CCSD(T)': ('Связанные кластеры', 'CCSD(T)', 'CCSD(T)', 'ccsd(t)'),
     'DLPNO-CCSD(T)': ('Связанные кластеры', 'DLPNO-CCSD(T)', None, None),
+    # GFN2-xTB through ORCA («! XTB2»): ORCA drives the optimizer and NEB, the program xtb computes energies and
+    # gradients (ORCA finds it by XTBEXE — modules/sextant/runner.py). No basis set; core.XTB_ORCA_TASKS
+    'GFN2-xTB': ('Полуэмпирические (xtb через ORCA)', 'XTB2', None, None),
     # the semiempirical methods of MOPAC (the fifth column; the other programs have none of them)
     'PM7': ('Полуэмпирические (MOPAC)', None, None, None, 'PM7'),
     'PM6': ('Полуэмпирические (MOPAC)', None, None, None, 'PM6'),

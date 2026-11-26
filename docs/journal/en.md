@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.228.0 — 26 November 2026
+
+- ### 0.228.0 — A draft reaction path in seconds
+
+A reaction path in ORCA can now be found with the fast GFN2-xTB method: choose it in the list of methods, no basis set is needed. In seconds it gives a starting guess of the transition state, to be refined with a DFT functional. The program xtb must be installed.
+
 ## 0.227.0 — 26 November 2026
 
 - ### 0.227.0 — The hindered rotor

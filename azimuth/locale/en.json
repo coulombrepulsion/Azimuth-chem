@@ -6309,5 +6309,13 @@
   "Один из волчков лежит на оси вращения — вращать нечего.": "One of the tops lies on the rotation axis — there is nothing to turn.",
   "Приведённый момент инерции должен быть больше нуля.": "The reduced moment of inertia must be greater than zero.",
   "У потенциала нет минимума с положительной кривизной.": "The potential has no minimum with a positive curvature.",
-  "Частота гармонического колебания должна быть больше нуля.": "The frequency of the harmonic vibration must be greater than zero."
+  "Частота гармонического колебания должна быть больше нуля.": "The frequency of the harmonic vibration must be greater than zero.",
+  "Полуэмпирические (xtb через ORCA)": "Semiempirical (xtb through ORCA)",
+  "GFN2-xTB в ORCA здесь — для «Энергии», «Оптимизации» и «Пути реакции (NEB-CI)»: частоты и остальное считайте программой xtb или функционалом DFT.": "GFN2-xTB in ORCA is here for «Energy», «Optimization» and «Reaction path (NEB-CI)»: compute frequencies and the rest with the program xtb or with a DFT functional.",
+  "С GFN2-xTB свои базисы элементов, релятивистский гамильтониан и поиск переходного состояния здесь не сочетаются — уберите их.": "With GFN2-xTB, own basis sets of elements, a relativistic Hamiltonian and a transition-state search are not combined here — remove them.",
+  "Для растворителя «{}» в модели ALPB метода GFN2-xTB нет параметров — выберите другой растворитель или газовую фазу.": "The ALPB model of GFN2-xTB has no parameters for the solvent «{}» — choose another solvent or the gas phase.",
+  "У GFN2-xTB нет базиса: это полуэмпирический метод со своим набором функций": "GFN2-xTB has no basis set to choose: it is a semiempirical method with its own functions",
+  "Для GFN2-xTB в ORCA нужна программа xtb, она не найдена: «Расчёт → Установить программы для расчёта…» ставит её.": "GFN2-xTB in ORCA needs the program xtb, and it is not found: «Calculation → Install calculation programs…» installs it.",
+  "ORCA не нашла программу xtb для метода GFN2-xTB.": "ORCA did not find the program xtb for the GFN2-xTB method.",
+  "Метод «XTB2» считает программа xtb, а ORCA только управляет расчётом. На этом компьютере поставьте xtb через «Расчёт → Установить программы для расчёта…»; на сервере xtb должна быть в PATH или задана переменной XTBEXE.": "The «XTB2» method is computed by the program xtb, ORCA only drives the calculation. On this computer install xtb with «Calculation → Install calculation programs…»; on a server xtb must be in PATH or given by the variable XTBEXE."
 }
