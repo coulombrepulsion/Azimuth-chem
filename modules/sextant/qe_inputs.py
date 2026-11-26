@@ -122,7 +122,7 @@ VDW_NAMES = {'': 'нет', 'd3': 'DFT-D3 (нулевое затухание)', '
              'ts': 'Ткаченко — Шеффлер (TS)', 'mbd': 'многочастичная дисперсия (MBD)'}
 # the functional — PBE and PBEsol by their own SSSP library (qe_pseudo.LIBRARIES), the non-local vdW-DF family
 # with the PBE files and input_dft (the names of Modules/funct.f90 of QE)
-FUNCTIONALS = {'': 'PBE', 'pbesol': 'PBEsol — решётки твёрдых тел', 'vdw-df2': 'vdW-DF2 (нелокальный)',
+FUNCTIONALS = {'': 'PBE', 'pbesol': 'PBEsol — решётки твёрдых тел', 'lda': 'LDA (Пердью — Цунгер)', 'vdw-df2': 'vdW-DF2 (нелокальный)',
                'vdw-df2-b86r': 'rev-vdW-DF2 (нелокальный)', 'vdw-df-cx': 'vdW-DF-cx (нелокальный)',
                'rvv10': 'rVV10 (нелокальный)', 'pbe0': 'PBE0 (гибридный: 25 % обмена ХФ)',
                'hse': 'HSE06 (гибридный, экранированный — щели полупроводников)'}
@@ -131,8 +131,8 @@ HYBRIDS = ('pbe0', 'hse')
 
 
 def library_of(functional):
-    """'PBEsol' or 'PBE' — the SSSP library of the pseudopotentials for the functional."""
-    return 'PBEsol' if functional == 'pbesol' else 'PBE'
+    """'PBEsol', 'LDA' or 'PBE' — the library of the pseudopotentials for the functional (qe_pseudo.LIBRARIES)."""
+    return 'PBEsol' if functional == 'pbesol' else 'LDA' if functional == 'lda' else 'PBE'
 SMEARINGS = {'mv': 'Марцари — Вандербильт', 'gaussian': 'гауссово', 'fd': 'Ферми — Дирак'}
 OCCUPATIONS = {'auto': 'авто (металл — размытие)', 'fixed': 'фиксированные (изолятор)', 'smearing': 'размытие'}
 
@@ -260,7 +260,7 @@ def pw_input(crystal, task='scf', pseudo=None, pseudo_dir='.', prefix='azimuth',
                                 'гибридов с ультрамягкими и PAW-псевдопотенциалами SSSP pw.x не считает, зоны и DOS '
                                 'требуют Ваннье-интерполяции.').format(FUNCTIONALS[o.functional]))
         lines.append(f"  input_dft = '{o.functional}'")
-    elif o.functional not in ('', 'pbesol'):
+    elif o.functional not in ('', 'pbesol', 'lda'):  # these — by the functional of their pseudopotential files
         raise ValueError(tr('Quantum ESPRESSO: функционал {} не поддерживается.').format(o.functional))
     if o.charge:
         lines.append(f'  tot_charge = {o.charge:g}')

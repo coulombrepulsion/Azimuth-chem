@@ -15,7 +15,9 @@
     table(root): {element: (file, ecutwfc, ecutrho)} of the JSON (keys «filename», «cutoff_wfc», «cutoff_rho», Ry).
 §4 SPECIFICATION
     LIBRARY (version, functional, protocol, URLs, MD5, sizes); PBESOL — SSSP 1.3.0 PBEsol efficiency of the
-    same record, LIBRARIES {'PBE', 'PBEsol'}, main --library PBEsol; folder(root, library=None) -> Path; installed(root)
+    same record; LDA — pslibrary files fetched by the element from the site of Quantum ESPRESSO (for_elements(library,
+    elements) names them; choose(names, element, tag) -> file | None; cutoffs(text of the header) -> (wfc, rho) | None;
+    download_elements); LIBRARIES {'PBE', 'PBEsol', 'LDA'}, main --library PBEsol; folder(root, library=None) -> Path; installed(root)
     -> bool; download(root, fetch=None, library=None) -> Path; table(root, library=None) -> dict; main(argv) (python -m
     modules.sextant.qe_pseudo --root DIR).
 §6 NOTES
@@ -49,7 +51,68 @@ PBESOL = {
     'archive': ('SSSP_1.3.0_PBEsol_efficiency.tar.gz', 'b6cad0d97c86d3b43ae416d6e5d8b771', 60464715),
     'license': 'LICENSE.txt',
 }
-LIBRARIES = {'PBE': LIBRARY, 'PBEsol': PBESOL}
+# LDA (Perdew — Zunger): SSSP has no such set. The files of pslibrary (A. Dal Corso, Comput. Mater. Sci. 95, 337,
+# 2014; GPL) on the site of Quantum ESPRESSO, fetched for the elements of the crystal only: the page of an element
+# lists its files, choose() takes one of them, the cutoffs are those its header suggests.
+LDA = {
+    'name': 'pslibrary_LDA',
+    'functional': 'LDA',
+    'kind': 'pslibrary',
+    'tag': 'pz',
+    'page': 'https://pseudopotentials.quantum-espresso.org/legacy_tables/ps-library/{}',
+    'files': 'https://pseudopotentials.quantum-espresso.org/upf_files/{}',
+}
+LIBRARIES = {'PBE': LIBRARY, 'PBEsol': PBESOL, 'LDA': LDA}
+
+
+def for_elements(library, elements):
+    """The library with the elements a calculation needs (a library fetched by the element — LDA); others as they are."""
+    if library.get('kind') != 'pslibrary':
+        return library
+    return {**library, 'elements': tuple(dict.fromkeys(elements))}
+
+
+def choose(names, element, tag='pz'):
+    """The file of an element among the names of its page: the functional tag («Si.pz-…»; not the relativistic
+    «rel-pz»), ultrasoft (rrkjus) before PAW (kjpaw), the newest version of pslibrary, the fewest semicore states
+    (the shortest name); None when there is none."""
+    import re
+
+    found = []
+    for name in names:
+        base = name.rsplit('/', 1)[-1]
+        match = re.fullmatch(rf'{re.escape(element)}\.{re.escape(tag)}-(?:([a-z]+)-)?(rrkjus|kjpaw)_psl\.([\d.]+)\.UPF', base)
+        if match:
+            version = tuple(int(n) for n in match.group(3).split('.'))
+            found.append((match.group(2) != 'rrkjus', tuple(-n for n in version), len(match.group(1) or ''), base))
+    return min(found)[3] if found else None
+
+
+def cutoffs(text):
+    """(ecutwfc, ecutrho) Ry of the header of a pslibrary file («Suggested minimum cutoff for wavefunctions: 44. Ry»),
+    or None."""
+    import re
+
+    wfc = re.search(r'Suggested minimum cutoff for wavefunctions:\s*([\d.]+)', text)
+    rho = re.search(r'Suggested minimum cutoff for charge density:\s*([\d.]+)', text)
+    return (float(wfc.group(1)), float(rho.group(1))) if wfc and rho else None
+
+
+def _by_element(root, library):
+    """{element: (file, ecutwfc, ecutrho)} of the files of a pslibrary folder (one file per element: the one choose
+    takes among those that are there)."""
+    target = folder(root, library)
+    names = [p.name for p in target.glob('*.UPF')] if target.is_dir() else []
+    found = {}
+    for element in {name.split('.')[0] for name in names}:
+        name = choose(names, element, library['tag'])
+        if name is None:
+            continue
+        with open(target / name, encoding='utf-8', errors='replace') as stream:
+            cut = cutoffs(stream.read(20000))
+        if cut is not None:
+            found[element] = (name, *cut)
+    return found
 
 
 def folder(root, library=None):
@@ -73,6 +136,8 @@ def _fetch(url):
 
 def table(root, library=None):
     library = library or LIBRARY
+    if library.get('kind') == 'pslibrary':
+        return _by_element(root, library)
     target = folder(root, library)
     data = json.loads((target / library['json'][0]).read_text(encoding='utf-8'))
     return {element: (entry['filename'], float(entry['cutoff_wfc']), float(entry['cutoff_rho']))
@@ -84,6 +149,9 @@ def installed(root, library=None):
         found = table(root, library)
     except (OSError, ValueError, KeyError):
         return False
+    if (library or LIBRARY).get('kind') == 'pslibrary':  # the files of the elements asked for (for_elements)
+        return all(element in found for element in library.get('elements', ())) and (
+            bool(found) or bool(library.get('elements')))
     return bool(found) and all((folder(root, library) / name).is_file() for name, _, _ in found.values())
 
 
@@ -93,9 +161,35 @@ def _checked(data, name, md5, size):
     return data
 
 
+def download_elements(root, library, fetch=None):
+    """The files of the elements of a pslibrary library (for_elements) that are not there yet."""
+    import re
+
+    fetch = fetch or _fetch
+    target = folder(root, library)
+    target.mkdir(parents=True, exist_ok=True)
+    have = _by_element(root, library)
+    for element in library.get('elements', ()):
+        if element in have:
+            continue
+        page = fetch(library['page'].format(element.lower())).decode('utf-8', 'replace')
+        name = choose(re.findall(r'href="([^"]+\.UPF)"', page), element, library['tag'])
+        if name is None:
+            raise ValueError(f'pslibrary: no {library["functional"]} pseudopotential of {element} on the site of '
+                             'Quantum ESPRESSO')
+        print(f'[pseudo] {name}', flush=True)
+        data = fetch(library['files'].format(name))
+        if cutoffs(data[:20000].decode('utf-8', 'replace')) is None:
+            raise ValueError(f'{name}: not a pslibrary file (no suggested cutoffs in its header)')
+        (target / name).write_bytes(data)
+    return target
+
+
 def download(root, fetch=None, library=None):
     fetch = fetch or _fetch
     library = library or LIBRARY
+    if library.get('kind') == 'pslibrary':
+        return download_elements(root, library, fetch)
     target = folder(root, library)
     target.mkdir(parents=True, exist_ok=True)
     name, md5, size = library['json']

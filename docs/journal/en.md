@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.236.0 — 26 November 2026
+
+- ### 0.236.0 — LDA for crystals
+
+Quantum ESPRESSO has the LDA functional. The program downloads its pseudopotentials by itself – for the elements of your crystal only. LDA and PBE can now be compared on one crystal: for silicon LDA gives a lattice a little smaller than measured, PBE a little larger.
+
 ## 0.235.0 — 26 November 2026
 
 - ### 0.235.0 — Graphene: the Dirac cone

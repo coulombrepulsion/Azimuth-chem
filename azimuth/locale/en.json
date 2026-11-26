@@ -6441,5 +6441,6 @@
   "Штриховые линии — модель сильной связи с этим t.": "Dashed lines — the tight-binding model with this t.",
   "E − E(K), эВ": "E − E(K), eV",
   "Модель сильной связи графена: в ячейке должно быть два атома.": "Tight-binding model of graphene: the cell must have two atoms.",
-  "Модель сильной связи графена: у атома должно быть три равноудалённых соседа.": "Tight-binding model of graphene: an atom must have three equidistant neighbours."
+  "Модель сильной связи графена: у атома должно быть три равноудалённых соседа.": "Tight-binding model of graphene: an atom must have three equidistant neighbours.",
+  "LDA (Пердью — Цунгер)": "LDA (Perdew–Zunger)"
 }

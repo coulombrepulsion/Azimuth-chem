@@ -200,10 +200,14 @@ class QePanel(QWidget):
         return False
 
     def library(self):
-        """The SSSP library of the functional chosen (qe_pseudo.LIBRARIES)."""
+        """The library of the pseudopotentials of the functional chosen (qe_pseudo.LIBRARIES); LDA — with the elements
+        of the crystal: its files are fetched by the element."""
         from modules.sextant import qe_inputs, qe_pseudo
 
-        return qe_pseudo.LIBRARIES[qe_inputs.library_of(self.functional.currentData() or '')]
+        library = qe_pseudo.LIBRARIES[qe_inputs.library_of(self.functional.currentData() or '')]
+        if library.get('kind') == 'pslibrary' and self.crystal is not None:
+            return qe_pseudo.for_elements(library, [site.symbol for site in self.crystal.sites if site.symbol != 'X'])
+        return library
 
     def computed(self):
         """(the crystal computed — primitive and/or supercell —, the rows of its cell in fractions of the cell of the

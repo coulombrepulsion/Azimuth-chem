@@ -162,3 +162,46 @@ def test_what_of_the_cell_a_vc_relax_changes():
     assert set(qi.DOFREE) == {'', '2Dxy', 'volume', 'shape'}
     with pytest.raises(ValueError):
         qi.pw_input(silicon(), 'Оптимизация с ячейкой', pseudo, options=qi.Options(dofree='sideways'))
+
+
+def test_lda_pseudopotentials_are_fetched_by_the_element(tmp_path):
+    # pslibrary on the site of Quantum ESPRESSO: the page of an element lists its files (read 2026-11-26: silicon has
+    # «pz» only as psl.0.1, titanium as psl.1.0.0); the header of a file suggests its cutoffs
+    page = ('<a href="/upf_files/Si.pbe-n-rrkjus_psl.1.0.0.UPF">x</a> <a href="/upf_files/Si.pz-n-kjpaw_psl.0.1.UPF">x</a>'
+            '<a href="/upf_files/Si.pz-n-rrkjus_psl.0.1.UPF">x</a> <a href="/upf_files/Si.rel-pz-n-rrkjus_psl.0.1.UPF">x</a>')
+    upf = ('<UPF version="2.0.1">\n Suggested minimum cutoff for wavefunctions:  44. Ry\n'
+           ' Suggested minimum cutoff for charge density: 175. Ry\n').encode()
+    asked = []
+
+    def fetch(url):
+        asked.append(url)
+        if url.endswith('/ps-library/si'):
+            return page.encode()
+        if url.endswith('/ps-library/mg'):
+            return b'<a href="/upf_files/Mg.pbe-spnl-rrkjus_psl.1.0.0.UPF">x</a>'
+        if url.endswith('/upf_files/Si.pz-n-rrkjus_psl.0.1.UPF'):
+            return upf
+        raise AssertionError(url)
+
+    names = ['/upf_files/Ti.pz-spn-rrkjus_psl.0.3.0.UPF', 'Ti.pz-spn-rrkjus_psl.1.0.0.UPF', 'Ti.pz-n-kjpaw_psl.1.0.0.UPF']
+    assert qp.choose(names, 'Ti') == 'Ti.pz-spn-rrkjus_psl.1.0.0.UPF'  # ultrasoft, the newest
+    assert qp.choose(['H.pz-rrkjus_psl.1.0.0.UPF', 'He.pz-rrkjus_psl.1.0.0.UPF'], 'H') == 'H.pz-rrkjus_psl.1.0.0.UPF'
+    assert qp.choose(names, 'T') is None and qp.choose(['Si.rel-pz-n-rrkjus_psl.1.0.0.UPF'], 'Si') is None
+    assert qp.cutoffs(upf.decode()) == (44.0, 175.0) and qp.cutoffs('<UPF>') is None
+    library = qp.for_elements(qp.LDA, ['Si', 'Si'])
+    assert library['elements'] == ('Si',) and qp.for_elements(qp.LIBRARY, ['Si']) is qp.LIBRARY
+    assert not qp.installed(tmp_path, library)
+    qp.download(tmp_path, fetch, library)
+    assert qp.installed(tmp_path, library) and qp.table(tmp_path, library) == {'Si': ('Si.pz-n-rrkjus_psl.0.1.UPF', 44.0, 175.0)}
+    assert (qp.folder(tmp_path, library) / 'Si.pz-n-rrkjus_psl.0.1.UPF').read_bytes() == upf
+    count = len(asked)
+    qp.download(tmp_path, fetch, library)  # what is there is not fetched again
+    assert len(asked) == count
+    both = qp.for_elements(qp.LDA, ['Si', 'Mg'])
+    assert not qp.installed(tmp_path, both)
+    with pytest.raises(ValueError, match='no LDA pseudopotential of Mg'):
+        qp.download(tmp_path, fetch, both)
+    # the input: no input_dft — the functional is that of the files
+    text = qi.pw_input(silicon(), 'Энергия', qp.table(tmp_path, library), 'p', options=qi.Options(functional='lda'))
+    assert 'input_dft' not in text and 'Si.pz-n-rrkjus_psl.0.1.UPF' in text and 'ecutwfc = 44' in text
+    assert qi.library_of('lda') == 'LDA' and qi.library_of('') == 'PBE' and 'lda' in qi.FUNCTIONALS
