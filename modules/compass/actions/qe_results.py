@@ -44,6 +44,66 @@ def dos_data(self):
     return (found, e0) if found.energies else None
 
 
+def eos_data(self):
+    """(Fit, [(V Å³, E eV)]) of a finished series of volumes («Уравнение состояния»), (None, points) when the points
+    do not give a fit (with the reason in self.eos_error), or None when the job is not such a series."""
+    from modules.compass.chemistry import equation_of_state
+    from modules.spectrum.readers import qe
+
+    if self.folder is None or not (self.folder / 'eos1.in').is_file() or not (self.folder / 'pw.out').is_file():
+        return None
+    text = (self.folder / 'pw.out').read_text(encoding='utf-8', errors='replace')
+    points = equation_of_state.points_of_runs([qe.read(run) for run in qe.runs(text)])
+    self.eos_error = ''
+    try:
+        return equation_of_state.fit([v for v, _ in points], [e for _, e in points]), points
+    except ValueError as exc:
+        self.eos_error = str(exc)
+        return None, points
+
+
+def eos_lines(self, found):
+    """The lines of the summary: V₀, the lattice parameters at V₀, B₀ and B₀′."""
+    fit, points = found
+    if fit is None:
+        return [tr('Уравнение состояния не подогнано: {}').format(self.eos_error)]
+    lines = [tr('Уравнение состояния Бирча — Мурнагана по {} объёмам: V₀ = {} Å³ на ячейку расчёта, B₀ = {} ГПа, B₀′ = {}')
+             .format(len(points), f'{fit.v0:.3f}', f'{fit.b0:.1f}', f'{fit.b0_prime:.2f}')]
+    cell = getattr(self.crystal, 'cell', None)
+    try:
+        computed, _ = self.computed()
+        scale = (fit.v0 / computed.cell.volume()) ** (1.0 / 3.0)
+        lines.append(tr('Равновесная ячейка файла: a = {}, b = {}, c = {} Å (среднеквадратичное отклонение подгонки {} мэВ)')
+                     .format(f'{cell.a * scale:.4f}', f'{cell.b * scale:.4f}', f'{cell.c * scale:.4f}', f'{1000 * fit.rms:.2f}'))
+    except (AttributeError, ValueError, ZeroDivisionError):
+        pass
+    return lines
+
+
+def show_eos(self, found):
+    """E(V) of the series with the curve of the fit."""
+    from modules.compass.actions import qe_plots
+    from modules.compass.chemistry import equation_of_state
+
+    fit, points = found
+    plot = qe_plots.EosPlot()
+    zero = fit.e0 if fit is not None else min(e for _, e in points)
+    plot.volumes = [v for v, _ in points]
+    plot.energies = [1000 * (e - zero) for _, e in points]
+    if fit is not None:
+        lo, hi = min(plot.volumes), max(plot.volumes)
+        plot.curve = [(v, 1000 * (equation_of_state.energy(fit, v) - zero))
+                      for v in (lo + (hi - lo) * k / 100 for k in range(101))]
+        plot.minimum = fit.v0
+    rows = [(v, e, (equation_of_state.pressure(fit, v) if fit is not None else '')) for v, e in points]
+    window = qe_plots.QePlotWindow(self, tr('Уравнение состояния · ') + self.name, plot, rows,
+                                   ['V, A^3', 'E, eV', 'P(fit), GPa'], 'equation_of_state.csv')
+    window.note.setText(' '.join(self.eos_lines(found)))
+    self.plot_window = window
+    window.show()
+    return window
+
+
 def phonon_data(self):
     """(branches [[ν cm⁻¹] per q], path dict, (ν, g) of the phonon DOS or None) of a finished job of the phonon
     branches (the files of matdyn.x), or None."""
@@ -103,6 +163,9 @@ def show_plot(self):
     phonons = self.phonon_data()
     if phonons is not None:
         return self.show_phonons(phonons)
+    series = self.eos_data()
+    if series is not None:
+        return self.show_eos(series)
     bands = self.band_data()
     if bands is not None:
         found, path, e0 = bands
@@ -113,8 +176,15 @@ def show_plot(self):
         rows = [(x, *row) for x, row in zip(plot.x, plot.energies)]
         header = ['k, 1/A'] + [f'E{n + 1} - E0, eV' for n in range(len(found.energies[0]))]
         window = qe_plots.QePlotWindow(self, tr('Зонная структура · ') + self.name, plot, rows, header, 'bands.csv')
+        from modules.compass.chemistry import band_gap
+
+        text = (self.folder / 'pw.out').read_text(encoding='utf-8', errors='replace')
+        self.gap = band_gap.gap(found.energies, band_gap.occupied_bands(text), plot.x, plot.ticks)
+        plot.marks = band_gap.marks(self.gap, plot.x, e0)
+        window.note.setText(band_gap.text(self.gap))
         if path.get('general'):
-            window.note.setText(tr('Для этой решётки путь общий: Γ–X, Γ–Y, Γ–Z вдоль осей обратной ячейки файла.'))
+            window.note.setText((window.note.text() + ' ').lstrip() + tr(
+                'Для этой решётки путь общий: Γ–X, Γ–Y, Γ–Z вдоль осей обратной ячейки файла.'))
     else:
         dos = self.dos_data()
         if dos is None:

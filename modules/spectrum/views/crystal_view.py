@@ -431,6 +431,15 @@ class CrystalResultsView(QWidget):
             self.bands_plot.x = path['x']
             self.bands_plot.energies = [[e - (e0 or 0.0) for e in row] for row in found.energies]
             self.bands_plot.ticks, self.bands_plot.breaks = [tuple(t) for t in path['ticks']], path['breaks']
+            from modules.compass.chemistry import band_gap
+
+            try:
+                occupied = band_gap.occupied_bands(run.output.read_text(encoding='utf-8', errors='replace'))
+            except OSError:
+                occupied = None
+            self.gap = band_gap.gap(found.energies, occupied, path['x'], self.bands_plot.ticks)
+            self.bands_plot.marks = band_gap.marks(self.gap, path['x'], e0)
+            self.bands_plot.caption = band_gap.text(self.gap)
             self.bands_plot.update()
         self.show_dos(run)
 

@@ -503,6 +503,9 @@ class QePanel(QWidget):
     band_data = _results.band_data
     dos_data = _results.dos_data
     phonon_data = _results.phonon_data
+    eos_data = _results.eos_data
+    eos_lines = _results.eos_lines
+    show_eos = _results.show_eos
     show_phonons = _results.show_phonons
     show_plot = _results.show_plot
     stop = _run.stop

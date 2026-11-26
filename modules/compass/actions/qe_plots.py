@@ -6,7 +6,10 @@
     E − E0; E0 — the highest occupied level of the scf run for an insulator (the top of the valence band, 0 eV), the
     Fermi level for a metal. The data can be saved as a table (CSV) for another program.
 §4 SPECIFICATION
-    BandsPlot(): x, energies [[eV − E0] per k], ticks [(x, label)], breaks [index], span (lo, hi eV);
+    BandsPlot(): x, energies [[eV − E0] per k], ticks [(x, label)], breaks [index], span (lo, hi eV), marks [(x, eV −
+    E0, 'v' | 'c')] — the edges of the gap as dots, caption — a line at the top of the frame (band_gap.marks, band_gap.text);
+    EosPlot(): volumes [Å³], energies [meV from E₀ of the fit], curve [(V, meV)], minimum V₀ — the series of volumes
+    and its Birch–Murnaghan fit;
     DosPlot(): energies [eV − E0], dos [states/eV]; QePlotWindow(parent, title, plot, rows, header, name):
     plot, save_button; save(path=None) -> path (CSV: header and rows).
 §7 TESTS
@@ -60,6 +63,9 @@ class BandsPlot(_Plot):
         self.span = (-12.0, 8.0)
         self.axis = 'E − E₀, эВ'
         self.zero_line = True
+        self.marks = []  # the edges of the gap: [(x, E − E₀, 'v' | 'c')] — the top of the valence band, the bottom of
+        # the conduction band (band_gap.gap)
+        self.caption = ''  # a line inside the frame, at its top (the gap, where the plot has no note under it)
 
     def paintEvent(self, event):
         p = QPainter(self)
@@ -114,6 +120,100 @@ class BandsPlot(_Plot):
                 else:
                     path.lineTo(point)
             p.drawPath(path)
+        for x, e, edge in self.marks:  # the edges of the gap on the bands
+            colour = QColor(ZERO if edge == 'v' else '#2e8b57')
+            p.setPen(QPen(colour.darker(130), 1))
+            p.setBrush(colour)
+            p.drawEllipse(QPointF(X(x), Y(e)), 4.5, 4.5)
+        p.setClipping(False)
+        if self.caption:
+            box = QRectF(left + 6, top + 4, right - left - 12, 34)
+            back = QColor(self.palette().base().color())
+            back.setAlpha(215)
+            p.fillRect(box, back)
+            p.setPen(QPen(ink, 1))
+            p.drawText(box.adjusted(4, 0, -4, 0), Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
+                       | Qt.TextFlag.TextWordWrap, self.caption)
+        p.end()
+
+
+class EosPlot(_Plot):
+    """E(V) of a series of volumes: the points computed and the curve of the fit (equation_of_state.Fit)."""
+
+    LEFT = 64
+
+    def __init__(self):
+        super().__init__()
+        self.volumes, self.energies = [], []  # Å³, meV from the minimum of the fit
+        self.curve = []  # [(V, meV)] of the fit
+        self.minimum = None  # V₀
+
+    def paintEvent(self, event):
+        p = QPainter(self)
+        p.setRenderHint(QPainter.RenderHint.Antialiasing)
+        ink = self.palette().text().color()
+        left, right, top, bottom = self.frame()
+        xs = self.volumes + [v for v, _ in self.curve]
+        ys = self.energies + [e for _, e in self.curve]
+        if not xs:
+            p.end()
+            return
+        x0, x1 = min(xs), max(xs)
+        pad = 0.04 * (x1 - x0 or 1.0)
+        x0, x1 = x0 - pad, x1 + pad
+        y0, y1 = min(0.0, min(ys)), max(ys) * 1.08 or 1.0
+
+        def X(v):
+            return left + (right - left) * (v - x0) / (x1 - x0)
+
+        def Y(e):
+            return bottom - (bottom - top) * (e - y0) / (y1 - y0)
+
+        font = QFont(self.font())
+        font.setPixelSize(11)
+        p.setFont(font)
+        p.setPen(QPen(ink, 1))
+        p.drawRect(QRectF(left, top, right - left, bottom - top))
+        for lo, hi, place in ((x0, x1, 'x'), (y0, y1, 'y')):
+            step = self.steps(lo, hi)
+            if (hi - lo) / step > 12 or (hi - lo) / step < 3:
+                from math import floor, log10
+
+                raw = (hi - lo) / 6
+                power = 10 ** floor(log10(raw))
+                step = next(m * power for m in (1, 2, 5, 10) if m * power >= raw)
+            v = int(lo // step + 1) * step
+            while v < hi:
+                if place == 'x':
+                    p.drawLine(QPointF(X(v), bottom), QPointF(X(v), bottom + 4))
+                    p.drawText(QRectF(X(v) - 30, bottom + 6, 60, 14), Qt.AlignmentFlag.AlignCenter, f'{v:g}')
+                else:
+                    p.drawLine(QPointF(left - 4, Y(v)), QPointF(left, Y(v)))
+                    p.drawText(QRectF(0, Y(v) - 7, left - 6, 14), Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter, f'{v:g}')
+                v += step
+        p.drawText(QRectF(right - 160, bottom + 18, 160, 14), Qt.AlignmentFlag.AlignRight, tr('V, Å³ на ячейку расчёта'))
+        p.save()
+        p.translate(12, (top + bottom) / 2)
+        p.rotate(-90)
+        p.drawText(QRectF(-110, -10, 220, 14), Qt.AlignmentFlag.AlignCenter, tr('E − E₀, мэВ'))
+        p.restore()
+        p.setClipRect(QRectF(left, top, right - left, bottom - top))
+        if self.minimum is not None:
+            p.setPen(QPen(QColor(ZERO), 1, Qt.PenStyle.DashLine))
+            p.drawLine(QPointF(X(self.minimum), top), QPointF(X(self.minimum), bottom))
+        path = QPainterPath()
+        for k, (v, e) in enumerate(self.curve):
+            point = QPointF(X(v), Y(e))
+            if k:
+                path.lineTo(point)
+            else:
+                path.moveTo(point)
+        p.setPen(QPen(QColor(LINE), 1.4))
+        p.drawPath(path)
+        p.setPen(QPen(QColor(LINE).darker(140), 1))
+        p.setBrush(QColor(LINE))
+        for v, e in zip(self.volumes, self.energies):
+            p.drawEllipse(QPointF(X(v), Y(e)), 4.0, 4.0)
         p.end()
 
 

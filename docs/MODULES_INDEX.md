@@ -192,6 +192,7 @@
 ## modules/compass/chemistry
 
 - `modules/compass/chemistry/abc_search.py` — Conformer search by an Artificial Bee Colony (ABC) over the torsions of the rotatable bonds.
+- `modules/compass/chemistry/band_gap.py` — The band gap of a band structure: the top of the valence band, the bottom of the conduction band, the direct and the indirect gap.
 - `modules/compass/chemistry/brillouin.py` — The first Brillouin zone of a crystal and the path of its band structure.
 - `modules/compass/chemistry/builder.py` — Independent coordinate-based builder. Templates are starting geometries, not optimized structures.
 - `modules/compass/chemistry/cleanup.py` — «Выровнять геометрию»: a quick, simple force field for a hand-built structure.
@@ -221,6 +222,7 @@
 - `modules/compass/chemistry/crystal_voids.py` — The voids of a crystal: where a probe sphere fits between the van der Waals spheres of the atoms — as «Display Voids» of Mercury (CCDC).
 - `modules/compass/chemistry/editing.py` — Quick structure edits of Compass: hydrogens by valence, H → group, element change.
 - `modules/compass/chemistry/embed3d.py` — Flat (2D) structures of a file and their 3D coordinates by RDKit.
+- `modules/compass/chemistry/equation_of_state.py` — The equation of state of a crystal from a series of volumes: the Birch–Murnaghan fit, V₀, B₀ and B₀′.
 - `modules/compass/chemistry/formats.py` — Molecule files of other programs: reading and writing for Compass.
 - `modules/compass/chemistry/formats_common.py` — What the readers of structure files share: the numbers of their text, the element of a symbol or a number, the molecule made of atoms, whether a file can be read.
 - `modules/compass/chemistry/formats_outputs.py` — Structures read from the inputs and outputs of calculation programs and from trajectories: Gaussian and ORCA inputs, the orientations of a Gaussian log, Molden, XYZ with many frames (Trajectory, Step).

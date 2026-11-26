@@ -23,6 +23,8 @@
     «K_POINTS crystal») and the density of states («Плотность состояний»: scf, nscf on a grid of the spacing ×
     DOS_DENSER with occupations 'tetrahedra_opt', then dos.x, DeltaE 0.01 eV) run as steps of one job; nbnd = ⌈N/2⌉ +
     max(4, ⌈N/8⌉) bands for N valence electrons (z_valence of the UPF files) so that empty bands are computed too.
+    «Уравнение состояния (ряд объёмов)» (EOS_TASK): seven runs of pw.x at EOS_FACTORS of the volume (eos1.in …), the
+    atoms relaxed in each cell — for the fit of equation_of_state.py.
     steps(crystal, task, pseudo, pseudo_dir, prefix, spacing, basis) -> [(file, program, text)]; valence(path) -> float
     | None; bands_count(crystal, pseudo, pseudo_dir) -> int | None; dos_input(prefix) -> text. Options — the settings of
     the page of Sextant: the cutoffs (None — those of the library), an explicit grid n1 × n2 × n3 (None — by the
@@ -66,7 +68,13 @@ BANDS_TASK, DOS_TASK = 'Зонная структура', 'Плотность с
 PHONON_TASK = 'Частоты (точка Γ)'  # pw.x, ph.x at q = 0, dynmat.x — the modes in Molden format (PHONON_FILE)
 # pw.x, ph.x on a grid of q, q2r.x (the force constants), matdyn.x along the path of qe_paths and matdyn.x for the DOS
 DISPERSION_TASK = 'Фононные ветви и плотность состояний'
-STEPS = {BANDS_TASK: (('scf.in', 'pw.x'), ('bands.in', 'pw.x')),
+# the equation of state: the same crystal at EOS_FACTORS of its volume, one run of pw.x each (the atoms relaxed in the
+# scaled cell; scf with a hybrid functional, which has no forces here) — then the Birch–Murnaghan fit of
+# modules/compass/chemistry/equation_of_state.py
+EOS_TASK = 'Уравнение состояния (ряд объёмов)'
+EOS_FACTORS = (0.94, 0.96, 0.98, 1.0, 1.02, 1.04, 1.06)
+STEPS = {EOS_TASK: tuple((f'eos{n + 1}.in', 'pw.x') for n in range(len(EOS_FACTORS))),
+         BANDS_TASK: (('scf.in', 'pw.x'), ('bands.in', 'pw.x')),
          DOS_TASK: (('scf.in', 'pw.x'), ('nscf.in', 'pw.x'), ('dos.in', 'dos.x'), ('projwfc.in', 'projwfc.x')),
          PHONON_TASK: (('scf.in', 'pw.x'), ('ph.in', 'ph.x'), ('dynmat.in', 'dynmat.x')),
          DISPERSION_TASK: (('scf.in', 'pw.x'), ('ph.in', 'ph.x'), ('q2r.in', 'q2r.x'), ('matdyn.in', 'matdyn.x'),
@@ -346,6 +354,19 @@ def steps(crystal, task, pseudo, pseudo_dir='.', prefix='azimuth', spacing=SPACI
         return [('pw.in', 'pw.x', pw_input(crystal, task, pseudo, pseudo_dir, prefix, spacing, options=options))]
     if task not in STEPS:
         raise ValueError(tr('Quantum ESPRESSO: задача {} не поддерживается.').format(task))
+    if task == EOS_TASK:
+        from modules.compass.chemistry import equation_of_state
+
+        from dataclasses import replace
+
+        o = options or Options()
+        kind = 'scf' if o.functional in HYBRIDS else 'relax'
+        # one grid of k-points for every volume (that of the cell as it is): a grid that changed along the series
+        # would put a step into E(V)
+        same = o if o.grid else replace(o, grid=kpoints(crystal.cell, spacing))
+        return [(name, tool, pw_input(equation_of_state.scaled(crystal, factor), kind, pseudo, pseudo_dir, prefix, spacing,
+                                      options=same))
+                for (name, tool), factor in zip(STEPS[EOS_TASK], EOS_FACTORS)]
     if task in (PHONON_TASK, DISPERSION_TASK):
         o = options or Options()
         if o.functional in PHONON_REFUSED or o.vdw not in ('', 'd2'):

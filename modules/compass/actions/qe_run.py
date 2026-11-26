@@ -424,6 +424,17 @@ def poll(self):
         bottom = min((e for e in values if e > e0 + 1e-3), default=None)
         if top is not None and bottom is not None:
             text += '<br>' + tr('Щель по пути в зоне Бриллюэна: {} эВ').format(f'{bottom - top:.3f}')
+        from modules.compass.chemistry import band_gap
+
+        # direct or indirect, and where its edges are (the number above stays: the levels by E0 of the scf run)
+        path = bands[1]
+        detail = band_gap.gap(found.energies, band_gap.occupied_bands(
+            self.output_path().read_text(encoding='utf-8', errors='replace')), path['x'], [tuple(t) for t in path['ticks']])
+        if detail is not None:
+            text += '<br>' + band_gap.text(detail)
+    series = self.eos_data() if self.program != 'cp2k' else None
+    if series is not None:  # the fit first: the energy above is that of the last volume of the series
+        text = '<br>'.join(self.eos_lines(series)) + '<br>' + tr('Ниже — последний объём ряда.') + '<br>' + text
     if self.program == 'cp2k':
         text += self.multiwfn_line()
     self.summary.setText(text)
@@ -433,6 +444,10 @@ def poll(self):
     branches = self.phonon_data()
     if branches is not None:
         self.plot_button.setText(tr('Показать фононные ветви'))
+        self.plot_button.show()
+        self.plot_button.setEnabled(True)
+    elif series is not None:
+        self.plot_button.setText(tr('Показать E(V)'))
         self.plot_button.show()
         self.plot_button.setEnabled(True)
     elif bands is not None or self.dos_data() is not None:

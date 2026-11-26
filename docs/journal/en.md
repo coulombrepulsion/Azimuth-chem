@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.229.0 — 26 November 2026
+
+- ### 0.229.0 — The equation of state and the gap on the bands
+
+A crystal has a new task, «Equation of state»: Quantum ESPRESSO computes seven volumes, and the program fits the curve and gives the equilibrium lattice parameter and the bulk modulus. And under the plot of the bands it now says whether the gap is direct or indirect and where its edges are; the edges are marked with dots.
+
 ## 0.228.0 — 26 November 2026
 
 - ### 0.228.0 — A draft reaction path in seconds
