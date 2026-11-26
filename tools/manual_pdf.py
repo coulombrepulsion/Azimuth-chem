@@ -100,9 +100,11 @@ def output(lang):
 def sources(lang):
     """The files the book is made of, in a fixed order."""
     files = [MANUAL / f'{lang}.md', Path(__file__).resolve()]
-    images = MANUAL / 'img'
-    if images.is_dir():
-        files += sorted(p for p in images.iterdir() if p.is_file() and not p.name.startswith('.'))
+    # the pictures this book shows (each language has its own: NAME.jpg, NAME-en.jpg, NAME-zh.jpg) — a new picture of
+    # one book does not make the others old
+    text = (MANUAL / f'{lang}.md').read_text(encoding='utf-8') if files[0].is_file() else ''
+    shown = {MANUAL / name for name in re.findall(r'!\[[^\]]*\]\((img/[^)\s]+)\)', text)}
+    files += sorted(p for p in shown if p.is_file())
     files += sorted(FONTS.glob('Inter-*.otf')) + sorted(FONTS.glob('GolosText-*.ttf'))
     return files
 

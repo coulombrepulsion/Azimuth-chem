@@ -18,7 +18,8 @@ def test_the_book_is_as_new_as_its_sources():
 
 
 def test_every_picture_of_the_manual_is_there_and_every_picture_there_is_used():
-    text = (manual_pdf.MANUAL / 'ru.md').read_text(encoding='utf-8')
+    # the three books, each with the pictures of the program in its language
+    text = ''.join((manual_pdf.MANUAL / f'{lang}.md').read_text(encoding='utf-8') for lang in ('ru', 'en', 'zh'))
     used = set(re.findall(r'!\[[^\]]*\]\((img/[^)\s]+)\)', text))
     assert used and all((manual_pdf.MANUAL / name).is_file() for name in used)
     present = {'img/' + p.name for p in (manual_pdf.MANUAL / 'img').iterdir() if not p.name.startswith('.')}
@@ -80,7 +81,11 @@ def test_the_three_manuals_have_the_same_chapters_figures_and_tables():
     assert shape['en'] == shape['ru'] and shape['zh'] == shape['ru']
     pictures = {lang: sorted(re.findall(r'img/[\w-]+\.jpg', (manual_pdf.MANUAL / f'{lang}.md').read_text(encoding='utf-8')))
                 for lang in ('ru', 'en', 'zh')}
-    assert pictures['en'] == pictures['zh'] == pictures['ru']
+    # the same pictures, each taken from the program in the language of its book
+    assert sorted(p.replace('-en.jpg', '.jpg') for p in pictures['en']) == pictures['ru']
+    assert sorted(p.replace('-zh.jpg', '.jpg') for p in pictures['zh']) == pictures['ru']
+    assert not any(p.endswith(('-en.jpg', '-zh.jpg')) for p in pictures['ru'])
+    assert all(p.endswith('-en.jpg') for p in pictures['en']) and all(p.endswith('-zh.jpg') for p in pictures['zh'])
 
 
 def test_the_contents_take_the_room_of_three_digits_before_the_pages_are_known():

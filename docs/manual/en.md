@@ -187,7 +187,7 @@ Pages with molecules have «Open in Compass» buttons: the browser passes the mo
 4. Click an oxygen atom and a hydrogen atom — the O–H bond length (about 0.96 Å) appears under the model.
 5. Click the symmetry button under the model: ethanol in the zigzag conformation has the group Cs.
 
-![Compass · Molecule: the model, the tool panel on the left, the menus and view buttons above the field, the summary and the «To the calculation settings» button under the model](img/compass.jpg)
+![Compass · Molecule: the model, the tool panel on the left, the menus and view buttons above the field, the summary and the «To the calculation settings» button under the model](img/compass-en.jpg)
 
 ### Step 3. The calculation in Sextant
 
@@ -196,7 +196,7 @@ Pages with molecules have «Open in Compass» buttons: the browser passes the mo
 3. The input file is shown on the right — you can read it and correct it if needed.
 4. Click «Run calculation» (`Ctrl+Enter`). The progress of the calculation takes the place of the input file: the stages, the optimization cycles, the last energy.
 
-![Sextant: the task setup on the left, the calculation card and the input file on the right](img/sextant.jpg)
+![Sextant: the task setup on the left, the calculation card and the input file on the right](img/sextant-en.jpg)
 
 ### Step 4. The result in Compass and Spectrum
 
@@ -205,7 +205,7 @@ When the calculation ends, the buttons «Go to Compass» and «Go to Spectrum» 
 - In **Compass** the result opens as the optimization steps: the ☰ button at the top left of the model shows the energy plot and plays the steps. The vibrational frequencies can be viewed right on the model.
 - In **Spectrum** — the final energy, the convergence of the optimization, the IR spectrum with animated vibrations and the thermochemistry (enthalpy and Gibbs free energy).
 
-![Spectrum: the «Vibrations and IR» tab — the table of modes, the IR spectrum and the animation of the chosen vibration](img/spectrum-vibrations.jpg)
+![Spectrum: the «Vibrations and IR» tab — the table of modes, the IR spectrum and the animation of the chosen vibration](img/spectrum-vibrations-en.jpg)
 
 > **Tip.** If the result of an optimization with frequencies has an imaginary frequency, the structure is not at a minimum. The calculation doctor offers the button «Shift along the imaginary mode and optimise again» (section «Calculation doctor»).
 
@@ -223,7 +223,7 @@ The Azimuth window consists of the left panel and the working area of a section.
 - **The section header** — the name of the section and its menus: «File», «Edit», «View», «Calculation» and the menus of the section itself (Compass has «Tools», «Project», «Server», the crystal has «Crystal»); the last one is always «Help».
 - **The working area** — the content of the section. At its top right there is a pale azimuth scale on the background, at the bottom left — the picture of the section (a compass, a sextant, a spectrum).
 
-![The home page: the «Continue» cards and the cards of the sections](img/home.jpg)
+![The home page: the «Continue» cards and the cards of the sections](img/home-en.jpg)
 
 **The home page** tells what Azimuth is and gives a quick way into work. The «Continue» cards bring back the last molecule and the last crystal; the arrow on a card unfolds a stack of five more recent projects of the same kind. Below are the cards of the sections.
 
@@ -382,7 +382,7 @@ Compass is the section for building, editing and viewing molecules. Here the res
 
 ### The Compass window
 
-![The «Compass · Molecule» window](img/compass.jpg)
+![The «Compass · Molecule» window](img/compass-en.jpg)
 
 - **Structure tabs** above the model. The result of a calculation (optimization steps, a scan, an IRC or NEB path, XYZ frames) opens in a tab of its own, the molecule stays in its tab; if the open tab is empty, the result takes it.
 - **The tool panel** on the left: building modes and tools — the element, the bond order, «Bond», «Break», «Delete», «Add hydrogens», «Tidy the geometry».
@@ -569,7 +569,7 @@ The «Tools» menu of Compass: «Table of internal coordinates…» (all lengths
 
 ### The result of a calculation on the model
 
-![The result of an optimization in Compass: the steps panel with the energy plot to the left of the model](img/compass-optimization.jpg)
+![The result of an optimization in Compass: the steps panel with the energy plot to the left of the model](img/compass-optimization-en.jpg)
 
 **The result panel** is opened by the ☰ button at the top left of the model; it is visible only when the tab has something to show. The pages of the panel:
 
@@ -581,7 +581,7 @@ The «Tools» menu of Compass: «Table of internal coordinates…» (all lengths
 
 The header of the panel has the «Go to Spectrum» icon: Spectrum opens on the tab with the same content (convergence, vibrations, maps, topology). A click on an empty place of the field collapses the panel.
 
-![A potential energy surface scan: the energy plot over the points of the scan](img/compass-scan.jpg)
+![A potential energy surface scan: the energy plot over the points of the scan](img/compass-scan-en.jpg)
 
 ### Properties and electron density on the model
 
@@ -635,7 +635,7 @@ Theory — in the Atlas: [«Atomic charges: comparing the schemes»](https://www
 
 > **Note.** Crystal analysis and calculations are still marked as not checked in the program (section «Calculation programs and how they were checked»): compare their results with independent data.
 
-![«Compass · Crystal»: the NaCl cell, the cell edges a, b, c in red, green and blue](img/crystal.jpg)
+![«Compass · Crystal»: the NaCl cell, the cell edges a, b, c in red, green and blue](img/crystal-en.jpg)
 
 ### Opening a crystal
 
@@ -686,7 +686,7 @@ The arrow in the lower right corner of the field moves the selected molecules (o
 
 ### Contacts and hydrogen bonds
 
-![The hydrogen bond network of benzoic acid: acid dimers on the model](img/crystal-contacts.jpg)
+![The hydrogen bond network of benzoic acid: acid dimers on the model](img/crystal-contacts-en.jpg)
 
 The «Contacts» panel shows the contacts between the atoms of the cell and of neighbouring cells:
 
@@ -731,7 +731,7 @@ Contacts repeated by symmetry are gathered into one row with the «Count» colum
 
 ### Powder pattern
 
-![Powder pattern: the curve, the line marks and the table of reflections](img/crystal-powder.jpg)
+![Powder pattern: the curve, the line marks and the table of reflections](img/crystal-powder-en.jpg)
 
 «Powder pattern…» computes the powder X-ray pattern from the atoms of the cell: the atomic scattering factors of neutral atoms, the thermal parameters from the file, the Lorentz–polarization factor. The window has the curve, the line marks under the axis and a table (hkl, 2θ, d, multiplicity, intensity in % of the strongest).
 
@@ -753,7 +753,7 @@ If the CIF has no list of symmetry operations but has the symbol or the number o
 
 A periodic calculation of a crystal is set up in Sextant: the «To the crystal calculation» arrow at the bottom of «Compass · Crystal» opens Sextant with this crystal and the Quantum ESPRESSO program; CP2K can be chosen in the «Program» line. The calculation page is arranged as for a molecule (chapter 8): «Calculation setup» — the task, the method, the basis set (CP2K) or the cutoffs (Quantum ESPRESSO), dispersion, resources, the k grid, the cell, the supercell and the optimization thresholds; the cell charge, spin, DFT+U, occupations and convergence are in «Additional settings…».
 
-![Sextant with a crystal calculation](img/sextant-crystal.jpg)
+![Sextant with a crystal calculation](img/sextant-crystal-en.jpg)
 
 Table: Programs for periodic calculations
 
@@ -799,7 +799,7 @@ Theory — in the Atlas: [«Crystals: lattice and cell»](https://www.azimuth-ch
 
 Sextant prepares the input file of a calculation and runs it — on this computer or on a computing server. The geometry, the charge and the constraints come from Compass; the result returns to the tab from which the calculation was started.
 
-![Sextant: «Calculation setup» on the left, the calculation card and the input file on the right](img/sextant.jpg)
+![Sextant: «Calculation setup» on the left, the calculation card and the input file on the right](img/sextant-en.jpg)
 
 ### The Sextant window
 
@@ -1010,7 +1010,7 @@ The tabs are gathered under three common ones:
 
 The tabs of the chosen group are a second row above the page; a group opens on the tab last chosen in it. Only tabs that have something to show are shown.
 
-![Spectrum: the «Energies and frequencies» tab of an optimization result — the energy of each step; at the bottom — the information of the status line](img/spectrum-optimization.jpg)
+![Spectrum: the «Energies and frequencies» tab of an optimization result — the energy of each step; at the bottom — the information of the status line](img/spectrum-optimization-en.jpg)
 
 ### Energies, convergence and thermochemistry
 
@@ -1022,7 +1022,7 @@ Theory — in the Atlas: [«Thermochemistry from frequencies»](https://www.azim
 
 ### Vibrations, IR and Raman
 
-![The «Vibrations and IR» tab](img/spectrum-vibrations.jpg)
+![The «Vibrations and IR» tab](img/spectrum-vibrations-en.jpg)
 
 The «Vibrations and IR» tab — the table of frequencies and intensities, imaginary frequencies, the IR spectrum and the animation of the chosen vibration.
 
@@ -1038,7 +1038,7 @@ Theory — in the Atlas: [«Normal modes»](https://www.azimuth-chem.com/atlas/?
 
 ### UV-Vis, ECD and emission
 
-![The «UV-Vis» tab: TD-DFT transitions and the absorption spectrum](img/spectrum-uv.jpg)
+![The «UV-Vis» tab: TD-DFT transitions and the absorption spectrum](img/spectrum-uv-en.jpg)
 
 The «UV-Vis» tab — TD-DFT or CIS transitions and the spectrum in eV, nm or cm⁻¹; the band width.
 

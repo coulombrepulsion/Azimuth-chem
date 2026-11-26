@@ -19,10 +19,14 @@
     The pictures of the site (site/img-program/NAME-THEME.webp, 1600 px wide, named in site/index.html as
     <!--SHOT NAME key-->) are chosen from these. --site: every picture made whose NAME site/index.html
     names is also written there as WEBP (Pillow: 1600 × 1000, quality 80) — no step by hand.
+    --lang zh: without a screen Qt sees no font of the system, and the fonts of the program have no Chinese letters
+    (azimuth/fonts.py) — the pictures had empty places for them (2026-11-26). A Chinese font of the system
+    (CHINESE_FONTS, the first found) is registered and stands in for every family where a letter is missing.
     A window of its own (the surface of Hirshfeld, the powder pattern) is pictured alone, at the size of
     the main window, so that all the pictures of a panel have one shape (build_atlas_site.SHOT_SIZE).
     --manual: the pictures of the user manual (MANUAL_SHOTS, unless --only names others) — the light theme only,
-    docs/manual/img/NAME.jpg (1800 px wide, quality 88: a book of thirty pictures stays a few megabytes);
+    docs/manual/img/NAME.jpg, with --lang en|zh NAME-LANG.jpg — the program in the language of its book (1800 px wide,
+    quality 88: a book of thirty pictures stays a few megabytes);
     tools/manual_pdf.py puts them into the PDF. Not in it: the surface of Hirshfeld and its fingerprint — without a
     screen the surface is not drawn.
 """
@@ -38,6 +42,41 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+
+
+# the Chinese fonts of the systems, the first found is taken (Windows, macOS, Linux)
+CHINESE_FONTS = ('C:/Windows/Fonts/msyh.ttc', 'C:/Windows/Fonts/msyhbd.ttc', 'C:/Windows/Fonts/msyh.ttf',
+                 'C:/Windows/Fonts/simsun.ttc', '/System/Library/Fonts/PingFang.ttc',
+                 '/System/Library/Fonts/Hiragino Sans GB.ttc', '/System/Library/Fonts/STHeiti Medium.ttc',
+                 '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc',
+                 '/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc',
+                 '/usr/share/fonts/google-noto-cjk/NotoSansCJK-Regular.ttc')
+
+
+def chinese_letters():
+    """Register a Chinese font of the system and let it stand in for the families of the program where a letter is
+    missing (QFont substitutions are the fallbacks of a family); its family, or '' when none is found."""
+    from PySide6.QtGui import QFont, QFontDatabase
+
+    from azimuth import fonts
+    from azimuth.ui import menu_font_family
+
+    found = ''
+    for path in CHINESE_FONTS:  # the bold of YaHei too, when it is there: the headings are not made bold by hand
+        if Path(path).is_file():
+            families = QFontDatabase.applicationFontFamilies(QFontDatabase.addApplicationFont(path))
+            found = found or (families[0] if families else '')
+    if not found:
+        return ''
+    fonts.install()
+    for name in ('GolosText-Medium.ttf', 'GolosText-SemiBold.ttf'):
+        QFontDatabase.addApplicationFont(str(fonts.FOLDER / name))
+    named = {fonts.FAMILY, 'Golos Text', 'Segoe UI', 'Helvetica Neue', 'sans-serif', 'Menlo', 'Consolas', 'monospace',
+             menu_font_family()}
+    for family in named | set(QFontDatabase.families()):
+        if family != found:
+            QFont.insertSubstitution(family, found)
+    return found
 
 
 MANUAL_SHOTS = ('home', 'compass', 'compass-optimization', 'compass-scan', 'sextant', 'spectrum-optimization',
@@ -89,6 +128,10 @@ def main(argv=None):
 
     app = QApplication.instance() or QApplication([])
     app.setStyleSheet(STYLE)
+    if args.lang == 'zh':
+        family = chinese_letters()
+        print(f'Chinese letters: {family}' if family else 'Chinese letters: no Chinese font of the system found — '
+              'the pictures will have empty places', flush=True)
     from azimuth import i18n
 
     i18n.set_language(args.lang)  # the texts made while the window is built
@@ -305,7 +348,7 @@ def main(argv=None):
 
         folder = ROOT / 'docs' / 'manual' / 'img'
         folder.mkdir(parents=True, exist_ok=True)
-        target = folder / f'{name}.jpg'
+        target = folder / f'{name}{suffix}.jpg'  # NAME.jpg for the Russian book, NAME-en.jpg, NAME-zh.jpg
         with Image.open(path) as image:
             image = image.convert('RGB')
             if image.width > 1800:
