@@ -1,4 +1,4 @@
-"""«Инструменты» of Spectrum: the isotope pattern, the energies of several results, the Boltzmann shares, the equilibrium of two forms.
+"""«Инструменты» of Spectrum: the isotope pattern, the energies of several results, the Boltzmann shares, the equilibrium of two forms, the hindered rotor.
 
 §1 PURPOSE
     The tools of Chemcraft that belong to results: the windows over modules/spectrum/analysis/isotopes.py and
@@ -11,6 +11,9 @@
     boltzmann_dialog(), equilibrium_dialog(paths=None), current_formula().
     EquilibriumDialog(owner, read=None) — set_form(k, path), sigmas, mirrors, temperature, qrrho, table (K(T) at
     200–600 K and the chosen T), factors (what K is made of at the chosen T), compute(), copy(), save_csv(path).
+    HinderedRotorDialog(owner) — set_scan(path), cover, sigma, wavenumber (0 — from the curvature of the scan),
+    temperature, table (q of the harmonic oscillator, the hindered and the free rotor, ΔG and the factor of K at
+    200–600 K and the chosen T), compute(), copy(), save_csv(path); hindered_rotor_dialog(path=None) of the tool.
 §7 TESTS
     tests/test_gui.py::test_spectrum_tools.
 """
@@ -439,6 +442,165 @@ class EquilibriumDialog(QDialog):
         return _save(self, self.table, path, 'equilibrium.csv')
 
 
+class HinderedRotorDialog(QDialog):
+    """«Заторможенный ротатор…»: a torsion from its relaxed scan (modules/spectrum/analysis/hindered_rotor.py)."""
+
+    HEADERS = ('T, K', 'q гарм.', 'q заторм.', 'q своб.', 'ΔG', 'Множитель к K')
+    COVERS = (('full', 'Полный оборот (0–360°)'), ('mirror', 'Половина оборота, вторая — зеркальная (0–180°)'),
+              ('period2', 'Потенциал повторяется через 180°'), ('period3', 'Потенциал повторяется через 120°'))
+
+    def __init__(self, owner):
+        from PySide6.QtWidgets import QSpinBox
+
+        super().__init__(owner)
+        self.setWindowTitle(tr('Заторможенный ротатор'))
+        self.points, self.moment, self.potential, self.rows = None, None, None, []
+        lay = QVBoxLayout(self)
+        hint = label(tr('Торсионное колебание с низким барьером — плохой гармонический осциллятор. Откройте скан '
+                        'двугранного угла с релаксацией: по его потенциалу считаются уровни вращения волчка и поправка '
+                        'ΔG к свободной энергии, посчитанной с гармонической частотой этой моды.'), 'subtitle')
+        hint.setWordWrap(True)
+        lay.addWidget(hint)
+        form = QFormLayout()
+        row = QHBoxLayout()
+        row.addWidget(button(tr('Выбрать файл…'), lambda: self.choose()))
+        self.name = QLabel('—')
+        row.addWidget(self.name, 1)
+        form.addRow(tr('Скан'), row)
+        self.cover = QComboBox()
+        for key, title in self.COVERS:
+            self.cover.addItem(tr(title), key)
+        self.cover.currentIndexChanged.connect(lambda *_: self.compute())
+        form.addRow(tr('Скан покрывает'), self.cover)
+        options = QHBoxLayout()
+        self.sigma = QSpinBox()
+        self.sigma.setRange(1, 6)
+        self.sigma.setToolTip(tr('Число симметрии волчка: 3 у метильной группы, 2 у фенила, 1 у волчка без симметрии. '
+                                 'Если две ямы — зеркальные формы и они уже учтены числом зеркальных форм в «Равновесии '
+                                 'двух форм», поставьте 2, чтобы не посчитать их дважды.'))
+        self.sigma.valueChanged.connect(lambda *_: self.compute())
+        options.addWidget(QLabel('σ'))
+        options.addWidget(self.sigma)
+        self.wavenumber = QDoubleSpinBox()
+        self.wavenumber.setRange(0.0, 2000.0)
+        self.wavenumber.setDecimals(1)
+        self.wavenumber.setSuffix(' ' + tr('см⁻¹'))
+        self.wavenumber.setSpecialValueText(tr('по кривизне скана'))
+        self.wavenumber.setToolTip(tr('Частота торсионной моды из расчёта частот — её вклад заменяется. 0 — взять '
+                                      'частоту по кривизне потенциала в минимуме.'))
+        self.wavenumber.valueChanged.connect(lambda *_: self.compute())
+        options.addWidget(QLabel(tr('Гармоническая частота')))
+        options.addWidget(self.wavenumber)
+        self.temperature = QDoubleSpinBox()
+        self.temperature.setRange(1, 5000)
+        self.temperature.setDecimals(2)
+        self.temperature.setSuffix(' K')
+        self.temperature.setValue(298.15)
+        self.temperature.valueChanged.connect(lambda *_: self.compute())
+        options.addWidget(self.temperature)
+        options.addStretch(1)
+        form.addRow(tr('Волчок'), options)
+        lay.addLayout(form)
+        self.table = _table(self.HEADERS)
+        lay.addWidget(self.table, 1)
+        self.note = label('', 'subtitle')
+        self.note.setWordWrap(True)
+        lay.addWidget(self.note)
+        bottom = QHBoxLayout()
+        self.copy_button = button(tr('Копировать таблицу'), lambda: self.copy())
+        bottom.addWidget(self.copy_button)
+        bottom.addWidget(button(tr('Сохранить CSV…'), lambda: self.save_csv()))
+        bottom.addStretch(1)
+        bottom.addWidget(button(tr('Закрыть'), self.accept))
+        lay.addLayout(bottom)
+        self.resize(780, 560)
+
+    def choose(self):
+        from modules.spectrum.views.reaction_view import RESULT_FILTER
+
+        path, _ = QFileDialog.getOpenFileName(self, tr('Скан двугранного угла'), '', tr(RESULT_FILTER))
+        if path:
+            self.set_scan(path)
+        return path
+
+    def set_scan(self, path):
+        """The scan of the output: its points, the reduced moment of the two tops at the lowest point."""
+        from pathlib import Path
+
+        from modules.spectrum.analysis import hindered_rotor
+        from modules.spectrum.readers.outputs import read_any
+
+        self.points, self.moment, self.potential, self.rows = None, None, None, []
+        self.table.setRowCount(0)
+        try:
+            output = read_any(Path(path).read_text(encoding='utf-8', errors='replace'))
+            scan = getattr(output, 'scan', None)
+            self.points = hindered_rotor.points_of(scan)
+            geometry = scan.points[scan.reference].geometry
+            if geometry is None:
+                raise ValueError(tr('В скане нет геометрий — приведённый момент инерции не посчитать.'))
+            atoms = scan.coordinates[0].atoms
+            self.moment = hindered_rotor.reduced_moment(geometry, atoms[1], atoms[2])
+        except (ValueError, OSError) as exc:
+            self.points = None
+            self.name.setText('—')
+            self.note.setText(str(exc))
+            return None
+        self.name.setText(Path(path).name + ' · ' + scan.coordinates[0].label)
+        cover = hindered_rotor.cover_of(self.points)
+        self.cover.blockSignals(True)
+        self.cover.setCurrentIndex(max(0, self.cover.findData(cover or 'full')))
+        self.cover.blockSignals(False)
+        return self.compute()
+
+    def compute(self):
+        from azimuth import defaults
+        from modules.spectrum.analysis import hindered_rotor, thermo
+
+        if self.points is None:
+            return None
+        chosen = round(self.temperature.value(), 2)
+        temperatures = sorted(set(hindered_rotor.TEMPERATURES) | {chosen})
+        try:
+            self.potential = hindered_rotor.fit(self.points, self.cover.currentData())
+            own = hindered_rotor.harmonic_wavenumber(self.potential, self.moment)
+            nu = self.wavenumber.value() or None
+            self.rows = hindered_rotor.table(self.potential, self.moment, self.sigma.value(), nu, temperatures)
+        except ValueError as exc:
+            self.rows = []
+            self.table.setRowCount(0)
+            self.note.setText(str(exc))
+            return None
+        unit, factor = tr(defaults.energy_name()), defaults.energy_factor()
+        headers = list(self.HEADERS)
+        headers[4] = f'ΔG, {unit}'
+        self.table.setHorizontalHeaderLabels([tr(h) if k != 4 else h for k, h in enumerate(headers)])
+        _fill(self.table, [(f'{r.temperature:g}', f'{r.q_ho:.3f}', f'{r.q_hr:.3f}', f'{r.q_free:.3f}',
+                            f'{r.correction * factor:+.3f}', f'{r.factor:.3f}') for r in self.rows])
+        p = self.potential
+        amu = self.moment / thermo.AMU * 1e20
+        constant = hindered_rotor.rotational_constant(self.moment) * thermo.HARTREE / hindered_rotor.CM
+        self.note.setText(tr('Барьер {:.2f} {}, минимум при {:.0f}°. Приведённый момент инерции {:.3f} а.е.м.·Å², '
+                             'B = {:.2f} см⁻¹. Частота по кривизне скана {:.0f} см⁻¹. ΔG = G(заторм.) − G(гарм.): '
+                             'прибавьте её к G; K или k умножается на множитель.').format(
+            p.barrier * factor, unit, p.minimum_angle, amu, constant, own))
+        return self.rows
+
+    def copy(self):
+        from PySide6.QtWidgets import QApplication
+
+        from azimuth.ui import copied
+
+        lines = ['\t'.join(self.table.horizontalHeaderItem(c).text() for c in range(self.table.columnCount()))]
+        lines += ['\t'.join(self.table.item(r, c).text() for c in range(self.table.columnCount()))
+                  for r in range(self.table.rowCount())]
+        QApplication.clipboard().setText('\n'.join(lines))
+        copied(self, tr('таблица ротатора'), self.copy_button)
+
+    def save_csv(self, path=None):
+        return _save(self, self.table, path, 'hindered_rotor.csv')
+
+
 class SpectrumToolsTool:
     """Was the mixin SpectrumTools of the window; a part of its own — it reaches the window only through
     the names of PORT (azimuth/window_port.WindowPort)."""
@@ -488,6 +650,14 @@ class SpectrumToolsTool:
         dialog.show()
         for k, path in enumerate(paths or ()):
             dialog.set_form(k, path)
+        return dialog
+
+    def hindered_rotor_dialog(self, path=None):
+        dialog = HinderedRotorDialog(self.w.widget)
+        self.hindered_rotor_window = dialog
+        dialog.show()
+        if path:
+            dialog.set_scan(path)
         return dialog
 
     def boltzmann_dialog(self):

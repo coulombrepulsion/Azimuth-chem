@@ -1031,6 +1031,21 @@ def test_spectrum_tools(window, app, tmp_path):
     pair.mirrors[0].setValue(2)
     assert pair.table.item(at, 2).text() == '1'
     pair.close()
+    # «Заторможенный ротатор…»: the real scan of H2O2 (ORCA 6.0.1, 0…180°) — taken as the mirrored half, the cis
+    # barrier of its table (0.01321533 Eh = 8.29 kcal/mol), more states than the harmonic oscillator has
+    scan = str(Path(__file__).parents[1] / 'data' / 'scan2d' / 'h2o2_scan1d_orca.out')
+    rotor = window.spectrum_tools.hindered_rotor_dialog(scan)
+    assert rotor.cover.currentData() == 'mirror' and rotor.table.rowCount() == 10
+    assert rotor.potential.barrier * 627.5094740631 == pytest.approx(8.29, abs=0.05)
+    at = next(r for r in range(10) if rotor.table.item(r, 0).text() == '298.15')
+    assert float(rotor.table.item(at, 2).text()) > float(rotor.table.item(at, 1).text())
+    assert float(rotor.table.item(at, 5).text()) > 1 and rotor.table.item(at, 4).text().startswith('-')
+    before = rotor.table.item(at, 2).text()
+    rotor.sigma.setValue(2)
+    assert float(rotor.table.item(at, 2).text()) == pytest.approx(float(before) / 2, abs=2e-3)
+    rotor.set_scan(str(Path(__file__).parents[1] / 'data' / 'orca601' / 'h2o_optfreq.out'))
+    assert rotor.table.rowCount() == 0 and 'двугранного' in rotor.note.text()
+    rotor.close()
 
 
 def test_experiment_and_conformers_over_the_spectra(window, tmp_path):

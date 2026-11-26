@@ -686,6 +686,7 @@ def spectrum_menus(self, studio, menu, own, help_menu, picture_menu, compare_men
         own('Энергии из нескольких файлов…', lambda: studio.spectrum_tools.energies_of_files()),
         own('Доли по Больцману…', lambda: studio.spectrum_tools.boltzmann_dialog()),
         own('Равновесие двух форм…', lambda: studio.spectrum_tools.equilibrium_dialog()),
+        own('Заторможенный ротатор…', lambda: studio.spectrum_tools.hindered_rotor_dialog()),
         None,
         own('Множители частот…', lambda: studio.vibrations.open_factor_table()),
         own('Опытные данные для молекулы…', lambda: self._measured_data()),

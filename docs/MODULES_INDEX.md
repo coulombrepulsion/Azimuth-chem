@@ -427,6 +427,7 @@
 - `modules/spectrum/analysis/experiment.py` — An experimental spectrum over the computed one.
 - `modules/spectrum/analysis/fukui.py` — The Fukui functions and the dual descriptor condensed to the atoms, and the global indices of the conceptual DFT .
 - `modules/spectrum/analysis/gto.py` — Contracted Gaussian basis functions: normalization, overlap and values on a grid.
+- `modules/spectrum/analysis/hindered_rotor.py` — A hindered internal rotation from a relaxed scan of a dihedral angle: levels, partition function, the correction of G.
 - `modules/spectrum/analysis/ir_spectrum.py` — Gaussian IR broadening (the lines and the broadened curve). Contract: docs/features/IR_SPECTRUM.md.
 - `modules/spectrum/analysis/isotopes.py` — The isotope pattern of a molecular ion: M, M+1, M+2… with their exact masses.
 - `modules/spectrum/analysis/nci_domains.py` — Weak interactions told apart by NCI: the regions of low RDG split into domains, each named and measured.
@@ -463,7 +464,7 @@
 - `modules/spectrum/views/spectrum_extras.py` — The button «Эксперимент и конформеры» of the IR (Raman) and the UV-Vis (ECD) spectra.
 - `modules/spectrum/views/spectrum_pulse.py` — The sign of a running calculation in Spectrum: a small spectrum being recorded by the status line.
 - `modules/spectrum/views/thermo_view.py` — Spectrum: the «Термохимия» tab. Numbers: modules/spectrum/analysis/thermo.py.
-- `modules/spectrum/views/tools_view.py` — «Инструменты» of Spectrum: the isotope pattern, the energies of several results, the Boltzmann shares, the equilibrium of two forms.
+- `modules/spectrum/views/tools_view.py` — «Инструменты» of Spectrum: the isotope pattern, the energies of several results, the Boltzmann shares, the equilibrium of two forms, the hindered rotor.
 - `modules/spectrum/views/trajectory.py` — Selectable, theme-aware energy plot of optimization cycles (used by the Compass drawer).
 - `modules/spectrum/views/transfer_view.py` — Spectrum: the window «Перенос заряда» of an excited state — IFCT between fragments and the transition matrix as a heat map (the calculation: modules/spectrum/analysis/charge_transfer.py).
 - `modules/spectrum/views/uv_view.py` — The UV-Vis, ECD and emission of a result in Spectrum: the plots (UVPlot, EmissionPlot) and the panel UVVisPanel — the states, their NTO on the model, the analyses of Multiwfn (D, Sr, H, t, HDI, EDI), the charge transfer, the fit, the ref…

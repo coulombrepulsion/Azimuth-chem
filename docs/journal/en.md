@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.227.0 — 26 November 2026
+
+- ### 0.227.0 — The hindered rotor
+
+A soft rotation of a group about a bond is poorly described by a harmonic vibration. Spectrum has a new tool, «Hindered rotor»: give it a scan of the dihedral angle, and it computes by how much the free energy and the equilibrium or rate constant should be corrected.
+
 ## 0.226.0 — 26 November 2026
 
 - ### 0.226.0 — The complete basis set and the equilibrium of two forms
@@ -311,7 +317,7 @@ The Multiwfn excitation analysis works again with ORCA TD-DFT where both singlet
 
 - ### 0.216.154 — The fingerprint by the data
 
-The fingerprint of the Hirshfeld surface got a choice of scale. The standard one (0.4–2.6 Å, as in CrystalExplorer) lets different crystals be compared. The scale «by the data» stretches the axes round the spot itself, which becomes larger and more detailed.
+The fingerprint of the Hirshfeld surface got a choice of scale. The standard one (0.4–2.6 Å) lets different crystals be compared. The scale «by the data» stretches the axes round the spot itself, which becomes larger and more detailed.
 
 
 ## 0.216.153 — 21 November 2026
@@ -456,9 +462,9 @@ The Help menu has a search field, as on macOS: type a word and the program lists
 
 ## 0.216.133 — 21 November 2026
 
-- ### 0.216.133 — An AkelPad editor, Total Commander files
+- ### 0.216.133 — A full editor of the input file and the files on the server
 
-The input file in Sextant is now edited in a full editor: line numbers, find and replace (with regular expressions), go to line, duplicating, moving and commenting lines, case, wrap, zoom — with the keyboard shortcuts of AkelPad (F1 lists them all). «Files on the server» gained the keys and features of Total Commander: F3 view, F6 move, Shift+F6 rename, Shift+F4 new file, Alt+F7 find, Ctrl+D favourite folders, Insert and mask marking, sorting, and a function key bar at the bottom.
+The input file in Sextant is now edited in a full editor: line numbers, find and replace (with regular expressions), go to line, duplicating, moving and commenting lines, case, wrap, zoom — with keyboard shortcuts (F1 lists them all). «Files on the server» gained keys and new features: F3 view, F6 move, Shift+F6 rename, Shift+F4 new file, Alt+F7 find, Ctrl+D favourite folders, Insert and mask marking, sorting, and a function key bar at the bottom.
 
 
 ## 0.216.132 — 21 November 2026
@@ -869,7 +875,7 @@ The basic colours by hue, a pipette instead of a button, no «HTML»; opening do
 
 ## 0.216.74 — 19 November 2026
 
-- ### 0.216.74 — The colour picker as in Chemcraft
+- ### 0.216.74 — A new colour picker
 
 The sets of colours first; the palette and the numbers open with «Choose by hand».
 
@@ -2189,7 +2195,7 @@ The conformers calculated by a Sextant queue went into «Project molecules» as 
 
 ## 0.204.0 — 17 November 2026
 
-- ### 0.204.0 — Bond style, as in Chemcraft
+- ### 0.204.0 — Bond style
 
 «View → Bond display → Bond style…» now gathers everything about bonds: the colour (by the atoms or your own), the width, how double, aromatic and dashed bonds are drawn, long bonds dashed, and the look of hydrogen bonds. And the menu of a bond (right click) can make it aromatic, partial or coordination (dashed) and give it a colour of its own — to one bond or to all the bonds of the selected part.
 
@@ -2819,28 +2825,28 @@ Thanks to the first tester! No more error window when the pointer is over «Atom
 
 - ### 0.172.0 — pair energies and the framework
 
-«Crystal → Pair energies and framework (xtb)…»: how strongly a molecule is bound to each neighbour, the lattice energy and the «energy framework» on the model — thick blue lines between the centres of the molecules show where the crystal has strong columns, layers or a 3-D network. Calculated in xtb in seconds, as in CrystalExplorer.
+«Crystal → Pair energies and framework (xtb)…»: how strongly a molecule is bound to each neighbour, the lattice energy and the «energy framework» on the model — thick blue lines between the centres of the molecules show where the crystal has strong columns, layers or a 3-D network. Calculated in xtb in seconds.
 
 
 ## 0.171.0 — 14 November 2026
 
 - ### 0.171.0 — crystals from COD
 
-«File → Find a crystal in COD…» in «Compass · Crystal» searches the Crystallography Open Database — an open collection of nearly half a million structures — by words, a formula or elements, and opens the CIF found with one click. It is the open alternative to the paid CSD that Mercury uses. An internet connection is needed; only the search criteria are sent.
+«File → Find a crystal in COD…» in «Compass · Crystal» searches the Crystallography Open Database — an open collection of nearly half a million structures — by words, a formula or elements, and opens the CIF found with one click. It is an open database, free to use. An internet connection is needed; only the search criteria are sent.
 
 
 ## 0.170.0 — 14 November 2026
 
 - ### 0.170.0 — the network by layers
 
-The contact network of the Contacts window can now be grown layer by layer and built only from the selected rows of the table — like «expand contacts» in Mercury: you see where a chain or a layer of one chosen bond goes.
+The contact network of the Contacts window can now be grown layer by layer and built only from the selected rows of the table: you see where a chain or a layer of one chosen bond goes.
 
 
 ## 0.169.0 — 14 November 2026
 
 - ### 0.169.0 — the Hirshfeld surface
 
-«Crystal → Hirshfeld surface…»: a molecule inside its surface, with red spots where neighbours come closer than the van der Waals radii (hydrogen bonds are seen at once), and the fingerprint plot — which contacts at which distances make up its surroundings. For benzoic acid: H···H 42 %, O···H 25 %, C···H 22 %. Not even Mercury has it — for this one used to go to CrystalExplorer.
+«Crystal → Hirshfeld surface…»: a molecule inside its surface, with red spots where neighbours come closer than the van der Waals radii (hydrogen bonds are seen at once), and the fingerprint plot — which contacts at which distances make up its surroundings. For benzoic acid: H···H 42 %, O···H 25 %, C···H 22 %.
 
 
 ## 0.168.0 — 14 November 2026
@@ -2889,14 +2895,14 @@ You can now write to the author at contact@azimuth-chem.com — it is shown in �
 
 - ### 0.163.0 — the molecular shell
 
-«Crystal → Molecular shell…» puts a molecule and all its neighbours on the model — those closer than a given distance or touching it with their van der Waals spheres, as in Mercury. Their number is the molecular coordination number (14 within 4 Å for benzoic acid), and the table gives each neighbour its symmetry code and shortest contact. The centre is the molecule whose atom is selected on the model.
+«Crystal → Molecular shell…» puts a molecule and all its neighbours on the model — those closer than a given distance or touching it with their van der Waals spheres. Their number is the molecular coordination number (14 within 4 Å for benzoic acid), and the table gives each neighbour its symmetry code and shortest contact. The centre is the molecule whose atom is selected on the model.
 
 
 ## 0.162.0 — 14 November 2026
 
 - ### 0.162.0 — hydrogen bonds as in a paper
 
-The «Contacts» window of a crystal has a button «Table for a paper…»: the hydrogen bonds with the lengths D–H, H···A, D···A, the angle and the symmetry code of the acceptor (for example, «−x+1, −y, −z+1» for the dimer of benzoic acid); you can copy it straight into your text or save it to CSV. And the criteria of the contact search are now yours to set, as in Mercury: the margin over the sum of the radii and the smallest angles of the bonds.
+The «Contacts» window of a crystal has a button «Table for a paper…»: the hydrogen bonds with the lengths D–H, H···A, D···A, the angle and the symmetry code of the acceptor (for example, «−x+1, −y, −z+1» for the dimer of benzoic acid); you can copy it straight into your text or save it to CSV. And the criteria of the contact search are now yours to set: the margin over the sum of the radii and the smallest angles of the bonds.
 
 
 ## 0.161.0 — 14 November 2026
@@ -2938,14 +2944,14 @@ The golden arc of the waiting compass now fills during one turn of the needle an
 
 - ### 0.158.0 — comparing packings and hkl planes
 
-«Crystal → Compare the packing…» tells whether two files (or an experiment and a calculation) have the same packing, like COMPACK in Mercury; «Planes (hkl) in the cell…» shows the reflecting planes on the model, also on a double click on a line of the powder pattern.
+«Crystal → Compare the packing…» tells whether two files (or an experiment and a calculation) have the same packing; «Planes (hkl) in the cell…» shows the reflecting planes on the model, also on a double click on a line of the powder pattern.
 
 
 ## 0.157.0 — 13 November 2026
 
 - ### 0.157.0 — hydrogens, cell setting, planes
 
-Contacts are found with the H atoms at neutron distances (as in Mercury); «Crystal → Cell setting…» shows the crystal in another setting of the group (P 21/c ↔ P 21/n) or in the reduced cell; planes through groups of atoms work in «Crystal» too.
+Contacts are found with the H atoms at neutron distances; «Crystal → Cell setting…» shows the crystal in another setting of the group (P 21/c ↔ P 21/n) or in the reduced cell; planes through groups of atoms work in «Crystal» too.
 
 
 ## 0.156.0 — 13 November 2026
@@ -2966,7 +2972,7 @@ An experimental powder pattern is now compared with the calculated one: the back
 
 - ### 0.154.0 — voids of a crystal
 
-«Crystal → Voids…»: where a solvent molecule fits in a crystal — the volume, the cavities and channels, a surface on the model, as in Mercury.
+«Crystal → Voids…»: where a solvent molecule fits in a crystal — the volume, the cavities and channels, a surface on the model.
 
 
 ## 0.153.1 — 13 November 2026
@@ -3762,7 +3768,7 @@ Going to «Compass · Molecule» from a crystal project opens a «New project» 
 
 ## 0.106.7 — 8 November 2026
 
-- Now you can look into the server right from Sextant: two panes, as in Total Commander — your computer and the server. Copy, open results, edit inputs, delete what is not needed.
+- Now you can look into the server right from Sextant: two panes — your computer and the server. Copy, open results, edit inputs, delete what is not needed.
 
 ## 0.106.6 — 8 November 2026
 
@@ -4543,7 +4549,7 @@ Going to «Compass · Molecule» from a crystal project opens a «New project» 
 
 ### Compass
 
-- The menus are now as in Chemcraft: File, Edit, View, Display, Tools and Calculation, and they hold everything that used to be only buttons.
+- The menus are now the usual ones: File, Edit, View, Display, Tools and Calculation, and they hold everything that used to be only buttons.
 - New: select by numbers or within a coordinate range, expand the selection by one step, put the origin at an atom or the axes on three atoms, turn the molecule to its principal axes, show all bond angles, copy the camera position and the picture itself.
 - In Tools I compute moments of inertia and rotational constants, the exact and average molecular mass, and tell you which atoms, bonds and fragments the structure is made of.
 
@@ -4866,7 +4872,7 @@ Going to «Compass · Molecule» from a crystal project opens a «New project» 
 ### Compass
 
 - Atoms can have their own labels: select atoms and press the tag button next to «1», «H», «H1». A «#» in the label becomes the number in the order of selection. The labels follow the atoms when you edit the structure and are saved in the project. I label the residues of a protein or DNA from a PDB file myself.
-- There is a dummy atom X, as in Chemcraft: a point without a nucleus — for a Z-matrix, the centre of a ring or an axis. It is in the periodic table, written as X in the coordinates, and stays out of the calculation.
+- There is a dummy atom X: a point without a nucleus — for a Z-matrix, the centre of a ring or an axis. It is in the periodic table, written as X in the coordinates, and stays out of the calculation.
 
 ### Spectrum
 
@@ -5185,7 +5191,7 @@ Going to «Compass · Molecule» from a crystal project opens a «New project» 
 ### Compass
 
 - Charges, bond orders and the dipole moment from a calculation are drawn right on the molecule in Compass.
-- Bonds in Compass honestly enter the atoms, as in Chemcraft, and rotation is four times faster. Benzene no longer stops to think.
+- Bonds in Compass honestly enter the atoms, and rotation is four times faster. Benzene no longer stops to think.
 - Compass has a library of 65 molecules and IUPAC names in three languages. I checked 94 names — none of them took offence.
 - Compass can now lay two structures over each other, even if the atoms are numbered any old way: I work out who matches whom and tell you the RMSD. I won’t mix up enantiomers — I don’t use a mirror without asking.
 - Your own fragments: select a group, save it — and it lives in «My fragments» next to methyl and phenyl. You can hand it to a colleague as a file.
