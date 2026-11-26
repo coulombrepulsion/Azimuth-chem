@@ -3233,8 +3233,12 @@ def test_the_fields_of_the_crystal_setup_move_into_the_dialog(window, app, tmp_p
     assert window.crystal_tool.to_calculation()
     tool = window.crystal_mode_tool
     panel, rows = tool.panel, tool.setup_rows
-    # outside the beta (AGENTS.md §0): shown, marked in the title, the reason in its tip
-    assert tool.unverified.text().endswith('не проверено') and 'числа ещё не сверены с литературой' in tool.unverified.toolTip()
+    # Quantum ESPRESSO is compared with the literature (docs/plans/CRYSTAL_VALIDATION.md) — no mark; CP2K is not yet:
+    # marked in the title, the reason in its tip
+    assert tool.unverified.text() == 'Постановка задачи' and tool.unverified.toolTip() == ''
+    assert panel.set_program('cp2k') and tool.unverified.text().endswith('не проверено')
+    assert 'числа ещё не сверены с литературой' in tool.unverified.toolTip()
+    assert panel.set_program('qe') and tool.unverified.text() == 'Постановка задачи'
     try:
         rows.reset()
         inside = tool.options_dialog.forms[-1]

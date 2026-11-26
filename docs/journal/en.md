@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.233.0 — 26 November 2026
+
+- ### 0.233.0 — Crystals in Quantum ESPRESSO are checked
+
+Crystal calculations in Quantum ESPRESSO are compared with the literature on six crystals, and the mark «not checked» is removed from them. CP2K keeps it for now.
+
 ## 0.232.0 — 26 November 2026
 
 - ### 0.232.0 — NMR of flexible molecules

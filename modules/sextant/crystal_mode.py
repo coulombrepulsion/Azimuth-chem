@@ -78,8 +78,10 @@ def make_job_card(window, panel):
     return card
 
 
-CRYSTALS_UNVERIFIED = ('Запуск Quantum ESPRESSO и CP2K проверен (на этом компьютере и на сервере), но числа ещё не '
-                       'сверены с литературой на известных кристаллах — сверяйте результаты сами.')
+# Quantum ESPRESSO is compared with the literature on six crystals (docs/plans/CRYSTAL_VALIDATION.md); CP2K is not yet
+CRYSTALS_UNVERIFIED = ('Запуск CP2K проверен (на этом компьютере и на сервере), но числа ещё не сверены с литературой '
+                       'на известных кристаллах — сверяйте результаты сами. Расчёты Quantum ESPRESSO сверены.')
+UNVERIFIED_PROGRAMS = ('cp2k',)
 
 
 class CrystalModeTool:
@@ -121,11 +123,11 @@ class CrystalModeTool:
         panel.where_in_form = False  # where to compute — the switches by «Запустить расчёт», as for a molecule
         panel.hide()  # the holder of the controls and of the run; they live in the cards
         # «Постановка задачи»
-        frame, layout = card(tr('Постановка задачи') + ' · ' + tr('не проверено'))
-        # outside the beta (AGENTS.md §0): the crystals are shown, marked — in the title, with the reason in its tip (a
-        # line of its own pushed the fields of the card over the window of a laptop)
+        frame, layout = card(tr('Постановка задачи'))
+        # a program whose numbers are not compared with the literature yet (UNVERIFIED_PROGRAMS) is marked in the
+        # title, with the reason in its tip (a line of its own pushed the fields of the card over the window of a laptop)
         self.unverified = layout.itemAt(0).widget()
-        self.unverified.setToolTip(tr(CRYSTALS_UNVERIFIED))
+        self.mark_unverified(panel.program)
         form = QFormLayout()
         form.setSpacing(13)
         self.calc_title = QLineEdit()
@@ -304,8 +306,12 @@ class CrystalModeTool:
         # the input file
         preview_card, preview_layout = card(tr('Входной файл Quantum ESPRESSO'))
         self.preview_title = preview_layout.itemAt(0).widget()
-        panel.program_listener = lambda kind: self.preview_title.setText(
-            tr('Входной файл CP2K') if kind == 'cp2k' else tr('Входной файл Quantum ESPRESSO'))
+
+        def program_chosen(kind):
+            self.preview_title.setText(tr('Входной файл CP2K') if kind == 'cp2k' else tr('Входной файл Quantum ESPRESSO'))
+            self.mark_unverified(kind)
+
+        panel.program_listener = program_chosen
         head = preview_layout.itemAt(0).widget()
         preview_layout.removeWidget(head)
         head.setWordWrap(False)
@@ -350,6 +356,14 @@ class CrystalModeTool:
         panel.primitive.toggled.connect(lambda _: self.update_card())
         self.page = page
         return page
+
+    def mark_unverified(self, kind):
+        """The title of «Постановка задачи»: «· не проверено» and the reason in the tip for a program of
+        UNVERIFIED_PROGRAMS."""
+        marked = kind in UNVERIFIED_PROGRAMS
+        self.unverified.setText(tr('Постановка задачи') + (' · ' + tr('не проверено') if marked else ''))
+        self.unverified.setToolTip(tr(CRYSTALS_UNVERIFIED) if marked else '')
+        return marked
 
     def update_card(self):
         """The model of the tab, its formula and what is computed: the group, the cell, the atoms of the cell computed."""

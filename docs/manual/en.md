@@ -46,7 +46,7 @@ The same manual opens in the program itself: «Help → Manual».
 
 ### Calculation programs and how they were checked
 
-Azimuth supports several calculation programs, but not all of them have been checked equally. Programs whose input files have never been run by the real program are marked **«not checked»** in the program list of Sextant: check the input file yourself before a calculation with them. For crystal calculations the same mark means something else: Quantum ESPRESSO and CP2K have been run both on this computer and on a server, but their numbers are not yet compared with the literature for known crystals – compare the result yourself.
+Azimuth supports several calculation programs, but not all of them have been checked equally. Programs whose input files have never been run by the real program are marked **«not checked»** in the program list of Sextant: check the input file yourself before a calculation with them. For crystal calculations in CP2K the same mark means something else: the program has been run both on this computer and on a server, but its numbers are not yet compared with the literature for known crystals – compare the result yourself. Calculations in Quantum ESPRESSO are compared on six crystals and carry no mark.
 
 Table: Calculation programs
 
@@ -60,7 +60,8 @@ Table: Calculation programs
 | Psi4 | Input file, run, reading | Checked |
 | Gaussian | Input file, run, reading | Input files not checked by a run |
 | GAMESS (US) | Input file, run, reading | Input files not checked by a run |
-| Quantum ESPRESSO, CP2K | Crystal calculations | Runs checked (macOS, Linux, a server); the numbers are not compared with the literature – marked «not checked» |
+| Quantum ESPRESSO | Crystal calculations | Runs checked (macOS, Linux, a server); lattice parameters, gaps and magnetic moments compared with the literature on six crystals (Si, MgO, SrTiO₃, TiO₂, graphene, NiO) |
+| CP2K | Crystal calculations | Runs checked (macOS, Linux, a server); the numbers are not compared with the literature – marked «not checked» |
 | CRYSTAL | Input file and reading the result (no run) | Not checked |
 | Q-Chem, Firefly | Reading the result only | – |
 | Multiwfn | Wavefunction analysis (charges, surfaces, QTAIM) | Checked (version 2026.7.15) |

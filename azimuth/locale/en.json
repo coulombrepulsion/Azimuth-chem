@@ -6421,5 +6421,6 @@
   "В файле {} нет экранирований ЯМР.": "File {} has no NMR shieldings.",
   "В файле {} не нашлась энергия.": "No energy found in file {}.",
   "Конформеры различаются набором или порядком атомов — усреднять экранирования нельзя: считайте ЯМР от геометрий с одной нумерацией.": "The conformers differ in their atoms or in the order of them — the shieldings cannot be averaged: compute NMR from geometries with one numbering.",
-  "ΔG, кДж/моль": "ΔG, kJ/mol"
+  "ΔG, кДж/моль": "ΔG, kJ/mol",
+  "Запуск CP2K проверен (на этом компьютере и на сервере), но числа ещё не сверены с литературой на известных кристаллах — сверяйте результаты сами. Расчёты Quantum ESPRESSO сверены.": "CP2K runs are checked (on this computer and on a server), but the numbers are not yet compared with the literature on known crystals — check the results yourself. Quantum ESPRESSO calculations are compared."
 }
