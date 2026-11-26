@@ -55,7 +55,9 @@ header.top .btn.small{margin-left:auto}
 .btns{display:flex;flex-wrap:wrap;gap:12px}
 .btn{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:16px;padding:12px 20px;border-radius:10px;text-decoration:none;border:1px solid var(--line);color:var(--ink);background:var(--panel)}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.btn:hover{filter:brightness(1.06)}
+.btn.primary:hover{filter:brightness(1.06)}
+/* a light button: its background and edge on hover — a filter of a white button flashed white in Safari while it came */
+.btn:not(.primary):hover{background:var(--soft);border-color:var(--muted)}
 .hero img{width:100%;height:auto;display:block}
 section{padding:48px 0;border-top:1px solid var(--line)}
 section h2{font:700 30px/1.2 var(--f-display);margin:0 0 10px}
@@ -194,7 +196,7 @@ figure.shot figcaption{margin-top:8px;font-size:13px;color:var(--muted)}
 @media (prefers-reduced-motion:reduce){.secPanel,.secBack,.secPanel.open,.secBack.open{transition:none}}
 /* the press of a button is seen it sinks a little and darkens while held */
 .btn,.example,.card.part,.langs button{-webkit-tap-highlight-color:transparent}
-.btn{transition:transform .12s,filter .12s}
+.btn{transition:transform .12s,filter .12s,background-color .15s,border-color .15s}
 .btn:active{transform:scale(.96);filter:brightness(.9)}
 .example:active{transform:scale(.98);box-shadow:none;transition-duration:.08s}
 .card.part{transition:border-color .2s,transform .12s}
