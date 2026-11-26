@@ -38,6 +38,7 @@ from azimuth.core import (
     BASIS_TABLE,
     CDA_TASK,
     INTERACTION_TASK,
+    IRC_TASK,
     DISPERSION_METHODS,
     METHOD_TABLE,
     NEB_TASK,
@@ -501,11 +502,16 @@ class SextantWorkspace:
                             'cda_atoms': 'Фрагмент 1', 'cda_pick': 'Фрагмент 1',
                             'cda_charge': 'Фрагмент 1:', 'cda_mult1': 'Фрагмент 1:'}
                 text = caption if len(present) != 1 else captions[present[0]]  # «T и P» with T alone: «Температура»
+                if task == IRC_TASK and present == ['max_cycles']:  # MaxIter of %irc
+                    text = 'Шагов в каждую сторону'
                 caption_label = rows.label(widget) if rows is not None else form.labelForField(widget)
                 if caption_label is not None:
                     caption_label.setText(tr(text))
         note = tr('Конец пути и число промежуточных структур задаются в Компасе («Правка → Путь реакции»).') \
-            if task == NEB_TASK else tr('Частоты считаются на этой геометрии, без оптимизации: она должна быть '
+            if task == NEB_TASK else tr('Начинайте с переходного состояния (одна мнимая частота), найденного тем же '
+                                        'методом и базисом: путь идёт от него вниз в обе стороны, гессиан считается в '
+                                        'начале. Профиль энергии и шаги — в Компасе.') \
+            if task == IRC_TASK else tr('Частоты считаются на этой геометрии, без оптимизации: она должна быть '
                                         'оптимизирована тем же методом и базисом — иначе это не минимум.') \
             if task == inputs.FREQ_TASK else self.cda_note() if task == CDA_TASK \
             else self.interaction_note() if task == INTERACTION_TASK else ''

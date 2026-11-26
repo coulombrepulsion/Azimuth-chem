@@ -58,7 +58,7 @@
 """
 
 from azimuth.core import (
-    BASIS_TABLE, CDA_TASK, WAVEFUNCTION, INTERACTION_TASK, EXCITED_OPT_TASK, FREQ_TASK, FUKUI_TASK, NEB_TASK, PROGRAM_COLUMN, SCAN_TASK, SOLVENTS, TASKS, TDDFT_TASK, TS_TASK, Z,
+    BASIS_TABLE, CDA_TASK, WAVEFUNCTION, INTERACTION_TASK, IRC_TASK, EXCITED_OPT_TASK, FREQ_TASK, FUKUI_TASK, NEB_TASK, PROGRAM_COLUMN, SCAN_TASK, SOLVENTS, TASKS, TDDFT_TASK, TS_TASK, Z,
     calculation_title, file_base,
     orca_input, program_names,
     validate_constraints,
@@ -124,6 +124,8 @@ def _constraints(molecule, calculation, constraints):
 def _no_neb(kind, calculation):
     if calculation.task == NEB_TASK:
         raise ValueError(tr(f'Путь реакции (NEB) здесь пишется только для ORCA, не для {NAMES[kind]}.'))
+    if calculation.task == IRC_TASK:
+        raise ValueError(tr(f'Путь от переходного состояния (IRC) здесь пишется только для ORCA, не для {NAMES[kind]}.'))
     if calculation.task == SCAN_TASK and kind not in ('orca', 'gaussian', 'xtb'):  # 0.91.20; xtb
         raise ValueError(tr(f'Скан ППЭ здесь пишется для ORCA, Gaussian и xtb, не для {NAMES[kind]}.'))
     if calculation.task == FUKUI_TASK:  # Multiwfn needs the orbitals of the three calculations (ORCA Molden)
@@ -483,7 +485,7 @@ MOPAC_TASKS = ('Энергия', 'Оптимизация', 'Оптимизаци
 # task — with the programs whose inputs write them (gaussian_input, psi4_input, xtb_arguments, mopac_input, orca_input)
 PROGRAM_TASKS = {
     'orca': tuple(TASKS),
-    'gaussian': tuple(t for t in TASKS if t not in (NEB_TASK, FUKUI_TASK, CDA_TASK, INTERACTION_TASK)),  # no file of
+    'gaussian': tuple(t for t in TASKS if t not in (NEB_TASK, IRC_TASK, FUKUI_TASK, CDA_TASK, INTERACTION_TASK)),  # no file of
     # orbitals for Fukui (nor for CDA)
     'psi4': ('Энергия', 'Оптимизация', 'Оптимизация + частоты', FREQ_TASK, TS_TASK, TDDFT_TASK),  # no scan
     'xtb': tuple(XTB_TASK),
@@ -558,6 +560,8 @@ def task_options(kind, task):
         when.add('root')
     if task == SCAN_TASK:
         when.add('scan')
+    if task == IRC_TASK:  # the steps in each direction (MaxIter) and the Hessian at the start numerically
+        return ('max_cycles', 'num_freq', 'guess') if kind == 'orca' else ()
     if task == NMR_TASK:
         when.add('nmr')
     if task == CDA_TASK:
@@ -745,6 +749,8 @@ def read_settings(kind, text):
         found['couplings'] = True
     elif any('neb' in w for w in lower):
         found['task'] = NEB_TASK
+    elif kind == 'orca' and 'irc' in lower:
+        found['task'] = IRC_TASK
     elif opt and (kind == 'orca' and re.search(r'^\s*scan\b', blocks, re.M)
                   or kind == 'gaussian' and re.search(r'^\s*[bad](?:\s+\d+){2,4}\s+s\s+\d+', text.lower(), re.M)):
         found['task'] = SCAN_TASK  # %geom Scan of ORCA, «S n step» of Gaussian

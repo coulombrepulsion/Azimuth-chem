@@ -655,6 +655,8 @@ MILESTONES = (
         'orca': ('ORCA SCF HESSIAN', 'NUMERICAL HESSIAN'), 'gaussian': ('Force constants in Cartesian coordinates',),
         'psi4': ('Computing Second Derivatives',), 'xtb': ('Numerical Hessian',)}),
     ('neb', 'Путь реакции найден', {'orca': ('THE NEB OPTIMIZATION HAS CONVERGED', 'NEB-CI HAS CONVERGED')}),
+    # ORCA 6.0.1 prints it after each direction (tests/data/orca601/irc_hcn)
+    ('irc', 'Путь IRC дошёл до минимума', {'orca': ('THE IRC HAS CONVERGED',)}),
     ('freq', 'Частоты колебаний посчитаны', {
         'gamess': ('FREQUENCIES IN CM**-1',), 'nwchem': ('Vibrational analysis',),
         'mopac': ('DESCRIPTION OF VIBRATIONS',),  # MOPAC 23.2.5

@@ -35,3 +35,9 @@ converge», exit code 64. The whole output (it names no path of the computer). U
 `h2o_scf_maxiter4_parallel.out` — ORCA 6.0.1 on the owner's Mac (2026-11-22, 2 processes), water B3LYP/def2-SVP with
 `%scf MaxIter 4 end`: the SCF does not converge and the parallel run ends with the lines of mpirun. The whole output,
 the paths replaced (/opt/orca). Used by `tests/sextant/test_runner.py` (not an MPI failure).
+
+`irc_hcn/` — ORCA 6.0.1 on the owner's Mac (2026-11-26, 4 processes): IRC of HCN ⇄ HNC, B3LYP-D3(BJ)/def2-SVP, from
+the transition state found by «Переходное состояние + частоты» (one imaginary frequency, 1117i cm⁻¹); `%irc MaxIter
+40, InitHess calc_anfreq`. Both directions converged: forward to HNC (−34.21 kcal/mol from the TS), backward to HCN
+(−47.77). `hcn_irc.out` — the whole output, `hcn_irc_IRC_Full_trj.xyz` — the 61 geometries of the path (renamed after
+the output, as ORCA names it). Used by `tests/sextant/test_irc_task.py`.

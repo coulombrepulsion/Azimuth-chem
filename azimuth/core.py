@@ -195,6 +195,8 @@ TASKS = {
     'Спектр UV-Vis (TD-DFT)': '',  # the %tddft block (TDDFT_STATES excited states)
     'ЯМР (экранирование)': 'NMR',
     'Путь реакции (NEB-CI)': 'NEB-CI',  # ORCA only; the end structure: end.xyz
+    # the intrinsic reaction coordinate from a transition state down to both minima (ORCA only; the block %irc: irc_block)
+    'Путь от переходного состояния (IRC)': 'IRC',
     # the geometry of an excited state (the root «root» of TD-DFT; ORCA %tddft iroot, Gaussian TD(Root=…) Opt)
     'Оптимизация возбуждённого состояния (TD-DFT)': 'Opt',
     # a relaxed scan — the coordinate chosen among the constraints of Compass goes from its value to the end
@@ -224,6 +226,7 @@ RELATIVISTIC = {'': 'Нет', 'DKH': 'DKH2 (Дуглас — Кролл — Хе
 SLOW_CONV = {'': 'Обычная', 'SlowConv': 'Трудная (SlowConv)', 'VerySlowConv': 'Очень трудная (VerySlowConv)'}
 TDDFT_MODES = {'': 'Как в программе', 'tda': 'TDA (Тамм — Данков)', 'full': 'Полное TD-DFT (RPA)'}
 NEB_TASK = 'Путь реакции (NEB-CI)'
+IRC_TASK = 'Путь от переходного состояния (IRC)'
 SCAN_TASK = 'Скан ППЭ с релаксацией'
 SCAN_LIMITS = {'B': (0.3, 10.0), 'A': (1.0, 179.0), 'D': (-360.0, 360.0)}  # Å, °, °: the end value of a scan
 SCAN_UNITS = {'B': 'Å', 'A': '°', 'D': '°'}
@@ -571,6 +574,15 @@ def validate_constraints(constraints, count):
     return tuple(out)
 
 
+def irc_block(c):
+    """%irc of ORCA: both directions from the transition state, the Hessian computed at the start (numerically for the
+    correlated wave-function methods and with «Численные частоты»), MaxIter — steps in each direction (the limit of cycles)."""
+    hessian = 'calc_numfreq' if c.num_freq or c.method in WAVEFUNCTION and c.method != 'HF' else 'calc_anfreq'
+    rows = '  Direction both\n' + f'  InitHess {hessian}\n'
+    rows += f'  MaxIter {c.max_cycles}\n' if c.max_cycles else ''
+    return '%irc\n' + rows + 'end\n'
+
+
 def neb_block(molecule, end, images):
     """%neb of ORCA: the product in end.xyz (the same atoms in the same order), the number of images."""
     if end is None:
@@ -670,6 +682,8 @@ def orca_input(molecule, calculation, constraints=(), neb_end=None, neb_images=8
         blocks += '%elprop\n  Polar 1\nend\n'
     if c.task == NEB_TASK:
         blocks += neb_block(molecule, neb_end, neb_images)
+    if c.task == IRC_TASK:
+        blocks += irc_block(c)
     if c.solvent and c.solvent_model == 'smd':  # SMD on the CPCM cavity, the same solvent name
         blocks += f'%cpcm\n  smd true\n  SMDsolvent "{SOLVENTS[c.solvent][1]}"\nend\n'
     if c.stability and c.task == 'Энергия':  # the SCF solution checked (and followed) for instabilities

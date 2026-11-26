@@ -549,6 +549,7 @@ Theory — in the Atlas: [«Conformers: which minima to look for»](https://www.
 2. Choose the end structure — from a file or from the comparison. It is renumbered like the starting one and overlaid on it.
 3. The intermediate structures (1–50) are built by IDPP (bonds are not shortened when groups rotate) or linearly; the frames go to the steps panel and to an XYZ file.
 4. «To Sextant: ORCA NEB-CI» prepares a calculation of the path and the transition state: Sextant chooses the task «Reaction path (NEB-CI)», and `end.xyz` is written next to the input file.
+5. A transition state found is checked with the task «Path from the transition state (IRC)» (0.223.0): ORCA goes down from it both ways, to the reactant and to the product. «Task settings» have «Steps each way» and a numerical Hessian for the methods without an analytic one. Start from a geometry with one imaginary frequency computed with the same method and basis. The result opens in Compass: the «Optimization» panel shows the profile of ΔE from the transition state and the structures step by step; the end steps are the minima this TS connects.
 
 Theory — in the Atlas: [«Potential energy surface»](https://www.azimuth-chem.com/atlas/?lang=en#pes).
 
@@ -842,6 +843,7 @@ Table: Sextant tasks
 | Excited state optimization | The geometry of the chosen excited state (ORCA, Gaussian) |
 | Relaxed PES scan | A coordinate from the Compass constraints is changed to the final value in a given number of points, the rest is optimized; in ORCA also a second coordinate (a two-dimensional scan) |
 | Reaction path (NEB-CI) | The path between the starting and the end structures and the transition state (ORCA) |
+| Path from the transition state (IRC) | The descent from a transition state to both minima and the energy profile (ORCA) |
 | Fukui functions (N, N+1, N−1) | Three energy calculations as a queue: the molecule, the anion and the cation (ORCA) |
 | Donor–acceptor bond CDA | The Dapprich–Frenking charge decomposition analysis: the complex and two fragments (ORCA) |
 | Interaction energy with BSSE | Five energy calculations of a pair of molecules with the Boys–Bernardi correction (ORCA) |
@@ -1310,6 +1312,7 @@ Table: Sextant tasks for molecules
 | Excited state optimization | ✓ | ✓ | | | | | |
 | Relaxed PES scan | ✓ | ✓ | | ✓ | | | |
 | Reaction path (NEB-CI) | ✓ | | | | | | |
+| Path from the transition state (IRC) | ✓ | | | | | | |
 | Fukui functions | ✓ | | | | | | |
 | Donor–acceptor bond CDA | ✓ | | | | | | |
 | Interaction energy with BSSE | ✓ | | | | | | |

@@ -6210,5 +6210,10 @@
   "Отправка остановлена.": "Sending stopped.",
   "Остановлен до отправки на сервер.": "Stopped before it was sent to the server.",
   "Остановлен: задача {} снята с очереди сервера.": "Stopped: job {} taken off the queue of the server.",
-  "Останавливаю: задача {} снята с очереди сервера, забираю вывод…": "Stopping: job {} taken off the queue of the server, fetching the output…"
+  "Останавливаю: задача {} снята с очереди сервера, забираю вывод…": "Stopping: job {} taken off the queue of the server, fetching the output…",
+  "Путь от переходного состояния (IRC)": "Path from the transition state (IRC)",
+  "Путь от переходного состояния (IRC) здесь пишется только для ORCA, не для {}.": "A path from the transition state (IRC) is written here only for ORCA, not for {}.",
+  "Шагов в каждую сторону": "Steps each way",
+  "Начинайте с переходного состояния (одна мнимая частота), найденного тем же методом и базисом: путь идёт от него вниз в обе стороны, гессиан считается в начале. Профиль энергии и шаги — в Компасе.": "Start from a transition state (one imaginary frequency) found with the same method and basis: the path goes down from it both ways, the Hessian is computed at the start. The energy profile and the steps are in Compass.",
+  "Путь IRC дошёл до минимума": "The IRC path reached a minimum"
 }

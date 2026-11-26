@@ -1,0 +1,16 @@
+# CHN_B3LYP_def2-SVP
+! B3LYP D3BJ def2-SVP TightSCF
+%pal nprocs 4 end
+%maxcore 1000
+
+! IRC
+%irc
+  MaxIter 40
+  InitHess calc_anfreq
+end
+
+* xyz 0 1
+C   0.01165100  0.03858300  0.00000000
+N   1.19769600 -0.03772200  0.00000000
+H   0.46065300  1.14913900  0.00000000
+*

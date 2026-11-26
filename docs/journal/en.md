@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.223.0 — 26 November 2026
+
+- ### 0.223.0 — The path from a transition state
+
+Sextant has a new task for ORCA, «Path from the transition state (IRC)». Find a transition state, check that it has one imaginary frequency, and run this task at the same geometry with the same method: ORCA goes down from it both ways. Compass shows which two minima this transition state connects and the energy profile along the path.
+
 ## 0.222.50 — 26 November 2026
 
 - ### 0.222.50 — The manual in three languages
