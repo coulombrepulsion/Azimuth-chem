@@ -1,5 +1,14 @@
 # Изменения
 
+## 0.222.50 — 2026-11-26: руководство на английском и китайском
+
+Основание: владелец, 2026-11-26 — «У меня вот есть уже готовый мануал на русском, можешь сделать еще на английском теперь и на китайском?»
+
+- Changed: `docs/manual/en.md` и `docs/manual/zh.md` — перевод книги-руководства 0.222.48 целиком (те же 11 глав и 4 приложения, 107 заголовков, 15 рисунков, 20 таблиц); прежние английский и китайский тексты (старое руководство по разделам) заменены. Названия пунктов меню и кнопок взяты из переводов интерфейса (`azimuth/locale/en.json`, `zh.json`); ссылки на темы Атласа ведут на www.azimuth-chem.com/atlas с языком книги. Рисунки — те же снимки окон (на русском).
+- Changed: `tools/manual_pdf.py` собирает книгу и на английском и китайском (`--lang en`, `--lang zh`): обложка, страница издания с лицензией и ссылкой, «Chapter 1» / «第 1 章», «Appendix A» / «附录 A», «Table» / «表：», заметки «Warning», «Tip» / «注意», «提示»; китайский текст — системным шрифтом (PingFang SC на macOS, Microsoft YaHei на Windows).
+- Не сделано: PDF на английском и китайском не собраны (здесь нет Qt с QtWebEngine) — собрать на Mac: `.venv/bin/python tools/manual_pdf.py --lang en`, `--lang zh`; русский PDF тоже пересобрать (`tools/manual_pdf.py` изменился, `test_the_book_is_as_new_as_its_sources` иначе упадёт). Предварительная печать HTML книг через Chromium (Playwright) — en 50 страниц, zh 46, китайские буквы на месте.
+- Tests: `tests/core/test_manual_pdf.py` — `test_the_english_and_chinese_books_number_as_the_russian_one`, `test_the_three_manuals_have_the_same_chapters_figures_and_tables`; ссылки на Атлас — существующий `test_site_links.py`.
+
 ## 0.222.49 — 2026-11-26: Windows — программы для расчёта ставятся мимо зеркала conda, причина сбоя — в журнале
 
 Основание: владелец, 2026-11-26 — проверка на Windows (`docs/plans/WINDOWS_CHECK.md`, §2.3): «Установить программы» → xtb и MOPAC не ставились ни в 0.222.35, ни в 0.222.48; «Исправь сейчас».

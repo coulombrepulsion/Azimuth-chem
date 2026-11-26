@@ -53,6 +53,36 @@ def test_the_numbers_of_chapters_appendices_figures_and_tables():
     assert html.count('<section class="chapter">') == html.count('</section>') == 3
 
 
+def test_the_english_and_chinese_books_number_as_the_russian_one():
+    # the words of the book in its language: «Chapter 1» / «第 1 章», «Appendix A» / «附录 A», «Table» / «表：», the
+    # notes «Warning» / «注意» and «Tip» / «提示»; Chinese text needs a CJK font of the system
+    en = '\n'.join(['# Book', '', '## First', '', '### Part', '', 'Table: Numbers', '', '| a |', '|---|', '| 1 |', '',
+                    '> **Warning.** Careful.', '', '> **Tip.** Quick.', '', '## Appendix A. Formats', ''])
+    html, headings = manual_pdf.to_html(en, 'en', '1')
+    assert [(h.level, h.number) for h in headings] == [(2, '1'), (3, '1.1'), (2, 'A')]
+    assert 'Chapter 1' in html and 'Appendix A' in html and 'Table 1.1.' in html and 'User manual' in html
+    assert '<aside class="warning">' in html and '<aside class="tip">' in html and 'Version 1' in html
+    zh = '\n'.join(['# 书', '', '## 第一', '', '表：数字', '', '| a |', '|---|', '| 1 |', '', '> **注意。** 小心。', '',
+                    '> **提示。** 快。', '', '## 附录 A。格式', ''])
+    html, headings = manual_pdf.to_html(zh, 'zh', '1')
+    assert [(h.level, h.number, h.title) for h in headings] == [(2, '1', '第一'), (2, 'A', '格式')]
+    assert '第 1 章' in html and '附录 A' in html and '表 1.1.' in html and '用户手册' in html
+    assert '<aside class="warning">' in html and '<aside class="tip">' in html and 'PingFang SC' in html
+
+
+def test_the_three_manuals_have_the_same_chapters_figures_and_tables():
+    # the English and Chinese manuals are translations of the Russian one: the same headings, pictures and tables
+    books = {lang: manual_pdf.to_html((manual_pdf.MANUAL / f'{lang}.md').read_text(encoding='utf-8'), lang, '0')
+             for lang in ('ru', 'en', 'zh')}
+    shape = {lang: ([(h.level, h.number if h.number.isdigit() or '.' in h.number else len(h.number)) for h in hs],
+                    html.count('<figure>'), html.count('<caption>'))
+             for lang, (html, hs) in books.items()}
+    assert shape['en'] == shape['ru'] and shape['zh'] == shape['ru']
+    pictures = {lang: sorted(re.findall(r'img/[\w-]+\.jpg', (manual_pdf.MANUAL / f'{lang}.md').read_text(encoding='utf-8')))
+                for lang in ('ru', 'en', 'zh')}
+    assert pictures['en'] == pictures['zh'] == pictures['ru']
+
+
 def test_the_contents_take_the_room_of_three_digits_before_the_pages_are_known():
     markdown = '# К\n\n## Глава\n\n### Раздел\n'
     first, headings = manual_pdf.to_html(markdown, 'ru', '1')

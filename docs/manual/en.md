@@ -1,541 +1,1372 @@
-# Azimuth manual
+# Azimuth User Manual
 
-Azimuth is a teaching program for quantum chemistry. It has four sections: the **Atlas** (theory; since 0.160.0 on the site [azimuth-chem.com](https://www.azimuth-chem.com/?lang=en), the program opens it in the browser), **Compass** (the molecule and the crystal), **Sextant** (preparing and running a calculation) and **Spectrum** (the results of a calculation). Every section has its own tab in this manual: first what the section can do, then how to do things step by step.
+## Introduction
 
-## General
+### What Azimuth is
 
-### The program window
+Azimuth is a teaching program for quantum chemistry. It leads you along the whole path of quantum-chemical work: **understand the theory → build the molecule → prepare and run the calculation → read the result**. Each step has a section of its own, and the data pass from section to section without intermediate files: a molecule built in Compass goes to Sextant, and the result of the calculation comes back onto the model in Compass and into the plots of Spectrum.
 
-- **The side panel** on the left: the program icon (opens the home page), the sections — Atlas (opens it on the site in the browser; since 0.200.0 a line sets it apart from the sections of the program, and the arrow ↗ on its button tells that it opens outside the window), Compass · Molecule, Compass · Crystal, Sextant, Spectrum — the Back and Forward buttons, the language (Russian, English, Chinese), the theme and About. A section can also be opened from the keyboard: Ctrl+1 … Ctrl+5 (Cmd+1 … Cmd+5 on a Mac).
-- **The section header** — the name of the section and its menus: File, Edit, View, Calculation and the menus of the section itself (Tools, Project, Server in Compass, Crystal for a crystal); the last one is Help.
-- **Tabs** are shared by «Compass · Molecule», Sextant and Spectrum: a tab is the whole work on one structure — the structure, the settings of its calculation and its result. A tab chosen in one section is chosen in all of them; «Compass · Crystal» keeps its own tabs, and Sextant and Spectrum go back to the molecules from there. The result of a calculation opens in the tab the calculation was started from (a result from a file — in an empty or a new tab) and is shown where there is something to look at: vibrations, UV-Vis and NMR in Spectrum, the rest in Compass. Properties (charges, bond orders, the dipole) are on the model at once, and when the result has orbitals, a ☰ button on the right above the model opens the «Electron density» panel.
-- **The compass of background work** (0.203.0; before it an hourglass) appears at the bottom of the left panel, above the languages, when long work goes on behind a window put away: a calculation of Sextant when you have left Sextant, or a conformer search put away with «Put away» (the ✕ of its window during the search does the same: only «Stop» stops the search). The compass stands on a «breathing» blue disc and its needle swings; when the share done is known a ring fills around it, when not a comet runs round (for xtb — «conformer 5 of 20»); its tooltip shows the time. A click opens the window of the work without leaving the section; with several works their number is on the sign and a click gives the list. When the work ends the needle stops and a tick appears next to it (a cross after an error, a bar when stopped); once you open the window the sign goes. Back in Sextant the calculation window closes by itself and the progress is in the place of the input file.
-- **Home.** Under the name — what Azimuth is (since 0.200.0 without Quail's greeting: she stays in the question windows, the hints of Compass and on the site); the Continue cards bring back the last molecule («Compass · Molecule») and the last crystal («Compass · Crystal», 0.192.0), and the arrow on a card unfolds a stack of five more recent projects of the same kind (0.216.27); if the last file is gone, the newest of «Recent files» of the same kind. Below are the cards of the sections.
-- **Help** in every section (0.216.134): a search field at the top of the menu — type a word, and the menu items and window buttons with that word in their name or tooltip appear below it, with their path («Crystal ▸ Intermolecular interactions ▸ Hirshfeld surface…»). The chosen item is shown in its place: the menus open one after another, the item is highlighted, Enter runs it. ⌘? (Ctrl+?) opens Help with the search field. Help also has the **Periodic table** (0.216.104): an element card with an animated atom, its mass, the isotopes from NIST and the electron configuration.
-- **Help → Handbook** (0.218.0): **Units and constants** — conversion of energy (Eh, eV, kcal/mol, kJ/mol, cm⁻¹, K, THz and the wavelength of a photon in nm), length and dipole moment, the fundamental constants of CODATA 2018 — those the program computes with; **Solvents** — ε at 20–25 °C and the name of the solvent in ORCA, Gaussian, xtb and CREST, Psi4, MOPAC (the «?» at the solvent in Sextant opens this table); **Frequency scaling factors** — the NIST CCCBDB table by method and basis set (from Spectrum — «Tools → Frequency scaling factors…»: «Apply to the spectrum» or a double click puts the factor into the IR spectrum); **Measured data** — the databases of measured spectra, geometries and thermochemistry (NIST WebBook and CCCBDB, ATcT, SDBS, nmrshiftdb2, NIST atomic spectra, COD, PubChem) with a search by the formula of the molecule (from Spectrum — «Tools → Measured data for the molecule…»). The field on top searches the table of the open tab.
-- **The theme and the language** are shared by all sections, the Atlas included. The program icon in the Dock and in the window follows the theme of the program, like the left panel: a light tile in the light theme, a dark blue one in the dark theme. The same icon stays in the Dock after the program is closed. **«Settings → Theme → As in the system»** (0.173.0) — light or dark as the appearance of the system (macOS, Windows), changing with it until a theme is chosen by hand with the button of the left panel or in the settings.
-- **Quail in the windows.** Quail greets the end of a calculation in the calculation window, stands in the questions before quitting and before replacing the project and in the input file check, in a Spectrum tab without a result she studies an empty sheet with a magnifier, while a calculation runs she counts in its window, and while a Compass tab is empty she stands in the corner of the field with a hint: the pencil in her bubble turns on editing, the folder opens a file (once a molecule is built or opened she goes away until the next start).
-- **Questions and dialogs** («Save changes?», choosing a file, entering a name) speak the language of the program — with the buttons Yes, No, Save, Don't Save, Cancel too. The file dialogs on macOS are the system's own: their buttons follow the language of macOS.
-- **Tooltips** (0.202.18) appear only where they tell something new: on icons without words, on the fields of settings, on cut text. Over an empty place of a panel, over a frame and over a button whose tooltip repeats its words nothing appears. Longer explanations are behind «?».
-- **The values of fields** (0.203.7) — the numbers and the text of the fields stand in the middle of the field throughout the program, as in the tables.
-- **Settings** (0.91.35) — «File → Settings…» in any section or the gear in the left panel: one window for the settings of the whole program — language and theme; «Add hydrogens to files without H»; the CSV analysis tables (the column separator «;», «,» or Tab, the decimal sign — comma or point, with a sample row); the calculations folder; the Multiwfn grid and program. Changes apply at once and are kept until the next start. The mouse wheel scrolls the window; a list or a number is changed by the wheel only after a click in it (0.200.1). (0.91.72) As Tools → Preferences of Chemcraft, three more sections: «Bonds and steps» — the factor of the sum of covalent radii for bonds by distance (1.22; for structures without their own bonds — XYZ, calculation outputs; «Find bonds again» applies it to the open one), the threshold of «Bonds from Mayer orders» (0.5) and «Optimization and scan steps in one orientation» (every step is turned onto the starting geometry, the molecule does not jump; lengths and angles stay the same); «Pictures» — the magnification of «High-resolution snapshot» (×2–×6), a transparent background, cropping to the molecule; «Spectra» — IR as sticks or a curve, the IR and UV-Vis band widths, turning the frequency factor on at once. At the top — the icons of the sections; each section has «Defaults». (0.91.73) «Model look» — the display scheme at start («As last time» or any of the menu) and quick drawing from N atoms (a large model is drawn slightly coarser also at rest; snapshots are full quality); «Units» — the coordinates of the Compass table (Å or bohr) and the energies ΔE (kcal/mol, kJ/mol, eV) of optimization steps, scans, IRC and conformers, the reaction diagram starts in them too; «Programs» — where ORCA, Gaussian, Psi4, xtb, CREST, MOPAC were found, «Choose…» a file (say, one of two ORCA versions) and «Find it myself»; «All settings» — «Save to a file…» (JSON, no passwords or keys), «Load from a file…» (on another computer) and «Reset all settings…».
-- **Atoms with symbols** (0.91.41) — wherever atom numbers are needed (the plane and the line of the maps of Spectrum, the fragments of the charge transfer and of CDA, «Select by numbers»), atoms are shown as «H1», «C3–C8», and they can be typed either way: «1-4, 7», «N1, H2–H4», or just «H» for all hydrogens; a symbol that is not the element of that atom is refused (a mistyped number).
-- **The «File» menu** (0.91.75): «Save» (Ctrl+S) writes the project into the same file without asking, «Save as…» (Ctrl+Shift+S) under a new name; «Close the tab» (Ctrl+W) and «Close the other tabs»; «Clear» — an empty structure in the tab and nothing over the model (properties, surfaces, critical points, measurements, own labels, the structure overlaid for comparison), as Clear of Chemcraft; «Molecule by name…» — an English name (aspirin, caffeine, 2-butanol), the structure from PubChem: its 3D model (MMFF94 force field), or, without one, built from the SMILES; the internet is needed; «Paste a structure from the clipboard» (Ctrl+Shift+V) — copied XYZ coordinates (whole or only the lines «C  x  y  z»), a molfile or a SMILES; «Show the file in its folder» — Finder or Explorer with the file of the tab (the project, the calculation output or the file it was opened from). A structure by name or from the clipboard goes into an empty tab, else into a new one.
-- **Errors and a report for the author** (0.91.44) — when something breaks, the program does not stay silent: the error is written to a log, and a window with Quill says «Something went wrong» (the program goes on) and offers «Save the report…». If the program closed after a crash, at the next start it offers to save a report itself. The report is one .zip: the logs of errors, crashes and the start, the versions of Azimuth, Python, Qt, NumPy, VTK, the system and the settings without passwords; send it to the author. The same — «File → Error report…» and the section «Errors» of «Settings» (with «Open the folder of the logs»). The logs are in ~/Library/Logs/Azimuth (macOS), %LOCALAPPDATA%\Azimuth\Logs (Windows), ~/.local/state/Azimuth (Linux).
-- **Calculation programs.** The calculation programs are not part of Azimuth and are installed separately (Sextant installs xtb, CREST, MOPAC, Open MPI, Quantum ESPRESSO, NWChem and Psi4 itself). For ORCA, Gaussian, Psi4, xtb, MOPAC, GAMESS (US) and NWChem, and for crystals Quantum ESPRESSO and CP2K, Azimuth prepares the input files, runs the programs and reads the results; for CRYSTAL it prepares the input file and reads the output; Q-Chem and Firefly outputs it only reads.
-- **Files from Finder** (0.216.135). Double-clicking an `.qcc` project opens it in Azimuth; for CIF, XYZ, MOL, SDF, PDB, calculation inputs and outputs, Molden and CUBE files Azimuth is offered in «Open With». A structure or a crystal opens in Compass, a calculation result in Spectrum. If macOS says the program is blocked, see `README_MACOS.md` next to the program.
+The calculations themselves are done by external programs — ORCA, xtb, MOPAC, Psi4, NWChem and others. Azimuth prepares their input files, runs them on this computer or on a computing server, follows the course of the calculation and reads the results. Sextant installs some of these programs by itself; ORCA is downloaded from the site of its developers (see «Installing the calculation programs»).
 
-### From theory to a result
+The program is meant for students who are just starting with quantum-chemical calculations and for teachers who run a practical course. An experienced user will find it a convenient shell: it brings together building structures, projects with sets of molecules, calculation queues, work with a SLURM cluster and wavefunction analysis.
 
-1. In the **Atlas** — the item «Atlas» of the panel opens [it on the site](https://www.azimuth-chem.com/atlas/?lang=en) — open a topic (for example, «Geometry optimization»), watch the demo and answer the tasks.
-2. On the topic page press «Open in Compass» — the browser hands the molecule to the program, and it opens in **Compass · Molecule** (on a computer with Azimuth installed). You can also build your own.
-3. Press «To the calculation settings» under the model — **Sextant** opens. Choose the program, the task, the method and the basis and press «Run calculation».
-4. When the calculation finishes, the result goes to the tab it was started from, and the section does not change by itself: the calculation window has «Go to Compass» (optimization steps, frequencies, orbitals) and «Go to Spectrum» (frequencies, spectra, thermochemistry).
+### Sections of the program
 
-### Examples
+Table: The sections of Azimuth
 
-«File → Open an example…» opens the program's `examples` folder: real ORCA, Gaussian, xtb and Psi4 outputs (properties, optimizations, scans, vibrations, UV-Vis and NMR, orbitals), pairs of structures to compare, molecules for rotation about a bond, CIF crystals (CsCl, NaCl, graphite, benzoic acid, silicon) and a file of your own fragments. What to open and what to look at is in the table `examples/README.md`. The File menu of Spectrum also has teaching ORCA results that open without files.
+| Section | Purpose | Chapter |
+|---|---|---|
+| **Atlas** | 56 interactive topics of theory — from the postulates of quantum mechanics to DFT, thermochemistry and spectra; self-check exercises | 5 |
+| **Compass · Molecule** | Building and editing molecules, symmetry and name, conformers, reaction path, projects; the result of a calculation on the 3D model | 6 |
+| **Compass · Crystal** | Crystals from CIF files: cell, symmetry, contacts, Hirshfeld surface, powder pattern, (hkl) surfaces | 7 |
+| **Sextant** | Preparing the input file and running the calculation on this computer or on a server, queues and chains of calculations | 8 |
+| **Spectrum** | Reading the result: energies, convergence, vibrations and IR, UV-Vis, NMR, thermochemistry, orbitals, electron density analysis | 9 |
 
-### Where the files are
+The Atlas is the site [azimuth-chem.com](https://www.azimuth-chem.com/?lang=en); the program opens it in the browser, and the molecules of Atlas pages open in Compass with one click.
 
-- **Calculations** — «Documents/Azimuth/Расчёты» (on Windows «Documents\Azimuth\Calculations», and «C:\Users\Public\Documents\Azimuth\Calculations» when the user name has non-Latin letters: calculation programs on Windows do not open files in folders with such letters in the path): every calculation has its own folder `<date>_<formula>_<program>` with the input file and the whole output.
-- **Projects** — «Documents/Azimuth/Проекты/<name>» (another folder is chosen in «Settings → Calculations → Projects folder»): `project.qcc` (a pointer), `project.sqlite` (the molecules, settings and calculation history) and the calculation folders of the molecules. More in «Compass · Molecule → Projects».
-- **The startup log** — `~/Library/Logs/Azimuth/startup.log` on a Mac (`%LOCALAPPDATA%\Azimuth\Logs` on Windows). If the program did not open, the reason is written there.
+### How this manual is organized
 
-### About
+Chapters 1–4 are for everyone: what the program is, how to install it, how to walk the whole path on one example and how the interface works. Chapters 5–9 describe the sections of the program in the order of work. Each chapter begins with an overview, followed by procedures — numbered «how to» steps — and reference information. Chapter 10 is for those who control the program from a language model, chapter 11 tells what to do when something does not work. The appendices gather into tables the file formats, the keyboard shortcuts and the capabilities of each calculation program.
 
-The About button at the bottom of the panel: the versions of the program and of all its sections (in the header of the window), a description of the sections, this manual, the changelog, and «Report a problem». In the **changelog** every section has its own tab: Program (general changes), Atlas (together with the technical changelog of the Atlas), Compass, Sextant, Spectrum.
+The same manual opens in the program itself: «Help → Manual».
+
+### Conventions
+
+- **«File → Open…»** — a menu item: the arrow leads from a menu to a submenu and to the item. The menus of the sections are in the header of the window above the working area.
+- **«Run calculation»** — the label of a button, field or tab in a window of the program.
+- `Ctrl+S` — a keyboard shortcut. On macOS press `⌘` (Cmd) instead of `Ctrl` and `⌥` (Option) instead of `Alt`; the text gives the Windows and Linux variant. The `Delete` key on a Mac is `⌫`.
+- `C:\ORCA`, `examples/README.md` — names of files, folders, commands and text typed as it is.
+- **Click** — a press of the left mouse button; a **right-click** opens the context menu (a two-finger click on a Mac trackpad).
+
+> **Note.** Explanations and details that can be skipped on first reading look like this.
+
+> **Tip.** Techniques that save time look like this.
+
+> **Warning.** Warnings look like this: the action cannot be undone or may spoil the result.
+
+### Calculation programs and how they were checked
+
+Azimuth supports several calculation programs, but not all of them have been checked equally. Programs whose input files have never been run by the real program are marked **«not checked»** in the program list of Sextant: check the input file yourself before a calculation with them.
+
+Table: Calculation programs
+
+| Program | What Azimuth does | Status |
+|---|---|---|
+| ORCA | Input file, run, progress, reading the result | Checked |
+| xtb | Run, reading, conformer search, quick calculation from Compass | Checked |
+| CREST | Conformer search | Checked |
+| MOPAC | Input file, run, reading | Checked |
+| NWChem | Input file, run, reading | Checked |
+| Psi4 | Input file, run, reading | Checked |
+| Gaussian | Input file, run, reading | Input files not checked by a run |
+| GAMESS (US) | Input file, run, reading | Input files not checked by a run |
+| Quantum ESPRESSO, CP2K | Crystal calculations | Not checked |
+| CRYSTAL | Input file and reading the result (no run) | Not checked |
+| Q-Chem, Firefly | Reading the result only | — |
+| Multiwfn | Wavefunction analysis (charges, surfaces, QTAIM) | Checked (version 2026.7.15) |
+
+## Installation and first start
+
+### System requirements
+
+Table: Supported systems
+
+| System | Requirements |
+|---|---|
+| macOS | A Mac with an Apple Silicon processor (M1 or newer); Python 3.13 |
+| Windows | Windows 10 or 11, 64-bit; Python 3.12 or 3.13 (64-bit) |
+| Linux | x86_64, glibc 2.34 or newer (Ubuntu 22.04+, Debian 12+, Fedora 35+, Linux Mint 21+); Python 3.12 or 3.13 |
+
+The first start needs the internet: the program installs its libraries (Qt, VTK, NumPy) once into the folder `.venv` inside the program folder. The Python of the system is not changed. After that, the internet is needed only by the Atlas (unless it is saved for offline work), by the search of molecules by name in PubChem, the search of crystals in COD and the installation of calculation programs.
+
+Put the program folder on a path **without Cyrillic or other non-Latin letters and without spaces** — for example `~/Azimuth` on a Mac or `C:\work\Azimuth` on Windows: many calculation programs cannot open files on such paths.
+
+### Installing on macOS
+
+1. Unpack the archive of the program into a convenient folder (or get it with `git clone`).
+2. Double-click `Azimuth.app` in the program folder. The application must stay in this folder next to the other files; for convenience make an alias of it in «Applications» or in the Dock.
+3. The first start installs the dependencies and takes a few minutes. Then the program window opens.
+
+The program is not signed with a paid Apple certificate, so on the first start macOS may say: «“Azimuth” Not Opened — Apple could not verify…». Nothing is wrong with the program — you only need to allow it to start once.
+
+- **For the whole folder at once.** Open «Terminal» (Applications → Utilities), type `xattr -dr com.apple.quarantine ` (with a space at the end), drag the program folder into the Terminal window and press Return. The «downloaded from the internet» mark is removed from all files.
+- **Through the system settings.** Try to open `Azimuth.app` and close the message. Open «System Settings → Privacy & Security» and at the bottom, next to the line about «Azimuth» being blocked, click «Open Anyway»; confirm with your password.
+
+> **Note.** In macOS 15 (Sequoia) and newer, right-click → «Open» no longer bypasses this check. A folder obtained with `git clone` gets no such mark, and there are no warnings.
+
+The file `Launch-macOS.command` in the program folder is for installation and diagnostics from the Terminal. After the first start of `Azimuth.app`, `.qcc` projects open with a double click in the Finder, and Azimuth appears in «Open With» for CIF, XYZ, MOL, SDF, PDB, Molden and CUBE files and the files of calculations.
+
+### Installing on Windows
+
+1. If the archive was downloaded from the internet, unblock it before unpacking: right-click the archive → «Properties» → the «Unblock» check box → «OK».
+2. Unpack the program folder to a short Latin path, for example `C:\work\Azimuth`.
+3. Run `windows_first_run.bat`. It finds a 64-bit Python 3.13 or 3.12 (Anaconda's too), installs the dependencies and checks the installation. If there is no suitable Python, the installer itself installs Python 3.13 for the current user only, without administrator rights.
+4. After a successful check, start the program with `Launch-Windows.bat`.
+
+If a blue window «Windows protected your PC» (SmartScreen) appears, click «More info» → «Run anyway»: the program is not signed with a paid Microsoft certificate.
+
+> **Note.** The first loading of VTK after the installation may take several minutes while the antivirus checks its files. Do not interrupt it.
+
+### Installing on Linux
+
+1. Install Python 3.13 (3.12 also works) with the venv module. Ubuntu 24.04: `sudo apt install python3 python3-venv`; Fedora: `sudo dnf install python3.13`.
+2. Install the Qt system libraries missing from a minimal installation. Ubuntu and Debian: `sudo apt install libxcb-cursor0 libegl1 libxkbcommon-x11-0`; Fedora: `sudo dnf install xcb-util-cursor`.
+3. Unpack the program folder and run `./Launch-Linux.sh` in a terminal. The first start installs the dependencies, then the window opens.
+4. To have the program in the application menu and to open the «Open in Compass» links of the Atlas site, run `./Launch-Linux.sh --install-desktop`. To remove the shortcut — `--remove-desktop`. After moving the program folder, repeat the command.
+
+> **Tip.** If under Wayland the window or the model is drawn incorrectly, start the program under X11: `QT_QPA_PLATFORM=xcb ./Launch-Linux.sh`.
+
+### Checking the installation
+
+«Help → Installation check» checks Python and the libraries, the teaching files, the Atlas and the VTK 3D graphics. The same from a terminal: `.venv/bin/python verify_install.py` (on Windows `.venv\Scripts\python.exe verify_install.py`). Exit code 0 means that all checks passed.
+
+### Installing the calculation programs
+
+The calculation programs are not part of Azimuth. Sextant installs some of them itself; the others are installed separately.
+
+Table: How the calculation programs are installed
+
+| Program | How to install |
+|---|---|
+| xtb, CREST, MOPAC | «Sextant → Calculation → Install calculation programs…» (CREST — not on Windows) |
+| Open MPI | The same, or the «Install Open MPI…» button in the run card (macOS, Linux) |
+| Psi4, NWChem, Quantum ESPRESSO | «Install calculation programs…» (macOS and Linux) |
+| ORCA | By hand from the developers' site (see below) |
+| MS-MPI (Windows) | The installer `msmpisetup.exe` from the Microsoft site; the «Install MS-MPI…» button opens the page |
+| Multiwfn | macOS: `brew install multiwfn`; Windows and Linux — the noGUI build from sobereva.com/multiwfn |
+| CP2K | Linux — «Install calculation programs…»; macOS — `brew install cp2k`; on a server — the cp2k module |
+| Gaussian, GAMESS (US) | Commercial or separately distributed programs; installed by their authors' instructions |
+
+If xtb, CREST or MOPAC is not found, the run card of Sextant has an «Install into the program folder…» button next to the program. The «Install calculation programs…» window checks xtb and MOPAC at once if they are not there yet and says «already here» for programs it found. For big programs (Quantum ESPRESSO, NWChem, Psi4) the download size and the disk space are given. The programs are installed from conda-forge through the conda of the computer if there is one, otherwise through a small micromamba installer — without administrator rights and without changing the terminal settings. They go into the program folder, into the hidden folder `.tools` (for a built application — into `~/Library/Application Support/Azimuth` on a Mac and `%LOCALAPPDATA%\Azimuth` on Windows).
+
+#### How to install ORCA
+
+ORCA is free for teaching and research, but it is downloaded only from its developers' site after registration.
+
+1. Register on the ORCA forum (orcaforum.kofo.mpg.de) and in the Downloads section download the archive for your system: for a Mac on Apple Silicon — «macOS arm64, Open MPI 4.1.1», for Windows — «Windows x64». ORCA 6.0.1 (macOS) and 6.1.1 (Windows) have been checked.
+2. Unpack the archive: on a Mac — into «Applications» or the home folder, on Windows — into a folder with a Latin path without spaces, for example `C:\ORCA`.
+3. On a Mac, remove the «from the internet» mark from the ORCA files once: type `xattr -dr com.apple.quarantine ` in the Terminal and drag the ORCA folder into the window.
+4. Open Sextant. If ORCA has a green check mark in the «Run the calculation» card, the program is found. If not, click «Choose…» and select the file `orca` (`orca.exe` on Windows) in its folder.
+5. To run on several processes ORCA needs MPI: Open MPI on a Mac and Linux (the «Install Open MPI…» button in the same card), Microsoft MPI on Windows. On one process no MPI is needed.
+
+> **Note.** Sextant looks for the programs in PATH, in the usual installation folders (ORCA folders in «Applications» and in the home folder, Homebrew, conda) and in `.tools`. Where each program was found is shown in «File → Settings… → Programs»; there you can also set the file of a program by hand, for example one of two versions of ORCA.
+
+### Where the program keeps its files
+
+Table: The folders of Azimuth
+
+| What | macOS and Linux | Windows |
+|---|---|---|
+| Calculations | `~/Documents/Azimuth/Расчёты` | `Documents\Azimuth\Calculations` |
+| Projects | `~/Documents/Azimuth/Проекты` | `Documents\Azimuth\Projects` |
+| Crystals from COD | `~/Documents/Azimuth/COD` | `Documents\Azimuth\COD` |
+| Logs | `~/Library/Logs/Azimuth` (Linux — `~/.local/state/Azimuth`) | `%LOCALAPPDATA%\Azimuth\Logs` |
+| Programs installed by Sextant | the `.tools` folder of the program | the `.tools` folder of the program |
+
+Every calculation has a folder of its own named `<date>_<formula>_<program>`: it holds the input file, the whole output of the program and the subfolder «Анализ» with the tables of analyses. The folders of calculations and projects can be changed in «File → Settings… → Calculations».
+
+> **Note.** If the Windows user name contains Cyrillic or other non-Latin letters, calculations go by default to `C:\Users\Public\Documents\Azimuth\Calculations`: calculation programs on Windows cannot open files on paths with non-Latin letters.
+
+## Quick start: from theory to result
+
+This chapter walks the whole path on one example — the geometry optimization and frequency calculation of ethanol. The details of every step are in chapters 5–9.
+
+### Step 1. Theory in the Atlas
+
+1. Click «Atlas» on the left panel — an Atlas topic opens in the browser.
+2. Open the topic «Geometry optimization», watch the demonstration («▶ Demonstration» at the bottom right) and move the sliders.
+3. Answer the «Check your knowledge» exercises at the end of the page.
+
+Pages with molecules have «Open in Compass» buttons: the browser passes the molecule to the program, and it opens in Compass.
+
+### Step 2. The molecule in Compass
+
+1. Go to «Compass · Molecule» (`Ctrl+2`).
+2. Open ethanol from the library: «File → Example molecules → Alcohols and ethers → Ethanol · C₂H₆O». Or build it from SMILES: «File → Molecule from SMILES…» and the line `CCO`.
+3. Rotate the molecule with the mouse, zoom with the wheel. «View → Atom labels → Element and number · C1» labels the atoms.
+4. Click an oxygen atom and a hydrogen atom — the O–H bond length (about 0.96 Å) appears under the model.
+5. Click the symmetry button under the model: ethanol in the zigzag conformation has the group Cs.
+
+![Compass · Molecule: the model, the tool panel on the left, the menus and view buttons above the field, the summary and the «To the calculation settings» button under the model](img/compass.jpg)
+
+### Step 3. The calculation in Sextant
+
+1. Click «To the calculation settings» under the model — Sextant opens with this molecule.
+2. Choose the program (for example ORCA or xtb), the task «Optimization + frequencies», the method B3LYP and the basis set def2-SVP. The D3(BJ) dispersion correction is already on.
+3. The input file is shown on the right — you can read it and correct it if needed.
+4. Click «Run calculation» (`Ctrl+Enter`). The progress of the calculation takes the place of the input file: the stages, the optimization cycles, the last energy.
+
+![Sextant: the task setup on the left, the calculation card and the input file on the right](img/sextant.jpg)
+
+### Step 4. The result in Compass and Spectrum
+
+When the calculation ends, the buttons «Go to Compass» and «Go to Spectrum» appear in the calculation window.
+
+- In **Compass** the result opens as the optimization steps: the ☰ button at the top left of the model shows the energy plot and plays the steps. The vibrational frequencies can be viewed right on the model.
+- In **Spectrum** — the final energy, the convergence of the optimization, the IR spectrum with animated vibrations and the thermochemistry (enthalpy and Gibbs free energy).
+
+![Spectrum: the «Vibrations and IR» tab — the table of modes, the IR spectrum and the animation of the chosen vibration](img/spectrum-vibrations.jpg)
+
+> **Tip.** If the result of an optimization with frequencies has an imaginary frequency, the structure is not at a minimum. The calculation doctor offers the button «Shift along the imaginary mode and optimise again» (section «Calculation doctor»).
+
+### Teaching examples
+
+«File → Open an example…» opens the `examples` folder of the program: real outputs of ORCA, Gaussian, xtb and Psi4 (properties, optimizations, scans, vibrations, UV-Vis and NMR, orbitals), pairs of structures to compare, molecules for rotation about a bond, CIF crystals (CsCl, NaCl, graphite, benzoic acid, silicon) and a file of custom fragments. What to open and what to look at is described in the table `examples/README.md`. The «File» menu of Spectrum also has teaching ORCA results that open without files.
+
+## Interface and settings
+
+### The main window
+
+The Azimuth window consists of the left panel and the working area of a section.
+
+- **The left panel.** At the top — the program icon, which opens the home page. Below — the sections: the Atlas (set apart by a line; the arrow ↗ reminds you that it opens in the browser), «Compass · Molecule», «Compass · Crystal», Sextant and Spectrum. At the bottom — the «Back» and «Forward» buttons, the choice of language (Russian, English, Chinese), the theme, the settings and «About». The keys `Ctrl+1` … `Ctrl+5` also switch the sections.
+- **The section header** — the name of the section and its menus: «File», «Edit», «View», «Calculation» and the menus of the section itself (Compass has «Tools», «Project», «Server», the crystal has «Crystal»); the last one is always «Help».
+- **The working area** — the content of the section. At its top right there is a pale azimuth scale on the background, at the bottom left — the picture of the section (a compass, a sextant, a spectrum).
+
+![The home page: the «Continue» cards and the cards of the sections](img/home.jpg)
+
+**The home page** tells what Azimuth is and gives a quick way into work. The «Continue» cards bring back the last molecule and the last crystal; the arrow on a card unfolds a stack of five more recent projects of the same kind. Below are the cards of the sections.
+
+### Structure tabs
+
+A tab is the whole work on one structure: the structure itself, the settings of its calculation and its result. The tabs are shared by «Compass · Molecule», Sextant and Spectrum: a tab chosen in one section is chosen in all of them. «Compass · Crystal» keeps its own tabs; Sextant and Spectrum return from it to the molecules.
+
+- «+» above the model opens a new tab, the cross closes it (if there are unsaved changes, the program asks).
+- The result of a calculation opens in the tab from which the calculation was started; a result from a file opens in an empty or a new tab.
+- A result is shown where there is something to look at: vibrations, UV-Vis and NMR in Spectrum, the rest in Compass. Properties (charges, bond orders, dipole) appear on the model at once.
+
+### The «File» and «Help» menus
+
+The «File» menu is in every section. The main items:
+
+- «Save» (`Ctrl+S`) writes the project into the same file without asking, «Save as…» (`Ctrl+Shift+S`) under a new name.
+- «Close the tab» (`Ctrl+W`) and «Close the other tabs».
+- «Clear» — an empty structure in the tab and nothing on top of the model (properties, surfaces, critical points, measurements, custom labels, an overlaid structure).
+- «Molecule by name…» — an English name (aspirin, caffeine, 2-butanol); the structure is taken from PubChem — its 3D model (MMFF94 force field), or, when there is none, built from SMILES. The internet is needed.
+- «Paste a structure from the clipboard» (`Ctrl+Shift+V`) — copied XYZ coordinates (whole or only the «C x y z» lines), a molfile or SMILES.
+- «Show the file in its folder» — the Finder or Explorer with the file of the tab.
+- «Settings…» — the window of the program settings (section «Program settings»).
+
+A structure by name or from the clipboard goes into an empty tab, otherwise into a new one.
+
+**The «Help» menu** begins with a search field in every section. Type a word, and the menu items and window buttons whose name or tooltip contains it appear below, with the path to them («Crystal ▸ Intermolecular interactions ▸ Hirshfeld surface…»). The chosen item is shown in its place: the menus open one after another, the item is highlighted, `Enter` runs it. `Ctrl+?` opens «Help» with the search field at once. The same menu has «Manual», «What's new» (the change journal), «Periodic table», «Handbook», the installation check, the folder of logs, the error report and «About».
+
+### Handbook and periodic table
+
+«Help → Handbook» gathers data needed during work. The field at the top searches the table of the open tab.
+
+- **Units and constants** — conversion of energy (Eh, eV, kcal/mol, kJ/mol, cm⁻¹, K, THz and the wavelength of a photon in nm), length and dipole moment; the fundamental constants of CODATA 2018 — those the program computes with.
+- **Solvents** — the dielectric constant ε at 20–25 °C and the name of the solvent in ORCA, Gaussian, xtb and CREST, Psi4, MOPAC. The «?» sign next to the solvent in Sextant opens this table.
+- **Frequency scaling factors** — the NIST CCCBDB table by methods and basis sets. From Spectrum («Tools → Frequency scaling factors…») a factor is put into the IR spectrum with the «Apply to the spectrum» button or a double click.
+- **Experimental data** — databases of measured spectra, geometries and thermochemistry (NIST WebBook and CCCBDB, ATcT, SDBS, nmrshiftdb2, NIST atomic spectra, COD, PubChem) with a search by the formula of the molecule.
+
+«Help → Periodic table» opens the cards of the elements: an animation of the atom, the atomic mass, the isotopes from NIST data and the electron configuration.
+
+### The button panel above the model
+
+Above the Compass model there is a row of view buttons, and at the right edge of the field — a column of «Snapshot» and of the buttons for what is overlaid from a calculation. The set of buttons can be changed.
+
+1. Right-click any item or submenu in a menu of the window and choose «Add to the row above the field» or «Add to the column on the right». An item can also simply be dragged from the menu onto the row or the column.
+2. The buttons of the row and the column are dragged with the mouse to another place. Dropped between the buttons of a group, a button joins the group; dropped after the last one, it stands behind a new divider.
+3. Right-click a button — «Remove from the panel», a move to another place, or «Put the buttons back as they were». The standard buttons can be removed too — they stay in the menu.
+
+The set of buttons is remembered and does not depend on the language of the program. «Compass · Crystal» has its own layout: changes there do not touch the panel of the molecule.
+
+### The background work indicator
+
+When long work goes on behind a window put away — a Sextant calculation while you are in another section, or a conformer search collapsed with the «Collapse» button — an icon appears at the bottom of the left panel above the languages: a compass on a «breathing» blue circle with a swinging needle. When the share of work done is known, a ring fills around it; when not, a comet runs around the circle. The tooltip shows the time.
+
+- A click opens the window of the work without leaving the section. If there are several, the icon shows their number, and a click gives a list.
+- When the work ends, the needle stops and a sign appears next to it: a check mark — success, a cross — an error, a dash — the work was stopped. Opening the window removes the sign.
+- When you return to Sextant, the calculation window closes by itself, and the progress of the calculation stands in place of the input file.
+
+### Theme, language and tooltips
+
+The theme (light or dark) and the language are shared by all sections, the Atlas included. «Settings → Theme → As in the system» follows the appearance of macOS or Windows and changes with it until a theme is chosen by hand. The program icon in the Dock and the left panel follow the theme.
+
+Questions and dialogs («Save changes?», choosing a file, entering a name) speak the language of the program, buttons «Yes», «No», «Save», «Cancel» included. The file dialogs on macOS are the system's own; their buttons follow the language of macOS.
+
+Tooltips appear only where they tell something new: on icons without a label, on settings fields, on cut text. Icon buttons unfold on hover and show their label. Longer explanations are behind the «?» sign next to a field.
+
+**Atoms in input fields.** Where atom numbers are needed (the plane and line of Spectrum maps, the fragments of charge transfer and CDA, «Select by numbers»), atoms are shown as «H1», «C3–C8». They can be entered either so or by numbers: «1-4, 7», «N1, H2–H4», and a plain «H» means all hydrogen atoms. A symbol that does not match the element of the atom with that number is not accepted — this protects against mixed-up numbers.
+
+### Program settings
+
+«File → Settings…» in any section (or the gear icon on the left panel) opens one window for the settings of the whole program. On the left — the list of sections, on the right — their fields. Changes act at once and are kept until the next start. Most sections have a «Defaults» button.
+
+Table: Sections of the «Settings» window
+
+| Section | What is set |
+|---|---|
+| Appearance | Language; theme — light, dark or as in the system |
+| Files | «Add hydrogens to files without H» |
+| Bonds and steps | The factor applied to the sum of covalent radii for bonds by distance (1.22; «Find bonds again» applies it to the open structure); the order threshold for «Bonds by Mayer bond orders» (0.5); «Optimization and scan steps in one orientation» |
+| Model view | The display scheme at start («As last time» or any from the menu); fast drawing of big models — from N atoms |
+| Snapshots | The magnification of the «High-resolution snapshot» (×2–×6), transparent background, cropping to the molecule |
+| Spectra | IR as sticks or a curve, the width of IR and UV-Vis bands, the frequency scaling factor on at once |
+| Units | Coordinates in the Compass table (Å or bohr); the ΔE energies of steps, scans, IRC and conformers (kcal/mol, kJ/mol, eV) |
+| Analysis tables (CSV) | The column separator («;», «,» or tab) and the decimal mark; a sample line next to them |
+| Calculations | The calculations folder, the projects folder, the default conformer search method |
+| Programs | Where ORCA, Gaussian, Psi4, xtb, CREST, MOPAC and others were found; «Choose…» the program file and «Find it myself» |
+| Multiwfn | The calculation grid (coarse, medium, fine) and the Multiwfn program file |
+| Errors | The folder of logs, «Save the report…», «Send to the author…» |
+| All settings | «Save to a file…» (JSON, without passwords and keys), «Load from a file…» (for example on another computer), «Reset all settings…» |
+
+> **Tip.** By default the CSV tables are written for the Russian locale — «;» between columns and a decimal comma: Excel and Numbers open them with a double click. For the international form choose «,» and a point.
+
+### Files from the Finder and Explorer
+
+- A double click on a `.qcc` project opens it in Azimuth. For CIF, XYZ, MOL, SDF, PDB, the outputs and input files of calculations, Molden and CUBE, Azimuth is offered in «Open With». A structure and a crystal open in Compass, the result of a calculation in Spectrum.
+- Files can be dragged onto the window. While they are held over it, the window turns grey and a hint for the section on the screen appears in the middle: in Compass — structure files (XYZ, MOL, SDF, MOL2, PDB, CIF, Molden, QCC), in Sextant — input files or structures, in Spectrum — calculation files.
+
+### Errors and the report for the author
+
+When something breaks, the program does not keep silent: the error is written into the log, and a window with Quail says «Something went wrong» (the program goes on working) and offers «Save the report…». If the program closed after a crash, it offers to save the report at the next start.
+
+The report is one `.zip` archive: the logs of errors, crashes and starts, the versions of Azimuth, Python, Qt, NumPy, VTK, information on the system and the settings without passwords. The **«Send to the author…»** button (in the error window, in the question after a crash and in «Settings → Errors») saves the report on the desktop and opens in the mail program a letter to contact@azimuth-chem.com with the version, the system and the last error. You only need to drag the report file into the letter and add what you were doing. The same — «File → Error report…».
+
+### Quail
+
+Quail is the mascot of the program. She greets the end of a calculation in its window, stands in the questions before quitting and before replacing a project and in the input file check. While a Compass tab is empty, Quail stands in a corner of the field with a hint: the pencil in the bubble starts building, the folder opens a file. In Spectrum without a result she studies an empty sheet with a magnifier. In the Atlas, Quail leads the demonstrations of the topics.
 
 ## Atlas
 
-The Atlas lives on the site: [azimuth-chem.com/atlas](https://www.azimuth-chem.com/atlas/?lang=en). The item «Atlas» of the left panel and its card on the home page open it in the browser in the language and the theme of the program (light or dark, since 0.192.4). To read it without the internet, press «Keep the Atlas for reading offline» in the left panel of the site.
+The Atlas is an interactive textbook of theory: 56 topics in 13 sections, from the postulates of quantum mechanics and the hydrogen atom to DFT, perturbation theory, solvation, the choice of method, NMR, conformers, heavy elements, crystals, Walsh diagrams and machine learning in quantum chemistry. The numbers on the pages are computed right in the browser (Python on the page) — without calculation programs and without a server.
 
-56 interactive theory topics in 13 sections: from the postulates of quantum mechanics and the hydrogen atom to DFT, perturbation theory, solvation, choosing a method, NMR, conformers, heavy elements, crystals and Walsh diagrams. «Point groups» has the reduction of representations and SALCs, «SCF iterations» Koopmans’ theorem, «Hückel method» reactivity indices, Fukui functions and semi-empirical methods. The numbers on the pages are computed right in the browser (Python in the page) — no calculation programs and no server needed.
+### How to open the Atlas
 
-### Sections
+The Atlas lives on a site: the main address is [www.azimuth-chem.com](https://www.azimuth-chem.com/?lang=en), a mirror for Russia is [ru.azimuth-chem.com/atlas](https://ru.azimuth-chem.com/atlas/?lang=ru). The «Atlas» item on the left panel and its card on the home page open it in the browser in the theme of the program (light or dark): in Russian on the mirror, in English and Chinese at the main address. The language of an Atlas opened from the program is the language of the program; the theme and the language on the site are switched in its left panel.
 
-Quantum mechanics basics · Molecules and nuclei · Symmetry · Many-electron wavefunctions · Hartree–Fock · Correlation · Density and DFT · Choosing method and basis · MOs and reactions · Thermochemistry and kinetics · Properties and spectra. Each has three to five topics.
+> **Tip.** To read the Atlas without the internet (for example in a classroom without a network), click «Save the Atlas for offline work» in the left panel of the site.
 
-### What a topic page has
+### Sections of the Atlas
 
-- **«What to understand»** and **the model limits** — at the top of the page: what you will learn and where the model stops working.
-- **Sections with sliders, buttons and charts** — change the parameters and watch the result change. Key concepts are highlighted, formulas are in the text.
-- **Demo** (the «▶ Demo» button at the bottom right) — a step-by-step show: Quail presses the buttons herself and explains what you see. The animations of a topic run only while it is open — on another topic or in another section they wait and then go on from the same place.
-- **Check your knowledge** — tasks at the end of the page: do something on the page and pick one answer of four; it is checked at once, and a wrong answer hints where to look.
-- **Glossary** — terms underlined with dots: hover or click to see the definition and a link to the topic that explains it (132 terms).
-- **«Open in Compass»** — on pages with molecules: buttons with the names of the molecules open them in the program.
-- **Next question** — at the end of the page, a question that leads to the next topic.
+Basics of quantum mechanics · The molecule and the nuclei · Symmetry · Crystals · Many-electron functions · Hartree–Fock · Correlation · Density and DFT · Choosing the method and basis set · MOs and reactions · Thermochemistry and kinetics · Properties and spectra · Dynamics and machine learning. A section has from two to six topics. «Point groups» includes the reduction of representations and SALCs, «SCF iterations» — Koopmans' theorem, «The Hückel method» — reactivity indices, Fukui functions and semiempirical methods.
+
+### The page of a topic
+
+- **«What to understand»** and **the limits of the model** — at the beginning of the page: what you will learn and where the model stops working.
+- **Sections with sliders, buttons and plots.** Change the parameters and watch how the result changes. Key concepts are highlighted, formulas are in the text; the caption under a plot explains what it shows.
+- **Demonstration** — the «▶ Demonstration» button at the bottom right. A step-by-step show: Quail presses the buttons herself and explains what is seen. The `←` `→` arrows turn the steps, `Esc` ends the show. The animations of a topic run only while the topic is open — on another topic they stop and later go on from the same place.
+- **Check your knowledge** — exercises at the end of the page: do something on the page and choose one answer of four. The answer is checked at once, and a wrong one hints where to look.
+- **Glossary** — terms underlined with dots (there are 132). Hover or click — a definition appears with a link to the topic that explains the term.
+- **«Open in Compass»** — on pages with molecules: the buttons with the names of molecules open them in the program (on a computer where Azimuth is installed).
+- **What next** — a question at the end of the page that leads to the next topic.
 
 ### How to find a topic
 
-1. The Atlas home page lists all topics by section — click a topic.
-2. Or press the magnifier (or the «/» key) and start typing: the search covers the titles, key concepts, section headings and tasks.
-3. The tabs under the header switch between the topics of one section; the ‹ › arrows on the right of the topic row page through all topics in order; so do the ← and → keys, and ↑ and ↓ scroll the topic (in fields, sliders, the demonstration and the projector mode the keys work as before).
-4. The «Continue» line at the top of the Atlas overview brings back the last topic you opened, and «Where to start» suggests the first topics.
+1. The home page of the Atlas has all topics grouped by sections — click a topic.
+2. Or click the magnifier icon (or press `/`) and start typing: the search covers titles, key concepts, section headings and exercises.
+3. The tabs under the header switch the topics of one section; the ‹ › arrows at the right of the topic row turn all topics in order. The `←` and `→` keys do the same, and `↑` and `↓` scroll the topic.
+4. The «Continue» line at the beginning of the Atlas overview returns to the last topic opened, and «Where to start» offers the first topics.
+
+Every time the Atlas home page opens, Quail tells a textbook fact on one of the topics — the «Psst, did you know?» corner (129 facts, three per topic). «Open the topic» goes to it, «One more fact» shows another, «Hide» removes the card until the next start.
 
 ### How to work through a topic
 
 1. Read «What to understand».
-2. Start the «▶ Demo». The ← → arrows go through the steps, Esc ends the show.
-3. Move the sliders yourself: every block answers one question, and the caption under the chart explains what you see.
-4. Answer the «Check your knowledge» tasks.
-5. Open the topic's molecule in Compass and calculate it in Sextant — compare with what the Atlas showed.
+2. Start the «▶ Demonstration».
+3. Move the sliders yourself: each block answers one question.
+4. Answer the «Check your knowledge» exercises.
+5. Open the molecule of the topic in Compass and calculate it in Sextant — compare with what the Atlas showed.
 
-### Psst, did you know?
+### The Atlas in class
 
-On the Atlas home page Quail tells a textbook fact about one of the topics each time it is opened (129 in all, three per topic). «Open the topic» goes to it, «Another fact» shows another one, «Hide» removes the card until the next start.
+**Presentation mode** (a button on the topic page) enlarges fonts and plots for a projector. The demonstration of a topic suits a lecture: the steps are turned with the arrows like slides.
 
-### How to show a topic in class
-
-- **Presentation mode** (a button on the topic page) enlarges the fonts and charts for a projector.
-- The language of the Atlas is that of the program when it is opened from it; the theme and the language are switched in the left panel of the site.
+In this manual many sections end with «Theory — in the Atlas» links: they lead to the topics that explain what exactly the program computes.
 
 ## Compass · Molecule
 
-Building, editing and viewing molecules and calculation results on the model.
+Compass is the section for building, editing and viewing molecules. Here the result of a calculation is laid onto the 3D model as well: optimization steps, vibrations, charges, orbitals and electron density surfaces.
 
-### First steps: from a molecule to a calculation
+### The Compass window
 
-Five minutes with ethanol — the main things of Compass in order.
+![The «Compass · Molecule» window](img/compass.jpg)
 
-1. **Open a molecule.** «File → Example molecules → Alcohols and ethers → Ethanol · C₂H₆O». Or build it yourself: «File → Molecule from SMILES…» and `CCO`.
-2. **Look at it.** Drag with the mouse to rotate it, the wheel zooms. «View → Atom labels → Element and number · C1» numbers the atoms, so that you can name them.
-3. **Measure.** In the «View» mode (the first button of the toolbar) click the atoms one after another: two atoms — the bond length under the model (O–H about 0.96 Å), three — the bond angle, four — the dihedral. A second click takes an atom off the selection, a click on an empty place clears it. «View → All bond angles» writes the angles on the model.
-4. **Find the symmetry.** The symmetry button under the model: ethanol as a zigzag is Cs (one mirror plane). The point group is found for a single molecule of up to 150 atoms; pressing again symmetrises the structure.
-5. **Edit the geometry.** Drag an atom in the «Move an atom» mode — and take it all back with «Undo» (Ctrl+Z, Cmd+Z on a Mac). «Tidy the geometry» places the atoms by the VSEPR rules — a neat starting structure, not an optimised one.
-6. **Pass it to a calculation.** «To the calculation settings» under the model (or «Calculation → To the calculation settings») opens Sextant with this molecule: choose the program, the task «Optimization + frequencies», the method and the basis set and press «Run calculation». The result comes back to Compass as optimisation steps; the frequencies and the spectrum go to Spectrum.
-7. **Save.** «File → Save project…» keeps the molecule together with the calculation settings; «File → Export coordinates» writes XYZ and other formats.
+- **Structure tabs** above the model. The result of a calculation (optimization steps, a scan, an IRC or NEB path, XYZ frames) opens in a tab of its own, the molecule stays in its tab; if the open tab is empty, the result takes it.
+- **The tool panel** on the left: building modes and tools — the element, the bond order, «Bond», «Break», «Delete», «Add hydrogens», «Tidy the geometry».
+- **Modes above the model**: «View / select» (the arrow — rotate the model and select atoms; the structure does not change), «Edit the structure» (the pencil — atoms, fragments, molecules) and «Move atoms». The button of the active mode is pressed.
+- **Buttons above the model**: the view (centre, isometric or perspective, axes, «Best view»), atom labels, optimization constraints (the lock), the chevron of the view panel.
+- **The column at the right edge of the field**: «Snapshot» and below it what is overlaid from a calculation — «Atoms», «Bonds», «Dipole and forces» and the eraser «Remove everything overlaid from the model».
+- **Under the model** — the summary (the formula and the number of atoms), the name button (IUPAC), the symmetry button and «To the calculation settings».
+- **The «Coordinates» tab** — the table of coordinates (ångströms or bohrs), the format and copying. `Delete` deletes the atoms of the selected rows.
 
-### The window
+The Compass menus are arranged as in Chemcraft: «File» (open, save, picture), «Edit» (selection, atoms, bonds, geometry, coordinate system), «View» (projection, camera, axes, labels, measurements on the model), «Display» (model, bonds, schemes), «Tools» (moments of inertia, statistics of atoms and bonds, mass, fragments, comparison of structures), «Calculation», «Project» and «Server».
 
-- **Structure tabs** above the model: «+» opens a new one, the cross closes one (after a question if there are unsaved changes). A calculation result (optimization steps, a scan, an IRC or NEB path, XYZ frames) opens in its own tab, and the molecule stays in its own; if the open tab is empty, the result takes it. «Molecule» and «Crystal» have tabs of their own.
-- **The tool panel** on the left: the modes View, Atom, Fragment / angle, Move an atom and the other kinds of moving; the element, the bond order, Bond, Break, Delete, Add hydrogens, Tidy the geometry.
-- **Buttons above the model**: the view (center, isometric or perspective, axes, «Best view» — turn the molecule conveniently and center it; «Center» keeps your rotation), atom labels (element, number, element and number), optimization constraints (a lock); at the end of the row — the chevron of the view panel. (0.205.0) **The column at the right edge of the field** — Snapshot and, under it, what a calculation lays over the model: atoms, bonds, dipole and forces, «Remove everything laid over the model»; it stays visible when the view panel is folded, and the panel slides out between the field and the column. Structure comparison is in «View → Structure comparison». The names of icon buttons show when you hover over them. (0.206.0) **Your own buttons:** right-click any item or submenu in the menus of the window — «Add to the row above the field» (the buttons stand after the lock) or «Add to the column on the right» (under the eraser). An item can also simply be dragged out of its menu with the mouse onto the row above the field or the column on the right (0.213.0). Right-click a button of the row or the column — «Remove from the panel», move it to the other place, or «Put the buttons back as they were»; the standard buttons can be removed too — they stay in the menus. The buttons of the row and the column can also simply be dragged with the mouse — to the other place or to another position (0.206.2). (0.206.3) The buttons stand in groups parted by thin lines: a button added from a menu stands as a group of its own at the end; dropped among the buttons of a group it joins that group; dropped after the last button it stands after a new line. The set is remembered and does not depend on the language of the program.
-- **Menus in the section header** — as in Chemcraft: File (open, save, picture), Edit (selection — also one step wider, by numbers and by a coordinate range; atoms, bonds, geometry, the coordinate frame — origin at an atom, axes on three atoms, two atoms along an axis, principal axes of inertia), View (perspective, camera — copy and paste its position, axes, labels, measurements on the model — all distances and bond angles, copy picture), Display (model, bonds, schemes), Tools (moments of inertia and rotational constants, statistics of atoms and bonds, molecular mass, fragments of the structure, comparison of structures), Calculation.
-- **Under the model** — the summary (formula and number of atoms), the naming button (IUPAC), the symmetry button and «To the calculation settings». The name appears after the naming button, the point group after the symmetry button.
-- **The Coordinates tab** — the table of coordinates (ångström or bohr), the format and copying. Delete (Backspace on a Mac) removes the atoms of the selected rows.
-- **Icon buttons** unfold with their label when you hover over them.
-- **Section background:** a pale azimuth scale at the top right, the picture of the section (compass, sextant, spectrum) at the bottom left.
+### Building a molecule
 
-### How to build a molecule
+1. «File → New molecule» (`Ctrl+N`) or «+» above the model. If a project is open, an empty «New molecule» row appears in its list of molecules; with the first atom it becomes a molecule of the project.
+2. Turn on the «Edit the structure» mode (the pencil). Choose an element on the panel and click the field — an atom appears; a click on an atom attaches a new one to it.
+3. To place a group, choose a fragment (methyl, phenyl, carbonyl, rings…) and click the field, an atom or a hydrogen — the fragment takes its place.
+4. «Add hydrogens» adds the missing H atoms, «Tidy the geometry» arranges the atoms by the VSEPR rules.
 
-1. «File → New molecule» (⌘N; since 0.201.0 a new molecule of the project: an empty row «New molecule» appears in its list of molecules, the field is empty for building, the molecule before stays; with its first atom the row becomes a molecule of the project, left empty it is written nowhere) — or a new tab with «+».
-2. Atom mode: pick an element on the panel and click the field — the atom appears; a click on an atom attaches a new one to it.
-3. Fragment / angle mode: pick a fragment (methyl, phenyl, carbonyl, rings…) and click the field, an atom or a hydrogen — the fragment replaces it.
-4. «Add hydrogens» adds the missing H atoms, «Tidy the geometry» arranges the atoms by VSEPR rules.
-5. A ready molecule can be taken from the library («File → Example molecules»: 106 molecules in 7 groups) or built from SMILES («File → Molecule from SMILES…», for example `CC(=O)O` — acetic acid).
+A ready molecule can be taken from the library — «File → Example molecules» (106 molecules in 7 sections) — or built from SMILES: «File → Molecule from SMILES…», for example `CC(=O)O` for acetic acid.
 
-- **Modes above the model** (0.202.1): «View / select» (the arrow — turn the model, select atoms with a click, with a frame holding Shift; the structure does not change), «Edit the structure» (the pencil — atoms, fragments, molecules) and «Move atoms» (the arrows). The pressed one is on.
-- **Icon switches in the pencil:** «Add hydrogens while building» (off by default; also in «Edit → Atoms, fragments and molecules») — an atom in the empty field comes with its hydrogens (C → CH₄), a click on a saturated atom takes away a hydrogen for the new bond (two for a double bond), and new atoms are filled with hydrogens by their valences; and «Tidy while building» — the same as the menu item below.
-- **«Tidy while building»** («Edit → Geometry», on by default): a new atom or group takes its VSEPR place at once and a chain stretches into a zigzag (anti), while the part already drawn does not move. Missing hydrogens are taken into account for the moment, so even a bare carbon skeleton gets the right angles.
-- **«Tidy the geometry»** — a simple force field for the whole molecule or the selection: bond lengths, VSEPR angles, flat multiple bonds and aromatic rings, repulsion of atoms and (since 0.55.0) torsions: bonds between tetrahedral atoms become staggered, not eclipsed; anti is preferred to gauche, but a gauche stays gauche. It gives a tidy starting structure, not an optimized one: the energy is nominal and cannot rank conformers (use «Refine with xtb» in the conformer search for that).
+**Building switches** (icons in the pencil menu and in «Edit → Atoms, fragments and molecules»):
 
-### How to open and save
+- **«Add hydrogens while building»** (off by default) — an atom placed on an empty field comes with its hydrogens at once (C → CH₄), a click on a saturated atom removes a hydrogen to make room for the new bond, and new atoms are filled with hydrogens by valence.
+- **«Tidy while building»** («Edit → Geometry», on by default) — a new atom or group takes its VSEPR place at once, a chain is stretched into a zigzag, and the part of the molecule already drawn does not move.
+- **«Tidy with UFF»** — while building, new atoms are aligned by the UFF force field instead of the simple VSEPR field.
 
-- **Open** («File → Open…», or drop a file on the window): XYZ, an Azimuth project (.qcc), Molfile/SDF, MOL2, PDB, ORCA and Gaussian input files, ORCA and Gaussian results, Molden and fchk files. A CIF opens in «Compass · Crystal», a result as steps in Compass or in Spectrum.
-- **More formats (0.64).** An SDF file with several molecules opens them in tabs (the first one in the current tab, at most 30); a PDB file with several models (MODEL … ENDMDL, for example molecular dynamics frames) — as steps in the result panel. NWChem, Q-Chem, GAMESS (US) and Firefly results are read like ORCA and Gaussian ones: the energy, optimization steps, frequencies and IR with the vibrations, Mulliken charges, the dipole moment, the TD-DFT spectrum. The «Coordinates» tab also shows SMILES and InChI (InChI and InChIKey come from PubChem, internet needed). (0.91.35) When the name line of an SDF record is empty (as RDKit and many databases write it), the name is taken from its data items — `<Name>`, `<Title>`, `<PUBCHEM_IUPAC_NAME>`, `<chembl_id>`; underscores become spaces. A record without a name («nan») is named by its formula. These names are shown on «Structures» and in the calculation queue («Queue 3 of 44: …»).
-- **Files without hydrogens.** If an opened file has not a single H atom, Compass adds them by the valences (C 4, N 3, O 2, halogens 1; the bond orders from the file or from the lengths) and says how many. It is a separate step: Ctrl+Z gives the file back as it was. Double and triple bonds written in the file (MOL/SDF, MOL2, PDB CONECT) are followed whatever the bond length; in XYZ the order comes from the length. A set of structures (SDF, several files) is completed as a whole, so Sextant, the queue and the input files of a set get the full molecules. A file with at least one H is not changed (radicals, ions, fragments); metals are left alone; an ion or a radical without H gets the hydrogens of the neutral molecule — check the charge. The geometry of the new hydrogens is a starting one. To turn it off: «File → Add hydrogens to files without H».
-- **Save project** — «File → Save project…» (the molecule and the calculation settings).
-- **Export coordinates** — «File → Export coordinates»: XYZ in ångström or another format.
-- **Snapshots** — the Snapshot button at the model: PNG (×1 and ×3 — the magnification is set in «Settings → Pictures», with a transparent background if you like), GIFs of a rotation and of optimization steps, SVG and PDF pictures (labels, measurements and lines in them are vector graphics).
-- **Dragging files** (0.106.5). While files from Finder or Explorer are held over the window it turns grey and shows in the middle an icon and a hint for the section on screen: in Compass «Drop structure files here» (XYZ, MOL, SDF, MOL2, PDB, CIF, Molden, QCC), in Sextant input files or structures, in Spectrum calculation results with their extensions.
-- **ChemDraw files** (0.216.98). ChemDraw XML files (.cdxml) open: the atoms and bonds of the fragments of the first page, bond orders, formal charges, the caption of the drawing as the name. The flat drawing is scaled to ångströms, hydrogens are added, «Make 3D» gives the volume. Expand abbreviations (Ph, OMe…) in ChemDraw; save a binary .cdx there as .cdxml.
+**«Tidy the geometry»** — a simple force field for the whole molecule or the selection: bond lengths, VSEPR angles, planar multiple bonds and aromatic rings, repulsion of atoms and torsion terms (bonds between tetrahedral atoms become staggered). It gives a neat starting structure, not an optimized one: its energy is arbitrary and cannot be used to compare conformers.
+
+### Opening and saving
+
+**Open** — «File → Open…» (`Ctrl+O`) or drag a file onto the window. Compass reads XYZ, Azimuth projects (`.qcc`), Molfile and SDF, MOL2, PDB, ChemDraw XML (`.cdxml`), ORCA and Gaussian input files, the outputs of calculations, Molden and fchk files (the full list is in Appendix A). A CIF opens in «Compass · Crystal», the result of a calculation — as steps in Compass or in Spectrum.
+
+- An SDF with several molecules opens as a set of structures (the «Structures» panel), a PDB with several models (MODEL … ENDMDL, for example molecular dynamics frames) — as steps in the result panel.
+- If the name line of an SDF record is empty (as RDKit and many databases write it), the name is taken from its data fields — `<Name>`, `<Title>`, `<PUBCHEM_IUPAC_NAME>`, `<chembl_id>`.
+- From ChemDraw XML the atoms and bonds of the fragments of the first page are taken, with bond orders, formal charges and the caption of the drawing. The flat drawing is converted into ångströms, hydrogens are added, «Make 3D» gives the volume. Expand abbreviations (Ph, OMe…) in ChemDraw; save a binary `.cdx` there as `.cdxml`.
+
+**Files without hydrogens.** If an opened file has not a single H atom, Compass adds them by valence (C — 4, N — 3, O — 2, halogens — 1) and says how many it added. `Ctrl+Z` returns the file as it was. Double and triple bonds written in the file (MOL/SDF, MOL2, PDB CONECT) are taken into account; in XYZ the bond order is found from the length. A file with at least one H is not changed. To turn the completion off: «File → Add hydrogens to files without H».
+
+> **Warning.** An ion or a radical without H gets the hydrogens of a neutral molecule — check the charge and the multiplicity before the calculation.
+
+**Save.**
+
+- «File → Save project…» — the molecule together with the calculation settings.
+- «File → Export coordinates» — XYZ in ångströms or another format.
+- The «Snapshot» button at the model — PNG (×1 and ×3; the magnification is in «Settings → Snapshots», a transparent background optional), a GIF of rotation and a GIF of optimization steps, vector SVG and PDF.
+- «File → Model for 3D printing…» — what is on the screen as balls and sticks: STL in one colour for any printer or VRML in the colours of the elements. The scale is millimetres per ångström (10 by default: water is about 2.5 cm); bonds are not thinner than the thickness set, so that they do not break.
 
 ### Projects
 
-A project keeps the molecules of one piece of work and all their calculations in one folder: the list of molecules, their structures, charges, settings and calculation attempts. A project appears when a set of molecules is opened (SDF, several files) or when you save.
+A project gathers the molecules of one piece of work and all their calculations in one folder: the list of molecules, their structures, charges, settings and calculation attempts. A project appears when a set of molecules is opened (an SDF, several files) or when saving.
 
-- **The projects folder** (0.107.2). A project made by opening molecules lives at once in a permanent folder «Documents/Azimuth/Проекты/<name>» (on Windows «Documents\\Azimuth\\Projects», in Latin letters), not in a temporary folder of the system. «Save» only confirms the name — nothing is copied. Another folder for new projects is chosen in «Settings → Calculations → Projects folder».
-- **The open project as one whole** (0.107.1). Saving, «Save all structures», adding molecules and closing a tab work with one state of the project: an export gets the latest unsaved edits and only the molecules of this project. The name given to a project at its first save is no longer reset to «New project» when molecules are added.
-- **A project in an SQLite database** (0.108.0). The molecules, settings and history of calculations of a project are kept in `project.sqlite` next to `project.qcc` (which became a short pointer); the calculation files stay in their folders as before. Every change is written whole or not at all. A project of an earlier version is moved at its first save, its old file stays as `project.qcc.v1-backup`. Such a project opens only in Azimuth 0.108 or later; to give a project back to an old version, rename `project.qcc.v1-backup` to `project.qcc` (changes after the move are not included). Do not copy `project.sqlite` apart from its folder — use «Save as…» or copy the whole project folder with the program closed.
-- **A project in two windows** (0.107.7). If one project is open in two Azimuth windows, only the first one writes to it; the second shows it «read only» and changes nothing in it until the project is closed in the first. «Save as…» makes an independent copy of the project with its own identifier.
-- **The «Project», «Server» and «Help» menus** (0.108.80). In Compass the «Project» menu gathers what the project molecule panel and its menu do: a new and an open project, the list of molecules, adding and removing molecules, restoring removed ones, single or batch mode, the history and the files of the project. In Sextant there are the «View» menu (the input file, the calculation window, the result in Compass and in Spectrum, 0.108.81) and the «Server» menu: calculate on this computer or on a server, the server profile, the connection check, the files on the server — always, not only when «Server» is chosen. Every section has the «Help» menu: the manual, «What's new», the installation check, the folder of the program logs, an error report, «About».
-- **Remove molecules from a project** (0.108.43). In the list of the project choose one or several (Shift, Cmd/Ctrl) and press Delete (⌫), or right-click → «Remove from project…». The window asks to confirm; when the molecules have calculations, the tick «Also delete their calculation files» deletes their folders too — for good. Without it the files stay in the project folder and Ctrl+Z (⌘Z) in the list or «Restore removed» in its menu brings the molecules back. The complexes a binding queue made for the molecule and its tab go with it. A molecule that is being calculated or waits in a queue cannot be removed — wait for the end or stop the calculation.
-- **A project listed by its name** (0.108.45). Under «Continue» on the home page and in «File → Recent files» a project is shown by its name, not by its file name project.qcc.
-- **Properties of a finished molecule of a project in Compass** (0.108.49). For a molecule of a project with a result, the buttons «Atoms», «Bonds», «Dipole and forces» show the properties of the result and offer the analyses of its wavefunction, even while other molecules are still being calculated.
-- **The optimized geometry goes into the molecule of the project** (0.108.50). After an optimization (or a transition state search) converged, the structure of the molecule of the project becomes the final geometry of the calculation, so the chain MOPAC → ORCA → QTAIM needs no manual transfer. It is not taken when the optimization did not converge or the structure was edited after the start; the structure before is in the input of the attempt and in Undo.
-- **The calculation folder of a molecule** (0.108.53). In the right-click menu of the list of molecules of a project, «Calculation folder» opens the folder of the current result of the molecule or, when there is none, of its latest attempt.
-- **A result of earlier data** (0.108.58). If the geometry, charge, multiplicity, method (basis, solvent) or program of a molecule was changed after its calculation, its row in the list is marked «≠», the tooltip names what changed, and showing the result in Spectrum or Compass says so. The result is not recalculated or carried over to the new data: it stays the result of its own calculation, and the analyses (QTAIM) stay with their file. The successful result of a new calculation becomes the current one.
-- **A file opened just to look** (0.174.0). An opened file gets a project tab, but its folder stays in «Projects» only if the project changed: the molecule was edited, files were added to the project, it was saved under a name or computed. If none of this happened, the folder is removed when the tab or the program closes; the opened file itself stays where it is. The same with a CIF (0.174.1): a crystal project stays if it was computed or the crystal was changed.
-- **A draft at the exit** (0.108.59). A molecule drawn on the empty tab in no project and not saved to a file becomes a draft «New project» in the «Projects» folder when the program closes — also with «Don't save». Since 0.189.1 the same happens when you leave its tab for another one: the tab stays an ordinary project tab and does not vanish. In «Continue» on the home page and in «Recent files» it is marked «· draft»; «Save» gives it a name. An XYZ whose frames are different molecules opens as a project, like an SDF; the frames of one molecule (an optimization, a dynamics) stay steps.
-- **A project from calculations** (0.216.116–0.216.119). «File → Project from calculations…» (in Compass and Sextant) gathers calculations made outside Azimuth from a chosen folder into a project: ORCA, Gaussian, Psi4, xtb, MOPAC, GAMESS, NWChem and Q-Chem outputs together with their files (orbitals, checkpoints, xtb geometries). The same molecule calculated in different ways becomes one molecule of the project with the history of those calculations; conformers stay separate molecules. The message says how many calculations were taken and which were not.
+- **The project folder** — «Documents/Azimuth/Проекты/<name>»: `project.qcc` (the pointer), `project.sqlite` (molecules, settings and calculation history) and the calculation folders of the molecules. Every change is written into the database completely or not at all.
+- **The «Project» menu** gathers the actions with a project: a new and an open project, the list of molecules, adding and removing molecules, bringing removed ones back, single or batch mode, the history and the files of the project.
+- **Removing molecules.** In the list of molecules of the project choose one or several (`Shift`, `Ctrl`) and press `Delete` or right-click — «Remove from project…». The check box «Also delete the files of their calculations» deletes their folders too — irreversibly. Without it the files stay, and the molecules come back with `Ctrl+Z` in the list or «Restore removed».
+- **The optimized geometry** after a converged optimization (or transition state search) becomes the structure of the project's molecule, so that a chain such as MOPAC → ORCA → QTAIM goes on without carrying anything by hand. The previous structure stays in the input of the attempt and in the undo history.
+- **A result for earlier data.** If the geometry, charge, multiplicity, method or program of a molecule was changed after its calculation, its row in the list is marked «≠», and the tooltip names what changed. The result is not recomputed: it remains the result of its own calculation.
+- **«Calculation folder»** in the right-click menu of the list opens the folder of the current result of the molecule or of its last attempt.
+- **«Save all structures»** writes all molecules of the project into one XYZ or SDF file.
+- **A project from calculations.** «File → Project from calculations…» gathers into a project the calculations made outside Azimuth from a chosen folder: the outputs of ORCA, Gaussian, Psi4, xtb, MOPAC, GAMESS, NWChem and Q-Chem together with their files. One molecule calculated in different ways becomes one molecule of the project with the history of these calculations.
+- **Draft.** A molecule drawn on an empty tab and not saved to a file becomes a «New project» draft in the «Проекты» folder when the program closes (or when you go to another tab). In «Continue» and in «Recent files» it is marked «· draft»; «Save» gives it a name.
+- **A file opened just to look at it** gets a project tab, but its folder stays in «Проекты» only if the project changed (the molecule was edited, calculated, or the project was saved under a name).
+- **One project in two windows.** Only the first window writes into the project; the second shows it «read-only».
 
-### How to view, select and measure
+> **Warning.** Do not copy `project.sqlite` apart from the project folder. To get a copy, use «Save as…» or copy the whole project folder while the program is closed.
 
-- **Rotate** — drag with the mouse (the molecule turns in the screen axes), **zoom** — the wheel, **pan** — the arrow buttons. On a trackpad: a drag rotates, two fingers pan, a pinch zooms.
-- **Select** — click an atom; Shift with a drag selects with a frame; «Edit → Selection» — all, invert, by element, none.
-- **Measure** — select 2, 3 or 4 atoms: under the model you see the length, the angle or the dihedral angle; «View → Bond lengths on the model» labels every bond, and the ruler pins the distances and angles you need on the model.
-- **Standard view** («View → Standard view»): along the x, y, z axes, along the selected bond or straight onto the plane of three selected atoms.
-- **Model** («View → Model»): ball and stick, sticks, space-filling; «View → Bond display» — colour, thickness, multiple bonds.
-- **Own labels** (the tag button next to «1», «H», «H1»): select atoms, press it and write a label — empty removes it, «#» becomes the number in the order of selection; without a selection the button shows or hides the own labels. The labels stand beside their atoms, follow them through edits, are kept in the tab and in the project. A PDB file with residues (a protein, DNA) gets its residues as labels by itself («Ala12», «A:Gly2»).
-- **Dummy atom X** (in the periodic table under the lanthanides, or X in the coordinate table) — a point without a nucleus or electrons, as in Chemcraft: for a Z-matrix, the centre of a ring, an axis. Drawn as a small grey point in a dashed ring, makes no bonds, is not in the formula; in the coordinates — X (ORCA: DA); it does not go into Sextant's input files.
-- **Protein ribbon** (0.106.3). «View → Protein ribbon» draws a protein (a PDB file or a peptide) as a ribbon: α-helices as red bands, β-strands as yellow arrows, the rest as a grey tube; the atoms of the chains are hidden, ligands and water stay («View → Hide atoms → Show all atoms» brings the atoms back over the ribbon). The chain is found from the bonds (N–Cα–C=O), the secondary structure from the C=O···N hydrogen bonds as in a simplified DSSP; 3₁₀-helices are drawn as helices. A protein from a PDB file without CONECT for the standard residues now gets all its bonds (crambin had 3 bonds for 327 atoms before).
-- **«Edit»: more as in Chemcraft** (0.91.76). «Selection → Select the whole molecule» (Ctrl+Shift+]) — the selection grows to whole molecules (in a cluster, a salt). «Order of atoms»: «Selected atoms first» — select atoms by clicks in the order you want and they get the numbers 1, 2, 3…, the others follow (the fragment for CDA, the first atoms of a Z-matrix, one numbering in two files); «Hydrogens after their atoms» (C1 H2 H3 C4…). «Bonds → Remove all bonds». «Geometry → Move and turn…» — the selected atoms (or all) are turned by an angle about the X, Y, Z axis through their centre or about the axis through the first two selected atoms, and moved by a vector. «Geometry → Planes of groups of atoms…» — the mean plane of a group (say, the ring C1–C6) and the deviations of the atoms from it; for two groups also the angle between the planes, the distance between the centres, the height of one centre above the other plane and the offset along it (π-stacking). «Copy → Copy SMILES». Everything is undone with Ctrl+Z.
-- **Vectors and planes** (0.91.77; «Edit → Vectors and planes», as in Chemcraft): «Vector between selected atoms» — an arrow from the first selected atom to the second; «Normal to the plane of selected atoms» — a 1.5 Å arrow from the centre of the mean plane of three or more atoms; «Plane through selected atoms» — a translucent sheet of the mean plane (a ring, say). Each object on the model has its number. «Angles between vectors and planes…» — the list and the angle of every pair: two vectors 0–180°, a line (normal) with a line and a plane with a plane 0–90°, a vector or a normal with a plane — the angle to the plane. «Vectors and planes as text…» — a line per object: «vector 1 2», «vector 0 0 0 1 0 0» (start and end in ångströms), «normal 1-6», «plane C1–C6»; the list can be edited and applied. Objects made of atoms move with them, are kept with the tab and go when another structure is opened; «Remove vectors and planes» takes them off.
-- **The «View» menu: more as in Chemcraft** (0.91.78). «Rotation centre — selected atoms» — the model turns and zooms about them («Center» brings back the centre of the molecule). «Camera → Camera position…» — the turns about the vertical, the horizontal and the line of sight and the zoom as numbers (from the X, Y, Z axes of the model or from the last view) — one view for several structures. «Where the axes are» — in the corner of the field, from the centre of the molecule or from the origin (drawn on the molecule itself). «Atom labels»: also «Number within the element · C1, H1» (C1, C2… H1, H2…), «Bond numbers», «Bond orders» (1, 2, 3, 1.5), «Labels of selected atoms only», «Label style…» (size). «Measurements on the model → Measurement style…» — the text size and the decimals of lengths (angles one less). «Van der Waals spheres» — translucent spheres of the Bondi radii over the model. «Hide atoms»: «Hide selected atoms», «Hide dummy atoms X», «Show all atoms» — hidden atoms stay in the structure and the calculation. The label and measurement styles are kept until the next start.
-- **Bond style** (0.204.0) — «View → Bond display → Bond style…», as in Chemcraft: the colour of the bonds (by the atoms, smoothly or with a sharp border, or one colour of your own from the circle), the width, double and triple bonds as several rods or one; how aromatic bonds are drawn (a line and dashes, two lines, one), the colour of the dashed bonds; long bonds (longer than a given share of the sum of the covalent radii — weak ones, transition states) dashed; hydrogen bonds — colour, width, dots, dashes or a solid line. The menu of a bond (right click) has, besides single, double and triple, «Aromatic (a line and dashes)», «Partial / coordination (dashed)» and «Bond colour…»; when both atoms of the bond are selected with others, all the bonds between the selected atoms get the type and the colour. The type and the colour of single bonds are kept in the tab.
-- **«Tools»** (0.91.80; the tools of Chemcraft spread over the sections). In Compass: «Table of internal coordinates…» — every bond length, valence and dihedral angle in a list, «Save CSV…»; «Volume and surface area…» — the van der Waals volume, the surface area, the solvent-accessible area (probe 1.4 Å), the effective diameter (Bondi radii); «Compare with a tab» — the structure of another tab is laid on the model with its RMSD, the atoms matched automatically. In Spectrum, the menu «Tools»: «Isotope pattern of the molecular ion…» — M, M+1, M+2… with exact masses and a picture (the formula of the result or your own, say C6H5Cl; monoisotopic and average mass); «Energies of several files…» — calculation outputs side by side: E, G (with frequencies), ΔE, ΔG in the units of «Settings» and the Boltzmann shares (by G if every one has it, else by E; a warning if the composition or the level of theory differ; since 0.108.6 also the warnings of the reaction diagram: normal termination not confirmed, imaginary frequencies, a different or unknown charge, a different multiplicity); «Boltzmann shares…» — the same for a pasted column of energies (hartree, kcal/mol, kJ/mol, eV). The tables are saved as CSV.
-- **«Calculation» of Compass** (0.105.19; Computation and Job tools of Chemcraft). «Charge and multiplicity…» — the fields of Sextant right from Compass. «Quick xtb calculation»: «Energy», «Optimization», «Optimization + frequencies» and «Scan of the selected atoms…» (2, 3 or 4 atoms — a length, an angle or a dihedral goes to the end value in the points given, the rest is optimized) — a GFN2-xTB calculation with the charge and multiplicity of the tab starts at once, whatever program Sextant shows, and comes to the tab as usual. An xtb scan is now in Sextant too. «Calculation steps»: «Save the steps as one XYZ…», «Coordinates of all steps (CSV)…», «Parameter along the steps…» — the length, angle or dihedral of the selected atoms along the steps of an optimization, a scan or an IRC (the energy as a grey dashed line), and without a selection the angle between the first two vectors or planes. While a scan is browsed its coordinate is measured on the model in orange. «Modes involving the selected atoms…» — the vibrations by the share of the selected atoms in the displacements: a C=O stretch, say, is found at once.
+### Viewing, selecting and measuring
 
-### How to edit the geometry
+- **Rotate** — drag with the mouse, **zoom** — the wheel, **pan** — the arrow buttons. On a trackpad: a drag rotates, two fingers move, a pinch zooms.
+- **Select** — click an atom; with a frame — drag with `Shift`. «Edit → Selection»: all, invert, by element, one step wider (`Ctrl+]`), the whole molecule (`Ctrl+Shift+]`), by numbers and by a range of coordinates.
+- **Measurements.** Select 2, 3 or 4 atoms — the length, the bond angle or the dihedral angle appears under the model. «View → Measurements on the model» labels all bond lengths and bond angles; the ruler pins chosen distances and angles on the model. «Measurement style…» sets the text size and the number of digits.
+- **Standard view** («View → Standard view»): along the x, y, z axes, along the selected bond or straight onto the plane of three selected atoms. «Rotation centre — selected atoms» rotates and zooms the model around them. «Camera → Camera position…» sets the angles and the scale as numbers — one viewpoint for several structures.
+- **Model** («Display»): balls and sticks, sticks, space-filling; «Van der Waals spheres» — translucent spheres of Bondi radii.
+- **Atom labels**: element, number, «Element and number · C1», «Number within the element · C1, H1», bond numbers and orders, labels of the selected atoms only; the size — «Label style…».
+- **Custom labels** (the tag button next to «1», «H», «H1»): select atoms, press it and type a label; «#» becomes the number in the order of selection. The labels follow the atoms when editing and are kept in the project. In a PDB with residues (a protein, DNA) the residues are labelled by themselves.
+- **Hide atoms**: the selected ones, dummy atoms X; «Show all atoms» brings them back. Hidden atoms stay in the structure and in the calculation.
+- **Protein ribbons** («View → Protein ribbon»): α-helices — red ribbons, β-sheets — yellow arrows, the rest — a grey tube; the atoms of the chains are hidden, ligands and water stay.
+- **The ghost atom X** (in the periodic table under the lanthanides, or X in the coordinate table) — a point without nucleus and electrons for a Z-matrix, the centre of a ring or an axis; it does not go into the input files of Sextant.
 
-- **Undo / Redo** — Ctrl+Z / Ctrl+Shift+Z (Cmd on a Mac).
-- **Bonds** — select two atoms: Bond / Break or Ctrl+B (Cmd+B); the bond order is on the panel.
-- **Move an atom** — the «Move an atom» mode, then drag the atom with the mouse. Next to it — what else can be dragged (icon buttons): a **fragment** about a pivot atom; **about a bond** — select two bonded atoms (the axis) and drag an atom of one side left or right, as in Chemcraft; a **whole molecule** — the molecule of the atom you drag moves (one of the two in a dimer; a drag in the empty field turns the view); a **chain** — the unbranched piece of a chain up to the nearest branches and rings, with its hydrogens; the **selection**.
-- **Rotation about a bond** («Edit → Geometry → Rotate about a bond…» or a right click on a bond): select two bonded atoms (or the four atoms of a dihedral). The window has the exact dihedral (a field and a slider), a turn by a given angle and «Turn the other side»; any atom of the rotating side can be dragged with the mouse. The closest contact between the two sides is shown. A scan with the chosen step opens frames in the steps panel (they can be played and saved as a GIF) or saves them as one XYZ file. «Done» is one change that can be undone, «Cancel» brings back the original geometry. Ring bonds do not rotate.
-- **Delete a molecule** (0.190.0). When the model has several molecules (a dimer, a complex, molecules side by side), a right click on an atom offers «Delete the molecule (N atoms)»: all the atoms bonded to this one go, the others stay. Since 0.200.3 the item is there for a single molecule too — the model becomes empty. «Edit → Undo» brings it back. To remove a molecule from the list of a project — «Remove from project…» in the molecule list.
+**Vectors and planes** («Edit → Vectors and planes»): «Vector between selected atoms», «Normal to the plane of selected atoms» (a 1.5 Å arrow from the centre of the mean plane) and «Plane through selected atoms» — a translucent sheet. Each object on the model has its own number. «Angles between vectors and planes…» gives the angle of every pair. «Vectors and planes as text…» — a line per object («vector 1 2», «normal 1-6», «plane C1–C6»); the list can be edited and applied. «Remove vectors and planes» removes them. «Geometry → Planes of groups of atoms…» — the mean plane of a group (for example the ring C1–C6) and the deviations of the atoms from it; for two groups — the angle between the planes, the distance between the centres and the offset (π-stacking).
+
+### Editing the geometry
+
+- **Undo and redo** — `Ctrl+Z` and `Ctrl+Shift+Z`.
+- **Bonds.** Select two atoms and press «Bond» or «Break» (or `Ctrl+B`); the bond order is on the panel. A right-click on a bond gives single, double, triple, aromatic, partial (dashed) and «Bond colour…».
+- **Moving atoms.** In the «Move atoms» mode drag an atom with the mouse. Next to it — what else can be dragged: a fragment around an anchor atom; rotation about a bond (select two bonded atoms and drag an atom of one side); the whole molecule; an unbranched chain; the selection.
+- **Rotation about a bond** («Edit → Geometry → Rotate about a bond…» or right-click a bond): the exact dihedral angle with a field and a slider, a turn by a given angle, a sweep with a given step (the frames go to the steps panel or to an XYZ file). The closest contact of the two sides is shown. Ring bonds do not rotate.
+- **Delete a molecule.** If there are several molecules on the model, right-click an atom — «Delete the molecule (N atoms)».
 - **Z-matrix editor** («Edit → Geometry → Z-matrix editor…»): lengths, angles and dihedrals as numbers; the model changes at once.
-- **Symmetrise** («Edit → Geometry»): fits the structure to the point group found; the second command also turns it to the standard orientation.
-- **Mirror** — «Edit → Geometry → Mirror» (the selected atoms or the whole molecule, in the plane XY, XZ or YZ through their centre); **copy and paste** — «Edit → Copy and paste».
-- **The UFF force field** (0.106.0). «Edit → Geometry → Optimize (UFF)» takes the selected atoms or the whole molecule to a minimum of the universal force field (Rappé et al., 1992; parameters, atom types and terms as in RDKit). The status bar shows the energy in kcal/mol and kJ/mol, before and after, and its terms: bonds, angles, torsions, inversions, van der Waals. It is undone like any edit. The check «Tidy with UFF» next to it lets UFF instead of the simple VSEPR field tidy the new atoms while building. The structure needs its hydrogens. «Calculation → Quick xtb calculation → GFN-FF optimization (xtb)» is Grimme's force field, also for large molecules.
-- **Build a peptide** (0.106.4). «Edit → Geometry → Build a peptide…»: a one-letter sequence (up to 30 residues) and a conformation — α-helix (φ −57°, ψ −47°), β-strand (−139°, +135°) or extended chain. The backbone has the ideal bonds and angles (Engh, Huber), every amino acid is L (Thr and Ile as natural), the side chains are turned so as not to clash; the ends are NH₂ and COOH. Then — «Protein ribbon», «Optimize (UFF)» or a calculation.
-- **Coordination centre** (0.108.40). «Edit → Geometry → Coordination centre…»: a metal, its oxidation state, a geometry (linear, trigonal planar, tetrahedron, square planar, trigonal bipyramid, square pyramid, octahedron, pentagonal bipyramid) and the ligands — one for every position, a comma-separated list or “4 Cl, 2 NH3”. Ligands: H2O, NH3, PH3, OH, CO, CN, F, Cl, Br, I, H. The M–L length is the sum of covalent radii (Cordero 2008), good to about 0.1 Å; every ligand is turned about its M–L bond to keep clear of its neighbours, and if they are still crowded you are told. The charge of the complex and the lowest multiplicity go to the fields of the tab; set a high-spin state yourself. In the bipyramids the two axial positions come first, in the square pyramid the apical one. Then optimize (xtb or a calculation).
+- **Move and rotate…** — the selected atoms are rotated by an angle about the X, Y, Z axis or an axis through two atoms and shifted by a vector. **Reflect** — in the XY, XZ or YZ plane.
+- **All bonds at once**: «Edit → Bonds → Remove all bonds»; «Find bonds again» builds them by distances.
+- **Copying**: «Edit → Copy and paste» — atoms, coordinates and «Copy SMILES».
+- **Atom order**: «Selected atoms first» (select atoms by clicks in the order wanted — they get the numbers 1, 2, 3…) and «Hydrogens after their atoms».
+- **Symmetrise** («Edit → Geometry») fits the structure to the point group found; the second action also turns it into the standard orientation.
+- **Optimise (UFF)** — the selected atoms or the whole molecule down to the minimum of the universal force field (Rappé et al., 1992; the parameters as in RDKit). The status line shows the energy before and after and its terms. The structure needs its hydrogens. For big molecules — «Calculation → Quick xtb calculation → GFN-FF optimization».
+- **Build a peptide…** — the sequence in one-letter codes (up to 30 residues) and the conformation: α-helix (φ −57°, ψ −47°), β-sheet (−139°, +135°) or an extended chain. All amino acids are L, the ends are NH₂ and COOH.
+- **Coordination centre…** — the metal, the oxidation state, the geometry (from linear to pentagonal bipyramid) and the ligands: one for all positions, a comma-separated list or «4 Cl, 2 NH3». Ligands: H2O, NH3, PH3, OH, CO, CN, F, Cl, Br, I, H. The M–L length is the sum of covalent radii (Cordero, 2008); the charge of the complex and the lowest multiplicity are put into the fields of the tab.
 
-### How to get the name and the symmetry
+> **Note.** Set a high-spin state of a coordination compound in Sextant yourself: the program puts the lowest multiplicity.
 
-1. The symmetry button under the model gives the point group (with a tolerance you can change); a second press symmetrises.
-2. The naming button (IUPAC) under the model gives the IUPAC name (acyclic and monocyclic compounds with C, H, N, O and halogens, in three languages) or the name from the program's reference list. If the rules do not cover the structure, Compass asks PubChem (internet needed; the name is in English).
+### Name and symmetry
 
-Theory in the Atlas on the site: [Point groups](https://www.azimuth-chem.com/atlas/?lang=en#sym).
+- **The symmetry button** under the model (bottom right) finds the point group with a tolerance that can be changed; a second press symmetrises the structure. The group is found for one molecule of up to 150 atoms. The same is in «Tools»: «Find the point group», «Symmetrise», «Symmetrise and turn to the standard orientation».
+- **The name button** (IUPAC) gives the name by the IUPAC rules (acyclic and monocyclic compounds with C, H, N, O and halogens, in three languages) or from the program's dictionary. If no rule applies, Compass asks PubChem (the internet is needed; the name is in English).
 
-### How to save your own fragment
+Theory — in the Atlas: [«Point groups»](https://www.azimuth-chem.com/atlas/?lang=en#sym).
 
-1. Select a group of atoms together with the atom it is attached by (for example, CF₃ and the carbon).
+### Custom fragments and molecules
+
+**Fragment.**
+
+1. Select a group of atoms together with the atom by which it attaches (for example CF₃ and the carbon).
 2. «Edit → Atoms, fragments and molecules → Save the selection as a fragment…» and give it a name.
-3. The fragment appears in «My fragments» and is placed like the built-in ones. There you can also delete, export and import fragments (a JSON file — to move them to another computer).
+3. The fragment appears in «My fragments» and is placed like the built-in ones. The same place has deletion, export and import as a JSON file (to carry fragments to another computer).
 
-### How to keep your own molecule (0.202.0)
+**Molecule.**
 
-1. Right click on an atom — «Keep the molecule in «My molecules»…» (the molecule of that atom — all the atoms bonded to it is kept); or the same item in the «Molecule» menu of the building and in «File → Example molecules → My molecules» (the atoms selected, without a selection — the whole structure). Give it a name.
-2. The molecule appears in «File → Example molecules → My molecules» (it opens in the tab, as an example) and in the «Molecule» menu of the building (the mode is also turned on by «Edit → Atoms, fragments and molecules → Add a molecule», 0.202.2; put by a click on the field beside the others). «Delete my molecule» is there too. The molecules are kept in the settings of the program with their bonds and bond orders.
+1. Right-click an atom — «Save the molecule to «My molecules»…» (all atoms connected to this one are saved). Or the same item in the «Molecule» menu of the building mode: the selected atoms, without a selection — the whole structure.
+2. The molecule appears in «File → Example molecules → My molecules» and in the «Molecule» menu when building (it is placed with a click on the field next to the others). The same place has «Delete my molecule».
 
-### How to check a structure, add a solvent, protons and isotopes
+### Structure check, solvent, protons and isotopes
 
-- **«Tools → Check the structure…»** (0.216.86). Before a calculation: the charge and multiplicity against the number of electrons, atoms too close, atoms with too many neighbours, a neutral N with four bonds and O with three, unfilled valences, disconnected parts. The window lists them (✕ ORCA will not accept it, ! looks like a mistake, · check what you meant); the atoms of the remarks are selected on the model. «Run calculation» in Sextant makes the same check itself and asks «Start all the same?» when it finds errors (0.216.99).
-- **«Tools → Surround with a solvent…»** (0.216.86–0.216.94) — explicit solvation: water, methanol, ethanol, ammonia, DMSO, dichloromethane, chloroform, THF or benzene. «The first coordination shell» puts a solvent molecule with a hydrogen bond on every free site (lone pairs of O and N, O–H and N–H groups); «Round the whole molecule, at random» — a given number of molecules without overlaps. «Remove the solvent» is in the same window.
+- **«Tools → Check the structure…»** before a calculation compares the charge and the multiplicity with the number of electrons and looks for atoms too close to each other, atoms with too many neighbours, a neutral N with four bonds and an O with three, unfilled valences and disconnected parts. The remarks come as a list (✕ — the program will not accept it, ! — looks like a mistake, · — check your intention), their atoms are selected on the model. «Run calculation» in Sextant makes the same check itself and asks «Start all the same?» when there are errors.
+- **«Tools → Surround with a solvent…»** — explicit solvation by water, methanol, ethanol, ammonia, DMSO, dichloromethane, chloroform, THF or benzene. «The first coordination shell» puts a solvent molecule by a hydrogen bond on every free place; «Round the whole molecule, at random» — a given number of molecules without overlaps. «Remove the solvent» — in the same window.
 - **«Tools → Protons»**: add a proton to the selected atom (charge +1), remove one (−1) or move a hydrogen to another atom (a tautomer).
-- **Isotopes** (0.216.97–0.216.101). Right-click an atom → «Isotope»: the stable isotopes of every element with their abundance (from NIST), T and ¹⁴C, or «A mass of one’s own…»; several atoms at once — «Tools → Isotopes of the selected atoms…». The model shows the mass number at the symbol; the isotopes go into the ORCA, Gaussian and Psi4 input files.
+- **Isotopes.** Right-click an atom → «Isotope»: the stable isotopes of all elements with their abundance (NIST), T and ¹⁴C or «A mass of one’s own…»; several atoms at once — «Tools → Isotopes of the selected atoms…». The mass number appears at the symbol on the model; isotopes go into the input files of ORCA, Gaussian and Psi4.
 
-### How to compare two structures
+### Comparing structures
 
 1. «View → Structure comparison» or «File → Overlay a structure for comparison…».
-2. Choose the file of another structure with the same composition (a conformer, the result of another program, a file with another atom numbering).
-3. The atoms are matched automatically; the RMSD (with all atoms and without H) and the largest deviation are shown. The model can be renumbered as in the file, and the structure from the file saved in the numbering of the model. Enantiomers are told apart: a mirror image is not allowed unless you ask.
+2. Choose the file of another structure of the same composition (a conformer, the result of another program, a file with another numbering).
+3. The atoms are matched automatically. The RMSD (with all atoms and without H) and the largest deviation are shown. The model can be renumbered as in the file, and the structure from the file can be saved in the numbering of the model.
 
-### How to find conformers
+Enantiomers are distinguished: a mirror reflection is not allowed without asking. A quick comparison with another open tab — «Tools → Compare with a tab».
 
-1. «Calculation → Conformer search…». On the left is the card «Search method» (0.91.2): the method is chosen in a list, below it are its description and only its settings; further down the energy window and the temperature shared by all; «Search» runs the method chosen. The method that suits the molecule is chosen at once: the scan up to 4 rotatable bonds, the bee colony for 5–10, CREST beyond. On the right are the conformers found. By default: the scan — a 120° step, at most 200 combinations and an xtb refinement at once; the bee colony — 10 conformers, 10 iterations; CREST — a metadynamics length of ×2 for molecules of up to 30 atoms (×1 otherwise); a window of 6 kcal/mol, 298.15 K.
-2. Compass finds the rotatable bonds (single bonds outside rings; CH₃ and amide C–N do not rotate), turns them in steps of 120° (or 60°, 180°) in all combinations or in a given number of random ones and drops structures where atoms run into each other.
-3. «Refine with xtb (GFN2)» optimizes every candidate and sorts them by the CREST rules: the energy window (0.91.1: the «Energy window» field, 6 kcal/mol by default as in CREST; wider shows the high forms too), duplicates (ΔE < 0.05 kcal/mol and RMSD < 0.125 Å) removed, identical structures with differently numbered atoms (the same rotational constants) counted as rotamers of one conformer, in the Rotamers column; the Boltzmann share at the chosen temperature is shown. When the window leaves something out, the line below says how many structures and how much higher the nearest one is: e.g. anti formic acid is 7.1 kcal/mol above syn in GFN2-xTB and is not shown with a window of 6.
-4. «Run CREST» runs a full search by CREST itself (iMTD-GC; «quick» is its --quick key) if it is installed («Sextant → Calculation → Install calculation programs…»). The energy window is passed to it (--ewin); «CREST: metadynamics length» (×1 — as CREST chooses itself) lengthens the search (--mdlen): CREST takes small conjugated molecules for rigid and gives them only 5 ps, so it finds one conformer — the line below then says so.
-5. «Bee colony (ABC)» — an artificial bee colony (the method of SmartChemDesign/abc): the turns of the rotatable bonds are the «food sources», their energy is a short xtb optimization (GFN2); first the lowest conformer is searched, then low ones unlike those found (by RMSD), and each best one is finished by a full optimization. A conformer is taken when it differs from those found (RMSD ≥ 0.15 Å) and lies within the energy window of the lowest one (0.91.1; before, a Boltzmann share of at least 5 %, i.e. a second conformer no more than 1.7 kcal/mol higher, so the search mostly gave one). «ABC: conformers» — how many to find, «ABC: iterations» — how long to search (each iteration is 2 × the number of rotatable bonds xtb runs). All the runs go into one folder ABC_… among the calculations. The line below shows the progress (0.91.3): the global search or «local search k of at most N · found, rejected» and the number of the xtb run; there are at most 2 × «Conformers» − 2 local searches (each about 10 × the number of rotatable bonds short optimizations).
-6. The conformers found are in the «Conformers» tab of the result panel (☰); «Take the selected one» puts the conformer into Compass, «Save XYZ…» saves all frames with their energies.
-7. (0.202.17) When the molecule is in a project, after a search with energies (xtb, CREST, the bee search) all the conformers of the energy window go into «Project molecules» under it: ▸ before its name unfolds the group (numbers 1.1, 1.2…, each with its ΔE). In the batch mode the tick of the molecule ticks its conformers too; in the unfolded group you can take off those not to be computed. Each conformer is a molecule of the project with its own calculations; a new search replaces those not computed yet, the computed ones stay. Removing the molecule removes its conformers too.
+### Conformer search
 
-Theory in the Atlas on the site: [Conformers: which minima to look for](https://www.azimuth-chem.com/atlas/?lang=en#conf).
+«Calculation → Conformer search…» opens the search window. On the left — the «Search method» card: the method is chosen in a list, with its description and settings below it; further down — the common energy window and temperature. On the right — the conformers found. A method suited to the molecule is chosen at once.
 
-### How to build a reaction path
+Table: Conformer search methods
 
-1. Put the start structure in Compass. «Calculation → Path between structures…».
-2. The end structure comes from a file or from the comparison; it is renumbered as the start and overlaid on it.
-3. Intermediate structures (1–50) are built by IDPP (bonds do not shorten when groups rotate) or linearly; the frames go to the steps panel and to an XYZ file.
-4. «To Sextant: ORCA NEB-CI» prepares a calculation of the path and the transition state: Sextant chooses the task «Reaction path (NEB-CI)», and end.xyz is written next to the input file.
+| Method | When it is chosen | How it works |
+|---|---|---|
+| Enumeration | Up to 4 rotatable bonds | Turns the rotatable bonds in 120° steps (or 60°, 180°) in all combinations (at most 200) or at random; discards structures with clashing atoms; refines the candidates in xtb |
+| Bee search (ABC) | 5–10 rotatable bonds | An artificial bee colony: the turns of the bonds are «nectar sources», the energy is a short xtb (GFN2) optimization; first the lowest conformer, then low ones unlike those already found |
+| CREST | More than 10 rotatable bonds | A full search by the CREST program (iMTD-GC; «quick» — the `--quick` key); the energy window is passed to it (`--ewin`) |
 
-Theory in the Atlas on the site: [Potential energy surface](https://www.azimuth-chem.com/atlas/?lang=en#pes).
+Single bonds outside rings count as rotatable; CH₃ groups and amide C–N bonds are not rotated.
 
-### How to fix atoms in an optimization
+**Sorting.** «Refine with xtb (GFN2)» optimizes every candidate and sorts them by the rules of CREST: the energy window (6 kcal/mol by default), duplicates (ΔE < 0.05 kcal/mol and RMSD < 0.125 Å) are removed, identical structures with differently numbered atoms count as rotamers of one conformer. The Boltzmann population at the chosen temperature (298.15 K by default) is shown. If the window discarded something, a line at the bottom says how many structures and how much higher the nearest one is.
 
-Select atoms (1–4: an atom, a length, an angle or a dihedral) and choose «Calculation → Fix the selection for the optimization» or the lock button above the model — a small lock appears on the model; the constraints go into the optimization input in Sextant.
+**Method settings.** «Energy window» (6 kcal/mol by default, as in CREST) and the temperature are common. The bee search has «ABC: conformers» (how many to find, 10 by default) and «ABC: iterations» (the length of the search; each iteration is 2 × the number of rotatable bonds xtb runs); all its runs lie in one ABC_… folder among the calculations. CREST has «quick» and «CREST: metadynamics length». «Run CREST» is available if CREST is installed. During the search the line at the bottom shows the progress: for xtb — «conformer 5 of 20», for the bee search — the global or local search and the number of the xtb run.
 
-### How to see a calculation result on the model
+**Result.** The conformers found are on the «Conformers» page of the result panel (☰): «Take the selected one» puts the conformer into Compass, «Save XYZ…» — all frames with their energies. If the molecule is in a project, the conformers within the energy window go into «Project molecules» as a group under it (numbers 1.1, 1.2…, each with its ΔE); each conformer is a molecule of the project with calculations of its own.
 
-- **The result panel (☰ on the left above the model)** — the ☰ button is shown only when the tab has something to show: steps, frequencies, orbitals or conformers. «Optimization» — optimization steps, scans, IRC, NEB: the energy chart, playback, GIF; after an optimization the last step is chosen, and the chosen step stays as the structure of the tab when the panel is folded (☰ or the cross; one undoable change). A click on the empty field folds the panel (as ☰ does). «Structures» — appears when several structure files are opened at once («File → Open…», select several) or an SDF database with several molecules: they are listed, the chosen one is on the model, «Take this structure». «Conformers» — appears after a conformer search and keeps them until the next search: the chosen conformer is on the model (arrows — another one), «Take this conformer». «Frequencies» — the frequencies and IR intensities (imaginary ones in orange); the chosen vibration moves right on the model (the amplitude is next to it; Space pauses, the arrows pick another vibration), the tab's own structure is not changed. «Orbitals» and «QTAIM» — see «How to study the electron density»; without orbitals in the result they are grey. (0.91.43) In the «Atoms» menu the values are grouped by kind into submenus: «Charges» (Mulliken, Löwdin, Hirshfeld, CM5, ADCH, RESP, AIM, APT, xtb, MOPAC), «Spin populations», «Fukui functions»; the kind on the model now is marked «•»; the Multiwfn analyses that give new values are in the submenu «Compute from the wavefunction». The eraser icon next to the three buttons takes everything laid over the model away — charges and spins, bond orders, dipole and forces, the surface, the critical points; the structure, its labels and the measurements stay.
-- **Properties** («Calculation → Properties from the calculation»): charges (Mulliken, Löwdin, Hirshfeld, CM5), spin populations, bond orders (Mayer or Wiberg), the dipole moment and the forces on atoms at the chosen step of an ORCA optimization — over the model, as long as the same structure is in the field. When the result has an orbital file (Molden, fchk or an ORCA .gbw), the same menu has «ADCH and CM5 charges…»: Multiwfn computes them in the background and they appear on the model. «RESP charges…» (0.91.33) are the charges fitted to the electrostatic potential of the molecule (two-stage RESP), as in the AMBER and GAFF force fields; the status line gives the RRMSE (how well the charges reproduce the potential), and «Analysis» gets «<name>_resp.chg» with the coordinates and charges for molecular dynamics programs. «Fukui functions…» (0.91.34) — for the result N of the Sextant queue «Fukui functions»: from the Hirshfeld charges of the three calculations, f⁺ (where an electron arrives — nucleophilic attack), f⁻ (where one leaves — electrophilic attack), f⁰ (radical attack) and the dual descriptor Δf = f⁺ − f⁻ (> 0 an electrophilic site, < 0 a nucleophilic one) by atom on the model; a window with the table, the likely sites of attack and the global indices — ionization potential, electron affinity, electronegativity, hardness and the electrophilicity index; the tables go to «Analysis» of the queue folder. Multiwfn is installed separately (on a Mac: `brew install multiwfn`; on Windows: the archive from sobereva.com/multiwfn — point the program to Multiwfn.exe); its output is kept next to the orbital file. References to Multiwfn and the methods are in «External programs and references». The same menu has «Hirshfeld charges…» — for Gaussian and Molden files whose output lacks them (ORCA prints its own) — and «AIM charges and spins (Bader basins)…» — the charges of Bader's atoms in molecules (the basins of the electron density), for an open shell also the spin populations of the basins (and «Hirshfeld charges…» gives the Hirshfeld spins of an open shell); for atoms with an ECP the core is counted (Multiwfn adds its density); on the medium grid it takes one to a few minutes. The same menu has «Bond orders: Mayer, Wiberg, FBO, LBO…»: four definitions of the bond order from the wavefunction; the model shows the Mayer orders first, the others are chosen in the same menu. (0.91.36) Above the model there are three buttons for this instead of one «±»: «Atoms» (the ± icon: what is written at the atoms — charges, spins, valences — and the Multiwfn analyses that give them, the Fukui functions), «Bonds» (a double bond: the bond orders on the model, their sets, «Bonds by the orders…») and «Dipole and forces» (an arrow). The menu «Calculation → Properties from the calculation» has all of them together. (0.91.38) At the bottom of the Fukui window — «Surface on the model: f⁺ f⁻ f⁰ Δf»: the same functions as fields, a ± surface on the Compass model (blue — above zero, red — below): Azimuth builds the densities of the three calculations of the queue on one grid itself (no Multiwfn needed) and subtracts them — f⁺ = ρ(N+1) − ρ(N), f⁻ = ρ(N) − ρ(N−1), f⁰ their mean, Δf = f⁺ − f⁻ (blue — electrophilic sites, red — nucleophilic ones). The grid is «Calculation grid» of «File → Settings…»; the fields computed are kept, another of the four is shown at once; the status line gives ∫ dV (1 for f, 0 for Δf, the difference comes from the grid step); the table of extrema is «fukui_<field>_extrema.csv» in «Analysis» of the queue folder.
-- **Orbitals and ESP** — in the orbitals window of Spectrum choose to show them on the Compass model: an orbital (blue and red phases), the electron or spin density lies on the model; «ESP on the surface» (when the orbitals were opened from a file — Molden, fchk or an ORCA .gbw) colours the surface ρ = 0.001 with the electrostatic potential of the wavefunction itself, computed in Multiwfn, and marks its minima and maxima (red attracts a positive charge, blue a negative one; the scale is in kcal/mol). **The menu «View → Surface on the model»**: at the top the tabs of the left panel («Orbitals and density…», «Surfaces…», «Critical points (QTAIM)…»), then the surfaces of Multiwfn by group, one «Calculation grid» for every field (coarse — seconds, medium, fine — minutes for large molecules; the same as «Grid» in the left panel), «CSV tables» and «Multiwfn program…»; below — level, opacity, «Remove surface». Without an installed Multiwfn its items are grey, and the tooltip says how to install it (`brew install multiwfn`) or point to the program file. **Weak interactions**: NCI from the wavefunction of the result, NCI from the promolecular density — for any structure on the model, no calculation needed — and IRI. The model shows the RDG = 0.5 surface coloured by sign(λ₂)ρ: blue — hydrogen bonds, green — van der Waals contacts, red — repulsion (in rings, in close contacts); the plot RDG — sign(λ₂)ρ is the «NCI» tab of Spectrum. **Functions on a grid**: ρ, |∇ρ|, ∇²ρ, the spin density, G(r), K(r), the local information entropy, the total ESP, ALIE, RDG, and ELF and LOL (the surfaces ELF = 0.8 and LOL = 0.5 show the bonds, lone pairs and cores as a Lewis structure). **Molecular surface**: on ρ = 0.001 — ESP, ALIE, LEA or LEAE with the minima and maxima (blue dots — minima such as lone pairs; red — maxima: acidic hydrogens, σ-holes). **Tables.** With every surface a CSV table of its extrema goes into the «Анализ» subfolder of the calculation folder (next to the orbital file): where the function is largest and smallest, the value, the coordinates and the nearest atom («<name>_<function>_extrema.csv»); for the molecular surface also a summary («<name>_esp_summary.csv»: area, volume, averages, σ²tot, ν, Π, MPI); the output of Multiwfn goes there too («<name>_multiwfn_<analysis>.txt»). For NCI from the promolecular density the table is written next to the saved project. «CSV tables…» opens «File → Settings…» at the tables (0.91.35: the separator — «;», «,» or Tab — and the decimal sign are chosen apart); by default, for a Russian locale («;» between the columns and the decimal comma — Excel and Numbers open them with a double click; the default) or international («,» and the point). Asking again for the same surface, table or state in one session takes it from memory — Multiwfn does not run again. When an old Multiwfn (before 3.8) runs, the program says so once: some analyses do not work in it.
+> **Tip.** A typical path: run the conformers found by xtb as a queue in MOPAC (PM7), then the best ones of the new sorting as a queue in ORCA (section «Calculation queue»).
 
-Theory in the Atlas on the site: [Atomic charges: comparing schemes](https://www.azimuth-chem.com/atlas/?lang=en#chg), [Electron density](https://www.azimuth-chem.com/atlas/?lang=en#dens).
+> **Note.** CREST treats small conjugated molecules as rigid and gives them a short metadynamics, so it finds one conformer. Then increase «CREST: metadynamics length» (the `--mdlen` key).
 
-### How to choose a look for a paper or a talk
+Theory — in the Atlas: [«Conformers: which minima to look for»](https://www.azimuth-chem.com/atlas/?lang=en#conf).
 
-«View → Display scheme»: «Azimuth», «Publication · white background», «Black and white», «Jmol colours», «Sticks», «Space filling», «Presentation» change the model, bonds, labels, projection, axes, atom size, colours, background and grid at once. The colour of one element is in the atom menu, «Colour of the element…». There you also set the atom size, the palette (Azimuth, Jmol/CPK, greys), the background (as the theme, white, black) and the dot grid separately. «Save the current look as a scheme…» adds your own scheme, which can be deleted. A white or black background of a scheme goes into snapshots too. (0.91.79) «Display → Own look…» — every parameter of the look in one window, each change on the model at once: the model, any atom size and bond width (not only those of the menu), the bond colours, multiple bonds, labels, perspective, axes, background, grid, the base palette and own colours of any elements (a double click on a colour in the list removes it). At the bottom — «Put back as it was»; «Save the scheme» under your own name (a tick — open the program with it), «Export schemes…» and «Import schemes…» — a .json file for colleagues (a taken name gets « (2)»).
+### Reaction path
 
-### 3D graphics by VTK (trial)
+1. Open the starting structure. «Calculation → Path between structures…».
+2. Choose the end structure — from a file or from the comparison. It is renumbered like the starting one and overlaid on it.
+3. The intermediate structures (1–50) are built by IDPP (bonds are not shortened when groups rotate) or linearly; the frames go to the steps panel and to an XYZ file.
+4. «To Sextant: ORCA NEB-CI» prepares a calculation of the path and the transition state: Sextant chooses the task «Reaction path (NEB-CI)», and `end.xyz` is written next to the input file.
 
-«View → 3D graphics by VTK (trial)»: VTK draws the atoms and bonds (OpenGL), while labels, selection, measurements and the cell stay as before. The choice is remembered; VTK draws straight into the window, on the graphics card, after the program is restarted. Then the surfaces on the model (an orbital, a density, the ESP) are drawn by VTK together with the atoms: a surface passes between the atoms by their true depth, its transparency is right and its mesh is full. If VTK does not work, Compass says so and returns to the built-in graphics.
+Theory — in the Atlas: [«Potential energy surface»](https://www.azimuth-chem.com/atlas/?lang=en#pes).
+
+### Constraints in an optimization
+
+Select atoms (1 — an atom, 2 — a length, 3 — an angle, 4 — a dihedral angle) and choose «Calculation → Fix the selection for the optimization» or press the lock button above the model. A small lock appears on the model, and the constraint goes into the input file of the optimization. Constraints also serve as the coordinates of a potential energy surface scan (section «Calculation tasks»).
+
+### Quick xtb calculation and calculation tools
+
+The «Calculation» menu of Compass:
+
+- **«Charge and multiplicity…»** — the fields of Sextant right from Compass.
+- **«Quick xtb calculation»**: «Energy», «Optimization», «Optimization + frequencies», «GFN-FF optimization» and «Scan along the selected atoms…» (a length, an angle or a dihedral angle is changed to the final value in a given number of points, the rest is optimized). A GFN2-xTB calculation with the charge and multiplicity of the tab starts at once, whatever program is set in Sextant, and comes to the tab like an ordinary one.
+- **«Calculation steps»**: «Save the steps as one XYZ…», «Coordinates of all steps (CSV)…» and «Parameter along the steps…» — a length, angle or dihedral of the selected atoms along the steps of an optimization, a scan or an IRC.
+- **«Modes involving the selected atoms…»** — vibrations sorted by the share of the selected atoms in the displacements; this is how, for example, the C=O stretch is found quickly.
+
+The «Tools» menu of Compass: «Table of internal coordinates…» (all lengths, angles and dihedrals; «Save CSV…»), «Volume and surface area…» (van der Waals volume, solvent-accessible area with a 1.4 Å probe, effective diameter; Bondi radii), the moments of inertia and the rotational constants, the mass of the molecule, the statistics of atoms and bonds.
+
+### The result of a calculation on the model
+
+![The result of an optimization in Compass: the steps panel with the energy plot to the left of the model](img/compass-optimization.jpg)
+
+**The result panel** is opened by the ☰ button at the top left of the model; it is visible only when the tab has something to show. The pages of the panel:
+
+- **«Optimization»** — the steps of an optimization, a scan, an IRC or a NEB: the energy plot, playback, GIF. After an optimization the last step is chosen; the chosen step remains the structure of the tab when the panel is collapsed. When a scan is turned through, its coordinate is labelled on the model in orange. A two-dimensional scan has the «Scan map» button: ΔE in colour with contour lines and the «valley» dashed.
+- **«Structures»** — when several files or an SDF database are open at once: the chosen structure on the model, «Take this structure».
+- **«Conformers»** — after a conformer search.
+- **«Frequencies»** — frequencies and IR intensities (imaginary ones in orange); the chosen vibration moves right on the model (space — pause, arrows — another vibration).
+- **«Orbitals»**, **«Surfaces»** and **«QTAIM»** — wavefunction analysis (section «Properties and electron density on the model»).
+
+The header of the panel has the «Go to Spectrum» icon: Spectrum opens on the tab with the same content (convergence, vibrations, maps, topology). A click on an empty place of the field collapses the panel.
+
+![A potential energy surface scan: the energy plot over the points of the scan](img/compass-scan.jpg)
+
+### Properties and electron density on the model
+
+**Properties** («Calculation → Properties from the calculation» and three buttons of the column on the right):
+
+- **«Atoms»** — charges (Mulliken, Löwdin, Hirshfeld, CM5, ADCH, RESP, AIM, APT, xtb, MOPAC), spin populations and Fukui functions; the kind shown is marked «•». Analyses that give new values are in the «Compute from the wavefunction» submenu.
+- **«Bonds»** — Mayer, Wiberg, FBO and LBO bond orders; «Bonds by orders…».
+- **«Dipole and forces»** — the dipole moment and the forces on the atoms at the chosen optimization step.
+
+The eraser next to them removes everything overlaid from the model; the structure, its labels and measurements stay.
+
+**Wavefunction analyses.** If the result has a file with orbitals (Molden, fchk or ORCA `.gbw`), the Multiwfn program computes in the background:
+
+- ADCH and CM5 charges, Hirshfeld charges (for Gaussian and Molden, which do not have them in the output) and AIM charges by Bader basins, for an open shell — spin populations as well;
+- RESP charges — fitted to the electrostatic potential (two-stage RESP), as in the AMBER and GAFF force fields; the status line shows the RRMSE, the «Анализ» folder gets a file `<name>_resp.chg` for molecular dynamics programs;
+- bond orders by four definitions.
+
+**Fukui functions** — for the result of the «Fukui functions» queue of Sextant: from the Hirshfeld charges of three calculations, f⁺ (nucleophilic attack), f⁻ (electrophilic attack), f⁰ (radical attack) and the dual descriptor Δf = f⁺ − f⁻ on the model; a window with a table, likely sites of attack and global indices (ionization potential, electron affinity, electronegativity, hardness, electrophilicity index). At the bottom of the window — the same functions as a surface on the model: the program builds the densities of the three calculations on one grid and subtracts them.
+
+**Orbitals and surfaces.** If the result has orbitals, the result panel has the pages «Orbitals», «Surfaces» and «QTAIM» (the same — «View → Surface on the model»).
+
+- **«Orbitals»** — the table of orbitals and the buttons «Orbital», «Spin» (for open shells) and «Composition» (contributions of atoms by Hirshfeld). Above the table — canonical or localized orbitals: Pipek–Mezey, its «Becke» variant (for basis sets with diffuse functions) or Boys; localized orbitals are labelled as cores, lone pairs, bonds and delocalized ones. `Shift`+click on another orbital overlays it on the one shown in its own pair of colours.
+- **«Surfaces»** — the tree of Multiwfn surfaces by groups: the density and its derivatives (ρ, |∇ρ|, the Laplacian ∇²ρ, spin density, RDG), electron localization (ELF, LOL, entropy), energy (G, K, ALIE), potential (ESP), weak interactions (NCI, IRI, IGMH) and functions on the molecular surface ρ = 0.001 (ESP, ALIE, LEA, LEAE) with minima and maxima. A double click puts a surface on the model. Below — «Difference density Δρ» by fragments: blue — electrons gained, red — lost.
+- **«QTAIM»** — «Find points»: the critical points of the density are searched for by Multiwfn, so bonds that Compass does not draw (hydrogen bonds, van der Waals contacts), rings and cages are found too. The list: type, atoms, ρ, ∇²ρ, the energy density H; at the bottom — the Poincaré–Hopf check n − b + r − c = 1. «On the model» draws the points (nuclei — grey, bonds — green, rings — orange, cages — violet) and the bond paths.
+
+The calculation grid (coarse — seconds, medium, fine — minutes for big molecules) is common to all fields; when the grid is changed, what is shown is rebuilt. What was built is remembered: showing it again does not start the calculation anew. While a field is computed, the cursor and the icon at the button turn into a spinning ring.
+
+**Weak interactions.** NCI from the wavefunction of the result, NCI from the promolecular density — for any structure on the model, without a calculation — and IRI: the RDG = 0.5 surface coloured by sign(λ₂)ρ: blue — hydrogen bonds, green — van der Waals contacts, red — repulsion. IGMH between molecules shows only the intermolecular part of the interaction. Plots and tables of domains are in the «NCI» tab of Spectrum.
+
+**Tables.** With every surface a CSV table of its extrema (`<name>_<function>_extrema.csv`) is written into the «Анализ» subfolder of the calculation folder, for the molecular surface also a summary (`<name>_esp_summary.csv`: area, volume, averages, σ²tot, ν, Π, MPI), as well as the Multiwfn output.
+
+> **Note.** Multiwfn is installed separately (section «Installing the calculation programs»). Without it the analysis items are grey, and the tooltip explains how to install it or point to it. If an old Multiwfn (before 3.8) is in use, the program warns once: some analyses do not work in it.
+
+Theory — in the Atlas: [«Atomic charges: comparing the schemes»](https://www.azimuth-chem.com/atlas/?lang=en#chg), [«Electron density»](https://www.azimuth-chem.com/atlas/?lang=en#dens).
+
+### The look for a paper and a presentation
+
+«View → Display scheme» changes at once the model, bonds, labels, projection, axes, atom size, colours, background and grid. The built-in schemes: «Azimuth», «Publication · white background», «Black and white», «Jmol colours», «Sticks», «Space filling», «Presentation». The white or black background of a scheme goes into snapshots too. «Save the current look as a scheme…» adds a scheme of your own.
+
+- **«Display → Own look…»** — all view parameters in one window, each change at once on the model: the model kind, atom size and bond thickness, bond colour, double bonds, labels, perspective, axes, background, grid, palette and your own element colours. «Save the scheme» — under your own name (a check box — start the program with it); «Export schemes…» and «Import schemes…» — as a `.json` file for colleagues.
+- **«Bond style…»** («View → Bond display»): bond colour (by atoms smoothly, with a sharp border or in one colour), thickness, multiple bonds as several cylinders or one, the look of aromatic bonds, long bonds dashed, hydrogen bonds.
+- The colour of one element — «Element colour…» in the atom menu.
+
+### VTK 3D graphics
+
+«View → 3D graphics by VTK (trial)»: atoms, bonds and surfaces are drawn by the VTK library (OpenGL) on the graphics card — a surface passes between the atoms by real depth, the transparency is honest. The choice is remembered and acts after the program restarts. If VTK does not work, Compass says so and returns to the built-in graphics.
 
 ## Compass · Crystal
 
-Crystals from CIF files: the cell, a supercell and a (hkl) surface. «Crystal» has its own tabs and menus; a molecule or a result opened here moves to «Molecule» by itself. While the field is empty, Quail stands in its lower left corner: the folder in her bubble opens a CIF, the little crystal an example.
+«Compass · Crystal» works with crystals from CIF files: the cell and a block of cells, symmetry, intermolecular contacts, the Hirshfeld surface, the energies of molecule pairs, the powder pattern and (hkl) surfaces. Periodic calculations in Quantum ESPRESSO and CP2K are also set up from here. The crystal has its own tabs and menus; a molecule or the result of a molecular calculation opened here goes to «Compass · Molecule» by itself.
 
-### How to open a crystal
+> **Note.** Crystal analysis and calculations are still marked as not checked in the program (section «Calculation programs and how they were checked»): compare their results with independent data.
 
-1. «File → Open CIF…» (or open a CIF from «Molecule» — the program switches here by itself). Examples — «File → Open an example…» (or the little crystal in Quail’s bubble on the empty field): a menu of crystals — CsCl, NaCl, graphite, benzoic acid, silicon; «Another file…» opens the folder of crystal examples (CIF and CRYSTAL outputs).
-2. The crystal is built at once (0.119.0): one cell, whole molecules, one part of a disorder. The atoms of the asymmetric unit are multiplied by the symmetry operations of the file (repeats on special positions are merged). The space group and Z are in the line under the model, the density in the status line.
-3. «File → Rebuild the crystal (cells, surface)…» or the crystal button over the model opens the Crystal panel to the right of the model (0.216.129): the cell contents, the group, the cell parameters and volume, the number of atoms. One cell or a block of n₁ × n₂ × n₃ cells (up to 10 × 10 × 10, at most 2000 atoms), a range of coordinates, «Atoms on the faces, edges and corners», «Whole molecules» and «One part of the disorder» rebuild the model at once, after a short pause — there is no Build button; «Close» folds the panel. The cell edges are drawn on the model: a in red, b in green, c in blue.
-4. «View → Show the cell» hides the edges.
-- **Panels beside the model** (0.216.127–0.216.132). Crystal, Contacts, the Hirshfeld surface and Calculation results open not as windows over the model but in the panel to the right of it (one at a time); below, where it says «the Crystal window» or «the Contacts window», this panel is meant. A row of the contacts table draws its contacts on the model and selects their atoms; «Show the network» draws the contacts of the network as dashed lines. The Hirshfeld surface lies on the model as soon as it is ready. The buttons of these panels stay lit while the panel is open; a second press or a click on the field beside the atoms closes it (0.216.142). The Crystal panel is split into sections that unfold: «Cell and packing», «Block of cells», «Symmetry operations», «Surface (hkl)», «View».
-- **A button panel of its own and menus in groups** (0.216.130–0.216.131). «Compass · Crystal» has its own layout of buttons over the model: buttons moved or removed here do not change the molecule panel, «Put the buttons back as they were» resets the panel of the tab where it was pressed. The Crystal menu: «Block of cells», «View of the crystal», «Labels on the model», then the submenus «Intermolecular interactions» (contacts, Hirshfeld surface, pair energies, shell), «Structure and packing», «Cell and lattice» and the powder pattern. The Calculation menu: the calculation in Sextant and the CRYSTAL input file, then what the calculation gave, and the submenus «Atomic charges», «Bonds and critical points (AIM)», «Fields on the model». Grey items say in their tooltip why they are unavailable.
-- **The coordinates of a crystal** (0.216.128). The Coordinates tab opens on «Independent atoms (fractions)»: the label, element, x, y, z, occupancy and U of the independent atoms of the file, with the group, the cell and the volume above the table; a row of the table selects all copies of the atom on the model. There are also «CIF of the crystal», «POSCAR (VASP)» and «Extended XYZ» of one cell. The ORCA, Gaussian, NWChem input blocks, the Z-matrix, SMILES and InChI are grey in a crystal: move the molecule to a molecule tab.
-- **Calculation results** (0.216.132). «Calculation → Calculation results…» and a button on the crystal panel: a table of the calculations of the crystal in the project (program and task, time, energy, pressure, outcome), the details of the chosen one — the cell energy in Eh and eV, the band gap or the Fermi level, the number of steps, the cell of the last step — and the buttons «Calculation folder», «Optimization steps», «Charges…», «AIM bonds…», «To Spectrum», «Calculate in Sextant…».
-- **Symmetry and whole molecules** (0.110.0). The Crystal window shows the space group (its number, if the file has it), the crystal system, the point group and the lattice type (P, A, B, C, I, F, R), found from the symmetry operations of the file, as well as Z, Z′ and the density. In the list «Symmetry operations» every operation is named: an axis or a plane, its direction and its place in the cell. The box «Whole molecules (completed across the cell faces)» builds the molecules that a face of the cell cuts as whole ones, each with its centre inside the cell; for crystals without separate molecules (salts, metals, frameworks) the box is unavailable, and the window says that the structure is infinite (a chain, a layer or a framework).
-- **Contacts and hydrogen bonds** (0.111.0). The button «Contacts…» in the Crystal window shows a table of contacts between the atoms of the cell and of the neighbouring cells: hydrogen bonds D–H···A (an angle of at least 120°), halogen and other σ-hole bonds, and van der Waals contacts (closer than the sum of the radii by 0.2 Å). Contacts repeated by symmetry are gathered in one row with a «Number» column. «Show the hydrogen-bond network» puts on the model the molecules of the cell and the neighbouring molecules bound to them by hydrogen bonds. In X-ray structures the H atoms are often closer to their atoms than they really are (C–H about 0.95 Å instead of 1.09), so the H···A distances come out about 0.1 Å longer.
-- **View and symmetry elements** (0.112.0). In the «View» group of the Crystal window the buttons «Along a», «Along b», «Along c» set the line of sight along an edge of the cell, and «Along the normal to (hkl)» perpendicular to the planes with the indices of «Surface (hkl)». The box «Symmetry elements» draws in the first cell the rotation axes (solid) and screw axes (dashed) in green, mirror planes (lightly filled) and glide planes (dashed) in blue, inversion centres as brown rings, each element with its symbol. If the cell has more than 400 elements (cubic groups with F centring), they are not drawn.
-- **Disorder** (0.114.0). If the CIF has disorder groups (`_atom_site_disorder_group`), the box «One part of the disorder» of the Crystal window is on: the cell, the molecules, the surface and the contacts are built from the ordered atoms and part 1, and the window says which part is shown. Untick it to see all the parts together.
-- **Displacement ellipsoids** (0.115.0). If the CIF has the displacement parameters of the atoms (anisotropic Uᵢⱼ or Bᵢⱼ, isotropic U_iso or B_iso), the box «Displacement ellipsoids (50 %)» in the «View» group of the Crystal window draws around each atom the projection of its ellipsoid: the atom is inside it with a probability of 50 %, as in ORTEP drawings. Atoms without parameters (often the hydrogens) stay ordinary balls.
-- **Packing coefficient** (0.116.0). The Crystal window shows the share of the cell inside the van der Waals spheres of the atoms (Bondi radii) — Kitaigorodsky's packing coefficient; for molecular crystals it is usually 0.65–0.77. The accuracy is about 0.01.
-- **Coordination polyhedra** (0.117.0). The box «Coordination polyhedra» in the «View» group of the Crystal window draws around metal atoms the polyhedra of their nearest neighbours (up to 1.12 × the shortest distance, from 4 to 12 atoms) as semi-transparent faces in the colour of the metal. Atoms at the edge of the block, with part of their neighbours cut off, get no polyhedra.
-- **Powder pattern** (0.118.0). The button «Powder pattern…» of the Crystal window calculates the X-ray powder pattern from the atoms of the cell: the atomic scattering factors of neutral atoms, the thermal parameters from the file, the Lorentz-polarization factor, no texture and no absorption. The window has the curve, the line marks under the axis and a table (hkl, 2θ, d, multiplicity, intensity in % of the strongest). You can choose the radiation (Kα₁ of copper, molybdenum, cobalt, iron, chromium, silver), the 2θ range and the line width, overlay an experimental pattern (two columns: 2θ and intensity), and save the calculation to .xy or the list of lines to .csv. If the CIF has no list of symmetry operations but has the symbol of the group or its number, the operations are taken from the tables of the 230 groups (the window says from what).
-- **The crystal panel** (0.120.0). Above the model in a crystal tab, next to the cell button, are «Crystal» (the window with the facts, the building of a block and of a surface), «View of the crystal» (along a, b, c; the boxes for symmetry elements, displacement ellipsoids and coordination polyhedra), «Contacts» and «Powder pattern». The arrow in the bottom right corner carries the selected molecules (one atom of each is enough) to a new «Compass · Molecule» tab — the calculation goes from there. The buttons for properties from a calculation, optimization constraints, comparison and the IUPAC name are hidden for a crystal; atoms can be edited as in a molecule.
-- **Fractional coordinates** (0.122.0). In the «Coordinates» tab of a crystal the format «Fractional (CIF)» shows the atoms of the model in fractions of the cell (beyond the first cell, above 1) with the labels and occupancies from the file. Repeats of one position are numbered (Na1, Na1_2…), atoms added by hand are named by their symbol and a number. The whole text is the CIF of the block shown, in the group P 1: it can be copied or saved with the buttons of the tab.
-- **Graph sets** (0.123.0). The column «Graph set» of the Contacts window names the pattern that a hydrogen bond of one kind makes together with its symmetry copies (Etter's notation): D — a single bond between two molecules, S(n) — a ring within a molecule, C(n) — an infinite chain, Rᵃ_d(n) — a ring of several molecules; n is the number of atoms in the ring or in the repeat of the chain (hydrogens count), a and d are the numbers of acceptors and hydrogens of the ring. This is the first level: patterns of bonds of different kinds (for example, between two independent molecules) are not named. H···C and H···π contacts get no graph set.
-- **π–π stacks** (0.124.0). Under the table of contacts the Contacts window shows how many flat rings the cell has (5–7 atoms, deviating from the plane by at most 0.1 Å) and the pairs of rings of different molecules lying in a stack: centroids closer than 4.0 Å, planes nearly parallel (an angle up to 20°). For each pair — the Cg···Cg distance, the angle between the planes, the distance from the centroid of one ring to the plane of the other, and the offset of the rings along the plane; repeats by symmetry are gathered in one row.
-- **A range of coordinates and colouring by symmetry** (0.125.0). In the Crystal window the box «A range of the coordinates (fractions of the cell) instead of the number of cells» builds the atoms with coordinates from–to on each axis (the bound included); with «Whole molecules» it takes the molecules whose centre is in the range. In the menu of the button «View of the crystal» the box «Molecules coloured by symmetry» paints each molecule in the colour of the symmetry operation that makes it (copies by a centring vector in the same colour); which operation has which colour is said in the message line.
-- **C–H···π and rings on the model** (0.126.0). The table of rings of the Contacts window shows C–H···π contacts too: a hydrogen on a carbon above a ring of another molecule (H···Cg up to 3.0 Å, the angle C–H···Cg at least 120°, the direction to the ring off the normal by at most 30°). The box «Rings, π–π and C–H···π on the model» in the menu «View of the crystal» draws the ring planes semi-transparent, the centroids as dots, π–π stacks as dashed lines between the centroids, and C–H···π as dotted lines from the hydrogen to the centroid.
-- **Calculation in Quantum ESPRESSO** (0.130.0). A periodic plane-wave calculation of the cell of the file (pw.x, SSSP efficiency pseudopotentials; the functional is PBE unless another is chosen, see below) is set up in Sextant — the program «Quantum ESPRESSO (crystal)», see below; the separate button «Calculation in Quantum ESPRESSO…» of the Crystal window and panel was removed in 0.216.146. Choose the task — the energy, the optimization of the atoms or the optimization together with the cell — the spacing of the k-point grid (smaller is more accurate and longer) and the number of processes; the input file is seen in Sextant. After the calculation Sextant shows the total energy of the cell (Ry, hartree, eV), the pressure, the gap on the k grid or the Fermi level, and after an optimization the new cell; «Open the optimized cell» opens it in a crystal tab. Quantum ESPRESSO and the pseudopotential library are installed with «Calculation → Install calculation programs…» (macOS and Linux; there is no build for Windows).
-- **Quantum ESPRESSO in Sextant** (0.133.0). The arrow «To the crystal calculation» at the bottom of «Compass · Crystal» opens Sextant with the program «Quantum ESPRESSO (crystal)» and this crystal; the same program can be chosen in the list of programs of Sextant. Above the settings is the choice of a crystal from the «Compass · Crystal» tabs, below are the same task, k spacing, processes, primitive cell, input file and start described above. Another program from the list brings back the molecule settings. If you select atoms before pressing the arrow, their whole molecules go to «Compass · Molecule» — for a molecular calculation (ORCA, xtb and the others).
-- **Halogen and other σ-hole bonds** (0.134.0). Besides hydrogen bonds, «Contacts» finds halogen, chalcogen, pnictogen and tetrel bonds R–E···Y: the atom E faces the nucleophile Y with its σ-hole, the angle R–E···Y (θ1) at least 150°. The column d/Σr is the distance divided by the sum of the van der Waals radii (below 1 — the atoms are closer than the radii allow). For a contact of two halogens the column X···X gives the second angle θ2 and the type: type I (θ1 ≈ θ2) — the atoms touch side by side, a van der Waals contact; type II (θ1 ≈ 180°, θ2 ≈ 90°) — a halogen bond. «Show the network» builds the network of hydrogen bonds, σ-hole bonds or all specific bonds — the choice is next to the button.
-- **Bands and density of states** (0.135.0). The task list of Quantum ESPRESSO has «Band structure» and «Density of states». The program sets the steps of one calculation itself: first scf, then the bands along a path through the high-symmetry points of the Brillouin zone (the standard path for the cubic, hexagonal, tetragonal and orthorhombic primitive lattices, a general one along the axes of the reciprocal cell for the rest), or the density of states on a dense grid by the tetrahedron method. After the calculation the button «Show the bands» or «Show the density of states» opens a plot: the energies are counted from the top of the valence band (for a metal, from the Fermi level), and «Save the data…» saves them to CSV. The summary of a band calculation gives the gap along the path.
-- **Frequencies at Γ in Quantum ESPRESSO** (0.219.0). The task «Frequencies (Γ point)» is now there for QE too (it was for CP2K): scf, then ph.x at q = 0 and dynmat.x with the sum rule for the acoustic modes. For an insulator ph.x also computes the dielectric constant ε∞ with the Born effective charges — from them the IR intensities of the modes (km/mol). The summary gives the optical modes, the imaginary ones (a structure not at its minimum — optimize first), the IR-active ones and ε∞; the modes on the model — «Calculation → Frequencies (Γ point)», as for CP2K. ph.x does not support hybrid functionals and dispersion corrections other than Grimme-D2 — compute their frequencies in CP2K. Checked on silicon (514 cm⁻¹, experiment 520) and NaCl (transverse optical 165 cm⁻¹, experiment 164).
-- **Phonon branches and density of states in Quantum ESPRESSO** (0.220.0). The task «Phonon branches and density of states»: scf, ph.x on a grid of q (the program chooses its size by the cell, 2 to 4 along each axis), q2r.x and matdyn.x — along the same path as the band structure, and on a dense grid for the density of states. «Show the phonon branches» opens the branches and, beside them, the phonon density of states. It takes longer than the frequencies at Γ: NaCl ran about half an hour on 6 processes. Negative frequencies are imaginary: the structure is not at its minimum, or the grid of q is too coarse.
-- **Quantum ESPRESSO on a server** (0.136.0). If a server with a SLURM queue is set up in «Server…», the Quantum ESPRESSO window gets the choice «Where»: «This computer» or «Server · …». The server needs pw.x: in PATH or as a module (`module load qe…`) — then the environment line can be written in the server profile. The SSSP pseudopotentials are taken from this computer and go with the calculation folder, the progress is seen in the window, and the result (the output, the density of states) is downloaded back. Processes are the MPI tasks of pw.x on the server.
-- **A crystal in Sextant and as a project** (0.137.0). An open CIF file gets its own project tab and folder in «Projects»: the crystal file lies there, and its calculations go there too. The arrow «To the crystal calculation» opens Sextant with the same cards as for a molecule: «Calculation setup» — the task, the method (functional), the cutoffs (from the SSSP table or your own), the dispersion correction (for molecular and layered crystals), processes and memory, the k grid (by the spacing or by hand), the primitive cell and an n₁×n₂×n₃ supercell, the optimization thresholds; the cell charge, spin, DFT+U, occupations and smearing, convergence — in «Additional settings…» at the bottom of the card (0.188.0); on the right — the crystal, «this computer / server» and «Run calculation»; below — the input file, which can be edited by hand. During the calculation its progress is shown in place of the input file; «Input file» brings the file back. For crystals Sextant has Quantum ESPRESSO and CP2K (0.138.0): the molecular programs do no periodic calculations.
-- **CP2K** (0.138.0). On the crystal calculation page you can choose CP2K instead of Quantum ESPRESSO in the «Program» line. CP2K calculates at the Γ point with MOLOPT Gaussian basis sets and plane waves for the density — handy for large cells (from ~10 Å, molecular crystals); calculate a small cell as a supercell. The tasks are the energy, the optimization of the atoms, the optimization with the cell and the frequencies at Γ; the settings are the method (a functional or GFN1-xTB, 0.183.0, 0.186.0), the basis set, the density grid (CUTOFF, REL_CUTOFF), the D3 or D3(BJ) dispersion correction; occupations and convergence — in «Additional settings…». CP2K is installed: on Linux with «Calculation → Install calculation programs…», on a Mac with «brew install cp2k» in Terminal (Homebrew), on a server as the cp2k module.
-- **Functional and cell charge** (0.182.0). For Quantum ESPRESSO the «Method» line has PBE (the default), PBEsol (more accurate lattice parameters of solids; its own pseudopotentials — the button «Download pseudopotentials», about 60 MB, once) and the non-local vdW-DF2, rev-vdW-DF2, vdW-DF-cx, rVV10: they include dispersion themselves, so do not choose the D3 correction with them. The list of dispersion corrections also has Tkatchenko–Scheffler (TS) and many-body dispersion (MBD). «Cell charge» (QE and CP2K; in Sextant — «Additional settings… → Electronic state») removes or adds electrons; the charge is compensated by a uniform background, and the energies of charged cells of different sizes are not compared directly.
-- **CP2K functional and basis set** (0.183.0). For CP2K the «Method» line has PBE, PBEsol, revPBE and BLYP; the D3 correction takes the parameters of the functional chosen, the pseudopotentials are GTH-PBE (GTH-BLYP for BLYP, not for every element). Basis sets: DZVP-MOLOPT-SR — for all elements and for solids; the full DZVP, TZVP and TZV2P are more accurate, but CP2K has them only for H, C, N, O, F, Si, P, S, Cl, that is for organic molecular crystals.
-- **CRYSTAL: the input file and the results** (0.216.0). «Compass · Crystal → Calculation → CRYSTAL input file…» writes the input of CRYSTAL (.d12) for the crystal shown: the task (energy, optimization of the atoms, optimization with the cell, elastic constants, frequencies at Γ), the functional (PBE0, B3LYP, HSE06, PBE — with and without the D3 correction, PBEsol, Hartree–Fock), a basis set of the CRYSTAL library (pob-TZVP, pob-DZVP, pob-DZVPP — for H–Br, their rev2 versions for CRYSTAL23, STO-3G, STO-6G), a pressure for the optimization with the cell (EXTPRESS) and the k grid (SHRINK; by default from the length of the cell). The group is written by its number in the setting CRYSTAL takes for it (P 21/n of a file becomes P 21/c), the atoms as the asymmetric unit; when no setting is found, the whole cell in P 1. The text is shown in the window and can be edited by hand; beside it, «Save .d3 for TOPOND…» (the search of all the critical points of the density). The program does not run CRYSTAL itself. An output of CRYSTAL (.out, CRYSTAL14/17/23) opens as a crystal: the last structure in its cell and group, the steps of the optimization in the drawer of steps, the energy, the pressure and the gap below; the elastic constants and the moduli (Voigt, Reuss, Hill) in a table. An output of TOPOND (.outp) opens as a table of the critical points: the type, the nearest atoms, ρ, ∇²ρ, G, V, H, |V|/G, the ellipticity.
-- **DFT+U** (0.184.0). The «DFT+U» line (Quantum ESPRESSO and CP2K; in Sextant — «Additional settings… → Electronic state»): U in eV for a d or f shell, for example «Ni 6.2» or «Fe 5.3, Co 3.3»; the shell is taken by the element (3d, 4d, 5d, 4f, 5f) and can be given explicitly — «Ni-3d 6.2». Empty — no U. It is needed for oxides and fluorides of transition metals and compounds of cerium and uranium: without it PBE underestimates the gap and the magnetic moments. U depends on the program and the projectors (QE — ortho-atomic, CP2K — Mulliken), so take a value obtained for the same program, or compute it (hp.x in QE). NiO, MnO, FeO also need the antiferromagnetic order — see «Magnetic order» (0.189.0). U is set for the elements of the open crystal: when you go to another crystal, the U of elements it lacks are removed.
-- **Hybrid functionals** (0.185.0). For Quantum ESPRESSO the «Method» line has PBE0 and HSE06 — they give the band gap more accurately than PBE (HSE06 is the standard for semiconductors) but take tens of times longer: start with a small cell and a coarse k grid. The «Energy» task only: pw.x computes no forces, stresses, bands or density of states of hybrids with the SSSP pseudopotentials — optimize the geometry with PBE (or PBEsol), then compute the energy and the gap with a hybrid. The D3 correction can be kept with them.
-- **GFN1-xTB in CP2K** (0.186.0). The «Method» line of CP2K has GFN1-xTB — a semiempirical method with its own D3 correction, hundreds of times faster than DFT. It is handy for a preliminary optimization of large cells (molecular crystals of hundreds of atoms), after which the geometry and the energy are refined with PBE. It needs no basis set, density grid, DFT+U or spin — these lines are hidden; no wave function for Multiwfn is written.
-- **Quick xtb calculation of a crystal** (0.216.147). «Calculation → Quick xtb calculation» in «Compass · Crystal» computes the crystal of the tab at once by the semiempirical GFN1-xTB in CP2K — the energy, the optimization of the atoms or the optimization together with the cell, without the page of Sextant (its settings do not change). The progress is shown on the pill over the model, Esc stops it; at the end the energy of the cell appears at the bottom, and the steps of an optimization open in the tab. A small cell is taken as a supercell for the Γ point by itself. The run goes into «Calculation results» of the project. CP2K must be installed.
-- **After a crystal calculation** (0.187.0). When a crystal calculation in Sextant has finished, its card has «Go to Compass» and «Go to Spectrum», as for a molecule. The CM5 and Hirshfeld charges and the AIM bonds (Multiwfn, CP2K calculations) are computed and shown in Compass — the buttons «Atoms» and «Bonds» above the crystal model — and in Spectrum, on the tabs «Charges» and «AIM bonds».
-- **Crystal calculation setup** (0.188.0). The lines follow the order of the molecule page: Name, Program, Task, Method, Basis set (CP2K) or Cutoffs (Quantum ESPRESSO), Dispersion, Resources, then the k grid, Cell, Supercell and Optimization thresholds. The cell charge, spin, DFT+U, occupations and SCF convergence are in «Additional settings…» at the bottom of the card; the line beside the button shows what is chosen there.
-- **Magnetic order** (0.189.0). «Additional settings… → Electronic state»: «spin-polarized calculation» and the order — ferromagnetic (all moments one way) or antiferromagnetic (the magnetic atoms form two sublattices with opposite moments). For an antiferromagnet the cell must hold both sublattices: NiO and MnO have one metal atom in the primitive cell — set the supercell 2 × 1 × 1 (this is the AFM-II order, the ground state of these oxides); in CP2K the Γ supercell 4 × 4 × 4 fits by itself. If the cell is too small, the status line says so. If the cell has atoms whose compounds are usually magnetic (V, Cr, Mn, Fe, Co, Ni, Cu, the lanthanides, uranium) and spin is off, the program asks before the run: turn on the antiferromagnetic order or compute without spin.
-- **Hydrogen bonds for a paper and contact criteria** (0.162.0). The line above the table of the Contacts window sets the search criteria, like «Define Contacts» in Mercury: «Σ r(vdW) + … Å» — the margin over the sum of the van der Waals radii (a negative one keeps only clearly short contacts), «D–H···A ≥ …°» and «R–E···Y ≥ …°» — the smallest angles of hydrogen and σ-hole bonds; «Search again» searches with them, «Defaults» brings back 0.20 Å, 120° and 150°. The choice is kept and goes into «Show the network». The button «Table for a paper…» shows the hydrogen bonds the way they are published: D–H···A, the lengths D–H, H···A, D···A, the angle and the symmetry code of the acceptor — the donor in the asymmetric unit of the file (x, y, z), the code (for example, «-x+1, -y, -z+1», i) is the operation that takes the acceptor from its position in the file to where it accepts the bond; the codes are marked i, ii, iii. «Copy» puts the table with tabs on the clipboard (it pastes as a table into Word and a spreadsheet), «Save CSV…» writes it to a file.
-- **Molecular shell** (0.163.0). «Crystal → Molecular shell…» (like «Molecular Shell» in Mercury) finds the neighbours of a molecule: in the «Atoms closer than» mode, the molecules with at least one atom closer than R Å (4.0 by default) to an atom of the central one; in the «Σ r(vdW) +» mode, those touching it with their van der Waals spheres plus a margin (0.5 Å by default). The centre is the molecules of the atoms selected on the model before the window opens, otherwise the first molecule of the cell. The window gives the number of neighbours — the molecular coordination number (12–14 in most organic crystals) — and the table gives each neighbour its formula, symmetry code (relative to the centre in the asymmetric unit of the file), shortest contact and its length. «Show on the model» puts the centre and the neighbours into the crystal tab; the centre is selected. Crystals without separate molecules (salts, metals, frameworks) have no shell.
-- **A pattern closer to the instrument** (0.168.0). The second line of the Powder pattern window: «Kα₂» adds the second line of the tube — every line once more at λ(Kα₂) (1.54443 Å for copper) with half the intensity, so the peaks split the more, the higher the angle; «Caglioti width» instead of a constant one — FWHM² = U tan²θ + V tanθ + W (U, V, W in degrees², 0.01, −0.005 and 0.003 by default), the lines wider at high angles with their areas kept; η — the Lorentzian share of the peak shape (pseudo-Voigt); «step» — the 2θ step of the curve, also used in the saved .xy. The third line is «Preferred orientation along» hkl with the parameter r (March–Dollase): r < 1 — plates lying on the holder with the plane hkl (the lines whose vector is along hkl are stronger), r > 1 — needles, r = 1 — no texture. The comparison with a measured pattern uses the same peak shape and doublets.
-- **Anomalous scattering** (0.179.0). The checkbox «Anomalous scattering» of the diffraction pattern window adds the f′ and f″ corrections at the line of the chosen tube to the atomic factors (the tables of Henke et al., 1993). For light atoms the difference is negligible; it shows for heavy atoms and near an absorption edge — for example, Fe with Co Kα or Cu with Cu Kα. For an arbitrary wavelength there are no corrections.
-- **Hirshfeld surface and fingerprint plot** (0.169.0; as in CrystalExplorer). «Crystal → Hirshfeld surface…» builds the surface of a molecule where its spherical atoms give half the density of the crystal (the promolecule; H atoms at neutron distances). The molecule is the one selected on the model, otherwise the first in the cell; the grid is coarse, medium or fine. The window gives the area, the volume, the globularity (1 for a sphere) and the shortest d_norm, draws the fingerprint — the share of the surface area at each pair of distances d_i (to the nearest nucleus inside) and d_e (outside), 0.4–2.6 Å — and a table of the contact shares (O···H means O···H and H···O together). The list above the table picks a pair: its part of the fingerprint is coloured and the rest grey. «Save the fingerprint…» writes a PNG. «Show on the model» puts the molecule with its neighbours on the model and colours the surface: d_norm is red where a contact is shorter than the sum of the van der Waals radii (hydrogen bonds), white at the sum, blue farther; d_i and d_e go from red (close) to blue.
-- **Shape index and curvedness** (0.175.0). In the same window the surface can be coloured by the shape index and the curvedness. Shape index: blue — a bump, red — a hollow where a neighbour atom fits in; a saddle is white. Red and blue triangles side by side («bow ties») are the sign of a π–π stack. The curvedness shows the flat areas (red, the faces of stacks) and the edges between them (blue). The scales are fixed, as in CrystalExplorer: the shape index from −1 to +1, the curvedness from −4 to 0.4.
-- **Model for 3D printing** (0.176.0; as «Print 3D» in Mercury). «File → Model for 3D printing…» in Compass — molecule and crystal — saves what is on the screen (a molecule, a block of cells, a shell) as balls and sticks: STL in one colour for any printer or VRML in the colours of the elements. The scale is millimetres per ångström (10 by default: water about 2.5 cm across); bonds are no thinner than the thickness set (1.6 mm), so that they do not break; in a crystal the cell edges too. The window shows the size of the model at once.
-- **Group symbol and Bravais lattice** (0.177.0). In the Crystal window the button «What does … mean» takes the Hermann–Mauguin symbol apart: the lattice letter (P, A, B, C, I, F, R — where else the nodes stand), the Bravais lattice (one of the 14: mP, oC, cF …) and each position — which axis (a rotation, a screw axis with its shift, a rotoinversion) and which plane (a mirror or a glide a, b, c, n, d, e) and along which direction of the system (for monoclinic — the b axis; for cubic — ⟨100⟩, ⟨111⟩, ⟨110⟩). The checkbox «Bravais lattice nodes» (and «Crystal → View») puts the lattice nodes of the block on the model: small diamonds at the cell corners, the centring nodes larger.
-- **A click on a hydrogen bond on the model** (0.178.0). Click the dashed line of a hydrogen bond — the status line shows D–H···A, the H···A distance and the angle; in «Compass · Crystal» with the atom labels of the file, and if the «Contacts» window is open, the row of this bond is selected in it.
-- **The network by layers and by the selected rows** (0.170.0). The «Show the network» button of the Contacts window has «layers: N» (1–6): the network grows from the molecules added N times, like «expand contacts» in Mercury. Select rows of the table (click, Shift, Ctrl/⌘) to build the network only from those contacts — for example from one hydrogen bond, to see its chain or layer.
-- **Crystals from COD** (0.171.0). «File → Find a crystal in COD…» in «Compass · Crystal» searches the Crystallography Open Database (an open collection of about half a million structures, the open alternative to the CSD that Mercury works with). Criteria: words (the name of the substance or mineral, the authors, the title of the paper), a formula (C7H6O2, TiO2 — the program puts the elements in Hill order itself), elements separated by spaces (Cu O) and «only these elements». «Search» shows up to 500 entries: the COD number, formula, name, group, cell and year (the journal and DOI are in the tooltip of the name). «Open in Compass» or a double click downloads the CIF into the folder «Documents/Azimuth/COD» and opens it like any CIF; «COD page» opens the entry in the browser. An internet connection is needed; COD receives only the search criteria.
-- **COD search by cell** (0.180.0). The second line of the COD window holds the cell parameters: three lengths or lengths and angles, with a tolerance (by default ± 1 % of a length and ± 1°). «As the open one» puts in the cell of the crystal from Compass: so the same structure in other works and close phases are found. «In any order of the axes» looks for the same cell in another setting (the lengths in every order, the angles not considered).
-- **Pair energies, the lattice energy and the energy framework** (0.172.0; as in CrystalExplorer). «Crystal → Pair energies and framework (xtb)…»: for a molecule (the one selected on the model, otherwise the first in the cell) and its neighbours closer than 3.8 Å (atom–atom; the radius can be changed) the interaction energy E = E(pair) − E(A) − E(B) is calculated in GFN2-xTB at the geometry of the crystal — single points, no optimization, seconds per pair; pairs equal by symmetry are calculated once. «Calculate in xtb» runs in the background with «k of N»; the calculations lie in the calculations folder of Sextant («Pairs_…»). The table: the symmetry code of the neighbour, the distance between the centroids, the shortest contact, E in kJ/mol. The lattice energy ≈ ½ Σ E over the neighbours (each pair belongs to two molecules); its magnitude is close to the sublimation enthalpy without vibrations. «Show the framework on the model» puts the molecule with its neighbours on the model and draws lines between the centroids whose thickness grows with |E|: blue for attraction, red for repulsion — strong columns, layers or a 3-D framework are seen at once. Molecules are taken as neutral (not the ions of salts); the accuracy of GFN2-xTB for pair energies is about 10–20 %. xtb is needed (Sextant, «Calculation → Install calculation programs…»).
-- **Components of pair energies and salts** (0.181.0). The table of pair energies also shows the GFN2 terms of each pair: electrostatics, dispersion, repulsion and the rest (polarization, exchange, charge transfer) — a hydrogen bond is seen in the electrostatics, a stack in the dispersion. These are the terms of a semiempirical method, not the CE-B3LYP of CrystalExplorer, but their sum is the same E. For salts the window shows the components of the cell and their charges: monatomic ions and the usual polyatomic ones (NH₄⁺, NO₃⁻, ClO₄⁻, SO₄²⁻, PO₄³⁻, BF₄⁻, PF₆⁻, acetate …) are recognized by the formula, and the only unknown component gets the charge that makes the cell neutral (the organic cation of a chloride — +1); the charges can be corrected. The lattice energy of a salt from the nearest neighbours is only a rough estimate: the long-range electrostatics is not in it.
+![«Compass · Crystal»: the NaCl cell, the cell edges a, b, c in red, green and blue](img/crystal.jpg)
 
-Theory in the Atlas on the site: [Crystals: lattice and cell](https://www.azimuth-chem.com/atlas/?lang=en#cryst).
+### Opening a crystal
 
-### How to cut a (hkl) surface
+1. «File → Open CIF…» (or open a CIF from «Molecules» — the program comes here by itself). Teaching crystals — «File → Open an example…»: CsCl, NaCl, graphite, benzoic acid, silicon.
+2. The crystal is built at once: one cell, whole molecules, with disorder — one part. The atoms of the asymmetric unit are multiplied by the symmetry operations of the file (repeats on special positions are merged). The space group and Z are in the line under the model, the density is in the status line.
+3. The crystal button above the model or «File → Rebuild the crystal (cells, surface)…» opens the «Crystal» panel to the right of the model.
 
-1. In the Crystal panel set the Miller indices (h k l), the number of layers, the number of cells in the plane and the vacuum (Å), and press «Build the surface» (the panel stays open).
-2. You get a slab turned so that the surface lies in the xy plane, with the slab cell on the model. NaCl (111), for example, lies face-on in the plane of the screen.
+While the field is empty, Quail stands in its lower left corner: the folder in her bubble opens a CIF, the small crystal opens an example.
 
-### How to save
+**Crystals from COD.** «File → Find a crystal in COD…» searches the Crystallography Open Database — an open database of about half a million structures. The search conditions: words (the name of a substance or mineral, authors, the title of a paper), a formula (C7H6O2, TiO2 — the program puts the elements in Hill order), elements separated by spaces and «only these elements»; the second line has the cell parameters with a tolerance (±1 % of the length and ±1° by default). «As the open one» fills in the cell of the crystal from Compass — this is how the same structure is found in other works, and close phases. The result is up to 500 records: the COD number, formula, name, group, cell and year. «Open in Compass» (or a double click) downloads the CIF into the folder «Documents/Azimuth/COD» and opens it. The internet is needed; COD receives only the search conditions.
 
-«File → Save the crystal as CIF…» writes the crystal from the file with its symmetry or the slab you built; «File → Export the crystal» — POSCAR, extended XYZ, a block of cells as CIF (P 1) and a picture; the same CIF, POSCAR and extended XYZ of one cell can be copied on the Coordinates tab.
+### The «Crystal» panel
+
+The panels «Crystal», «Contacts», «Hirshfeld surface» and «Calculation results» open to the right of the model (one at a time); the button of the open panel is highlighted, a second press or a click on the field away from the atoms closes it. The «Crystal» panel is divided into collapsible sections.
+
+- **«Cell and packing»** — the content of the cell, the space group (with its number if the file has it), the crystal system, the point group, the lattice type (P, A, B, C, I, F, R), the cell parameters and volume, Z, Z′, the density and Kitaigorodsky's packing coefficient — the share of the cell inside the van der Waals spheres of the atoms (usually 0.65–0.77 for molecular crystals). The «What the symbol … means» button parses the Hermann–Mauguin symbol into parts: the Bravais lattice, and for each position which axis and which plane along which direction.
+- **«Block of cells»** — one cell or a block n₁ × n₂ × n₃ (up to 10 × 10 × 10, at most 2000 atoms), the range of coordinates in fractions of the cell, «Atoms on the faces, edges and corners», «Whole molecules» (molecules cut by a face of the cell are built whole, the centre of each inside the cell) and «One part of the disorder». The model is rebuilt right after a short pause — there is no «Build» button.
+- **«Symmetry operations»** — the list of operations of the file with labels: the axis or plane, its direction and position in the cell.
+- **«Surface (hkl)»** — cutting a slab (section «Surface (hkl)»).
+- **«View»** — the viewing direction and what to draw on the model (section «View of the crystal»).
+
+For crystals without separate molecules (salts, metals, frameworks) «Whole molecules» is not available, and the panel says that the structure is infinite (a chain, a layer or a framework).
+
+**Disorder.** If the CIF has disorder groups (`_atom_site_disorder_group`), the «One part of the disorder» check box is on: the cell, the molecules, the surface and the contacts are built from the ordered atoms and part 1. Clear the check box to see all parts together.
+
+### View of the crystal
+
+The menu of the «View of the crystal» button above the model and the «View» section of the panel:
+
+- **«Along a», «Along b», «Along c»** and **«Along the normal to (hkl)»** set the line of sight along an edge of the cell or perpendicular to the planes.
+- **«Symmetry elements»** are drawn in the first cell: rotation axes (solid) and screw axes (dashed) in green, mirror and glide planes in blue, inversion centres as brown rings, each element with its symbol. If there are more than 400 elements (cubic groups with F centring), they are not drawn.
+- **«Displacement ellipsoids (50 %)»** — projections of the thermal displacement ellipsoids of the atoms, as in ORTEP drawings (if the CIF has Uᵢⱼ, Bᵢⱼ, U_iso or B_iso).
+- **«Coordination polyhedra»** — the polyhedra of the nearest neighbours of metal atoms (up to 1.12 × the shortest distance, from 4 to 12 atoms).
+- **«Bravais lattice nodes»** — the lattice nodes of the block: small rhombi at the vertices of the cells, bigger ones at the centring nodes.
+- **«Molecules coloured by symmetry»** — each molecule has the colour of the symmetry operation that generates it.
+- **«Rings, π–π and C–H···π on the model»** — the planes of rings, centroids, π–π stacks and C–H···π contacts.
+- «View → Show the cell» hides and shows the cell edges.
+
+### The crystal menus
+
+The «Crystal» menu is arranged in groups: «Block of cells», «View of the crystal», «Labels on the model», then the submenus «Intermolecular interactions» (contacts, Hirshfeld surface, pair energies, shell), «Structure and packing», «Cell and lattice» and the powder pattern. The «Calculation» menu: a calculation in Sextant and a CRYSTAL input file, then what the calculation gave — the submenus «Atomic charges», «Bonds and critical points (AIM)», «Fields on the model». Grey items say in their tooltip why they are not available.
+
+### Crystal coordinates
+
+The «Coordinates» tab of a crystal opens in the «Independent atoms (fractions)» format: label, element, x, y, z, occupancy and U of the independent atoms of the file; above the table — the group, the cell and the volume. A row of the table selects all copies of the atom on the model. The «Fractional (CIF)» format shows the atoms of the model in fractions of the cell. The same place has «CIF of the crystal», «POSCAR (VASP)» and «Extended XYZ» of one cell.
+
+The arrow in the lower right corner of the field moves the selected molecules (one atom of each is enough) into a new tab of «Compass · Molecule» — for a molecular calculation.
+
+### Contacts and hydrogen bonds
+
+![The hydrogen bond network of benzoic acid: acid dimers on the model](img/crystal-contacts.jpg)
+
+The «Contacts» panel shows the contacts between the atoms of the cell and of neighbouring cells:
+
+- **hydrogen bonds** D–H···A (an angle of at least 120°);
+- **halogen, chalcogen, pnictogen and tetrel** (σ-hole) bonds R–E···Y: the angle R–E···Y (θ1) at least 150°; the d/Σr column is the distance divided by the sum of van der Waals radii; for a contact of two halogens — the second angle θ2 and the type: type I (θ1 ≈ θ2) is a van der Waals contact, type II (θ1 ≈ 180°, θ2 ≈ 90°) is a halogen bond;
+- **van der Waals contacts** — closer than the sum of radii plus 0.2 Å.
+
+Contacts repeated by symmetry are gathered into one row with the «Count» column. A row of the table draws its contacts on the model and selects their atoms; a click on the dashed line of a hydrogen bond on the model selects its row.
+
+**Search criteria** — a line above the table, like «Define Contacts» in Mercury: the margin to the sum of van der Waals radii, the smallest angles of hydrogen and σ-hole bonds; «Search again» searches with them, «Defaults» returns 0.20 Å, 120° and 150°.
+
+**Graph sets** (Etter's notation) — the «Graph set» column: D — one bond between two molecules, S(n) — a ring inside a molecule, C(n) — an infinite chain, Rᵃ_d(n) — a ring of several molecules; n is the number of atoms in the ring or in the repeat unit of the chain, a and d are the numbers of acceptors and hydrogens. A separate table under the contacts gives the second level: for each pair of kinds of hydrogen bonds — the smallest ring and the smallest chain that contain bonds of both kinds.
+
+**π–π stacks and C–H···π.** Under the contact table — planar rings (5–7 atoms) and pairs of rings of different molecules lying in a stack (centroids closer than 4.0 Å, the planes almost parallel): the Cg···Cg distance, the angle between the planes, the distance from the centroid to the plane of the other ring and the offset. C–H···π contacts: H···Cg up to 3.0 Å, the C–H···Cg angle at least 120°.
+
+**Network.** «Show the network» builds the network of hydrogen and σ-hole bonds, π–π stacks and C–H···π (the choice is next to the button); «layers: N» (1–6) grows the network from the added molecules N times. Select rows of the table — the network is built only from these contacts, for example from one hydrogen bond, to see its chain or layer.
+
+**Table for a paper…** shows the hydrogen bonds the way they are published: D–H···A, the lengths D–H, H···A, D···A, the angle and the symmetry code of the acceptor (for example «-x+1, -y, -z+1», i). «Copy» puts the table with tabs on the clipboard (it is pasted as a table into Word and into a spreadsheet), «Save CSV…» — into a file.
+
+**Molecular shell** («Crystal → Molecular shell…», like «Molecular Shell» in Mercury) — the neighbours of a molecule: molecules with an atom closer than R Å (4.0 by default) or touching it with their van der Waals spheres with a margin. The window gives the molecular coordination number (12–14 for most organic crystals) and for each neighbour — its formula, symmetry code and the shortest contact.
+
+> **Note.** In X-ray structures the H atoms stand closer to their atoms than they really are (C–H about 0.95 Å instead of 1.09), so the H···A distances come out about 0.1 Å longer.
+
+### Hirshfeld surface
+
+«Crystal → Hirshfeld surface…» (as in CrystalExplorer) builds the surface of a molecule where its spherical atoms give half of the density of the crystal. The molecule is the one selected on the model, otherwise the first in the cell; the grid is coarse, medium or fine.
+
+- The window gives the area, the volume, the globularity (1 — a sphere) and the shortest d_norm.
+- **«Fingerprint»** — the share of the surface area for each pair of distances d_i (to the nearest nucleus inside) and d_e (outside), 0.4–2.6 Å, and a table of contact shares. The chosen pair of elements colours its part of the fingerprint, the rest is grey. «Save the fingerprint…» — PNG.
+- **On the model** the surface is coloured: d_norm — red where the contact is shorter than the sum of van der Waals radii (hydrogen bonds), white at the sum, blue farther; d_i and d_e — from red (close) to blue; the shape index (blue — convex, red — concave, «bow ties» are a sign of a π–π stack) and the curvedness (flat patches and the edges between them).
+
+### Pair energies and the energy framework
+
+«Crystal → Pair energies and framework (xtb)…» (as in CrystalExplorer): for a molecule and its neighbours closer than 3.8 Å the interaction energy E = E(pair) − E(A) − E(B) is computed in GFN2-xTB at the geometry of the crystal — single points, seconds per pair; pairs identical by symmetry are computed once.
+
+- The table: the symmetry code of the neighbour, the distance between the centres, the shortest contact, E in kJ/mol and its GFN2 terms — electrostatics, dispersion, repulsion and the rest: a hydrogen bond shows in the electrostatics, a stack in the dispersion.
+- The lattice energy ≈ ½ Σ E over the neighbours; its absolute value is close to the sublimation enthalpy without vibrations.
+- «Show the framework on the model» draws lines between the centres of the molecules whose thickness grows with |E|: blue — attraction, red — repulsion. One sees where the strong columns, layers or a three-dimensional framework are.
+- For salts the window shows the components of the cell and their charges: common ions (NH₄⁺, NO₃⁻, ClO₄⁻, SO₄²⁻ and others) are recognized by their formula; the charges can be corrected.
+
+> **Note.** The accuracy of GFN2-xTB for pair energies is about 10–20 %. The lattice energy of a salt from the nearest neighbours is only a rough estimate: the long-range electrostatics is not in it. The xtb program is needed.
+
+### Powder pattern
+
+![Powder pattern: the curve, the line marks and the table of reflections](img/crystal-powder.jpg)
+
+«Powder pattern…» computes the powder X-ray pattern from the atoms of the cell: the atomic scattering factors of neutral atoms, the thermal parameters from the file, the Lorentz–polarization factor. The window has the curve, the line marks under the axis and a table (hkl, 2θ, d, multiplicity, intensity in % of the strongest).
+
+- The radiation — Kα₁ of copper, molybdenum, cobalt, iron, chromium or silver; the 2θ range, the step and the line width.
+- «Kα₂» adds the second line of the tube with half the intensity; «Caglioti width» — FWHM² = U tan²θ + V tanθ + W; η is the share of the Lorentzian in the peak shape (pseudo-Voigt).
+- «Preferred orientation along» hkl with the parameter r (March–Dollase): r < 1 — plates, r > 1 — needles, r = 1 — no texture.
+- «Anomalous scattering» adds the f′ and f″ corrections at the line of the chosen tube (tables of Henke et al., 1993) — noticeable for heavy atoms and near an absorption edge.
+- An experimental pattern (two columns: 2θ and intensity) can be overlaid, and the calculation saved to `.xy` or the list of lines to `.csv`.
+
+If the CIF has no list of symmetry operations but has the symbol or the number of the group, the operations are taken from the tables of the 230 groups.
+
+### Surface (hkl)
+
+1. In the «Crystal» panel, section «Surface (hkl)», set the Miller indices (h k l), the number of layers, the number of cells in the plane and the vacuum (Å).
+2. Click «Build the surface».
+3. You get a slab turned so that the surface lies in the xy plane, with the slab cell on the model. For example, NaCl (111) lies with its face in the plane of the screen.
+
+### Crystal calculations
+
+A periodic calculation of a crystal is set up in Sextant: the «To the crystal calculation» arrow at the bottom of «Compass · Crystal» opens Sextant with this crystal and the Quantum ESPRESSO program; CP2K can be chosen in the «Program» line. The calculation page is arranged as for a molecule (chapter 8): «Calculation setup» — the task, the method, the basis set (CP2K) or the cutoffs (Quantum ESPRESSO), dispersion, resources, the k grid, the cell, the supercell and the optimization thresholds; the cell charge, spin, DFT+U, occupations and convergence are in «Additional settings…».
+
+![Sextant with a crystal calculation](img/sextant-crystal.jpg)
+
+Table: Programs for periodic calculations
+
+| | Quantum ESPRESSO | CP2K |
+|---|---|---|
+| Basis | Plane waves, SSSP efficiency pseudopotentials | MOLOPT Gaussian basis sets and plane waves for the density, Γ point |
+| Good for | Small cells, solids | Big cells (from ~10 Å), molecular crystals |
+| Tasks | Energy, atom optimization, optimization with the cell, band structure, density of states, frequencies at Γ, phonon branches and density of states | Energy, atom optimization, optimization with the cell, frequencies at Γ |
+| Methods | PBE, PBEsol, vdW-DF2, rev-vdW-DF2, vdW-DF-cx, rVV10, PBE0, HSE06 | PBE, PBEsol, revPBE, BLYP, GFN1-xTB |
+| Where to run | This computer (macOS, Linux) or a server | This computer or a server |
+
+**Features of the methods.**
+
+- PBEsol needs its own pseudopotentials — the «Download pseudopotentials» button (about 60 MB, once).
+- The nonlocal functionals vdW-DF2, rev-vdW-DF2, vdW-DF-cx and rVV10 take dispersion into account themselves — do not choose the D3 correction with them. The list of corrections also has Tkatchenko–Scheffler (TS) and many-body dispersion (MBD).
+- The hybrids PBE0 and HSE06 give the band gap more accurately than PBE (HSE06 is the standard for semiconductors), but take tens of times longer and work only in the «Energy» task: optimize the geometry with PBE or PBEsol, then compute the energy and the gap with a hybrid.
+- GFN1-xTB in CP2K is hundreds of times faster than DFT: it is convenient for a preliminary optimization of big cells, with the geometry refined with PBE afterwards.
+- CP2K basis sets: DZVP-MOLOPT-SR — for all elements and for solids; the full DZVP, TZVP and TZV2P exist only for H, C, N, O, F, Si, P, S, Cl.
+
+**Electronic state** («Additional settings… → Electronic state»):
+
+- **Cell charge** removes or adds electrons; the charge is compensated by a uniform background, so the energies of charged cells of different sizes are not compared directly.
+- **DFT+U** — U in eV for a d or f shell, for example «Ni 6.2» or «Fe 5.3, Co 3.3» (the shell can be given explicitly: «Ni-3d 6.2»). It is needed for oxides and fluorides of transition metals and for cerium and uranium compounds. U depends on the program and the projectors — take a value obtained for the same program.
+- **Magnetic order** — a spin-polarized calculation, ferromagnetic or antiferromagnetic order. For an antiferromagnet the cell must hold both sublattices: for NiO and MnO set a 2 × 1 × 1 supercell. If the cell contains usually magnetic atoms (V, Cr, Mn, Fe, Co, Ni, Cu, lanthanides, uranium) and spin is off, the program asks before the run whether to turn on antiferromagnetic order.
+
+**Frequencies and phonons in Quantum ESPRESSO.** «Frequencies (Γ point)» — scf, then ph.x at q = 0 and dynmat.x with the acoustic sum rule; for an insulator also the dielectric constant ε∞ and the Born effective charges, and from them the IR intensities of the modes. «Phonon branches and density of states» is computed on a q grid and takes noticeably longer (NaCl — about half an hour on 6 processes). Negative frequencies mean that the structure is not at a minimum or the q grid is too small. The modes at Γ are shown on the crystal model — «Calculation → Frequencies (Γ point)», the branches with the «Show the phonon branches» button.
+
+**Band structure and density of states.** The program sets up the steps of the calculation itself: scf, then the bands along a path through the high-symmetry points of the Brillouin zone or the density of states on a dense grid. «Show the bands» and «Show the density of states» open the plots (energies from the top of the valence band, for a metal from the Fermi level); «Save the data…» — CSV.
+
+**Quick xtb calculation of a crystal** — «Calculation → Quick xtb calculation» computes the crystal of the tab at once with GFN1-xTB in CP2K (energy, atom optimization or optimization with the cell), without the Sextant page. CP2K must be installed.
+
+**After the calculation.** «Calculation → Calculation results…» — the table of crystal calculations in the project (program, task, time, energy, pressure, outcome) and the details of the chosen one: the cell energy, the band gap or the Fermi level, the number of steps, the cell of the last step; the buttons «Calculation folder», «Optimization steps», «Charges…», «AIM bonds…», «To Spectrum». The optimized cell opens in a crystal tab with the «Open the optimized cell» button. CM5 and Hirshfeld charges and AIM bonds (Multiwfn, CP2K calculations) are shown on the crystal model and in the tabs of Spectrum.
+
+**CRYSTAL.** «Calculation → CRYSTAL input file…» writes a CRYSTAL input file (`.d12`): the task (energy, optimization, elastic constants, frequencies at Γ), the functional (PBE0, B3LYP, HSE06, PBE, PBEsol, Hartree–Fock), a basis set from the CRYSTAL library (pob-TZVP, pob-DZVP and others), the pressure and the k grid. Next to it — «Save .d3 for TOPOND…» (a search for all critical points of the density). The program does not run CRYSTAL itself. A CRYSTAL output (`.out`) opens as a crystal with optimization steps, energy and elastic constants; a TOPOND output (`.outp`) — as a table of the critical points of the density.
+
+### Saving and export
+
+«File → Save the crystal as CIF…» writes the crystal from the file with its symmetry or the slab built. «File → Export the crystal» — POSCAR, extended XYZ, a block of cells in CIF (P 1) and a picture. «File → Model for 3D printing…» saves a block of cells or a shell for a printer together with the cell edges.
+
+Theory — in the Atlas: [«Crystals: lattice and cell»](https://www.azimuth-chem.com/atlas/?lang=en#cryst).
 
 ## Sextant
 
-Preparing and running a calculation in ORCA, Gaussian, Psi4, xtb, MOPAC, GAMESS or NWChem, and for a crystal from «Compass · Crystal» in Quantum ESPRESSO or CP2K. The geometry, the charge and the constraints come from Compass.
+Sextant prepares the input file of a calculation and runs it — on this computer or on a computing server. The geometry, the charge and the constraints come from Compass; the result returns to the tab from which the calculation was started.
 
-### How to prepare and run a calculation
+![Sextant: «Calculation setup» on the left, the calculation card and the input file on the right](img/sextant.jpg)
 
-**How to install ORCA** (0.222.14). ORCA is not a part of Azimuth and is not installed by a button: you download it yourself; it is free for study and research. 1) Register at the ORCA forum (orcaforum.kofo.mpg.de) and download the archive for your system from its Downloads section: macOS on Apple Silicon — «macOS arm64, Open MPI 4.1.1»; Windows — «Windows x64». ORCA 6.0.1 (macOS) and 6.1.1 (Windows) are the checked ones. 2) Unpack the archive: on a Mac into «Applications» or the home folder, on Windows into a folder with a Latin path without spaces (for example `C:\ORCA`). 3) On a Mac the system may refuse the unsigned files of ORCA at the first run: once, in Terminal, run `xattr -dr com.apple.quarantine ` and the path of the ORCA folder (the folder can be dragged into the Terminal window). 4) Open Sextant: a green tick next to ORCA in the card «Run the calculation» means it is found; if not — «Choose…» and pick the file `orca` (`orca.exe`) in its folder. 5) To run on several processes ORCA needs MPI: on a Mac and Linux — «Install Open MPI…» in the same card, on Windows — Microsoft MPI (the installer `msmpisetup.exe` from the Microsoft site). One process needs no MPI.
+### The Sextant window
 
-1. Build or open a molecule in Compass and press «To the calculation settings» (or Ctrl+4).
-2. **Program**: ORCA, Gaussian, Psi4, xtb, MOPAC (0.91.5), GAMESS (US) or NWChem (0.108.39). For GAMESS and NWChem Sextant writes energy, optimization, optimization + frequencies, frequencies, transition state, TD-DFT (NWChem also NMR) without a solvent or constraints; GAMESS has no def2 basis sets — take cc-pVDZ, pcseg-1 or the Pople sets. GAMESS is run by its script `rungms` (set up for the computer), NWChem by the program `nwchem` (several processes through mpirun). The input files of NWChem are checked by real calculations (NWChem 7.3.0, every task of its list; 0.222.13): MP2 runs with the frozen core, as in ORCA and Psi4, and the «Cycle limit» of an optimization works for it too. The input files of GAMESS have not yet been checked by running the program itself — it is marked «not checked» in the list of programs. xtb (GFN2-xTB, a fast first estimate of geometry and frequencies) needs no method, basis or memory. MOPAC — the semiempirical methods PM7 (by default), PM6, PM6-D3H4, AM1, RM1, MNDO without a basis set: seconds even for big molecules, the result is a heat of formation; the tasks are energy, optimization and optimization + frequencies (in one file: a second job with OLDGEO computes the frequencies at the optimized geometry), the solvent is COSMO, only atoms can be frozen. When xtb, CREST or MOPAC is not found, «Install into the program folder…» is next to the message (conda-forge, no administrator rights). Above it is the **Name**: the first line of the input file and the name of the calculation's files. If the field is empty, the name is made up by itself — formula_method_basis_solvent, for example `H2O_B3LYP_def2-SVP_water.inp`; a name of your own in Cyrillic becomes Latin letters in the file name.
-3. **Task**: energy, optimization, optimization + frequencies, UV-Vis spectrum (TD-DFT, 10 excited states), NMR (shielding), reaction path (NEB-CI, ORCA only; the end structure comes from Compass), excited-state optimization (TD-DFT, ORCA and Gaussian; which state — in «Additional settings»). (0.91.14) The list holds only the tasks of the chosen program: Psi4 has no NMR and no reaction path, xtb and MOPAC only energy, optimization and optimization + frequencies. The settings of the chosen task are right under the fields, in «Task settings»: for an optimization — the transition-state search, convergence and the cycle limit, the exact Hessian; for frequencies — the temperature and pressure of the thermochemistry, numerical frequencies, Raman (ORCA); for TD-DFT — the number of states, TDA or full TD-DFT, triplets, the state to optimize. Only those the program writes into its input are shown; fields the program does not have (the basis of MOPAC, the method of xtb) are hidden. (0.91.15) «Frequencies and thermochemistry» — the frequencies at the current geometry without an optimization (it must be optimized with the same method); «Transition state + frequencies» — the saddle point and its frequencies (there must be one imaginary), not in xtb. (0.91.16) When you choose a task, Sextant sets the method, basis set and dispersion advised for it and its settings (a tight optimization before frequencies, a fine grid for NMR); a note below says what was set — you can change it. Next to the solvent is its model: CPCM or SMD (SMD — for solvation energies, ORCA and Gaussian). Dispersion: D3(BJ), D3(0) (zero damping — the «D3» of many papers) or D4. Under «Energy» — the stability analysis of the wavefunction (ORCA, Gaussian). (0.91.20) «Relaxed PES scan» (ORCA, Gaussian): the coordinate is a length, an angle or a dihedral from the optimization constraints of Compass (listed with its current value), «End» is the end value and the number of points; at every point everything else is optimized, and the points then appear in the ☰ panel of Compass with an energy plot. (0.91.21) Starting the SCF from the orbitals (.gbw) of an earlier calculation (ORCA, MORead) — after a broken calculation, for another method or a close geometry — is chosen in «Additional settings → Initial guess». (0.91.22) For «UV-Vis spectrum» in ORCA — «Natural transition orbitals (NTO)»: in Spectrum under the table of states the pairs «from → to» of the chosen state with their weights; the compass icon puts the «from» (hole) or «to» (particle) orbital on the model. (0.91.34) «Fukui functions (N, N+1, N−1)» (ORCA): three energy calculations at the geometry of the tab as a queue — the molecule itself, the anion (one electron more) and the cation (one electron less), the ions with a multiplicity lower by one (doublets for a singlet); def2-SVPD is advised — the anion needs diffuse functions — and the geometry should be optimized. At the end Compass opens the result N with the Fukui functions on the model (see «Properties»). (0.91.40) «Donor–acceptor bond CDA (complex and fragments)» (ORCA): the charge decomposition analysis of Dapprich — Frenking. «Task settings» take the atoms of fragment 1, the donor (numbers «1-4, 7» or the button «From selection» — the atoms selected in Compass), its charge and multiplicity; fragment 2 is the other atoms, its charge that of the complex minus that of fragment 1, its multiplicity its own; under the settings it is said what the fragments will be. Sextant queues three single points at one geometry: the complex (the atoms of fragment 1 first), fragment 1, fragment 2. At the end Compass opens the complex and Multiwfn (menu 16) computes the donation d (fragment 1 → 2), the back donation b, d − b and the repulsion r by orbital of the complex; the window explains the numbers, «Orbital on the model» shows the chosen orbital, the table goes into «Analysis» of the queue folder. The window opens again from «Bonds» → «Donor–acceptor bond (CDA)…» of the result of the complex.
-4. **Method** and **basis** are chosen by families: click the field and a list of families opens (Hartree–Fock, MP2, GGA, meta-GGA, hybrids, range-separated, double hybrids, coupled clusters; Pople, def2, cc, pcseg basis sets). The lists show only what the chosen program knows. The coupled clusters (0.221.0) — CCSD(T) in ORCA, Gaussian and Psi4 and DLPNO-CCSD(T) in ORCA — compute the «Energy» only: optimize the geometry with a DFT functional first. CCSD(T) grows as N⁷ — for molecules of up to about ten heavy atoms; DLPNO gives nearly the same (0.1 kcal/mol for water in cc-pVTZ) for molecules of tens of atoms. Hover over the button to see the recommendation for this molecule and task; the item «★ Recommended: …» sets it.
-5. **Charge and multiplicity** (in «Additional settings…», the group «Electronic state»; their values are in the line next to the button) are already computed from the molecule (N and P with four bonds +1, B with four −1; an atom by Hund's rules; O₂ a triplet; otherwise the lowest multiplicity for the number of electrons). If you change them and they do not fit the number of electrons, Sextant explains what to fix.
-6. At the top right, the calculation card: a small model of the molecule (turn it with the mouse), the formula, the number of electrons and the multiplicity, the arrow in the corner goes to the molecule in Compass; under a thin line — the launch (step 7). Below it the text of the input file («Expand» gives it the whole column), and on the left under the settings the approximate time of the calculation (a very rough estimate). The file can be edited right there (ORCA, Gaussian, Psi4; for xtb it is a command and is not edited): «Run calculation» checks it first — an unclosed block or geometry, an atom line without three numbers, no charge and multiplicity, an unclosed bracket — tints the lines and asks whether to run it as it is. If the settings or the molecule change after the edit, Sextant says the file was not rebuilt; «Rebuild the file from the settings» brings the generated one back.
-7. «Run calculation». The card shows the mark of the program, its name and a green tick when it is found (the path is in the tooltip); Sextant looks for it itself (ORCA folders in Applications and in the home folder, Homebrew, conda); if it does not find it, use «Locate…». Next to the button — only the time of the calculation; the folder icon there chooses where the calculation folders are made (Documents/Azimuth/Расчёты at first; the choice is kept). The buttons of Sextant are icons; what they do is in the tooltip.
+- **«Calculation setup»** (on the left) — the program, the task, the method, the basis set and the most common fields (solvent, processes and memory), as well as what the task cannot do without (the scan coordinate, the atoms of a CDA fragment). Under the fields — the «Task settings» of the chosen task. At the bottom of the card — «Additional settings…» and the «Fields…» button: it chooses which fields to keep in the card and which to move into the additional settings («As by default» returns the original set).
+- **The calculation card** (top right) — a small model of the molecule (it can be rotated with the mouse), the formula, the number of electrons and the multiplicity; the arrow in the corner leads to the molecule in Compass. Under the line — where to run («This computer» or «Server»), the program icon with a green check mark if the program is found, the estimated time and «Run calculation».
+- **The input file** — under the card. «Expand» gives it the whole column. During a calculation its place is taken by the progress of the calculation.
 
-   Above it — where to calculate: «This computer» or «Server». For the server fill in «Server…» (there can be several profiles: «New profile», «Delete profile»): the address, port, login, password (kept until the program quits or, with the tick, in the macOS Keychain; on Windows — in the Windows Credential Manager), the calculations folder on the server, the environment lines (for example `module load orca-6.1.1`; empty — ORCA is found on the server by itself) and, if the cluster needs them, «SLURM: partition / time» and «SLURM: project / QoS» (0.216.140); the password is not saved. If the server is behind OpenVPN, choose the OpenVPN Connect profile (or «Import .ovpn…») — the program connects the VPN itself when the server does not answer; «Check the connection» shows whether the server answers; «Login without a password» makes the key of the program and writes it to the server once with the password — no password afterwards (needed on Windows, where the password would otherwise be asked for every command; it is typed in the ssh window that opens); the icon next to «Server…» in the calculation card logs in to the server as the calculation does and shows how many cores and how much memory are free there; then the server is asked again every 5 seconds (a tick — connected, a cross — not, the reason in the tooltip). A calculation on this computer and one on a server run at the same time: each has its own window, and on a server the next calculation can be started without waiting for the previous one (0.216.140): the running one moves into its own window, and all such windows are under «Calculation → Other calculations on the server» (▶ running, ✓ over). Only a queue of calculations has to be waited for. (0.91.39) ORCA and MOPAC run on a server. For MOPAC the program looks for `mopac` (or `MOPAC2016.exe`) in PATH or a MOPAC module on the server; the number of threads is the «Processes» field of the panel: one SLURM task with that many cores (`-n 1 -c N`), `OMP_NUM_THREADS` in `job.sh`, and `THREADS=N` added to the input so that MOPAC does not take all the cores of the server; .out, .aux and .arc come back with the result.
-8. The progress of the calculation takes the place of the input file («Input file» on the calculation card brings the file back, «Calculation window» at the bottom of the input file card the calculation): the time, the stages («✓ The self-consistent field converged», «The geometry is optimized»), the cycles and the last energy. «Program output» opens the output file itself and follows it while the program writes (search, «Follow the end», «Open in an editor»). In the other sections the progress opens as a window from the sign in the left panel (or «Calculation → Calculation window»), and it can be hidden; «Stop» stops the program with all its processes.
-9. When the calculation finishes, the result opens by itself: an optimization as steps in Compass, everything else in Spectrum. If the program ended with an error, Sextant writes under «Progress» what happened and what it may come from (the SCF did not converge, not enough memory, an error in the input file, no basis for an element…); the details are at the end of the output («Program output»). (0.91.18) If the calculation broke off with an error or was stopped after some optimization (scan, IRC) steps, they still go to the tab of the calculation: the last geometry becomes its structure (Ctrl+Z brings the previous one back), and «Go to Compass» in the calculation window opens the steps in the ☰ panel — no need to open the output by hand.
-10. A ready input file of ORCA or Gaussian can be opened in Sextant (the folder icon at «Input file» or «File → Open an input file…»): the molecule, charge, multiplicity, program, method, basis and task are taken from it, and the file itself is run as it is.
-11. A set of structures (several files at once or an SDF database, see Compass) — the icon «Input files for the whole set of structures…» at «Input file»: a file for each structure with the same settings, each with its own charge and multiplicity from the bonds.
-12. Calculation queue (0.91.7–0.91.8) — the icon «Calculation queue for the set…» at «Input file», when the tab has conformers (after a search) or a set of structures. The dialog lists them with the search ΔE; the lowest within 3 kcal/mol are checked, «How many» checks the first N, a check box adds or removes any one. «Choose for the queue» — and Sextant is in queue mode: a blue band «Queue: N of M · …» appears in the calculation card («Change the choice…», ✕ — back to one calculation), the queue icon is pressed, the button reads «Run the queue (N)». The settings can still be changed; any Sextant program works (ORCA, Gaussian, Psi4, xtb, MOPAC). The same settings for all: charge and multiplicity — those of the tab for conformers, from the bonds for each structure of a set; a hand-edited input file is not used. The calculations run on this computer (one at a time) or on a server (ORCA and MOPAC, 0.91.39), where the whole queue is one job (see «A queue on a server»). The calculation window shows the queue (✓ done, ✗ failed, ▶ running); «Skip» stops the current calculation and goes to the next one, «Stop» stops the whole queue; one failure does not stop the queue. All calculation folders are inside one folder «…_batch_<program>». At the end — the table `Анализ/batch_energies.csv` (E, G with frequencies, ΔHf for MOPAC, the differences, Boltzmann shares, search ΔE) and the conformers on the «Conformers» page of the Compass panel, sorted again: by G when all had frequencies, else by E, for MOPAC (which prints no total energy) by the heat of formation ΔHf. «Go to Compass» opens them. A queue left when the program was closed is resumed with «Resume the queue». Example: run the xtb conformers through MOPAC (PM7) first, then queue the best of the new order in ORCA. (0.91.35) After the end of any calculation — after an error or a stop too — the program's scratch files are removed from the calculation folder: ORCA `*.tmp`, `*.tmp.N`, Gaussian `Gau-*.rwf`, `.int`, `.d2e`, `.scr`, Psi4 `psi.<pid>.<n>`; on a server, `*.tmp` in the job folder. The results, orbitals (.gbw, .chk), Hessian and the input file stay.
-- **Calculation doctor** (0.109.0). If a calculation ended with an error or an optimization did not converge within its cycles, a button with a fix appears in the calculation window under the description of the problem: «Repeat with hard SCF convergence», «Continue from the last geometry, cycles: 200», «Repeat: 4 processes, 2000 MB of memory per process», «Repeat on one process», «Repeat with the def2-SVP basis» and others. Pressing it puts these settings into Sextant (the last geometry onto the model; Ctrl+Z brings back the previous one) and runs the calculation again; the earlier calculation and its files stay. The doctor changes the method, the basis set and the multiplicity only when the button says so. There is no button if there is no reliable fix (for example, the disk is full), if the input file was edited by hand, or for a queue calculation — then the advice remains.
-- **The input file editor** (0.216.133–0.216.139) — like AkelPad: line numbers, syntax highlighting of the chosen program (keywords, blocks, the coordinates line, numbers, comments; for a crystal — Quantum ESPRESSO and CP2K), the matching bracket, a find and replace bar (case, whole word, regular expression, «In selection»), a status line (line, column, INS/OVR). Keys: Ctrl+F, F3 / Shift+F3, Ctrl+R, Ctrl+G; Ctrl+D duplicate the line, Ctrl+Shift+K delete it, Alt+↑/↓ move it, Ctrl+/ comment with the sign of the program; Ctrl+Shift+U / Ctrl+Shift+L case; F5 the date; Ctrl+U wrap; Ctrl+= / Ctrl+- size; Ctrl+S save the file as it is in the editor. The right button gives a menu with the submenus «Find and go to», «Lines», «Case», «View»; F1 lists all keys.
-- **The Edit menu** (0.216.136): undo and redo, find, replace, go to line, «Insert block» (ORCA — `%pal`, `%maxcore`, `%scf`, `%geom` with a constraint, `%tddft`, `%cpcm` with SMD, `%output`, `%freq`, `%moinp`; Gaussian — `%nprocshared`, `%mem`, `%chk`; the block goes where the program expects it), «Check the input file», «Rebuild the file from the settings», «Copy the input file».
-- **Run keys** (0.216.138): Ctrl+Enter (⌘↩) starts the calculation, Ctrl+. (⌘.) stops the calculation or the queue — on the Sextant page and in the editor.
-- **A chain of calculations** (0.216.137). «Calculation → Chain of calculations»: «Optimization + frequencies → UV spectrum (TD-DFT)», «… → NMR», «… → energy in a larger basis», «… → UV spectrum → NMR» — each step on the geometry of the one before, with the settings of Sextant. A chain runs as a queue (on this computer or on a server); if a step fails, the next ones are not calculated. Chains the chosen program cannot do are grey. Since 0.216.156 the chains are also in the «Task» list: under the chosen one its steps are shown, the first by the settings of the form, the next ones with a method and basis set of their own if you choose them.
-- **The doctor: a stopped optimization and an imaginary frequency** (0.216.138). A stopped optimization (by the button, by the server time, by closing the program) gets «Continue from the last geometry». If an optimization with frequencies ended with an imaginary frequency — «Shift along the imaginary mode and optimise again»: the molecule is shifted along the mode by 0.15 Å at the most moving atom, and the new optimization uses tight convergence.
+The buttons of Sextant are icons; what each does is shown in its tooltip.
 
-Theory in the Atlas on the site: [Hierarchy of methods and Jacob’s ladder](https://www.azimuth-chem.com/atlas/?lang=en#lad), [Basis sets](https://www.azimuth-chem.com/atlas/?lang=en#basis).
+### Preparing a calculation
+
+1. In Compass build or open a molecule and click «To the calculation settings» (or go to Sextant: `Ctrl+4`).
+2. **Program** — ORCA, Gaussian, Psi4, xtb, CREST, MOPAC, GAMESS (US) or NWChem. Programs whose input files have not been checked by a run are marked «not checked».
+3. **Title** — the first line of the input file and the name of the calculation files. If the field is empty, the title is made up by itself: formula_method_basis_solvent, for example `H2O_B3LYP_def2-SVP_water.inp`. A title of your own can be typed in Russian — in the file name it becomes Latin letters.
+4. **Task** — energy, optimization, frequencies, a spectrum and others (section «Calculation tasks»). The list has only the tasks of the chosen program. When a task is chosen, Sextant itself sets the method, basis set, dispersion and settings recommended for it (for example tight optimization convergence before frequencies, a fine grid for NMR); a hint at the bottom says what was set — everything can be changed.
+5. **Method** and **basis set** are chosen by families: click the field — a list of families opens (Hartree–Fock, MP2, GGA, meta-GGA, hybrids, range-separated, double hybrids, coupled clusters; Pople, def2, cc, pcseg basis sets). The lists contain only what the chosen program knows. The tooltip of the button shows the recommendation for this molecule and task; the «★ Recommended: …» item sets it.
+6. **Solvent** — CPCM or SMD (SMD — for solvation energies; ORCA and Gaussian), ALPB in xtb, PCM in Psi4, COSMO in MOPAC. **Dispersion** — D3(BJ), D3(0) or D4.
+7. **Processes and memory per process.** Sextant finds out the number of cores and the memory of the computer or of the chosen server and offers values. Values set by hand stay.
+8. **Charge and multiplicity** («Additional settings… → Electronic state»; their values are shown in a line next to the button) are computed from the molecule: N and P with four bonds — +1, B with four — −1, an atom — by Hund's rules, O₂ — a triplet, otherwise the lowest multiplicity for the number of electrons. If changed values do not agree with the number of electrons, Sextant explains what to correct.
+
+A new window starts with B3LYP-D3(BJ)/def2-SVP: without a dispersion correction B3LYP describes stacks, conformers and weak complexes poorly. For a method without D3 parameters (HF, MP2, ωB97X-D) and for xtb the correction is turned off by itself.
+
+> **Note.** Coupled clusters — CCSD(T) in ORCA, Gaussian and Psi4 and DLPNO-CCSD(T) in ORCA — compute only the «Energy»: optimize the geometry with a DFT functional first. CCSD(T) grows as N⁷ and suits molecules of up to about ten heavy atoms; DLPNO gives almost the same (0.1 kcal/mol for water in cc-pVTZ) for molecules of tens of atoms.
+
+Theory — in the Atlas: [«The hierarchy of methods and Jacob's ladder»](https://www.azimuth-chem.com/atlas/?lang=en#lad), [«Basis sets»](https://www.azimuth-chem.com/atlas/?lang=en#basis).
+
+### Calculation tasks
+
+Table: Sextant tasks
+
+| Task | What it computes |
+|---|---|
+| Energy | The energy at the given geometry; for ORCA and Gaussian optionally a check of the stability of the wavefunction |
+| Optimization | The energy minimum; in «Task settings» — transition state search, convergence, cycle limit, exact Hessian |
+| Optimization + frequencies | An optimization and frequencies at its geometry; thermochemistry at the given temperature and pressure |
+| Frequencies and thermochemistry | Frequencies at the current geometry without optimization (it must have been optimized by the same method) |
+| Transition state + frequencies | A search for a saddle point and its frequencies (there must be one imaginary) |
+| UV-Vis spectrum (TD-DFT) | Excited states: the number of states, TDA or full TD-DFT, triplets, natural transition orbitals (ORCA) |
+| NMR (shielding) | Shielding constants; in ORCA optionally spin–spin coupling constants |
+| Excited state optimization | The geometry of the chosen excited state (ORCA, Gaussian) |
+| Relaxed PES scan | A coordinate from the Compass constraints is changed to the final value in a given number of points, the rest is optimized; in ORCA also a second coordinate (a two-dimensional scan) |
+| Reaction path (NEB-CI) | The path between the starting and the end structures and the transition state (ORCA) |
+| Fukui functions (N, N+1, N−1) | Three energy calculations as a queue: the molecule, the anion and the cation (ORCA) |
+| Donor–acceptor bond CDA | The Dapprich–Frenking charge decomposition analysis: the complex and two fragments (ORCA) |
+| Interaction energy with BSSE | Five energy calculations of a pair of molecules with the Boys–Bernardi correction (ORCA) |
+
+Which tasks each program has is in Appendix C. Only the task settings the program writes into its input file are shown; fields the program does not have (a basis set for MOPAC, a method for xtb) are hidden.
+
+**Notes on the tasks.**
+
+- **Relaxed PES scan.** The coordinate is a length, an angle or a dihedral angle from the optimization constraints of Compass (shown in the list with its current value). The points of the scan open in the ☰ panel of Compass with the energy plot; a two-dimensional scan has a ΔE map. In xtb a two-dimensional scan is not made as a grid: two scans go one after the other.
+- **NMR with coupling constants.** The «Spin–spin coupling constants» check box of ORCA computes all J between H, C, F, P. Multiplets appear in Spectrum (section «NMR»).
+- **Fukui functions.** The ions have a multiplicity one lower (doublets for a singlet). def2-SVPD is recommended: the anion needs diffuse functions, and the geometry must be optimized. At the end Compass opens the N result with the Fukui functions on the model.
+- **CDA.** In «Task settings» — the atoms of fragment 1 (the donor) by numbers or with the «From selection» button, its charge and multiplicity; fragment 2 is the remaining atoms. Sextant sets up a queue of three single-point calculations: the complex, fragment 1, fragment 2. Then Multiwfn computes the donation d, the back-donation b, d − b and the repulsion r; a window explains the numbers.
+- **Interaction energy with BSSE.** The structure must consist of exactly two molecules, the pair neutral and closed-shell. Five calculations give ΔE, the BSSE and ΔE(CP) — the interaction energy at frozen geometry; the table `interaction.csv` is in the queue folder.
+- **Start from the orbitals of a previous calculation** (ORCA, MORead) — after a broken calculation, for another method or a close geometry: «Additional settings → Initial guess».
+
+**Chains of calculations.** «Calculation → Chain of calculations» (and chains in the «Task» list): «Optimization + frequencies → UV spectrum (TD-DFT)», «… → NMR», «… → energy in a bigger basis set», «… → UV spectrum → NMR». Each step is computed at the geometry of the previous one; the following steps can have their own method and basis set. A chain runs as a queue; if a step fails, the following ones are not computed.
 
 ### Additional settings
 
-«Calculation → Additional settings…» (or the sliders icon next to the fields): the sections on the left, the page of a section on the right; the window keeps one size. The solvent (CPCM in ORCA and Gaussian, ALPB in xtb, PCM in Psi4), the D3(BJ) or D4 dispersion, the processes and the memory per process are right in the setup of the task (Sextant finds the number of cores and the memory of the computer or of the chosen server and proposes values).
+«Calculation → Additional settings…» (or the icon with sliders) — a window with sections on the left and the page of the section on the right.
 
-**Dispersion by default** (0.222.12). A new window starts with B3LYP-D3(BJ)/def2-SVP: the D3(BJ) dispersion correction is on at once — without it B3LYP describes stacking, conformers and weak complexes poorly. For a method without D3 parameters (HF, MP2, ωB97X-D…) and for xtb the correction switches itself off, and it comes back with B3LYP. A project and an opened input file bring their own settings.
-
-**What is in the card and what is here** (0.222.0). «Calculation setup» does not scroll: the card holds the program, the task, the method, the basis set and the fields set most often (the solvent, the processes and the memory, the transition state of an optimization, the number of excited states of TD-DFT), and what a task cannot do without (the coordinate of a scan, the atoms of a fragment of CDA). The name of the calculation, the dispersion and the finer settings of a task (the convergence of an optimization, the exact Hessian, temperature and pressure, numerical frequencies, Raman, triplets, NTO, the second coordinate of a scan, the charges and multiplicities of the fragments of CDA…) are in the section «Task» of this window. The button «Fields…» at the foot of the card chooses which fields stay in the card: a ticked one goes back to its place, the rest come here; «As by default» restores the first choice. The choice is remembered. A crystal (0.222.1) works the same: the card holds the program, the task, the method, the basis set or the cutoffs and the grids, and by default the dispersion, the resources and the supercell; the name, the cell and the thresholds of a relaxation are in the section «Task».
-
-- **Electronic state** — charge and multiplicity (from the structure; changed by hand they are marked).
-- **SCF and integration** — SCF convergence, a hard SCF (ORCA SlowConv / VerySlowConv, Gaussian SCF=XQC, Psi4 damping), the DFT grid, no RI, RIJCOSX and AutoAux (ORCA).
-- **Relativistic corrections** — DKH2, ZORA or X2C (ORCA; Gaussian — DKH2). Sextant puts in the recontracted basis itself: def2-TZVP becomes DKH-def2-TZVP, ZORA-def2-TZVP or x2c-TZVPall, and with DKH and ZORA the heavy atoms (Rb–Rn, Ac–Lr) get the all-electron SARC. Without a Hamiltonian def2 works up to Rn with its pseudopotential; for the lanthanides the advice chooses DKH2 itself.
-- **Basis sets by element** — an own basis set for some elements, for example `Fe=def2-TZVP; Cl=def2-SVP` (the button “Add…” offers the elements of the molecule). The other atoms take the basis set of the calculation. ORCA writes a `%basis NewGTO` block, Gaussian `Gen` (only without atoms heavier than Kr), Psi4 `basis { assign }`.
-- **Optimization, frequencies and TD-DFT** — since 0.91.14 not here but in «Task settings» under the fields of «Task setup».
+- **Task** — the title of the calculation, dispersion and the fine settings of the task that are not kept in the card.
+- **Electronic state** — charge and multiplicity (values changed by hand are marked); for crystals — the cell charge, spin, magnetic order, DFT+U.
+- **SCF and integration** — SCF convergence, difficult convergence (ORCA SlowConv / VerySlowConv, Gaussian SCF=XQC, damping in Psi4), the DFT grid, a calculation without RI, RIJCOSX and AutoAux (ORCA).
+- **Relativistic corrections** — DKH2, ZORA or X2C (ORCA; Gaussian — DKH2). Sextant substitutes the recontracted basis set itself: def2-TZVP becomes DKH-def2-TZVP, ZORA-def2-TZVP or x2c-TZVPall; heavy atoms (Rb–Rn, Ac–Lr) with DKH and ZORA get all-electron SARC.
+- **Basis sets by element** — a basis set of its own for some elements, for example `Fe=def2-TZVP; Cl=def2-SVP`; the other atoms take the basis set of the calculation.
+- **Initial guess** — the orbitals of a previous ORCA calculation (MORead).
 - **Properties and output** — charges (Mulliken, Hirshfeld, NBO), orbitals in the output.
-- **Server resources in the panel** (0.108.47). When the server is chosen, the fields «Resources» get the number of processes and the memory per process advised for it (by its free cores and memory); back on the computer — the advice for the computer. A calculation and a queue on the server take the values of the panel without a question.
-- **Resources set by hand with the server** (0.108.52). Processes and memory set by hand with the server chosen stay: the advice of the server goes only into fields not touched.
-- **Starting orbitals of ORCA in More settings** (0.108.48). The start from the orbitals of an earlier calculation (MORead) is chosen in «More settings… → Initial guess»; the file chosen is named in the line under the settings button.
 
-Theory in the Atlas on the site: [Solvent models](https://www.azimuth-chem.com/atlas/?lang=en#solv), [Intermolecular interactions](https://www.azimuth-chem.com/atlas/?lang=en#disp).
+Theory — in the Atlas: [«Solvent models»](https://www.azimuth-chem.com/atlas/?lang=en#solv), [«Intermolecular interactions»](https://www.azimuth-chem.com/atlas/?lang=en#disp), [«Heavy elements»](https://www.azimuth-chem.com/atlas/?lang=en#rel).
 
-### A queue on a server
+### The input file
 
-- **A server queue as one job** (0.106.6). A queue of calculations on a server is now sent at once: the input files are uploaded and one SLURM job (`batch.sh`, like the laboratory's `orca.sh`) runs them in order. Azimuth only watches and downloads the finished ones; nothing has to be sent at the exit, and the watching is taken up at the next start. «Skip» ends the current calculation and the queue goes on; «Stop» cancels the queue job. A queue searching conformers before the calculations is still sent one by one. (0.107.5) If the connection broke while the queue was being queued, Azimuth does not send the same calculations one by one but checks with the server when the connection is back; every row on the server marks its own attempt.
-- **Fast sending of a queue** (0.106.9). A queue of calculations goes to the server as one archive: one `scp` and one ssh command that unpacks it and queues the `batch.sh` job — the time no longer grows with the number of calculations.
-- **A queue does not get in the way** (0.106.11). The calculation window is shown only for the first calculation of a queue. While you are in another section, the next ones run behind the sign in the left panel: the window does not open or come to the front, and one already open is just updated.
-- **The queue list inside the card** (0.106.12). The list of the calculations of a queue takes the height left in the calculation card (at least three lines) and scrolls inside it. The running calculation is always in sight, even when long names wrap onto two lines.
-- **A queue of different molecules leads to the project** (0.106.14). The page «Conformers» with the Boltzmann shares is filled only after a queue of structures of one formula. After a queue of different molecules of a project, «Go to Compass» opens the project and the list of its molecules.
-- **A queue taken up after a restart opens its project** (0.106.13). When the queue of a project is taken up after a restart («Open the queue?» or «Continue the queue»), its project opens in Compass — the tab of the project and its first molecule — while Sextant with the progress of the queue stays on screen.
-- **The purpose of a queue** (0.106.18). A queue started from the page «Conformers» is ranked as conformers, with Boltzmann shares. A queue of the molecules of a project stays a set of separate molecules, even when they share one formula.
-- **A server out of reach, a job gone from the queue** (0.108.61). When the connection is lost and after a restart, the calculation window says what was known last: «last answer of the server — 14:02 10.11, running». A queue whose calculations are all on the server and «Check on the server» are taken up also when the server does not answer: the watching waits for the connection by itself. A calculation counts as a success only by the mark of the normal end of the program in its output; when the job is gone from the queue and the mark is not there, Azimuth checks three more times before it reports an error. An end already recorded is not recorded a second time.
-- **Files from the server — only whole** (0.108.62). The files of a result are downloaded into a temporary folder first and come into the folder of the calculation only when their size is the one the server tells. A broken transfer is repeated (up to three times); a file that never comes whole is not put into the folder and does not replace the one there — the calculation window names it, and it stays on the server.
-- **Several calculations on a server** (0.216.140). While a calculation runs on the server, «Run calculation» is available: the running calculation moves into its own window (its buttons act on it, its result opens as usual), and the Sextant card takes the new one. «Calculation → Other calculations on the server» lists those windows. There is still one queue of calculations on a server.
-- **Environment lines for each program** (0.222.16). In «Server…», above the field of the environment lines, is the list «Environment lines for»: «All programs» — the lines of every job of this server; ORCA, MOPAC, Quantum ESPRESSO, CP2K — the lines of its jobs only (they come after the common ones). So the lines of one program do not reach the jobs of another: CP2K, for example, needs `module load cp2k` and `source …/toolchain/install/setup`, which get in the way of a job of ORCA. A program with lines of its own gets them as they are and is not looked for on the server; empty — it is looked for, as before. A dot after a name in the list shows who has lines.
-- **The VPN from the server window** (0.222.17). In the card «VPN», next to the list of the profiles of OpenVPN Connect, are the buttons «Connect the VPN» and «Disconnect the VPN»; the program still switches the VPN on by itself when the server does not answer. The window of OpenVPN Connect does not lie over the program (on a Mac it is hidden); if the VPN has not connected in 15 seconds, its window opens — it may be asking for a password.
-- **A server without SLURM** (0.222.19). When the server has no SLURM queue, a calculation starts there at once (by `nohup`) and runs by itself; the program shows it like a job of a queue and stops it the same way. It can be started only when the cores are free: with the new calculation no more than 80 % of the cores of the server may be busy — otherwise the program says how many cores can be taken now. A queue of several calculations is not sent to such a server — start them one by one.
-- **Programs outside PATH** (0.222.19). «Check resources» looks for the programs not only in PATH and among the modules, but also in the environments of conda, in `/opt` and in the home folder on the server. What was found is shown in the line «Outside PATH: …»; a program that is only there gets its environment line written by itself — it remains to save it.
-- **The cluster queue** (0.216.138). «Server → Cluster queue…» — the SLURM jobs on the server of the profile (squeue): number, name, user, state, time running, limit, nodes, cores, node or reason for waiting; Azimuth calculations are blue. The table is reread every 30 s («Refresh by itself»), «All users» shows other people’s jobs too, «Cancel the chosen» cancels jobs (scancel) after a question.
-- **SLURM partition and time limit** (0.216.140). «Server…» has «SLURM: partition / time» and «SLURM: project / QoS»: they go into every job as `#SBATCH -p / -t / -A / --qos` (empty — the defaults of the cluster). On large clusters a job without a time limit gets little time or is not accepted. Other `#SBATCH` lines (`--gres`, `--constraint`) can be written into the environment lines — they go to the head of the job script. The free cores are looked up in the given partition.
+The text of the input file is shown to the right of the settings and changes with them. The file can be edited right there (ORCA, Gaussian, Psi4); xtb has a command line instead of a file, and it is not edited. Before a run Sextant checks the file: an unclosed block, an atom line without three numbers, no charge and multiplicity, an unclosed bracket — it highlights the lines and asks whether to run it so. If the settings or the molecule changed after an edit, Sextant says that the file was not rebuilt; «Rebuild the file from the settings» brings back the generated one.
 
-### Files on the server
+**The editor** works like a programmer's text editor: line numbers, syntax highlighting of the chosen program, highlighting of the matching bracket, a find and replace panel (case, whole word, regular expression, «In selection»), a status line. A right-click opens a menu with the submenus «Find and go to», «Lines», «Case», «View»; `F1` shows all keys (Appendix B).
 
-- **Files on the server** (0.106.7; 0.216.133). In Sextant, with a server chosen, the icon «Files on the server» sits next to «Server…»: a two-pane window like Total Commander, this computer on the left and the server on the right. Enter or a double click opens a folder or opens a file in Azimuth (a file from the server is first downloaded to «<calculations folder>/from-server»). F3 — view, F4 — edit a text file (a server file is saved back to the server), Shift+F4 — new file, F5 — copy to the other pane, F6 — move, Shift+F6 — rename, F7 — new folder, F8 or Delete — delete (after a question; on the server it cannot be undone, on the computer the files go to the Trash). Alt+F7 — find files by a mask, Ctrl+D — favourite folders, Insert or Space — mark, + / − — mark by a mask, * — invert the marks, Ctrl+F3…F6 — sort, F2 — reread, Backspace — up one level, Tab — the other pane, F1 — all keys.
-- **Drag and drop and the look of the window** (0.216.139). Files can be dragged from Finder into either pane (to the server — an upload, to the computer pane — a copy into the open folder), between the panes (as F5) and out of the window (server files up to 50 MB are downloaded first). At the bottom — the function key bar and the blue «Open in Azimuth», under each pane — «Selected N of M»; the selection in one pane is kept while you work in the other. The window and its editor follow the dark theme.
-- **Selecting several files** (0.106.16). In «Files on the server» the selection stays on all the files concerned after copying, renaming or a new folder, and «Delete» deletes all the selected ones.
+**The «Edit» menu** of Sextant: undo and redo, find, replace, go to line, «Insert block» (ORCA — `%pal`, `%maxcore`, `%scf`, `%geom`, `%tddft`, `%cpcm`, `%output`, `%freq`, `%moinp`; Gaussian — `%nprocshared`, `%mem`, `%chk`; the block goes where the program expects it), «Check the input file», «Rebuild the file from the settings», «Copy the input file».
 
-### More about ORCA tasks
+**Your own input file.** A ready ORCA or Gaussian input file opens with the folder icon at «Input file» or «File → Open an input file…»: the molecule, charge, multiplicity, program, method, basis set and task are taken from it, and the file itself is run as it is.
 
-- **NMR couplings and multiplets** (0.106.1). In Sextant the task «NMR (shielding)» of ORCA has the check «Spin-spin coupling constants (J)»: every J between H, C, F, P. The «NMR» page of Spectrum then shows «Multiplets (J couplings)», the spectrometer frequency (¹H, MHz) and «¹H decoupled» for ¹³C: the table gets a «Multiplet» column («qd, J = 7.2, 1.2 Hz»), and the chosen signal is drawn under the spectrum at the scale of hertz. The splitting is first order (n neighbouring equivalent nuclei give n + 1 lines with the intensities of Pascal's triangle); when Δν/J is below 5 the program warns of strong coupling. The J of equivalent atoms are averaged (the three H of a CH₃ give the familiar 7 Hz).
-- **Two-dimensional scan** (0.106.2). In Sextant the «Relaxed PES scan» of ORCA has «Second coordinate» (from the same constraints of Compass) and «End 2» with its points: for every point of the first coordinate ORCA goes through all points of the second. In Compass such a scan has the button «Scan map» in the panel of steps (☰): ΔE in colour with isolines, the computed points, the minimum in orange and the «valley» dashed (for every value of the first coordinate the lowest point along the second). A click on a point shows its geometry on the model. xtb does not scan a grid (two scans run one after the other) — Sextant says so.
+**Save and run by hand.** «File → Save the input file…» writes the file; «Edit → Copy the input file» puts the text on the clipboard.
+
+### Running and following a calculation
+
+1. Click «Run calculation» (`Ctrl+Enter`). The folder icon next to the button chooses where the calculation folders are created.
+2. The **progress of the calculation** appears in place of the input file: the time, the stages («✓ The self-consistent field converged», «The geometry is optimized»), the cycles and the last energy. Back to the file — the «Input file» button on the card, again to the calculation — «Calculation window».
+3. «Program output» opens the output file itself and follows it while the program writes (search, «Follow the end», «Open in an editor»).
+4. «Stop» (`Ctrl+.`) interrupts the program together with all its processes.
+
+In other sections the progress of a calculation is opened by the icon on the left panel (the background work indicator) or «Calculation → Calculation window».
+
+When the calculation ends, the calculation window shows «Go to Compass» (optimization steps, frequencies, orbitals) and «Go to Spectrum» (frequencies, spectra, thermochemistry). If the calculation broke off with an error or was stopped, but there already were optimization steps, they still go to the tab: the last geometry becomes its structure (`Ctrl+Z` brings back the previous one).
+
+After the end of any calculation the temporary files of the program are deleted from the calculation folder (ORCA `*.tmp`, Gaussian `Gau-*.rwf` and others); the results, orbitals (`.gbw`, `.chk`), the Hessian and the input file stay.
+
+### Calculation doctor
+
+If the program ended with an error, Sextant writes under the progress what happened and what it may be connected with: the SCF did not converge, not enough memory, an error in the input file, no basis set for an element. The details are at the end of the program output.
+
+If there is a reliable fix, a button with it appears under the description of the problem, for example:
+
+- «Repeat with difficult SCF convergence»;
+- «Continue from the last geometry, cycles: 200» — for an optimization that did not converge or was stopped;
+- «Repeat: 4 processes, 2000 MB memory per process», «Repeat on one process»;
+- «Repeat with the def2-SVP basis set»;
+- «Shift along the imaginary mode and optimise again» — if an optimization with frequencies ended with an imaginary frequency: the molecule is shifted along the mode by 0.15 Å at the most mobile atom, and a new optimization runs with tight convergence.
+
+A click puts these settings into Sextant and runs the calculation again; the previous calculation and its files stay. The doctor changes the method, the basis set and the multiplicity only when the button says so. There is no button if there is no reliable fix (for example the disk is full), if the input file was edited by hand or the calculation belongs to a queue — then only advice remains.
+
+### Calculation queue
+
+A queue runs the same calculation for many structures: conformers after a search or a set of structures (several files, an SDF database, the molecules of a project).
+
+1. Click the «Calculation queue for the set…» icon at «Input file». The window has the list of structures with the ΔE of the search; the lowest ones within 3 kcal/mol are checked, «How many» checks the first N, a check box adds or removes any of them.
+2. «Choose for the queue» — Sextant goes into queue mode: a blue bar «Queue: N of M · …» appears in the card («Change the choice…», ✕ — back to one calculation), the button is called «Run the queue (N)».
+3. Set up the calculation — the same settings for all. The charge and multiplicity are taken from the tab (for conformers) or from the bonds (for each structure of a set). A file edited by hand does not go into a queue.
+4. Run the queue. The calculation window has a list (✓ done, ✗ error, ▶ running); «Skip» stops the current calculation and goes to the next one, «Stop» stops the whole queue. An error in one calculation does not stop the queue.
+
+All calculation folders of a queue lie in one folder «…_batch_<program>». At the end — the table `Анализ/batch_energies.csv` (E, G with frequencies, ΔHf for MOPAC, differences, Boltzmann populations) and the conformers on the «Conformers» page of the Compass panel, sorted anew: by G if all had frequencies, otherwise by E, for MOPAC by the heat of formation. A queue left when the program was closed is continued by the «Resume the queue» icon; at the next start the program itself asks «Open the queue?» and opens its project in Compass.
+
+**Input files for a set.** The «Input files for the whole set of structures…» icon writes a file for each structure with the same settings — to compute them outside the program.
+
+### Calculations on a server
+
+Sextant sends calculations to a computing server over SSH: with a SLURM queue or without one. ORCA and MOPAC are run on a server, and for crystals Quantum ESPRESSO and CP2K.
+
+#### The server profile
+
+«Server…» in the calculation card (or the «Server» menu) opens the profile window. There can be several profiles: «New profile», «Delete profile».
+
+- **Login:** address, port, user name, password, a jump server (ProxyJump).
+- **Calculations on the server:** the calculations folder on the server, environment lines, «SLURM: partition / time» and «SLURM: account / QoS».
+- **VPN:** an OpenVPN Connect profile for a server behind a VPN.
+
+The password does not go into the settings of the program: it is kept until the program is closed, and with the «Remember…» check box — in the system store: the Keychain on macOS, the Credential Manager on Windows.
+
+> **Tip.** The most reliable way is to log in without a password. «Login without a password» creates a key of the program and writes it to the server once, with the password — after that no password is needed and it is not stored anywhere. On Windows a login by key is required: without a key the password would be asked for every command.
+
+**Environment lines** — commands run before the program on the server, for example `module load orca-6.1.1`. Empty — ORCA is found on the server by itself. The «Environment lines for» list sets lines for all programs or for one only (ORCA, MOPAC, Quantum ESPRESSO, CP2K): so the lines of one program do not get into the jobs of another. `#SBATCH` lines (`--gres`, `--constraint`) can also be written here — they go to the beginning of the job script.
+
+**SLURM: partition and time.** The values go into every job as `#SBATCH -p / -t / -A / --qos`; empty — the defaults of the cluster. On big clusters a job without a time limit gets little time or is not accepted.
+
+**Check.** «Check the connection» shows whether the server answers. «Check resources» logs in to the server and shows the free cores and memory, as well as the programs — in PATH, among the modules, in conda environments, in `/opt` and in the home folder; for a program outside PATH the needed environment line is written by itself. After that the server is polled every 5 seconds: a check mark at the icon — connected, a cross — not (the reason is in the tooltip).
+
+**VPN.** If the server is behind OpenVPN, choose an OpenVPN Connect profile (or «Import .ovpn…»): the program connects the VPN by itself when the server does not answer. The «Connect the VPN» and «Disconnect the VPN» buttons are in the VPN card; the check box «Disconnect the VPN after the calculations».
+
+#### How to run on a server
+
+1. Choose «Server» in the calculation card. The «Processes» and «Memory» fields get a recommendation from the free resources of the server.
+2. Click «Run calculation». The input files are uploaded to the server, the job is put into the SLURM queue; the program follows it and downloads the result.
+3. A calculation on the server goes on after the program is closed. At the next start «Calculation → Calculation history…» → «Check on the server» follows it again and downloads the result without sending anything anew.
+
+While a calculation runs on the server, the next one can be started: the running one goes into a window of its own, and the Sextant card takes the new one. «Calculation → Other calculations on the server» — the list of such windows (▶ running, ✓ finished). A calculation on this computer and calculations on the server run at the same time.
+
+**A queue on a server** is sent as one job: one archive, one SSH command, one SLURM job (`batch.sh`) that computes the calculations in order. «Skip» ends the current calculation, «Stop» cancels the queue job.
+
+**A server without SLURM.** The calculation starts at once (through `nohup`) and runs by itself; in the program it looks like a queue job. It can be started only when cores are free: together with the new calculation at most 80 % of the server's cores may be busy. A queue of several calculations is not sent to such a server.
+
+**Reliable transfer.** The result files are first downloaded into a temporary folder and get into the calculation folder only when their size matches what the server reported; a broken transfer is repeated up to three times. When the connection breaks, the calculation window writes what was known last, and the watcher waits for the connection by itself. A calculation is considered successful only by the mark of the normal end of the program in the output.
+
+**The cluster queue.** «Server → Cluster queue…» — the SLURM jobs on the server (squeue): number, name, user, state, time, nodes, cores, node or the reason for waiting; Azimuth calculations are highlighted in blue. The table is reread every 30 s («Refresh by itself»). «All users» shows other people's jobs too, «Cancel the chosen» cancels your own jobs (scancel) after a question.
+
+#### Files on the server
+
+The «Files on the server» icon next to «Server…» opens a two-panel window like Total Commander: this computer on the left, the server on the right.
+
+- `Enter` or a double click — enter a folder or open a file in Azimuth (a file from the server is first downloaded into «<calculations folder>/from-server»).
+- `F3` — view, `F4` — edit a text file (a file from the server is saved back), `F5` — copy to the other panel, `F6` — move, `F7` — new folder, `F8` — delete (with a question; irreversible on the server, to the Trash on the computer).
+- Files can be dragged from the Finder or Explorer into either panel, between the panels and out of the window.
+- `F1` shows all keys of the window (Appendix B).
 
 ### Calculation history
 
-«Calculation → Calculation history…» — the last 60 calculations started from Sextant: when, where (this computer or a server), what, and their state now. «Open the result» opens the output of a finished calculation (as «Open a calculation result…»), «Folder» its folder. A calculation on a server goes on after the program is closed: «Check on the server» watches it again by its queue number (from job.json of the calculation folder) and downloads the result when it ends — nothing is sent again. (0.107.4) If the connection broke exactly while the calculation was queued, it is marked «not known whether the server accepted it — check»: «Check on the server» asks the server by the label of this sending (the receipt in the calculation folder, the queue, the job accounting) and, when it finds one job, watches it; several found — their numbers are shown and nothing is done automatically. A calculation closed before sending is «prepared, not sent»: start it again. (0.91.18) «Clear the list» takes all the entries away at once (after a question): the folders of the calculations stay on the disk, a calculation running now stays in the list.
-
-### How to save the input file and run it by hand
-
-«File → Save ORCA input file…» or «…the input file of the chosen program…»; «Edit → Copy the input file» puts the text on the clipboard. «File → Save project…» saves the molecule together with the settings.
-
-### How to install calculation programs
-
-- ORCA on several processes needs Open MPI 4.1. If it is missing, the card shows «Install Open MPI…»: Sextant downloads it from conda-forge into the program folder (.tools/calc) — no administrator rights and no changes to the terminal settings. On Windows Microsoft MPI is needed instead: «Install MS-MPI…» opens the Microsoft page — install msmpisetup.exe and restart Azimuth.
-- «Calculation → Install calculation programs…» installs Open MPI, xtb, CREST and MOPAC, and (not on Windows) Quantum ESPRESSO, NWChem and Psi4 (0.222.0; into .tools/psi4 with its own Python, checked by a helium atom) — with your conda if you have one, otherwise with a small micromamba installer. Only xtb and MOPAC are ticked by themselves when they are missing (0.222.27); Quantum ESPRESSO, NWChem and Psi4 show their download size and disk space.
-- On Windows ORCA needs Microsoft's MS-MPI, installed separately. Without MPI choose 1 process.
-- ORCA is downloaded by hand from the ORCA website under its licence; Gaussian is commercial; Psi4 is installed by «Install calculation programs…» (macOS, Linux) or with conda.
+«Calculation → Calculation history…» — the last 60 calculations started from Sextant: when, where (this computer or a server), what, and what state they are in now. «Open the result» opens the output of a finished calculation, «Folder» — its folder, «Check on the server» follows a server calculation again. If the connection broke at the moment of queuing, the calculation is marked «not known whether the server accepted it — check»: the check finds the job by the mark of the upload. A calculation closed before sending is marked «prepared, not sent» — it has to be started anew. «Clear the list» removes the entries; the calculation folders stay on the disk.
 
 ### Back to Compass
 
-The arrow next to the input file heading returns to the molecule — for example, to fix it before the calculation. The result of a calculation started from Sextant returns to the Compass tab it was started from.
+The arrow next to the heading of the input file and the arrow in the corner of the calculation card return to the molecule in Compass — for example to correct it before the calculation. The result of a calculation started from Sextant returns to the Compass tab from which it was started.
 
 ## Spectrum
 
-Results of ORCA, Gaussian, Psi4, xtb, MOPAC, NWChem, Q-Chem, GAMESS and Firefly calculations, and for crystals of Quantum ESPRESSO, CP2K and CRYSTAL.
+Spectrum reads the result of a calculation: energies and convergence, vibrations and IR, UV-Vis, NMR, thermochemistry, orbitals and electron density analysis. It reads the outputs of ORCA, Gaussian, Psi4, xtb, MOPAC, NWChem, Q-Chem, GAMESS (US) and Firefly, and for crystals Quantum ESPRESSO, CP2K and CRYSTAL.
 
 ### How to open a result
 
-- The result of a calculation from Sextant opens by itself.
-- «File → Open a calculation result…» — ORCA (.out), Gaussian (.log), xtb, Psi4 output; «File → Open orbitals…» — Molden, fchk, ORCA output; «File → Open CUBE (3D)…». (0.91.16) The tabs of the result are in the top row of the panel, the tabs of the molecules right after them; the file, the program, the termination and the energy are in the status line at the foot; «Add to reaction diagram» appears for a result with an energy.
-- Teaching ORCA results (energy, vibrations, an orbital) are in the File menu and need no files.
+- The result of a calculation from Sextant opens by itself — in the tab from which the calculation was started.
+- «File → Open a calculation result…» — an output of ORCA (`.out`), Gaussian (`.log`), xtb, Psi4 and other programs.
+- «File → Open orbitals…» — Molden, fchk, an ORCA output; «File → Open CUBE (3D)…».
+- Teaching ORCA results (energy, vibrations, an orbital) are in the «File» menu, without files.
 - «Edit → Use geometry from result» moves the final structure to Compass.
-- **MOPAC** (0.91): an `.out` output opens the same way; when an `.aux` of the same name lies next to it (the `AUX` keyword), the optimization steps, charges, dipole and vibrations are read from it. MOPAC gives the heat of formation ΔHf (kcal/mol at 298 K), not a total energy: it can be compared only with MOPAC results of the same method, so a MOPAC result does not go into a reaction diagram. MOPAC prints no IR intensities in km/mol — the vibrations have frequencies and animation only. MOPAC computes frequencies (`FORCE`) at the geometry it is given without optimizing it: when the gradient norm is above 1 kcal/(mol·Å), Spectrum warns that the point is not stationary. Since 0.91.6 the orbitals are read from the `.aux` too: the «Orbitals…» button shows them as for other programs. MOPAC works with Slater functions; Azimuth writes each of them as six Gaussians and checks the overlaps against those MOPAC itself printed (they agree within 2·10⁻⁴). By default MOPAC writes 10 orbitals on either side of the HOMO — those are in the table (the keywords `LARGE` or `AUX(MOS=99999)` give all of them); for the density and the charges Azimuth rebuilds the lower occupied orbitals from the density matrix of the same file. The charges from these orbitals are Coulson charges, the ones MOPAC prints.
 
-### Tabs
+The file name, the program, the termination and the energy are in the status line at the bottom. The folder icon in this line opens the «Анализ» subfolder of the result — the CSV tables of all analyses and the outputs of Multiwfn.
 
-(0.91.42) The tabs are gathered under three common ones: **Result** (energies and frequencies, convergence, thermochemistry), **Spectra** (vibrations and IR, UV-Vis, NMR) and **Wavefunction** (maps and profiles, density of states, delocalization, density topology, NCI). The tabs of the chosen group are a second row over the page; a group with one tab shown is that tab; a group opens on the tab last chosen in it. The folder icon in the bottom row opens «Analysis» of the result — the CSV tables of every analysis (critical points, maps, DOS, CDA…) and the Multiwfn outputs, or, before any analysis, the folder of the result itself; the same icon is next to «Copy table» of the critical points.
+**MOPAC results.** If an `.aux` file with the same name lies next to the `.out` (the `AUX` keyword), the optimization steps, charges, dipole, vibrations and orbitals are read from it. MOPAC gives the heat of formation ΔHf (kcal/mol at 298 K), not the total energy: it can be compared only with MOPAC results by the same method, so a MOPAC result does not go into the reaction diagram. MOPAC does not print IR intensities — its vibrations have only frequencies and animation.
 
-- **Energies and frequencies** — the program and its version, the final energy and method, whether it ended normally, whether the optimization converged, warnings.
-- **Vibrations and IR** — the table of frequencies and intensities, imaginary frequencies, the IR spectrum, an animation of the chosen vibration. Displacement arrows, both ways if you like; «GIF…» saves one period, «XYZ frames…» the same period as frames; «Displace +» and «Displace −» move a geometry displaced along the mode to Compass. «Scale factor» (0.89.23) multiplies the frequencies of the spectrum by the scaling factor of the method and basis from NIST CCCBDB (B3LYP/6-31G*: 0.960 ± 0.022): harmonic frequencies are higher than observed, so the spectrum comes closer to experiment. The factor is filled in from the method and basis of the result and can be changed; the table of modes stays as in the output, and the plot says «frequencies × …». The CSV of spectra, NMR and the reaction diagram follows «File → Settings… → Analysis tables» (for a Russian Excel: «;» and the decimal comma). When the result has Raman activities (0.90.1; ORCA with «Raman» in Sextant), «IR / Raman: activity / Raman: intensity (532 nm)» appears above the plot, and the table gets the activity (Å⁴/amu) and the depolarization ratio ρ: ρ = 0.75 — a vibration that is not totally symmetric, ρ < 0.75 — a totally symmetric one (a polarized band). The activity is a property of the molecule; the intensity is converted to an experiment with a 532 nm laser at 298 K ((ν₀ − ν)⁴ and the population of the levels), the strongest line is 100. In a molecule with a centre of symmetry (ethylene, CO₂) a vibration is seen either in IR or in Raman — the rule of mutual exclusion.
-- **UV-Vis** — TD-DFT/CIS transitions and the spectrum in eV, nm or cm⁻¹, the band width. When the output has rotatory strengths (ORCA prints them for TD-DFT by itself, Gaussian for `TD`), a «View» list appears above the plot: «Circular dichroism (ECD)» (0.90.0) shows the signed Δε spectrum — the same bands, but up or down by the sign of the rotatory strength R — and the table gets a column R (10⁻⁴⁰ cgs; the velocity gauge when the output has it — it does not depend on the origin of coordinates). The mirror-image isomer has the mirrored spectrum, an achiral molecule has none — the program says so when every |R| is below 0.1·10⁻⁴⁰. ECD is compared with experiment to find the absolute configuration (R or S). Export — PNG, SVG and CSV.
-- **NMR** — shieldings and chemical shifts against the chosen reference (for example, TMS by the same method); equivalent atoms are merged. The reference is kept for each level of theory (method, basis, solvent): «Compute TMS at this level» (0.89.25) sends a TMS input with the settings of the result to Sextant; once the TMS result is opened in Spectrum the reference is remembered by itself, and the shifts appear for every result of that level.
-- **Thermochemistry** (for a frequency calculation) — zero-point energy, corrections to E, H and G and the total H and G at the chosen temperature and pressure; the entropy by contributions; the symmetry number σ from the point group; Grimme's quasi-RRHO softens modes below 100 cm⁻¹. Imaginary frequencies are left out, and this is said. For MOPAC (0.91.6), instead of the total energy, the row ΔHf(T) = ΔHf(298 K) + H(T) − H(298 K), as MOPAC computes it; when MOPAC computed its THERMO table at the chosen temperature, its ΔHf and S are shown next to ours as a check (for water and benzene they differ by thousandths of a cal/(mol·K): MOPAC uses average atomic masses).
-- **Convergence** (for an optimization) — the energy of every step and the convergence criteria with their thresholds on a log scale: you see which criterion holds the optimization back.
-- **VCD** (0.216.125) — in «Vibrations and IR», when the output has the rotational strengths of the vibrations (ORCA `%freq DoVCD true end`, Gaussian `Freq=VCD`): the spectrum view «VCD» — bands up and down from zero, the column «R VCD» in the table of modes; the scale factor, the comparison, the experiment and the conformer average work for it too.
-- **Radiation** (0.216.125) — in «UV-Vis» after an optimization of an excited state (ORCA `%tddft iroot`, Gaussian `TD(Root=n) Opt`): the view «Radiation» — the energy of the light from the relaxed geometry (fluorescence of a singlet or phosphorescence of a triplet), the absorption of the same state at the starting geometry, the Stokes shift, the oscillator strength and the radiative lifetime.
+> **Note.** MOPAC computes frequencies at the geometry it was given, without optimizing it. If the gradient norm is greater than 1 kcal/(mol·Å), Spectrum warns that the point is not stationary.
 
-Theory in the Atlas on the site: [Normal modes](https://www.azimuth-chem.com/atlas/?lang=en#nm), [Thermochemistry from frequencies](https://www.azimuth-chem.com/atlas/?lang=en#thermo), [Excited states and spectra](https://www.azimuth-chem.com/atlas/?lang=en#exc), [NMR: from shielding to chemical shift](https://www.azimuth-chem.com/atlas/?lang=en#nmr).
+### The tabs of Spectrum
+
+The tabs are gathered under three common ones:
+
+- **Result** — energies and frequencies, convergence, thermochemistry;
+- **Spectra** — vibrations and IR, UV-Vis, NMR;
+- **Wavefunction** — maps and profiles, density of states, delocalization, electron density topology, NCI.
+
+The tabs of the chosen group are a second row above the page; a group opens on the tab last chosen in it. Only tabs that have something to show are shown.
+
+![Spectrum: the «Energies and frequencies» tab of an optimization result — the energy of each step; at the bottom — the information of the status line](img/spectrum-optimization.jpg)
+
+### Energies, convergence and thermochemistry
+
+- **Energies and frequencies** — the program and its version, the final energy and the method, whether the termination was normal, whether the optimization converged, warnings.
+- **Convergence** (for an optimization) — the energy of each step and the convergence criteria with their thresholds on a logarithmic scale: one sees which criterion holds the optimization back.
+- **Thermochemistry** (for a frequency calculation) — the zero-point vibrations, the corrections to E, H and G and the total H and G at the chosen temperature and pressure; the entropy by contributions; the symmetry number σ from the point group. Grimme's «quasi-RRHO» softens the contribution of modes below 100 cm⁻¹. Imaginary frequencies are not counted, and this is said. For MOPAC instead of the total energy — ΔHf(T) = ΔHf(298 K) + H(T) − H(298 K), as MOPAC itself computes it.
+
+Theory — in the Atlas: [«Thermochemistry from frequencies»](https://www.azimuth-chem.com/atlas/?lang=en#thermo).
+
+### Vibrations, IR and Raman
+
+![The «Vibrations and IR» tab](img/spectrum-vibrations.jpg)
+
+The «Vibrations and IR» tab — the table of frequencies and intensities, imaginary frequencies, the IR spectrum and the animation of the chosen vibration.
+
+- Displacement arrows — optionally in both directions; «GIF…» saves one period of the vibration, «XYZ frames…» — the same period as frames.
+- «Displace +» and «Displace −» move to Compass the geometry shifted along the mode (section «How to leave a saddle point»).
+- **The scaling factor** multiplies the frequencies of the spectrum by the scaling factor of the method and basis set from NIST CCCBDB (0.960 for B3LYP/6-31G*): harmonic frequencies are higher than the observed ones, and with the factor the spectrum is closer to experiment. The factor is set by itself from the method and basis set of the result; the table of modes stays as in the output.
+- **Raman.** If the result has Raman activities (ORCA with the «Raman» check box in Sextant), a choice «IR / Raman: activity / Raman: intensity (532 nm)» appears above the plot, and the table gets the activity (Å⁴/amu) and the depolarization ratio ρ: ρ = 0.75 — a non-totally-symmetric vibration, ρ < 0.75 — a totally symmetric one. For a molecule with a centre of symmetry a vibration is seen either in the IR or in the Raman spectrum — the rule of mutual exclusion.
+- **VCD.** If the output has the rotational strengths of vibrations (ORCA `%freq DoVCD true end`, Gaussian `Freq=VCD`), the «VCD» view of the spectrum shows bands going up and down from zero, and the table of modes gets an «R VCD» column.
+
+Export — PNG, SVG and CSV.
+
+Theory — in the Atlas: [«Normal modes»](https://www.azimuth-chem.com/atlas/?lang=en#nm).
+
+### UV-Vis, ECD and emission
+
+![The «UV-Vis» tab: TD-DFT transitions and the absorption spectrum](img/spectrum-uv.jpg)
+
+The «UV-Vis» tab — TD-DFT or CIS transitions and the spectrum in eV, nm or cm⁻¹; the band width.
+
+- **Circular dichroism (ECD).** If the output has rotational strengths (ORCA prints them for TD-DFT by itself, Gaussian for `TD`), a «View» choice appears above the plot: «Circular dichroism (ECD)» shows the Δε spectrum with its sign, and the table gets an R column. The mirror isomer has a mirror spectrum, an achiral molecule has none. ECD is compared with experiment to find the absolute configuration (R or S).
+- **Emission** — after an excited state optimization: the energy of the light from the relaxed geometry (fluorescence of a singlet or phosphorescence of a triplet), the absorption of the same state at the initial geometry, the Stokes shift, the oscillator strength and the radiative lifetime.
+- **Natural transition orbitals (NTO)** — under the table of states, the «from → to» pairs of the chosen state with their weights; the compass icon puts the hole orbital or the particle orbital on the model.
+
+**Excitation analysis** (a file of orbitals and Multiwfn are needed) computes for each state the distributions of the «hole» (where the electron left from) and of the «electron» (where it came) and their indices: D — the distance between the centres, Sr — the overlap, H — the size, t (t > 0 — the hole and the electron are separated), Δr — the charge transfer length, HDI and EDI — delocalization. The «Character» column says whether the excitation is local or a charge transfer. «Hole and electron on the model» shows both surfaces in Compass.
+
+**Charge transfer…** — set the fragments by atom numbers or take the atoms selected in Compass and click «Calculate». The window shows what share of the excitation is a charge transfer between the fragments and what share is a local excitation, how many electrons moved between each pair of fragments, and a heat map of the transition matrix.
+
+Theory — in the Atlas: [«Excited states and spectra»](https://www.azimuth-chem.com/atlas/?lang=en#exc).
+
+### NMR
+
+The «NMR» tab — shieldings and chemical shifts relative to the chosen reference (for example TMS by the same method); equivalent atoms are merged.
+
+- The reference is kept for each level of calculation (method, basis set, solvent). «Compute TMS at this level» sends to Sextant a TMS input file with the settings of the result; when the TMS result opens in Spectrum, the reference is remembered by itself, and the shifts appear for all results of this level.
+- **Multiplets (coupling constants)** — if spin–spin coupling constants were computed: the spectrometer frequency (¹H, MHz), «¹H decoupled» for ¹³C, the «Multiplet» column in the table («qd, J = 7.2, 1.2 Hz») and the chosen signal on a hertz scale. The splitting is first-order; when Δν/J is less than 5, the program warns about strong coupling. The J of equivalent atoms are averaged.
+
+Theory — in the Atlas: [«NMR: from shielding to chemical shift»](https://www.azimuth-chem.com/atlas/?lang=en#nmr).
+
+### Comparing spectra and experiment
+
+- **«Compare with…»** on the IR or UV-Vis tab — the spectrum of another file is laid dashed over the first (for example the same calculation by another method or in another program).
+- **«Experiment and conformers»** (the button with a flask on the IR and UV-Vis tabs): «Experimental spectrum…» — a measured spectrum from JCAMP-DX, text or CSV is laid in green over the calculated one, the units are converted by themselves, the legend gives the similarity of shape; «Find in NIST…» takes a measured IR or UV-Vis spectrum from the NIST Chemistry WebBook. The calculation is fitted to the experiment at once (the frequency factor for IR, a shift for UV-Vis and ECD); «Fit to the experiment» repeats the fit.
+- **«Average over conformers…»** adds up the spectra of conformers with Boltzmann weights (by G if all have frequencies, otherwise by E).
 
 ### How to leave a saddle point
 
 1. Open the result of a frequency calculation with an imaginary frequency.
-2. On the «Vibrations and IR» tab choose the imaginary mode and press «Displace +» (or «−»).
+2. On the «Vibrations and IR» tab choose the imaginary mode and click «Displace +» (or «Displace −»).
 3. The displaced geometry opens in Compass — send it to Sextant for a new optimization.
 
-The calculation doctor does it by itself (0.216.138): if an optimization with frequencies ended with an imaginary frequency, the calculation window has the button «Shift along the imaginary mode and optimise again».
+The calculation doctor does it by itself: if an optimization with frequencies ended with an imaginary frequency, the calculation window has the button «Shift along the imaginary mode and optimise again».
 
-Theory in the Atlas on the site: [Geometry optimization](https://www.azimuth-chem.com/atlas/?lang=en#opt).
+Theory — in the Atlas: [«Geometry optimization»](https://www.azimuth-chem.com/atlas/?lang=en#opt).
 
-### How to compare spectra
-
-On the IR or UV-Vis tab press «Compare with…» and choose another file — its spectrum lies over the first one as a dashed line (for example, the same calculation with another method or in another program).
-
-**With an experiment and over conformers** (0.216.122–0.216.124). The flask button «Experiment and conformers» on the IR (Raman) and UV-Vis (ECD) tabs: «Experimental spectrum…» — a measured spectrum from JCAMP-DX, text or CSV lies in green over the calculated one, the units are converted by themselves, the legend gives the similarity of the shapes; «Find in NIST…» takes a measured IR or UV-Vis spectrum from the NIST Chemistry WebBook. The calculation is fitted to the experiment at once (a frequency scale factor for IR, a shift for UV-Vis and ECD; «Fit to the experiment» — again). «Average over conformers…» adds the spectra of conformers with Boltzmann shares (by G if all have frequencies, otherwise by E).
-
-### How to look at orbitals
+### Orbitals
 
 1. The «Orbitals…» button or «File → Open orbitals…».
-2. The table and the level diagram, HOMO and LUMO; the isosurface of the chosen orbital, of the electron or spin density is computed right from the file — no CUBE file needed.
-3. Showing it on the Compass model moves the orbital, the density or the ESP onto the model in Compass.
+2. The table and the level diagram, HOMO and LUMO. The isosurface of the chosen orbital, of the electron or spin density is computed right from the file — no CUBE file is needed.
+3. «Show: on the Compass model» moves the orbital, density or ESP onto the model. «ESP on the surface» colours the ρ = 0.001 surface by the electrostatic potential and marks its minima and maxima.
 
-Theory in the Atlas on the site: [MOs of diatomic molecules](https://www.azimuth-chem.com/atlas/?lang=en#mo).
+The «Density analysis…» button in the orbitals window opens a detailed QTAIM table and the density difference Δρ. ORCA orbitals are taken from the `.gbw` file next to the output (by the `orca_2mkl` program of ORCA). Orbitals also open right from the outputs of GAMESS (US) and Firefly, NWChem and Q-Chem if they are printed in the output.
 
-### How to build an energy diagram of a reaction
+Theory — in the Atlas: [«MOs of diatomic molecules»](https://www.azimuth-chem.com/atlas/?lang=en#mo).
 
-1. «File → Reaction diagram…» or the «To the reaction diagram» button over an open result (it becomes a stage).
-2. «Stages from files…» — choose the results of the reactants, the transition state and the products: every file becomes a stage of its own (in the order of the names; «Up» and «Down» reorder them). For two species in one stage (A + B), select the stage and press «Add to the stage…». Numbers from a paper or the blackboard — «Type in…». Double-click a stage to rename it.
-3. At the top choose the quantity (ΔE, ΔE₀ with zero-point vibrations, ΔH, ΔG), the unit, T and P and the stage to count from. ΔH and ΔG need a frequency calculation. For reactions in solution where the number of molecules changes (A + B → C), tick «Standard state 1 mol/L».
-4. Under the diagram: the barriers (‡ is a transition state, it has exactly one imaginary frequency) and the energy of reaction. The ⚠ marks are checks: atoms or charge do not balance, different levels of theory, extra imaginary frequencies.
+### Electron density analysis
+
+Volume fields (surfaces, critical points) are shown on the Compass model (section «Properties and electron density on the model»), and tables, maps and plots in the tabs of the «Wavefunction» group. Most analyses need the orbital file of the result and the Multiwfn program.
+
+- **Maps and profiles** — a function (ρ, ∇²ρ, |∇ρ|, ELF, LOL, ESP, ALIE, RDG, sign(λ₂)ρ and others) in the plane of three atoms — a colour map with contour lines — or along a line through two atoms (a profile; the minimum of ρ between atoms is a bond critical point). Critical points and bond paths found near the plane are seen on the map. «Save picture…» — PNG.
+- **Density topology** — a detailed table of critical points: coordinates, ρ, ∇²ρ, ellipticity ε, the energy densities G, V, H, |V|/G and the eigenvalues of the Hessian λ1–λ3. The points are numbered within their kind (n1… nuclei, b1… bonds, r1… rings, c1… cages); the number is also labelled on the model. A double click on a row opens Compass with this point. The points are written into «Анализ» as tables by type: `<name>_qtaim_nuclei.csv`, `…_bonds.csv`, `…_rings.csv`, `…_cages.csv`.
+- **Density of states** — DOS (orbital levels broadened by a Gaussian or Lorentzian line), PDOS — the Mulliken contribution of fragments (by elements, or the selected atoms and the rest), the OPDOS of two fragments (above zero — bonding orbitals, below — antibonding); the HOMO–LUMO gap under the plot.
+- **Delocalization** — rings of 5–7 atoms with HOMA (1 for benzene, 0 for the Kekulé structure) and, by a button, FLU, PDI and MCI; delocalization indices — how many electron pairs two atoms share (about 1 — a single bond, 1.4–1.5 — aromatic, about 2 — double).
+- **NCI** — after an NCI or IRI calculation in Compass: the RDG — sign(λ₂)ρ plot (on the left, blue — hydrogen bonds; near zero, green — van der Waals; on the right, red — repulsion) and a table of weak-interaction domains — each region of the surface as a row: the type (hydrogen, halogen, chalcogen bond, C–H···π, π-stacking, van der Waals contact, repulsion), atoms, sign(λ₂)ρ, volume, distance and angle; for a hydrogen bond — an energy estimate from ρ. The number of the row stands above the dip on the plot and at the centre of the region on the model.
+- **IGMH between molecules** — δg_inter: the density gradient that appears only where the densities of different molecules meet. In the «NCI» tab — the plot, the domain table and the table of atom pairs with their contribution to the interaction.
+
+Theory — in the Atlas: [«Electron density»](https://www.azimuth-chem.com/atlas/?lang=en#dens), [«Atoms in molecules (Bader)»](https://www.azimuth-chem.com/atlas/?lang=en#aim).
+
+### Analysis files
+
+Every analysis writes tables into the «Анализ» subfolder of the calculation folder (next to the orbital file), so that they can be opened in a spreadsheet or put into a paper.
+
+Table: Analysis tables
+
+| File | What is in it |
+|---|---|
+| `<name>_<function>_extrema.csv` | Surface extrema: value, coordinates, nearest atom |
+| `<name>_esp_summary.csv` | Molecular surface summary: area, volume, averages, σ²tot, ν, Π, MPI |
+| `<name>_qtaim_nuclei.csv`, `…_bonds.csv`, `…_rings.csv`, `…_cages.csv` | Density critical points by type |
+| `<name>_excitations.csv` | Excitation indices (D, Sr, H, t, Δr, HDI, EDI) |
+| `<name>_charge_transfer_S<k>.csv` | Charge transfer of state k between fragments |
+| `<name>_nci_domains.csv` | NCI weak-interaction domains |
+| `<name>_resp.chg` | RESP coordinates and charges for molecular dynamics |
+| `fukui_<field>_extrema.csv` | Extrema of the Fukui function surfaces |
+| `batch_energies.csv` | Energies and Boltzmann populations of a calculation queue |
+| `<name>_multiwfn_<analysis>.txt` | Output of the Multiwfn program |
+
+### Reaction energy diagram
+
+1. «File → Reaction diagram…» or the «To the reaction diagram» button above an open result (it becomes a stage).
+2. «Stages from files…» — choose the results of the reactants, the transition state and the products: each file becomes a stage of its own (in the order of names; «Up» and «Down» reorder them). If a stage has two substances (A + B), choose the stage and click «Add to the stage…». Numbers from a paper or from the blackboard — «Type in…». A double click on a stage renames it.
+3. At the top choose the quantity (ΔE, ΔE₀ with zero-point vibrations, ΔH, ΔG), the units, T and P and the stage to count from. ΔH and ΔG need a frequency calculation. For reactions in solution where the number of molecules changes (A + B → C), check «Standard state 1 mol/L».
+4. Under the diagram — the barriers (‡ — a transition state, it has exactly one imaginary frequency) and the reaction energy. The ⚠ signs are checks: atoms or charge do not balance, different levels of theory, extra imaginary frequencies, normal termination not confirmed.
 5. «Picture or table…» — PNG, SVG or CSV; «Save diagram…» — to open it later together with the results.
 
-Theory in the Atlas on the site: [Reaction rate: transition state](https://www.azimuth-chem.com/atlas/?lang=en#kin), [Equilibrium: from energy to constant](https://www.azimuth-chem.com/atlas/?lang=en#eqm).
+Theory — in the Atlas: [«Reaction rate: the transition state»](https://www.azimuth-chem.com/atlas/?lang=en#kin), [«Equilibrium: from energy to the constant»](https://www.azimuth-chem.com/atlas/?lang=en#eqm).
 
-### How to explore the electron density
+### Spectrum tools
 
-1. Since 0.64.1 the orbitals also open right from GAMESS (US) / Firefly, NWChem (with «print "final vectors" "final vectors analysis"») and Q-Chem (with PRINT_ORBITALS and PRINT_GENERAL_BASIS) outputs — no Molden or fchk file needed.
-2. The simplest way is right in Compass: when the result of the tab has orbitals, the result panel (☰ on the left above the model) offers «Orbitals», «Surfaces» and «QTAIM» in its drop-down list of pages (the list holds only the pages that have something to show) (so do «View → Surface on the model → Orbitals and density…» and «Show in Compass» in Spectrum). «Orbitals» has the table of the orbitals (values in the middle of their cells) and the buttons «Orbital», «Spin» (open shells) and «Composition»; «Surfaces» has all the rest (ρ, ESP, the Laplacian, ELF…); the grid above the table and above the list is one choice. While the panel is open, the model is moved to the right and is not hidden under it. The button of what is on the model is blue and the row of the orbital built is lit; a second press takes the surface away and the button is white again. While a field is computed there is no waiting window — the cursor becomes a turning ring, and the same ring turns next to the button. What was built is kept: «Show» again puts it back at once, with no new calculation. (0.91.54) Change the «Grid» and what is on the model is built again on the new one at once. Everything three-dimensional is on the Compass model, the tables, maps and plots are in Spectrum. When Multiwfn is installed and the orbitals were opened from a file, it builds the grids of the orbitals, the density and the spin density (without it, Azimuth does). «Composition» fills a column of the table with the shares of the atoms in every orbital (Hirshfeld; hover over a cell for all atoms). Above the table you can choose «Canonical orbitals» or the localized ones — Pipek–Mezey (fast), its «Becke» variant (for basis sets with diffuse functions: aug-, -D) or Boys: the cores, the lone pairs (LP), the bonds and the delocalized orbitals (the π of a ring) with their atoms in «Composition»; the occupied localized orbitals have no energy («—»), the virtual ones stay canonical; the localized orbitals are computed once, their file is kept in «Analysis», and the chosen one goes onto the model with «Orbital». For open shells the α and β orbitals are localized (each with its own mark). One field can follow another. ORCA orbitals are taken from the .gbw file next to the output (by ORCA's program orca_2mkl; after a calculation from Sextant — at once). Or: open the orbitals («Orbitals…» in Spectrum or «File → Open orbitals…») and press «Density analysis…» — a window with the detailed QTAIM table and the difference Δρ; once a field or the points are on the Compass model, the window gives way to the same tabs. (0.91.37) The surfaces on the «Surfaces» page form a tree: the groups (density and its derivatives, electron localization, energy, potential, weak interactions, molecular surface) open and fold, a double click on a surface puts it on the model. Under the tree is «Density difference Δρ»: calculate the fragments separately (the same method and basis, the atoms in the same places), «+» adds the files of their orbitals, the bin removes the chosen one, «Show Δρ» (available once there is at least one fragment) puts the difference on the model; the tooltip of the list says how many atoms the fragments have of those of the molecule. (0.202.16) Shift+click on the row of another orbital puts it over the one shown — with a pair of colours of its own (green/yellow, violet/pink…); a second Shift+click takes it away.
-2. **Surfaces.** The list of the surfaces of Multiwfn by group: the density and its derivatives (ρ, |∇ρ|, the Laplacian ∇²ρ, the spin density — for open shells, RDG), electron localization (ELF, LOL, entropy), energy (G, K, ALIE), potential (the total ESP), weak interactions (NCI, IRI) and functions on the molecular surface ρ = 0.001 (ESP, ALIE, LEA, LEAE). Choose a row and press «Show» (or double-click): the surface lies on the model; «Show» again or «Remove» takes it off. The Laplacian: blue — ∇²ρ > 0 (charge depleted), red — ∇²ρ < 0 (charge concentrated: valence shells, lone pairs). Multiwfn and the file of these orbitals are needed — if something is missing, the line above the list says what. Below is the difference density Δρ (Azimuth computes it itself): add fragments — orbital files of the same atoms at the same positions, computed with the same method and basis (for example, the separate atoms or two halves of the molecule) — and press «Show Δρ»: blue — electrons gained, red — lost. Level and opacity — in «View → Surface on the model». (0.202.15) The tree of the surfaces stands in a frame with rounded corners; the meaning of Δρ and the steps are behind «?» by its heading. Messages such as «Critical points found…» and «Tables in the folder…» appear over the model for a while, not as a line at the foot of the panel.
-3. **QTAIM.** «Find points»: Multiwfn searches the orbital file (Molden, fchk or an ORCA .gbw) for the critical points — from the nuclei and from all pairs, triples and quadruples of atoms, so it also finds bonds that Compass does not draw (hydrogen, van der Waals), rings and cages. Compass shows a short list: type, atoms, ρ, ∇²ρ and the local energy density H; below — the Poincaré–Hopf check n − b + r − c = 1. A switch above the list chooses all points, nuclei (3, −3), bonds (3, −1), rings (3, +1) or cages (3, +3), with the number of each; the model shows the points of that kind, and the one chosen in the list is marked by a pulsing ring. A bond point names the two atoms it joins: those whose nuclei its bond path reaches. «On the model» draws the points (nuclei grey, bonds green, rings orange, cages violet) and the bond paths; the same button — «Remove from the model» — takes them off. The detailed table is the «Density topology» tab of Spectrum (the points can be searched for there too): coordinates, ρ, ∇²ρ, the ellipticity ε, the energy densities G, V, H, |V|/G and the eigenvalues λ1–λ3 of the Hessian. The points are written into «Анализ» as tables by kind: «<name>_qtaim_nuclei.csv», «…_bonds.csv», «…_rings.csv», «…_cages.csv». Multiwfn must be installed and the wavefunction should be DFT or HF (xtb has a minimal basis, and Multiwfn will warn that not all nuclei were found). (0.202.14) The mark of the point chosen goes with a second click on its row, a click below the rows, Esc or a click on an empty place of the model — the points themselves stay.
-4. **Slices** are in the «Maps and profiles» tab of Spectrum (below): the map in the plane of three atoms is built by Multiwfn, and the critical points and bond paths found near the plane are drawn on it.
+The «Tools» menu of Spectrum:
 
-- **Excitation analysis** (the UV-Vis tab, when the TD-DFT result has an orbital file and Multiwfn is installed): «Excitation analysis» computes for every state the distributions of the “hole” (where the electron left) and the “electron” (where it went) and their indices — D (the distance between their centroids, Å), Sr (overlap), H (size), t (t > 0 — the hole and the electron are apart), Δr (the charge-transfer length), HDI and EDI (delocalization); the «Character» column says local excitation or charge transfer. Which states to compute is chosen in the list next to the button: all, those chosen in the table (several rows — with ⌘ or Shift) or the bright ones (f ≥ 0.01) — every state is a separate run of Multiwfn, and the states already computed are not recomputed and keep their values. The table is written into «Анализ» («<name>_excitations.csv»). «Hole and electron on the model» shows both surfaces of the chosen state in Compass (the hole blue, the electron green).
-- **Charge transfer** (the UV-Vis tab, next to «Excitation analysis», 0.91.31): choose a state in the table and press «Charge transfer…». Set the fragments by atom numbers («1,2,9», «3-8»; with one fragment the rest of the molecule becomes the second) or take the atoms selected in Compass («From the Compass selection»), and press «Calculate». The window shows what percentage of the excitation is charge transfer between the fragments (intrinsic and apparent — net of the back transfer) and what is a local excitation; the table of the fragments (their shares of the hole and the electron, Δn — the change of the number of electrons, the redistribution inside the fragment), how many electrons moved between every pair and the net; the heat map of the transition matrix — by fragments or by atoms (hover over a cell for its value). The table is written into «Analysis» («<name>_charge_transfer_S<k>.csv»).
-- **Maps and profiles** (a Spectrum tab when the result has an orbital file and Multiwfn is installed): a function — ρ, ∇²ρ, |∇ρ|, ELF, LOL, ESP, ALIE, RDG, sign(λ₂)ρ and others — in the plane of three atoms (a colour map with contour lines, Bader's contours for ρ and ∇²ρ, the atoms of the plane labelled) or along the line through two atoms (a profile; the minimum of ρ between atoms is the bond critical point). When the critical points have been found, the points and bond paths near the plane are seen on the map (bonds — green diamonds, rings — orange, cages — violet). The data and the extrema are written into «Анализ» as CSV tables; «Save picture…» — PNG. The density slices moved here from Compass.
-- **Density topology** (a Spectrum tab when the result has an orbital file): the detailed table of the critical points of the density — the same points as in the «QTAIM» list of Compass (found here or there, they are seen in both); the switch of kinds, «Show on the Compass model» / «Remove from the model», copying the table. (0.91.17) Every point is numbered within its kind — n1, n2… the nuclei (in the order of the atoms), b1… bonds, r1… rings, c1… cages; the number is the first column of the tables of Compass and Spectrum and is written next to the point on the model, so a row of the table is easy to find on the molecule. The column «Type» is there only for «All points». The button of the model is the compass icon; a click on a row only chooses it (with the points on the model the mark moves, Spectrum stays), a double click opens Compass with this point. The compass icon is the way to Compass in other tabs too: «Vibrations and IR» (the chosen vibration on the page «Frequencies» of the panel), UV-Vis (the hole and the electron), the status line (orbitals and density). In the result panel of Compass every page has the spectrum icon «Go to Spectrum»: Spectrum opens the tab of the result with the same thing (Convergence, Vibrations and IR, Maps and profiles, Density topology).
-- **Density of states** (0.91.24; a Spectrum tab when the result has orbitals): DOS — the orbital levels broadened by a Gaussian or Lorentzian line (the full width at half maximum is the «Width» field); PDOS — the Mulliken share of fragments: by element (the metal of a complex first) or the atoms selected in Compass and the rest; OPDOS of two fragments — above zero bonding orbitals, below antibonding; the HOMO dashed, the levels as ticks under the axis, the HOMO–LUMO gap under the plot; α and β for an open shell; export PNG, SVG, CSV.
-- **Delocalization** (0.91.25; when the result has orbitals): rings of 5–7 atoms with HOMA (from the bond lengths: 1 for benzene, 0 for the Kekulé structure) and, by a button, FLU (0 for benzene), PDI and MCI (the larger, the more aromatic) — Multiwfn, closed shell only; delocalization indices — how many electron pairs two atoms share (about 1 — a single bond, 1.4–1.5 — aromatic, about 2 — double, hundredths — a hydrogen bond), for the atoms — localization and valence. The outputs of Multiwfn are in the folder «Анализ».
-- **NCI** (a Spectrum tab after NCI or IRI in Compass): the plot RDG — sign(λ₂)ρ as in the NCI paper: dips of RDG to zero are interactions (on the left, blue — hydrogen bonds; near zero, green — van der Waals; on the right, red — repulsion), the dashed line is the level of the surface on the model; «Save PNG…».
-- (0.198.0) **NCI domains.** Under the plot, a table of the weak interactions: every separate region of the NCI (IRI) surface is a row with its kind (hydrogen, halogen, chalcogen, pnictogen, tetrel bond, C–H···π, π stacking, van der Waals contact, steric repulsion, repulsion in a ring), the atoms, sign(λ₂)ρ at the dip of RDG and the strength (strong attraction < −0.035, attraction up to −0.010, weak up to +0.010, then repulsion), the volume, ∫ρ dV of attraction and repulsion, the distance and the angle; a hydrogen bond also gets an energy estimate from ρ (Emamian 2019). The number of the row stands over the dip on the plot and at the centre of the region on the model; the chosen row marks both. When Spectrum has the QTAIM of the same structure, the column BCP tells whether the interaction has a critical point. The table is «<name>_nci_domains.csv» in «Analysis».
-- (0.199.0) **IGMH between molecules** («Surface on the model → Weak interactions», needs the orbitals file of the result and at least two molecules): Multiwfn computes δg_inter — the density gradient that appears only where the densities of different molecules meet (Lu, Chen 2022). On the model: the surface δg_inter = 0.005 coloured by sign(λ₂)ρ, like NCI but only between molecules. In the tab «NCI»: the plot δg_inter — sign(λ₂)ρ (peaks up), the table of domains with the column «δG of pairs» and the table of atom pairs: how much each pair gives to the interaction (the δG index, a.u., and its share in per cent); above it, the atoms of each molecule with the largest share. The fragments are the molecules of the structure; with three or more molecules the atom pairs are computed for every pair of touching molecules.
+- **«Isotope pattern of the molecular ion…»** — M, M+1, M+2… with exact masses and a picture (the formula of the result or your own, for example C6H5Cl; monoisotopic and average mass).
+- **«Energies of several files…»** — the outputs of calculations side by side: E, G (if there are frequencies), ΔE, ΔG and Boltzmann populations. Warnings — if the composition, level of theory, charge or multiplicity differ, there are imaginary frequencies or normal termination is not confirmed.
+- **«Boltzmann shares…»** — the same for a pasted column of energies (hartree, kcal/mol, kJ/mol, eV).
+- **«Frequency scaling factors…»** and **«Measured data for the molecule…»** — the tables of the «Handbook» (chapter 4).
 
-Theory in the Atlas on the site: [Electron density](https://www.azimuth-chem.com/atlas/?lang=en#dens), [Atoms in molecules (Bader)](https://www.azimuth-chem.com/atlas/?lang=en#aim).
+Tables are saved as CSV in the form chosen in «Settings → Analysis tables».
 
 ## Control from a language model
 
-- **The MCP server of Azimuth** (0.217.0). `tools/azimuth_mcp.py` gives a language model — Claude, or a local one through any client with MCP — the tools of Azimuth: which programs are installed, the input file for a molecule and settings, starting a calculation on this computer, its progress and result (energy, convergence, frequencies, thermochemistry, excitations, errors and the doctor's advice), running the checks of the program. It sends nothing to a SLURM server and deletes nothing. To connect: in the settings of the client — the command `.venv/bin/python` and the argument `tools/azimuth_mcp.py` of the program folder; details — `docs/features/HEADLESS.md`.
+Azimuth can be controlled from a language model — Claude or a local one — through any client that supports the MCP protocol (Model Context Protocol). The program `tools/azimuth_mcp.py` in the Azimuth folder gives the model the tools of the program.
 
-## External programs and references
+Table: Tools of the Azimuth MCP server
 
-Some analyses Azimuth hands to other programs; their names are not written in the interface — here is what they are and what to cite.
+| Tool | What it does |
+|---|---|
+| Programs | Which calculation programs are installed on this computer |
+| Options | Tasks, methods and basis sets of a program |
+| Input file | An input file for a molecule (SMILES, XYZ or a file) and settings — without running |
+| Calculation | Runs a calculation on this computer |
+| Status and result | The progress and the result: energy, convergence, frequencies, thermochemistry, excitations, errors and the advice of the doctor |
+| Server | An ORCA or MOPAC calculation on the SLURM server of a Sextant profile — with the limits below |
+| Tests | Runs the tests of the program |
 
-**Multiwfn** (Tian Lu, sobereva.com/multiwfn) — wavefunction analysis: ADCH and CM5 charges, bond orders, the composition and grids of the orbitals, NCI and IRI, the ESP on the molecular surface, the critical points of the density (QTAIM), ELF and LOL. Installed separately: on a Mac `brew install multiwfn`, on Windows and Linux the noGUI build from the author's site; Azimuth finds it; when it does not, the items that need it are grey, and «View → Surface on the model → Multiwfn program…» points to the program file. Checked with version 2026.7.15. It reads Molden, fchk, wfn, wfx and mwfn orbital files (an ORCA .gbw is turned into Molden first). Cite both papers:
-- T. Lu, F. Chen, J. Comput. Chem. 33, 580 (2012); T. Lu, J. Chem. Phys. 161, 082503 (2024).
-- Methods: ADCH — T. Lu, F. Chen, J. Theor. Comput. Chem. 11, 163 (2012); CM5 — A. V. Marenich, S. V. Jerome, C. J. Cramer, D. G. Truhlar, J. Chem. Theory Comput. 8, 527 (2012); NCI — E. R. Johnson et al., J. Am. Chem. Soc. 132, 6498 (2010); IRI — T. Lu, Q. Chen, Chemistry–Methods 1, 231 (2021); molecular surface analysis — T. Lu, F. Chen, J. Mol. Graph. Model. 38, 314 (2012); ELF — A. D. Becke, K. E. Edgecombe, J. Chem. Phys. 92, 5397 (1990); LOL — H. L. Schmider, A. D. Becke, J. Mol. Struct. THEOCHEM 527, 51 (2000); Mayer bond orders — I. Mayer, Chem. Phys. Lett. 97, 270 (1983); Wiberg — K. B. Wiberg, Tetrahedron 24, 1083 (1968); fuzzy (FBO) — I. Mayer, P. Salvador, Chem. Phys. Lett. 383, 368 (2004); Laplacian (LBO) — T. Lu, F. Chen, J. Phys. Chem. A 117, 3100 (2013); orbital composition — T. Lu, F. Chen, Acta Chim. Sinica 69, 2393 (2011); hole–electron analysis — Z. Liu, T. Lu, Q. Chen, Carbon 165, 461 (2020); Δr — C. A. Guido et al., J. Chem. Theory Comput. 9, 3118 (2013); Hirshfeld — F. L. Hirshfeld, Theor. Chim. Acta 44, 129 (1977); QTAIM — R. F. W. Bader, “Atoms in Molecules: A Quantum Theory” (1990).
+**Connecting.** In the client settings set the command `.venv/bin/python` (on Windows `.venv\Scripts\python.exe`) from the program folder and the argument `tools/azimuth_mcp.py`. Details — `docs/features/HEADLESS.md`.
 
-**Bee colony conformer search (ABC)** — the method of SmartChemDesign/abc (github.com/SmartChemDesign/abc, MIT licence), written anew in Azimuth; the artificial bee colony — D. Karaboga, B. Basturk, J. Glob. Optim. 39, 459 (2007). Energies — xtb GFN2: C. Bannwarth, S. Ehlert, S. Grimme, J. Chem. Theory Comput. 15, 1652 (2019).
+**Limits of server calculations.** The model can send an ORCA or MOPAC calculation to a SLURM server of a Sextant profile, but only:
 
-## If something goes wrong
+- with an SSH key login (never with a password);
+- onto free cores and memory, so that together with the new calculation at most 80 % of the server's cores are busy;
+- with a time limit for every job and at most three jobs at once;
+- it may stop only its own jobs; nothing is deleted on the server, and no command of the model is run there.
 
-- **The program did not open** — the reason is in the startup log: `~/Library/Logs/Azimuth/startup.log` (Mac) or `%LOCALAPPDATA%\Azimuth\Logs\startup.log` (Windows).
-- **Sextant did not find ORCA** — «Calculation → Choose program…» and pick the `orca` file.
-- **ORCA stops on several cores** — install Open MPI with the button in Sextant or run on 1 process. On macOS Sextant puts a small mpirun (.azimuth-mpi) into the calculation folder that puts back the path to the Open MPI libraries: macOS removes it when ORCA starts mpirun, and without it ORCA stopped with «Library not loaded: libmpi.40.dylib».
-- **PubChem does not answer** — check the internet; if a certificate is mentioned, run «Install Certificates.command» from the Python folder in Applications.
-- **VTK does not draw** — switch off «View → 3D graphics by VTK (trial)» and restart the program.
-- **Report a problem** — the button in the About window opens an email to the author with the program version. Describe what you did and what you expected to see; attach the file if the problem is related to it.
+All actions are written into a journal.
+
+## When something goes wrong
+
+Table: Common problems and solutions
+
+| Problem | What to do |
+|---|---|
+| The program does not open | The reason is written in the start log: `~/Library/Logs/Azimuth/startup.log` (macOS) or `%LOCALAPPDATA%\Azimuth\Logs\startup.log` (Windows). Check the installation: `verify_install.py` (section «Checking the installation») |
+| macOS: «“Azimuth” Not Opened» | Allow the start (section «Installing on macOS») |
+| Windows: the SmartScreen window | «More info» → «Run anyway» |
+| Sextant did not find ORCA | «Choose…» in the run card, «Calculation → Choose program…» or «File → Settings… → Programs» — choose the file `orca` (`orca.exe`) |
+| ORCA stops on several cores | Install Open MPI with the button in Sextant (on Windows — MS-MPI) or run on one process. On macOS the error «Library not loaded: libmpi.40.dylib» means that ORCA did not find the Open MPI libraries; Sextant puts a small mpirun into the calculation folder that fixes this — install Open MPI from Sextant |
+| A calculation on Windows does not open its files | The path to the calculations folder or to the program contains non-Latin letters or spaces — choose a Latin path in «Settings → Calculations» |
+| SCF does not converge, not enough memory, no basis set | Follow the advice of the calculation doctor (section «Calculation doctor») |
+| An imaginary frequency after an optimization | «Shift along the imaginary mode and optimise again» or section «How to leave a saddle point» |
+| The server does not answer | «Check the connection» in the server window; if the server is behind a VPN — the OpenVPN Connect profile in the same window |
+| The wavefunction analysis items are grey | Multiwfn is not found or the result has no orbital file — the tooltip of the item says what is missing |
+| PubChem or COD does not answer | Check the internet; if a certificate is mentioned (macOS), run «Install Certificates.command» from the Python folder in «Applications» |
+| The model is not drawn or drawn incorrectly | Turn off «View → 3D graphics by VTK (trial)» and restart the program; on Linux under Wayland start it under X11 |
+| The program broke or closed | Save the report and send it to the author (section «Errors and the report for the author») |
+
+**Report an error.** The «Report an error» button in the «About» window and «File → Error report…» open a letter to the author with the version of the program. Describe what you were doing and what you expected to see; attach the report, and if the error is connected with a file, the file itself. Address: contact@azimuth-chem.com.
+
+## Appendix A. File formats
+
+Table: What Azimuth opens
+
+| Format | Extensions | Where it opens |
+|---|---|---|
+| XYZ (one or many frames) | `.xyz` | Compass; frames of one molecule as steps, of different molecules as a project |
+| Azimuth project | `.qcc` | Compass |
+| Molfile, SDF | `.mol`, `.sdf`, `.sd` | Compass; an SDF with several molecules as a set of structures |
+| MOL2 | `.mol2` | Compass |
+| PDB | `.pdb`, `.ent` | Compass; several models as steps; proteins with ribbons |
+| ChemDraw XML | `.cdxml` | Compass |
+| ORCA input file | `.inp` | Compass, Sextant |
+| Gaussian input file | `.gjf`, `.com`, `.gjc` | Compass, Sextant |
+| Calculation output | `.out`, `.log`, `.nwout`, `.qcout`, `.gamout` | Spectrum and Compass (ORCA, Gaussian, Psi4, xtb, MOPAC, NWChem, Q-Chem, GAMESS, Firefly) |
+| MOPAC auxiliary file | `.aux` | Read together with the MOPAC output |
+| Orbitals | `.molden`, `.molf`, `.fchk`, `.fch`; for ORCA the `.gbw` next to the output | Spectrum, Compass |
+| Volume data | `.cube` | Spectrum |
+| Crystal | `.cif` | «Compass · Crystal» |
+| CRYSTAL and TOPOND output | `.out`, `.outp` | «Compass · Crystal» |
+| Experimental spectrum | JCAMP-DX, text, CSV | Spectrum (comparison with experiment) |
+
+Table: What Azimuth saves
+
+| What | Formats |
+|---|---|
+| Molecule coordinates | XYZ, MOL, SDF, MOL2, PDB; ORCA, Gaussian, NWChem input blocks, Z-matrix; SMILES and InChI |
+| Crystal | CIF (with symmetry or a block in P 1), POSCAR (VASP), extended XYZ |
+| Picture of the model | PNG, SVG, PDF; GIF of rotation, steps and vibrations |
+| Model for 3D printing | STL, VRML |
+| Spectra, diagrams, maps | PNG, SVG, CSV |
+| Analysis tables | CSV (the separator and the decimal mark are in the settings) |
+| Input files | The formats of the calculation programs |
+| Program settings | JSON (without passwords and keys) |
+| Custom fragments and display schemes | JSON |
+
+## Appendix B. Keyboard shortcuts
+
+On macOS press `⌘` instead of `Ctrl` and `⌥` instead of `Alt`.
+
+Table: Common keys
+
+| Keys | Action |
+|---|---|
+| `Ctrl+1` … `Ctrl+5` | Atlas, «Compass · Molecule», «Compass · Crystal», Sextant, Spectrum |
+| `Ctrl+?` | «Help» with the menu search field |
+| `Ctrl+N` | New molecule |
+| `Ctrl+O` | Open a file |
+| `Ctrl+S` / `Ctrl+Shift+S` | Save / save as |
+| `Ctrl+W` | Close the tab |
+| `Ctrl+Shift+V` | Paste a structure from the clipboard |
+| `Ctrl+Z` / `Ctrl+Shift+Z` | Undo / redo |
+
+Table: Compass
+
+| Keys | Action |
+|---|---|
+| `Ctrl+A` | Select all |
+| `Ctrl+]` | Widen the selection by one step |
+| `Ctrl+Shift+]` | Select the whole molecule |
+| `Ctrl+C` / `Ctrl+V` | Copy / paste atoms |
+| `Ctrl+B` | Bond or break the selected atoms |
+| `Delete` | Delete the selected atoms (in the coordinate table — the atoms of the selected rows) |
+| Space, `←` `→` | Pause and choice of the vibration on the model |
+
+Table: Sextant and the input file editor
+
+| Keys | Action |
+|---|---|
+| `Ctrl+Enter` | Run the calculation or the queue |
+| `Ctrl+.` | Stop the calculation or the queue |
+| `Ctrl+F` / `F3` / `Shift+F3` | Find / find next / find previous |
+| `Ctrl+R` | Replace |
+| `Ctrl+G` | Go to line |
+| `Ctrl+D` | Duplicate the line |
+| `Ctrl+Shift+K` | Delete the line |
+| `Alt+↑` / `Alt+↓` | Move the line |
+| `Ctrl+/` | Comment or uncomment with the comment sign of the program |
+| `Ctrl+Shift+U` / `Ctrl+Shift+L` | Upper / lower case |
+| `F5` | Insert the date and time |
+| `Ctrl+U` | Word wrap |
+| `Ctrl+=` / `Ctrl+-` / `Ctrl+0` | Bigger / smaller / normal size |
+| `F1` | All keys of the editor |
+
+Table: The «Files on the server» window
+
+| Keys | Action |
+|---|---|
+| `Enter` | Enter a folder or open a file in Azimuth |
+| `F3` / `F4` | View / edit a text file |
+| `Shift+F4` | New file |
+| `F5` / `F6` | Copy / move to the other panel |
+| `Shift+F6` | Rename |
+| `F7` | New folder |
+| `F8` or `Delete` | Delete (with a question) |
+| `Alt+F7` | Find files by mask |
+| `Ctrl+D` | Favourite folders |
+| `Insert` or space | Mark a file |
+| `+` / `−` / `*` | Mark by mask / unmark by mask / invert the marks |
+| `Ctrl+F3` … `Ctrl+F6` | Sort by name, type, date, size |
+| `F2` or `Ctrl+R` | Reread the panels |
+| `Backspace` | One level up |
+| `Tab` | The other panel |
+| `F1` | All keys of the window |
+
+## Appendix C. Tasks by calculation program
+
+Table: Sextant tasks for molecules
+
+| Task | ORCA | Gaussian | Psi4 | xtb | MOPAC | NWChem | GAMESS |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| Energy | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Optimization | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Optimization + frequencies | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Frequencies and thermochemistry | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Transition state + frequencies | ✓ | ✓ | ✓ | | ✓ | ✓ | ✓ |
+| UV-Vis spectrum (TD-DFT) | ✓ | ✓ | ✓ | | | ✓ | ✓ |
+| NMR (shielding) | ✓ | ✓ | | | | ✓ | |
+| Excited state optimization | ✓ | ✓ | | | | | |
+| Relaxed PES scan | ✓ | ✓ | | ✓ | | | |
+| Reaction path (NEB-CI) | ✓ | | | | | | |
+| Fukui functions | ✓ | | | | | | |
+| Donor–acceptor bond CDA | ✓ | | | | | | |
+| Interaction energy with BSSE | ✓ | | | | | | |
+
+CREST does one task — the conformer search (iMTD-GC, GFN2-xTB). xtb needs no method, basis set or memory (GFN2-xTB is its own method). MOPAC computes with the semiempirical methods PM7 (by default), PM6, PM6-D3H4, AM1, RM1, MNDO without a basis set, the solvent is COSMO. GAMESS has no def2 basis sets — take cc-pVDZ, pcseg-1 or Pople basis sets. GAMESS is started by its own `rungms` script, NWChem by the `nwchem` program (several processes — through mpirun).
+
+Table: Task settings by program
+
+| Setting | Programs |
+|---|---|
+| Transition state search | ORCA, Gaussian, Psi4, MOPAC |
+| Optimization convergence | ORCA, Gaussian, Psi4, xtb, GAMESS |
+| Optimization cycle limit | ORCA, Gaussian, Psi4, xtb, GAMESS, NWChem |
+| Exact Hessian | ORCA, Gaussian, Psi4, GAMESS |
+| Thermochemistry temperature | ORCA, Gaussian, Psi4, MOPAC, GAMESS, NWChem |
+| Pressure, numerical frequencies | ORCA, Gaussian, Psi4 |
+| Raman | ORCA |
+| Coupling constants (NMR) | ORCA |
+| Number of excited states | ORCA, Gaussian, Psi4, GAMESS, NWChem |
+| TDA or full TD-DFT | ORCA, Gaussian, Psi4 |
+| Triplets | ORCA, Gaussian, Psi4, NWChem |
+| Natural transition orbitals | ORCA |
+| Wavefunction stability check | ORCA, Gaussian |
+| Second scan coordinate | ORCA |
+| Start from the orbitals of a previous calculation | ORCA |
+
+## Appendix D. External programs and literature
+
+Azimuth entrusts some analyses to other programs. Their names are not always seen in the interface; here it is said what these programs are and what to cite in your work.
+
+**Multiwfn** (Tian Lu, sobereva.com/multiwfn) — wavefunction analysis: ADCH, CM5, Hirshfeld, AIM and RESP charges, bond orders, orbital composition and grids, NCI, IRI and IGMH, ESP on the molecular surface, density critical points (QTAIM), ELF and LOL, excitation analysis, CDA. It reads Molden, fchk, wfn, wfx and mwfn orbital files (Azimuth first converts an ORCA `.gbw` into Molden). Checked with version 2026.7.15. Cite both papers:
+
+- T. Lu, F. Chen, *J. Comput. Chem.* **33**, 580 (2012);
+- T. Lu, *J. Chem. Phys.* **161**, 082503 (2024).
+
+**Analysis methods:**
+
+- ADCH — T. Lu, F. Chen, *J. Theor. Comput. Chem.* **11**, 163 (2012);
+- CM5 — A. V. Marenich, S. V. Jerome, C. J. Cramer, D. G. Truhlar, *J. Chem. Theory Comput.* **8**, 527 (2012);
+- Hirshfeld charges — F. L. Hirshfeld, *Theor. Chim. Acta* **44**, 129 (1977);
+- QTAIM — R. F. W. Bader, *Atoms in Molecules: A Quantum Theory* (Oxford, 1990);
+- NCI — E. R. Johnson et al., *J. Am. Chem. Soc.* **132**, 6498 (2010);
+- IRI — T. Lu, Q. Chen, *Chemistry–Methods* **1**, 231 (2021);
+- molecular surface analysis — T. Lu, F. Chen, *J. Mol. Graph. Model.* **38**, 314 (2012);
+- ELF — A. D. Becke, K. E. Edgecombe, *J. Chem. Phys.* **92**, 5397 (1990);
+- LOL — H. L. Schmider, A. D. Becke, *J. Mol. Struct. THEOCHEM* **527**, 51 (2000);
+- bond orders: Mayer — I. Mayer, *Chem. Phys. Lett.* **97**, 270 (1983); Wiberg — K. B. Wiberg, *Tetrahedron* **24**, 1083 (1968); fuzzy (FBO) — I. Mayer, P. Salvador, *Chem. Phys. Lett.* **383**, 368 (2004); Laplacian (LBO) — T. Lu, F. Chen, *J. Phys. Chem. A* **117**, 3100 (2013);
+- orbital composition — T. Lu, F. Chen, *Acta Chim. Sinica* **69**, 2393 (2011);
+- hole–electron analysis — Z. Liu, T. Lu, Q. Chen, *Carbon* **165**, 461 (2020); the Δr index — C. A. Guido et al., *J. Chem. Theory Comput.* **9**, 3118 (2013);
+- BSSE correction — S. F. Boys, F. Bernardi, *Mol. Phys.* **19**, 553 (1970).
+
+**Bee conformer search (ABC)** — the SmartChemDesign/abc method (github.com/SmartChemDesign/abc, MIT license), rewritten in Azimuth; the artificial bee colony — D. Karaboga, B. Basturk, *J. Glob. Optim.* **39**, 459 (2007).
+
+**xtb and GFN2-xTB** — C. Bannwarth, S. Ehlert, S. Grimme, *J. Chem. Theory Comput.* **15**, 1652 (2019).
+
+**The UFF force field** — A. K. Rappé, C. J. Casewit, K. S. Colwell, W. A. Goddard III, W. M. Skiff, *J. Am. Chem. Soc.* **114**, 10024 (1992).
+
+**Covalent radii** — B. Cordero et al., *Dalton Trans.* 2832 (2008).
+
+When citing a calculation made in Azimuth, name both the calculation program itself (ORCA, xtb, MOPAC…) according to the rules of its authors and Azimuth (the form of the reference is on the second page of the manual and in the file `CITATION.cff`).

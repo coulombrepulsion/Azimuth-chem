@@ -45,8 +45,50 @@ TITLES = {'ru': 'Руководство пользователя', 'en': 'User m
 WORDS = {
     'ru': {'contents': 'Содержание', 'figure': 'Рисунок', 'table': 'Таблица', 'version': 'Версия',
            'appendix': 'Приложение', 'chapter': 'Глава', 'program': 'Азимут',
-           'motto': 'Учебная программа по квантовой химии'},
+           'motto': 'Учебная программа по квантовой химии', 'header': 'Азимут',
+           'sections': (('Атлас', 'теория: 56 интерактивных тем'), ('Компас', 'молекулы и кристаллы'),
+                        ('Секстант', 'подготовка и запуск расчётов'), ('Спектр', 'разбор результатов'))},
+    'en': {'contents': 'Contents', 'figure': 'Figure', 'table': 'Table', 'version': 'Version',
+           'appendix': 'Appendix', 'chapter': 'Chapter', 'program': 'Azimuth',
+           'motto': 'A teaching program for quantum chemistry', 'header': 'Azimuth',
+           'sections': (('Atlas', 'theory: 56 interactive topics'), ('Compass', 'molecules and crystals'),
+                        ('Sextant', 'setting up and running calculations'), ('Spectrum', 'reading the results'))},
+    'zh': {'contents': '目录', 'figure': '图', 'table': '表', 'version': '版本',
+           'appendix': '附录', 'chapter': '第', 'chapter_end': '章', 'program': '方位',
+           'motto': '量子化学教学程序', 'header': '方位',
+           'sections': (('图谱', '理论：56 个交互主题'), ('罗盘', '分子与晶体'),
+                        ('六分仪', '准备并运行计算'), ('光谱', '解读结果'))},
 }
+# the page of the edition: the licence and the reference, in the language of the book
+EDITION = {
+    'ru': ('<p><b>«Азимут» (Azimuth). {title}.</b> Версия программы {version}.</p>'
+           '<p>© 2026 С. А. Собалев. Программа распространяется по академической лицензии «Азимута» (файл LICENSE): '
+           'свободно для преподавания, обучения и некоммерческих исследований с обязательной ссылкой на программу; '
+           'коммерческое использование — с письменного разрешения автора.</p>'
+           '<p><b>Как сослаться.</b> Собалев С. А. Азимут (Azimuth): учебная программа для квантово-химических '
+           'расчётов. Версия {version}. 2026. URL: https://azimuth-chem.com</p>'
+           '<p>Расчётные программы (ORCA, Gaussian, xtb и другие) в «Азимут» не входят и распространяются на условиях '
+           'своих лицензий. Названия программ и компаний принадлежат их владельцам.</p>'
+           '<p>Вопросы и сообщения об ошибках: contact@azimuth-chem.com</p>'),
+    'en': ('<p><b>Azimuth («Азимут»). {title}.</b> Program version {version}.</p>'
+           '<p>© 2026 S. A. Sobalev. The program is distributed under the Azimuth Academic License (the file LICENSE): '
+           'free for teaching, learning and non-commercial research, with a reference to the program; commercial use '
+           'only with the written permission of the author.</p>'
+           '<p><b>How to cite.</b> Sobalev S. A. Azimuth: a teaching program for quantum-chemical calculations. '
+           'Version {version}. 2026. URL: https://azimuth-chem.com</p>'
+           '<p>The calculation programs (ORCA, Gaussian, xtb and others) are not part of Azimuth and are distributed '
+           'under their own licenses. The names of programs and companies belong to their owners.</p>'
+           '<p>Questions and bug reports: contact@azimuth-chem.com</p>'),
+    'zh': ('<p><b>“方位”（Azimuth）。{title}。</b>程序版本 {version}。</p>'
+           '<p>© 2026 S. A. Sobalev。本程序依据“方位”学术许可证（LICENSE 文件）发布：可免费用于教学、学习和非商业研究，'
+           '但须引用本程序；商业使用须经作者书面许可。</p>'
+           '<p><b>如何引用。</b>Sobalev S. A. Azimuth: a teaching program for quantum-chemical calculations. '
+           'Version {version}. 2026. URL: https://azimuth-chem.com</p>'
+           '<p>计算程序（ORCA、Gaussian、xtb 等）不包含在“方位”中，按其各自的许可证发布。程序和公司名称归其所有者所有。</p>'
+           '<p>问题与错误报告：contact@azimuth-chem.com</p>'),
+}
+# Chinese text needs a CJK font of the system (Inter and Golos have none): PingFang on macOS, YaHei on Windows
+CJK_FONTS = "'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Source Han Sans SC'"
 APPENDIX_LETTERS = 'АБВГДЕЖИКЛМН'
 PAGE_MARGINS_MM = (18, 20, 20, 20)  # top, right, bottom, left — the room of the running header and the page number
 
@@ -196,9 +238,9 @@ def body_html(markdown, lang):
         text = ' '.join(s.strip() for s in quote)
         quote.clear()
         kind = 'note'
-        if re.match(r'\*\*(Внимание|Важно)', text):
+        if re.match(r'\*\*(Внимание|Важно|Warning|Important|注意|重要)', text):
             kind = 'warning'
-        elif re.match(r'\*\*(Совет|Подсказка)', text):
+        elif re.match(r'\*\*(Совет|Подсказка|Tip|Hint|提示|技巧)', text):
             kind = 'tip'
         out.append(f'<aside class="{kind}"><p>{inline(text)}</p></aside>')
 
@@ -230,7 +272,7 @@ def body_html(markdown, lang):
             if level == 2:
                 figures = tables = 0
                 section = subsection = 0
-                match = re.match(r'(?:Приложение|Appendix)\s+(\S+?)\.\s*(.*)', title)
+                match = re.match(r'(?:Приложение|Appendix|附录)\s*([^\s.。]+?)[.。]\s*(.*)', title)
                 if match:
                     appendix += 1
                     chapter_label = match.group(1)
@@ -241,7 +283,8 @@ def body_html(markdown, lang):
                     chapter += 1
                     chapter_label = str(chapter)
                     number = chapter_label
-                    label = f'{words["chapter"]} {chapter_label}'
+                    label = (f'{words["chapter"]} {chapter_label} {words["chapter_end"]}' if 'chapter_end' in words
+                             else f'{words["chapter"]} {chapter_label}')
                 h = Heading(2, number, title, slug('c' + number))
                 headings.append(h)
                 if any(x.level == 2 for x in headings[:-1]):
@@ -279,7 +322,7 @@ def body_html(markdown, lang):
             pending_caption = None
             out.append(_table(rows, caption))
             continue
-        caption = re.match(r'(?:Таблица|Table):\s*(.+)', stripped)
+        caption = re.match(r'(?:Таблица|Table|表)[:：]\s*(.+)', stripped)
         if caption:  # the caption of the table that follows (blank lines between them allowed)
             following = i + 1
             while following < len(lines) and not lines[following].strip():
@@ -477,8 +520,7 @@ def to_html(markdown, lang, version, pages=None, edition_date=''):
                    f'<span class="p">{page}</span></a></li>')
     toc.append('</ol></nav>')
     icon = ROOT / 'assets' / 'app-icon' / 'azimuth-256.png'
-    sections = [('Атлас', 'теория: 56 интерактивных тем'), ('Компас', 'молекулы и кристаллы'),
-                ('Секстант', 'подготовка и запуск расчётов'), ('Спектр', 'разбор результатов')]
+    sections = words['sections']
     cover = (
         '<div class="cover"><div class="band"></div>'
         + (f'<img class="icon" src="{icon.as_uri()}" alt="">' if icon.exists() else '')
@@ -487,18 +529,11 @@ def to_html(markdown, lang, version, pages=None, edition_date=''):
         + (f' · {edition_date}' if edition_date else '') + '</div>'
         + '<div class="sections">' + ''.join(f'<div><b>{a}</b>{b}</div>' for a, b in sections) + '</div>'
         + '<div class="foot">azimuth-chem.com</div></div>')
-    edition = (
-        '<div class="edition">'
-        f'<p><b>«Азимут» (Azimuth). {title}.</b> {words["version"]} программы {version}.</p>'
-        '<p>© 2026 С. А. Собалев. Программа распространяется по академической лицензии «Азимута» (файл LICENSE): '
-        'свободно для преподавания, обучения и некоммерческих исследований с обязательной ссылкой на программу; '
-        'коммерческое использование — с письменного разрешения автора.</p>'
-        '<p><b>Как сослаться.</b> Собалев С. А. Азимут (Azimuth): учебная программа для квантово-химических '
-        f'расчётов. Версия {version}. 2026. URL: https://azimuth-chem.com</p>'
-        '<p>Расчётные программы (ORCA, Gaussian, xtb и другие) в «Азимут» не входят и распространяются на условиях '
-        'своих лицензий. Названия программ и компаний принадлежат их владельцам.</p>'
-        '<p>Вопросы и сообщения об ошибках: contact@azimuth-chem.com</p></div>')
-    style = STYLE % {'header': f'Азимут · {title}', 'version': f'{words["version"]} {version}'}
+    edition = '<div class="edition">' + EDITION.get(lang, EDITION['ru']).format(title=title, version=version) + '</div>'
+    style = STYLE % {'header': f'{words["header"]} · {title}', 'version': f'{words["version"]} {version}'}
+    if lang == 'zh':  # the Chinese letters come from a font of the system, after the Latin ones of Inter
+        style = style.replace("'Inter Manual',", "'Inter Manual', " + CJK_FONTS + ",")
+        style += '\nbody { text-align: left; hyphens: manual; -webkit-hyphens: manual; }\n'
     page = (f'<!doctype html><html lang="{lang}"><head><meta charset="utf-8"><title>{words["program"]} — {title}</title>'
             f'<style>{_font_faces()}\n{style}</style></head><body>{cover}{edition}{"".join(toc)}{body}</body></html>')
     return page, headings
@@ -707,7 +742,7 @@ def build(lang='ru', out=None, keep_html=None):
         moved = [h.number for h in headings if second.get(h.id) is not None and second[h.id] + 1 != pages[h.id]]
         if moved:
             raise RuntimeError('the pages moved between the two prints: ' + ', '.join(moved[:10]))
-        data = add_outline(data, headings, title=f'Азимут {version} — {TITLES.get(lang, "")}')
+        data = add_outline(data, headings, title=f'{WORDS.get(lang, WORDS["ru"])["program"]} {version} — {TITLES.get(lang, "")}')
         out.write_bytes(data)
         out.with_name(out.stem + '.sha256').write_text(sources_hash(lang) + '\n', encoding='utf-8')
         return out, len(_pages(_objects(data), _ref(_objects(data)[_ref(_trailer(data), b'Root')], b'Pages')))

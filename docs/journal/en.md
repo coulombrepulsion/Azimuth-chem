@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.222.50 — 26 November 2026
+
+- ### 0.222.50 — The manual in three languages
+
+The manual book is now in English and in Chinese too — with the same chapters, pictures and tables as the Russian one. The names of buttons and menu items in it are those of the program in that language.
+
 ## 0.222.49 — 26 November 2026
 
 - ### 0.222.49 — Calculation programs on Windows
