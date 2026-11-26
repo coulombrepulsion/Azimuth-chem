@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.232.0 — 26 November 2026
+
+- ### 0.232.0 — NMR of flexible molecules
+
+The «NMR» tab has a new button «Average over conformers…»: choose the NMR results of the conformers, and the program averages the shieldings with their Boltzmann shares. The shares can be refined by the free energy.
+
 ## 0.231.0 — 26 November 2026
 
 - ### 0.231.0 — Magnetic crystals and a series in U

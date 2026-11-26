@@ -47,3 +47,8 @@ the output, as ORCA names it). Used by `tests/sextant/test_irc_task.py`.
 Sextant. Converged in 20 iterations; the climbing image 72.40 kcal/mol over HCN (the ends not optimized).
 `hcn_xtb_neb.out`, `hcn_xtb_neb_MEP_trj.xyz` — the output and the path; `hcn_xtb_neb_no_xtb.out` — the same task
 without XTBEXE: «Please set the XTBEXE environment variable», code 52. Used by `tests/sextant/test_orca_xtb.py`.
+`nmr_conformers/ethanol_a.out`, `ethanol_b.out` — ORCA 6.0.1 on the owner's Mac (2026-11-26, 4 processes): «ЯМР
+(экранирование)» of two rotamers of ethanol, B3LYP-D3BJ/def2-SVP, the input Sextant writes; the geometry of SMILES
+«CCO» and the same with the hydroxyl hydrogen turned by 120° about C–O (not optimized: test data for the averaging,
+not a result). Energies −154.830083571198 and −154.830440126007 Eh. Used by `tests/spectrum/test_ensemble.py` and
+`tests/gui/test_gui_spectrum.py`.

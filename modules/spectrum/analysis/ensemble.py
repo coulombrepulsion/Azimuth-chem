@@ -16,6 +16,8 @@
     weighted_modes(mode_lists, shares) -> tuple of modes (intensity × share; a mode without one — left out);
     weighted_excitations(lists, shares) -> tuple of excitations (fosc, r_length, r_velocity × share).
     missing(names, lists) -> names of the conformers without the data (an empty tuple of modes, of excitations).
+    weighted_shieldings(lists, shares) -> tuple of Shielding (σ of every atom — the sum of σ × share); ValueError
+      when the conformers list other atoms or another order.
 §7 TESTS
     tests/spectrum/test_ensemble.py.
 """
@@ -71,3 +73,19 @@ def weighted_excitations(lists, shares):
     return tuple(replace(e, fosc=e.fosc * share, r_length=times(e.r_length, share),
                          r_velocity=times(e.r_velocity, share))
                  for excitations, share in zip(lists, shares) for e in excitations)
+
+
+def weighted_shieldings(lists, shares):
+    """The shieldings of the mixture: of every atom the sum of σ × share over the conformers (they exchange faster
+    than the spectrometer measures, and a nucleus gives one averaged signal). The conformers must list the same
+    atoms in the same order; the anisotropy is not averaged (it is a property of one orientation) — None."""
+    lists = [tuple(items) for items in lists]
+    if not lists or len(lists) != len(shares):
+        raise ValueError(tr('Для среднего нужны хотя бы два конформера.'))
+    first = [(s.atom, s.element) for s in lists[0]]
+    for items in lists[1:]:
+        if [(s.atom, s.element) for s in items] != first:
+            raise ValueError(tr('Конформеры различаются набором или порядком атомов — усреднять экранирования нельзя: '
+                                'считайте ЯМР от геометрий с одной нумерацией.'))
+    return tuple(replace(s, isotropic=sum(p * items[k].isotropic for p, items in zip(shares, lists)), anisotropy=None)
+                 for k, s in enumerate(lists[0]))

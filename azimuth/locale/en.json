@@ -6409,5 +6409,17 @@
   "Атом {} попал в два экспериментальных сигнала.": "Atom {} is in two measured signals.",
   "Сигналов в расчёте {}, в эксперименте {}: без номеров атомов они сопоставляются по порядку, и число должно совпадать. Включите усреднение эквивалентных атомов или укажите номера атомов у каждого сигнала.": "{} signals in the calculation, {} in the experiment: without atom numbers they are matched by their order, and the counts must agree. Switch on the averaging of equivalent atoms or give the atom numbers of every signal.",
   "Для линейной поправки нужны хотя бы три сигнала.": "The linear correction needs at least three signals.",
-  "Все сигналы совпадают: прямую по ним не провести.": "All the signals coincide: no line can be drawn through them."
+  "Все сигналы совпадают: прямую по ним не провести.": "All the signals coincide: no line can be drawn through them.",
+  "Экранирования гибкой молекулы, усреднённые по расчётам ЯМР её конформеров с долями по Больцману": "The shieldings of a flexible molecule averaged over the NMR results of its conformers with their Boltzmann shares",
+  "Среднее по {} конформерам, доли: {}.": "Average over {} conformers, shares: {}.",
+  "Чтобы вернуться к одному расчёту, откройте его снова.": "To return to one calculation, open it again.",
+  "ЯМР: среднее по конформерам": "NMR: average over conformers",
+  "Выберите расчёты ЯМР конформеров одной молекулы (один метод, один порядок атомов). Доли предложены по электронной энергии этих расчётов. Точнее — по свободной энергии: впишите в столбец «ΔG» значения из расчётов с частотами.": "Choose the NMR results of the conformers of one molecule (one method, one order of the atoms). The shares are proposed by the electronic energy of these results. More accurate — by the free energy: type the values from the calculations with frequencies into the column «ΔG».",
+  "Выбрать расчёты ЯМР…": "Choose NMR results…",
+  "Показать средний спектр": "Show the averaged spectrum",
+  "Расчёты ЯМР конформеров": "NMR results of the conformers",
+  "В файле {} нет экранирований ЯМР.": "File {} has no NMR shieldings.",
+  "В файле {} не нашлась энергия.": "No energy found in file {}.",
+  "Конформеры различаются набором или порядком атомов — усреднять экранирования нельзя: считайте ЯМР от геометрий с одной нумерацией.": "The conformers differ in their atoms or in the order of them — the shieldings cannot be averaged: compute NMR from geometries with one numbering.",
+  "ΔG, кДж/моль": "ΔG, kJ/mol"
 }

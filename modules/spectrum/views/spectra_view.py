@@ -221,6 +221,11 @@ class NMRPanel(QWidget):
                                           'наибольшее отклонение, линейная поправка и график'))
         self.compare_button.clicked.connect(lambda: self.compare())
         split_row.addWidget(self.compare_button)
+        self.conformers_button = QPushButton(tr('Среднее по конформерам…'))
+        self.conformers_button.setToolTip(tr('Экранирования гибкой молекулы, усреднённые по расчётам ЯМР её конформеров '
+                                             'с долями по Больцману'))
+        self.conformers_button.clicked.connect(lambda: self.open_conformers())
+        split_row.addWidget(self.conformers_button)
         column.addLayout(split_row)
         self.plot = NMRPlot()
         column.addWidget(self.plot, 1)
@@ -241,6 +246,34 @@ class NMRPanel(QWidget):
         self.couplings = ()
         self.splittings = {}  # atoms tuple -> [(n, J)]
         self.measured = {}  # element -> the text of the measured shifts typed into «Сравнить с экспериментом…»
+
+    def open_conformers(self, show=True):
+        """The window that averages the shieldings over the NMR results of conformers (nmr_conformers_view)."""
+        from modules.spectrum.views.nmr_conformers_view import NMRConformersDialog
+
+        dialog = NMRConformersDialog(self)
+        dialog.built.connect(self.show_conformers)
+        self.conformers_dialog = dialog
+        if show:
+            dialog.show()
+        return dialog
+
+    def show_conformers(self, made):
+        """The averaged shieldings in the panel: the geometry, the level and the input of the most populated
+        conformer (the reference of the level applies as to any result)."""
+        from modules.spectrum.analysis.reaction import level_of_theory
+
+        shieldings, outputs, shares = made
+        main = max(range(len(shares)), key=shares.__getitem__)
+        dialog = getattr(self, 'conformers_dialog', None)
+        text = dialog.texts[main] if dialog is not None and len(dialog.texts) == len(outputs) else ''
+        self.load(shieldings, outputs[main].geometry, level_of_theory(text) or self.level, text,
+                  getattr(outputs[main], 'program', ''))
+        self._said = tr('Среднее по {} конформерам, доли: {}.').format(
+            len(shares), ', '.join(f'{100 * p:.0f} %' for p in shares)) + ' ' + tr(
+            'Чтобы вернуться к одному расчёту, откройте его снова.')
+        self.update_note()
+        return shieldings
 
     def compare(self, show=True):
         """The window of the comparison with the measured shifts for the element shown (nmr_compare_view)."""

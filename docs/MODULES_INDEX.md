@@ -461,6 +461,7 @@
 - `modules/spectrum/views/ir_plot.py` — The plot of an IR or Raman spectrum (a Qt widget; moved here from modules/spectrum/analysis/ir_spectrum.py, which keeps the broadening). Contract: docs/features/IR_SPECTRUM.md.
 - `modules/spectrum/views/nist_window.py` — «Найти в NIST…» of the button «Эксперимент и конформеры»: a measured IR or UV-Vis spectrum from the NIST Chemistry WebBook laid over the computed one (modules/spectrum/readers/nist.py).
 - `modules/spectrum/views/nmr_compare_view.py` — «Сравнить с экспериментом…» of the NMR tab: the computed shifts of one nucleus beside the measured ones.
+- `modules/spectrum/views/nmr_conformers_view.py` — «Среднее по конформерам…» of the NMR tab: the shieldings of a flexible molecule averaged by the Boltzmann shares.
 - `modules/spectrum/views/orbitals_view.py` — The orbital window of the Spectrum module: molecular orbitals of a Molden file, a Gaussian .fchk or an ORCA output (print[p_mos]).
 - `modules/spectrum/views/plot_zoom.py` — Spectrum: moving and zooming a picture of «Карты и профили» — the map and the profile.
 - `modules/spectrum/views/reaction_view.py` — Spectrum: the window «Диаграмма реакции». Numbers: modules/spectrum/analysis/reaction.py.

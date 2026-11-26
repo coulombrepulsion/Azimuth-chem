@@ -1235,3 +1235,34 @@ def test_nmr_compare_dialog(window, app, tmp_path):
     opened = panel.compare(show=False)
     opened.text.setPlainText('1\n2\n3\n4')
     assert panel.measured == {'C': '1\n2\n3\n4'} and panel.compare(show=False).text.toPlainText() == '1\n2\n3\n4'
+
+
+def test_nmr_conformers_dialog(window, app, tmp_path):
+    # «Среднее по конформерам…» of the NMR tab on two real rotamers of ethanol (tests/spectrum/test_ensemble.py has the
+    # numbers: 40.7 % and 59.3 % by the unrounded E at 298.15 K, the first carbon 175.96 ppm)
+    from modules.spectrum.views.spectra_view import NMRPanel
+
+    data = Path(__file__).parents[1] / 'data' / 'orca601' / 'nmr_conformers'
+    paths = [str(data / 'ethanol_a.out'), str(data / 'ethanol_b.out')]
+    panel = NMRPanel()
+    dialog = panel.open_conformers(show=False)
+    assert not dialog.build_button.isEnabled()
+    assert dialog.fill([str(Path(__file__).parents[1] / 'data' / 'orca601' / 'h2o_opt.out')]) is None
+    assert 'нет экранирований' in dialog.note.text()
+    rows = dialog.fill(paths)
+    assert [r[0] for r in rows] == ['ethanol_a.out', 'ethanol_b.out'] and rows[0][2] == '0.94' and rows[1][2] == '0.00'
+    # the shares follow the column as shown (0.94, not 0.9361 kJ/mol): exp(−0.94 / RT) = 0.6844 → 40.6 %
+    assert [dialog.table.item(r, 3).text() for r in range(2)] == ['40.6', '59.4'] and dialog.build_button.isEnabled()
+    dialog.table.item(0, 2).setText('abc')
+    assert not dialog.build_button.isEnabled() and 'не число' in dialog.note.text()
+    dialog.table.item(0, 2).setText('0,0')  # the free energies typed over: equal → halves
+    assert [dialog.table.item(r, 3).text() for r in range(2)] == ['50.0', '50.0']
+    dialog.temperature.setValue(298.15)
+    dialog.table.item(0, 2).setText('0.94')
+    shieldings, outputs, shares = dialog.average()
+    assert abs(shares[0] - 0.4063) < 2e-3 and len(outputs) == 2
+    assert panel.shieldings == shieldings and panel.element.currentText() == 'H'
+    assert 'Среднее по 2 конформерам' in panel.note.text() and '41 %' in panel.note.text()
+    panel.element.setCurrentText('C')
+    sigma = sorted(float(panel.table.item(r, 2).text()) for r in range(panel.table.rowCount()))
+    assert len(sigma) == 2 and abs(sigma[1] - 175.96) < 0.02 and abs(sigma[0] - 135.67) < 0.02
