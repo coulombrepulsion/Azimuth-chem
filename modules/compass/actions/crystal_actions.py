@@ -462,6 +462,25 @@ class CrystalTool:
         self.w.viewer.update()
         return polygons
 
+    def monolayer(self, vacuum=15.0):
+        """«Монослой из слоистого кристалла»: one sheet of the crystal shown (layer.monolayer) opened as a crystal of
+        its own, with vacuum — for the calculation of a layer beside its bulk. Returns its crystal or None."""
+        from modules.compass.chemistry import layer, surface
+
+        crystal = getattr(self.w, 'crystal', None)
+        if not crystal:
+            self.w.notify(tr('Откройте файл CIF: «Файл → Открыть…».'), 8000)
+            return None
+        try:
+            made = layer.monolayer(crystal[0], vacuum)
+        except ValueError as exc:
+            self.w.error(exc)
+            return None
+        name = (getattr(self, 'crystal_name', '') or 'crystal').rsplit('.', 1)[0] + '_monolayer.cif'
+        self.open_crystal_text(surface.write_cif(made), name)
+        self.w.notify(tr('Монослой: {} атомов в ячейке, вакуум {:g} Å вдоль c.').format(len(made.sites), vacuum), 8000)
+        return made
+
     def export_crystal(self, kind, path=None):
         """2026-11-13 («Файл → Экспорт кристалла»): the crystal of the file to other programs — 'poscar' (VASP),
         'extxyz' (ASE, OVITO) of its cell, 'block' — the block of cells shown (its n₁ × n₂ × n₃) as CIF in P 1

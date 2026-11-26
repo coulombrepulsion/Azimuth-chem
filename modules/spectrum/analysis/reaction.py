@@ -494,6 +494,18 @@ def barrier_rates(result, stages, temperature=298.15, pressure=ATM, molar=False)
 RATE_TEMPERATURES = tuple(range(200, 601, 50))  # K: the range of the course (200–600 K)
 
 
+def rate_table_tunnelling(stages, temperatures=RATE_TEMPERATURES, pressure=ATM, qrrho=False, molar=False):
+    """The rows of rate_table with the tunnelling coefficients added: (…, κ Wigner | None, κ Eckart | None)."""
+    rows_ = []
+    for t in temperatures:
+        result = profile(stages, 'G', 'kcal', 0, t, pressure, qrrho, molar)
+        for r in barrier_rates(result, stages, t, pressure, molar):
+            found = tunnelling(stages, r, t)
+            rows_.append((t, result.labels[r.ts], result.labels[r.start], r.direction, r.order, r.barrier * thermo.KCAL,
+                          r.k, r.half_life, None if found is None else found[1], None if found is None else found[2]))
+    return rows_
+
+
 def rate_table(stages, temperatures=RATE_TEMPERATURES, pressure=ATM, qrrho=False, molar=False):
     """Rows (T, TS, from, direction, n, ΔG‡ kcal/mol, k, t½ s or None) — the G profile recomputed at every T."""
     rows_ = []
@@ -503,6 +515,36 @@ def rate_table(stages, temperatures=RATE_TEMPERATURES, pressure=ATM, qrrho=False
             rows_.append((t, result.labels[r.ts], result.labels[r.start], r.direction, r.order, r.barrier * thermo.KCAL,
                           r.k, r.half_life))
     return rows_
+
+
+def tunnelling(stages, rate, temperature=298.15):
+    """(ν‡ cm⁻¹, κ of Wigner, κ of Eckart | None) of a Rate (modules/spectrum/analysis/tunnelling.py): the imaginary
+    frequency of the transition state of the stage and the two barrier heights with the zero-point energies (E₀ of
+    the stages on both sides; Eckart — None without the other side or with a barrier not above it). None when the
+    stage has not exactly one imaginary frequency."""
+    from modules.spectrum.analysis import tunnelling as tn
+
+    stages = list(stages)
+    imaginary = [f for s in stages[rate.ts].species for f in s.imaginary]
+    if len(imaginary) != 1:
+        return None
+    nu = abs(imaginary[0])
+    kinds = [stage.kind for stage in stages]
+
+    def zero_point(index):
+        parts = [value(s, 'E0') for s in stages[index].species]
+        return None if any(p is None for p in parts) else sum(parts)
+
+    before = next((j for j in range(rate.ts - 1, -1, -1) if kinds[j] == 'min'), None)
+    after = next((j for j in range(rate.ts + 1, len(stages)) if kinds[j] == 'min'), None)
+    other = after if rate.start == before else before
+    top = zero_point(rate.ts)
+    here = zero_point(rate.start)
+    there = zero_point(other) if other is not None else None
+    eckart = None
+    if None not in (top, here, there) and top - here > 0 and top - there > 0:
+        eckart = tn.eckart(nu, top - here, top - there, temperature)
+    return nu, tn.wigner(nu, temperature), eckart
 
 
 def rate_unit(order):

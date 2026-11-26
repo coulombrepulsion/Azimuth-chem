@@ -220,6 +220,7 @@ def crystal_menus(self, studio, menu, own, help_menu, picture_menu, compare_menu
         own('Найти кристалл в COD…', lambda: cod_window().show(studio)),  # the open database
         # reopens the CIF window to rebuild the crystal: the block of cells, the surface (hkl), the view
         'Перестроить кристалл (ячейки, поверхность)…',
+        own('Монослой из слоистого кристалла', lambda: studio.crystal_tool.monolayer()),
         studio.recent_menu,
         'Перечитать файл',  # as in «Компас · Молекула»
         'Открыть пример…',

@@ -1646,6 +1646,9 @@ def test_calculation_menu_of_compass(window, app, tmp_path, monkeypatch):
     steps = tuple(OptimizationStep(k + 1, -5.0 - 0.01 * k, read_xyz(f'3\n\nO 0 0 0\nH {r} 0 0\nH -0.24 0.93 0'))
                   for k, r in enumerate((0.96, 1.10, 1.30)))
     window.drawer.load(steps, 'scan.out')
+    plain = window.drawer.profile_data()  # an optimization: by its cycles, from the first
+    assert plain[0] == 'Шаги оптимизации' and [x for x, _ in plain[3]] == [1.0, 2.0, 3.0] and plain[3][0][1] == 0.0
+    assert window.drawer.profile_button.isVisibleTo(window.drawer)
     xyz = window.calculation_tool.save_steps_xyz(str(tmp_path / 'steps.xyz'))
     assert len(read_xyz_frames(Path(xyz).read_text(encoding='utf-8'))) == 3
     header, rows = field_tables.read_csv(window.calculation_tool.save_steps_table(str(tmp_path / 'steps.csv')))
@@ -1659,6 +1662,18 @@ def test_calculation_menu_of_compass(window, app, tmp_path, monkeypatch):
     window.drawer.load(steps, 'scan.out', Scan('relaxed', (Coordinate('bond', (0, 1)),),
                                                tuple(Point(k + 1, (r,), s.energy, s.geometry)
                                                      for k, (r, s) in enumerate(zip((0.96, 1.1, 1.3), steps)))))
+    # the energy profile for a report: the coordinate of the scan on x, ΔE from its reference point on y, with units
+    from azimuth import defaults
+
+    profile = window.drawer.show_profile()
+    reference = steps[window.drawer.scan.reference].energy
+    assert [x for x, _ in profile.plot.series[0][2]] == [0.96, 1.1, 1.3] and 'Å' in profile.plot.x_axis and 'ΔE' in profile.plot.y_axis
+    assert [e for _, e in profile.rows] == pytest.approx([(s.energy - reference) * defaults.energy_factor() for s in steps])
+    profile.plot.resize(560, 380)
+    profile.plot.grab()
+    saved = Path(profile.save(str(tmp_path / 'profile.csv'))).read_text(encoding='utf-8').splitlines()
+    assert len(saved) == 4 and saved[0].count(',') == 1
+    profile.reject()
     window.trajectory_tool.enter_trajectory()
     window.trajectory_tool.show_trajectory_step(1)
     assert window.viewer.scan_pin == (0, 1)

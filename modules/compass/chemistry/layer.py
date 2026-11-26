@@ -19,6 +19,9 @@
     with_vacuum(crystal, vacuum, axis): the same layer in a cell (group P 1) whose axis is as long as gives that
     vacuum; the atoms keep their Cartesian distances along the axis and the layer is put in the middle of the cell.
     For an axis perpendicular to the other two only (as a slab or a layer is built) — ValueError otherwise.
+    sheets(crystal, axis, gap): the atoms sorted along the axis are cut into sheets where the next atom is `gap` Å
+    or more above; monolayer(crystal, vacuum): the lowest sheet in a cell with that vacuum (MoS₂ of the bulk 2H cell —
+    one S–Mo–S sandwich).
     vacuums(now): the values of the series, VACUUMS and the present one. vacuum_of_input(text of pw.in) -> Å | None.
     cone(energies, occupied, x, ticks, a, window=WINDOW): the point K of the path (the first tick «K»); the bands
     N_occ and N_occ + 1 there must be within TOUCH of each other; on each side of K (the points of the same run of
@@ -28,7 +31,7 @@
     of the reciprocal vectors of the two-atom cell (k·a_j = 2π f_j); n — the cells of the three nearest neighbours
     (neighbour_cells(crystal): they depend on how the cell is drawn — γ = 120° or 60°).
 §4 SPECIFICATION
-    LEAST = 7 Å; VACUUMS = (8, 10, 12, 15, 18, 20) Å; WINDOW = 0.12 Å⁻¹; TOUCH = 0.05 eV; HBAR = 6.582119569e-16 eV·s.
+    LEAST = 7 Å; SHEET_GAP = 2.4 Å; VACUUMS = (8, 10, 12, 15, 18, 20) Å; WINDOW = 0.12 Å⁻¹; TOUCH = 0.05 eV; HBAR = 6.582119569e-16 eV·s.
     Cone(index, energy eV, slopes {('π' | 'π*', 'left' | 'right'): eV·Å}, hv eV·Å, velocity m/s, hopping eV | None,
     left, right — the labels of the neighbouring ticks). cone(...) -> Cone | None. text(cone) -> the line for the
     summary (Russian, keys of tr). ValueError with a message for the user.
@@ -44,6 +47,7 @@ from math import sqrt
 from azimuth.i18n import tr
 
 LEAST = 7.0
+SHEET_GAP = 2.4  # Å: an empty stretch along c that parts the sheets of a layered crystal (MoS₂ 3.0, graphite 3.35)
 VACUUMS = (8.0, 10.0, 12.0, 15.0, 18.0, 20.0)
 WINDOW = 0.12
 TOUCH = 0.05
@@ -119,6 +123,58 @@ def with_vacuum(crystal, wanted, axis=None):
         height = ((f[axis] - first) % 1.0) * old  # Å above the lowest atom
         if height > thick + 1e-6:
             height -= old
+        f[axis] = (0.5 * wanted + height) / new
+        sites.append(cr.Site(f'{atom[0]}{k}', atom[0], *f))
+    lengths[axis] = new
+    return cr.Crystal(crystal.title, replace(cell, a=lengths[0], b=lengths[1], c=lengths[2]), tuple(sites),
+                      (cr.operation('x, y, z'),), 'P 1')
+
+
+def sheets(crystal, axis=2, gap=SHEET_GAP):
+    """The atoms of the cell gathered into the sheets of a layered crystal: along the axis the atoms are sorted, and
+    an empty stretch of `gap` Å or more (the one through the edge of the cell too) starts a new sheet. [[atoms]] from
+    the lowest sheet; one sheet — the crystal is not layered along this axis."""
+    step = _spacing(crystal, axis)
+    atoms = sorted(_atoms(crystal), key=lambda a: a[1 + axis] % 1.0)
+    if not atoms:
+        return []
+    groups = [[atoms[0]]]
+    for before, atom in zip(atoms, atoms[1:]):
+        if ((atom[1 + axis] % 1.0) - (before[1 + axis] % 1.0)) * step >= gap:
+            groups.append([])
+        groups[-1].append(atom)
+    around = ((atoms[0][1 + axis] % 1.0) + 1.0 - (atoms[-1][1 + axis] % 1.0)) * step
+    if len(groups) > 1 and around < gap:  # the first and the last are one sheet through the edge of the cell
+        groups[0] = groups.pop() + groups[0]
+    return groups
+
+
+def monolayer(crystal, wanted=15.0, axis=2, gap=SHEET_GAP):
+    """One sheet of a layered crystal (MoS₂, graphite, h-BN) in a cell with `wanted` Å of vacuum (group P 1): the
+    in-plane cell as it is, the sheet in the middle. ValueError when the crystal has no separate sheets along the
+    axis or the axis is not perpendicular to them."""
+    from dataclasses import replace
+
+    from modules.compass.chemistry import crystal as cr
+
+    cell = crystal.cell
+    angles = [cell.alpha, cell.beta, cell.gamma]
+    if any(abs(angles[k] - 90.0) > 1e-6 for k in range(3) if k != axis):
+        raise ValueError(tr('Монослой: ось c должна быть перпендикулярна слоям.'))
+    found = sheets(crystal, axis, gap)
+    if len(found) < 2:
+        raise ValueError(tr('Монослой: в ячейке нет отдельных слоёв — между атомами вдоль оси c нет промежутка от {:g} Å.')
+                         .format(gap))
+    lengths = [cell.a, cell.b, cell.c]
+    old = lengths[axis]
+    sheet = found[0]
+    first = sheet[0][1 + axis] % 1.0
+    heights = [(((a[1 + axis] % 1.0) - first) % 1.0) * old for a in sheet]
+    thick = max(heights)
+    new = thick + wanted
+    sites = []
+    for k, (atom, height) in enumerate(zip(sheet, heights), 1):
+        f = list(atom[1:4])
         f[axis] = (0.5 * wanted + height) / new
         sites.append(cr.Site(f'{atom[0]}{k}', atom[0], *f))
     lengths[axis] = new

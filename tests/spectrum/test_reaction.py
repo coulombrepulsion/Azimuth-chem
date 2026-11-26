@@ -249,3 +249,37 @@ def test_the_units_and_numbers_of_rates_as_shown():
     assert reaction.scientific(12.5) == '12.5'
     assert reaction.duration(90.0) == '1.5 мин' and reaction.duration(2e-4) == '200 мкс'
     assert reaction.duration(3.15576e8).endswith('лет')
+
+
+def test_the_tunnelling_coefficients_of_a_barrier():
+    # A → TS → B with the zero-point energies typed in: the barriers of E₀ are 10 kcal/mol forward and 20 kcal/mol
+    # back, the transition state has one imaginary frequency of 1500 cm⁻¹ — the numbers the module of the tunnelling
+    # gets (tests/spectrum/test_tunnelling.py checks them against the Schrödinger equation)
+    from dataclasses import replace
+
+    from modules.spectrum.analysis import tunnelling as tn
+
+    a = typed_species('A', -100.0, 0.010, 0.014, -0.010, formula='CH4')
+    t = replace(typed_species('TS', -100.0 + 10 / KCAL + 0.002, 0.008, 0.012, -0.011, formula='CH4', ts=True),
+                frequencies=(-1500.0, 900.0, 1200.0))
+    b = typed_species('B', -100.0 - 10 / KCAL, 0.010, 0.014, -0.010, formula='CH4')
+    stages = [Stage('A', (a,)), Stage('TS', (t,)), Stage('B', (b,))]
+    forward, reverse = reaction.barrier_rates(profile(stages, 'G', 'kcal'), stages)
+    nu, wigner, eckart = reaction.tunnelling(stages, forward, 300.0)
+    assert nu == 1500.0 and wigner == pytest.approx(tn.wigner(1500.0, 300.0))
+    assert eckart == pytest.approx(tn.eckart(1500.0, 10 / KCAL, 20 / KCAL, 300.0), rel=1e-9)  # E₀: E + ZPE on both sides
+    assert reaction.tunnelling(stages, reverse, 300.0)[2] == pytest.approx(eckart, rel=1e-9)  # the same back
+    rows = reaction.rate_table_tunnelling(stages, (300.0, 600.0))
+    assert [len(r) for r in rows] == [10] * 4 and rows[0][:8] == reaction.rate_table(stages, (300.0,))[0]
+    assert rows[0][9] == pytest.approx(eckart) and rows[2][9] < rows[0][9] and rows[2][8] < rows[0][8]  # hotter — less
+    # no frequencies (typed by hand), two imaginary ones, no other side: no coefficient invented
+    assert reaction.tunnelling(bimolecular(), reaction.barrier_rates(profile(bimolecular(), 'G', 'kcal'), bimolecular())[0]) is None
+    twice = [stages[0], Stage('TS', (replace(t, frequencies=(-1500.0, -80.0, 900.0)),)), stages[2]]
+    assert reaction.tunnelling(twice, forward) is None
+    alone = stages[:2]
+    only = reaction.barrier_rates(profile(alone, 'G', 'kcal'), alone)[0]
+    assert reaction.tunnelling(alone, only)[1] == pytest.approx(wigner_at(1500.0)) and reaction.tunnelling(alone, only)[2] is None
+
+
+def wigner_at(nu, temperature=298.15):
+    return 1 + (1.438776877 * nu / temperature) ** 2 / 24

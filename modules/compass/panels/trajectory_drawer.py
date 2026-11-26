@@ -283,7 +283,9 @@ class TrajectoryDrawer(QFrame):
         self.next = iconify(QPushButton(), 'step-next', tr('Следующий шаг · ↓ или →'))
         # a two-dimensional scan — its map (scan_map_view.ScanMapDialog)
         self.map_button = iconify(QPushButton(), 'scan-map', tr('Карта скана · энергия по двум координатам'))
-        for b in (self.previous, self.play, self.next, self.map_button):
+        # the energy along the steps as a plot for a report: axes with units, the data as CSV
+        self.profile_button = iconify(QPushButton(), 'spectrum', tr('Профиль энергии · график с осями и таблица для отчёта'))
+        for b in (self.previous, self.play, self.next, self.map_button, self.profile_button):
             nav.addWidget(b)
         nav.addStretch(1)
         # an icon toggle like the other buttons of the row (was a check box with text)
@@ -325,6 +327,7 @@ class TrajectoryDrawer(QFrame):
         self.plot.selected.connect(self.select)
         self.adopt.clicked.connect(self.adoptRequested)
         self.map_button.clicked.connect(self.mapRequested)
+        self.profile_button.clicked.connect(lambda: self.show_profile())
         self.open_button.clicked.connect(self.openRequested)
         self.close_button.clicked.connect(self.closeRequested)
         self.spectrum_button.clicked.connect(lambda: self.spectrumRequested.emit(self.page()))
@@ -415,6 +418,7 @@ class TrajectoryDrawer(QFrame):
             w.setVisible(has)
         self.play.setEnabled(len(self.steps) > 1)
         self.map_button.setVisible(self.is_map())
+        self.profile_button.setVisible(len([s for s in self.steps if s.energy is not None]) > 1)
         if has:
             # an optimization opens on its last step with a geometry (the result); a scan or a path on the first
             last = next((i for i in range(len(self.steps) - 1, -1, -1) if self.steps[i].geometry is not None), 0)
@@ -422,6 +426,45 @@ class TrajectoryDrawer(QFrame):
         else:
             self.show_step(-1)
         self.plot.update()
+
+    def profile_data(self):
+        """(title, the label of x, the label of y, [(x, ΔE in the unit of the settings)]) of the energy along the steps:
+        an optimization — by its cycles from the first; an IRC — by its steps from the transition state; a scan of one
+        coordinate — by the value of the coordinate from the reference point. None without two energies."""
+        from azimuth import defaults
+
+        title, headers, ref = self.columns()
+        points = []
+        for i, step in enumerate(self.steps):
+            if step.energy is None or ref is None:
+                continue
+            x = float(step.cycle) if self.scan is None else float(self.scan.points[i].number)
+            if self.scan is not None and self.scan.kind != 'irc' and len(self.scan.coordinates) == 1:
+                x = float(self.scan.points[i].values[0])
+            points.append((x, (step.energy - ref) * defaults.energy_factor()))
+        if len(points) < 2:
+            return None
+        return title, headers[0] if len(headers) == 2 else headers[1], headers[-1], points
+
+    def show_profile(self):
+        """The window of the energy profile (qe_plots.CurvesPlot in a QePlotWindow: «Сохранить данные…» — CSV)."""
+        from modules.compass.actions import qe_plots
+
+        found = self.profile_data()
+        if found is None:
+            return None
+        title, x_label, y_label, points = found
+        plot = qe_plots.CurvesPlot()
+        plot.x_axis, plot.y_axis = x_label, y_label
+        plot.series.append(('', '#2a62b8', points, points))
+        window = qe_plots.QePlotWindow(self.window(), title, plot, [(x, e) for x, e in points], ['x', 'dE'], 'energy_profile.csv')
+        window.header = [x_label.replace(',', ''), y_label.replace(',', '')]  # one column each in the CSV
+        window.note.setText(tr('Энергия относительно: {}.').format(
+            tr('первого шага') if self.scan is None else tr('переходного состояния') if self.scan.kind == 'irc'
+            else tr('опорной точки скана')))
+        self.profile_window = window
+        window.show()
+        return window
 
     def is_map(self):
         """The steps are a relaxed or rigid scan of two coordinates."""

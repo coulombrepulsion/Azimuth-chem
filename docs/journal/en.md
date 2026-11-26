@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.239.0 — 26 November 2026
+
+- ### 0.239.0 — Tunnelling, heat capacity and monolayers
+
+The reaction diagram has the tunnelling corrections of Wigner and Eckart to the rate constant. After a phonon calculation of a crystal a heat-capacity window opens with the Debye model. A monolayer can be cut out of a layered crystal with one command. And the steps of an optimization, a scan and an IRC have the button «Energy profile» – a plot with labelled axes for a report.
+
 ## 0.238.0 — 26 November 2026
 
 - ### 0.238.0 — The bands of anatase and the project sheets

@@ -451,6 +451,57 @@ def show_phonons(self, found):
                                        list(zip(*dos)), ['nu, cm-1', 'g(nu)'], 'phonon_dos.csv')
         self.phdos_window = second
         second.show()
+        show_thermo(self, dos)  # by the function: an owner that is not the panel has no such method
+    return window
+
+
+def thermo_data(self, dos):
+    """(rows, summary, atoms in the cell computed, formula units in it) of the harmonic thermodynamics of the phonon
+    density of states (phonon_thermo), or None with the reason in self.thermo_error."""
+    from collections import Counter
+    from functools import reduce
+    from math import gcd
+
+    from modules.compass.chemistry import crystal as cr, phonon_thermo
+
+    self.thermo_error = ''
+    try:
+        counts = Counter(a[0] for a in cr.unit_cell(self.computed()[0]) if a[0] != 'X')
+        atoms = sum(counts.values())
+        units = reduce(gcd, counts.values())
+        rows = phonon_thermo.table(dos[0], dos[1], atoms, units)
+        return rows, phonon_thermo.summary(dos[0], dos[1], atoms, units, rows), atoms, units
+    except (ValueError, AttributeError, TypeError) as exc:
+        self.thermo_error = str(exc)
+        return None
+
+
+def show_thermo(self, dos):
+    """C_V(T) of the phonon density of states with the Debye curve fitted to it; the table of C_V, S, U, F and Θ(T)."""
+    from modules.compass.actions import qe_plots
+    from modules.compass.chemistry import phonon_thermo
+
+    found = thermo_data(self, dos)
+    if found is None:
+        return None
+    rows, summary, atoms, units = found
+    joule = phonon_thermo.EV * phonon_thermo.NA / units
+    plot = qe_plots.CurvesPlot()
+    plot.x_axis, plot.y_axis = 'T, K', 'C_V, Дж/(моль·К)'
+    points = [(r.temperature, r.heat) for r in rows]
+    span = [rows[0].temperature + (rows[-1].temperature - rows[0].temperature) * k / 120 for k in range(121)]
+    plot.series.append((tr('по фононному спектру'), '#2a62b8', points, points))
+    plot.series.append((tr('модель Дебая, Θ = {} K').format(f'{summary.theta_fit:.0f}'), '#c0504d', [],
+                        [(t, phonon_thermo.debye_heat(t, summary.theta_fit, atoms) * joule) for t in span]))
+    plot.series.append((tr('предел Дюлонга — Пти'), '#888888', [], [(span[0], summary.limit), (span[-1], summary.limit)]))
+    table = [(r.temperature, r.heat, r.entropy, r.energy, r.free, '' if r.theta is None else r.theta) for r in rows]
+    window = qe_plots.QePlotWindow(self, tr('Теплоёмкость · ') + self.name, plot, table,
+                                   ['T K', 'C_V J/(mol K)', 'S J/(mol K)', 'U - E0 kJ/mol', 'F - E0 kJ/mol', 'Theta_D(T) K'],
+                                   'phonon_thermodynamics.csv')
+    room = min(rows, key=lambda r: abs(r.temperature - 298.15))
+    window.note.setText(' '.join(phonon_thermo.lines(summary, room)))
+    self.thermo_window = window
+    window.show()
     return window
 
 

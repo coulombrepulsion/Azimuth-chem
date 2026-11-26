@@ -93,6 +93,11 @@ def lattice(crystal):
         return 'tI'
     if system == 'orthorhombic' and centring == 'P':
         return 'oP'
+    # a cell written without its symmetry (group P 1: a monolayer cut out of a crystal, a slab, a supercell) with the
+    # metric of a hexagonal lattice — the path of that lattice: its points are those of the reciprocal cell
+    if centring == 'P' and abs(c.gamma - 120) < 0.01 and abs(c.alpha - 90) < 0.01 and abs(c.beta - 90) < 0.01 \
+            and abs(c.a - c.b) < 1e-4 * c.a:
+        return 'hP'
     return 'other'
 
 

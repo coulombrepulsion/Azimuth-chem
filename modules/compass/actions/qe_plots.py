@@ -372,6 +372,8 @@ class CurvesPlot(_Plot):
         p.drawText(QRectF(-110, -10, 220, 14), Qt.AlignmentFlag.AlignCenter, tr(self.y_axis))
         p.restore()
         for k, (name, colour, _, _) in enumerate(self.series):  # the legend, inside the frame
+            if not name:
+                continue
             y = top + 14 + 16 * k
             p.setPen(QPen(QColor(colour), 2))
             p.drawLine(QPointF(left + 10, y), QPointF(left + 30, y))

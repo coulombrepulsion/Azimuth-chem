@@ -624,12 +624,19 @@ class ReactionWindow(QWidget):
                 if rate.half_life is not None:
                     text += ', t½ = ' + reaction.duration(rate.half_life)
                 lines.append('    ' + text)
+                tunnel = reaction.tunnelling(self.stages, rate, s['temperature'])
+                if tunnel is not None and rate.direction == 'forward':  # κ is the same in both directions
+                    nu, wigner, eckart = tunnel
+                    lines.append('    ' + tr('туннельная поправка (ν‡ = {}i см⁻¹): κ = {} по Вигнеру').format(
+                        f'{nu:.0f}', f'{wigner:.2f}') + ('' if eckart is None else tr(', {} по Эккарту').format(
+                            reaction.scientific(eckart) if eckart >= 100 else f'{eckart:.2f}')))
         if r.reaction is not None:
             lines.append(tr(f'{sym} реакции («{r.labels[0]}» → «{r.labels[-1]}»): {r.reaction:+.1f} {unit}'))
         if s['quantity'] in ('H', 'G'):
             lines.append(tr(f'T = {s["temperature"]:.2f} K, P = {s["pressure_atm"]:g} атм') + (tr(', 1 моль/л') if s['molar'] else ''))
         if r.quantity == 'G' and r.barriers:
-            lines.append(tr('k — по Эйрингу (теория переходного состояния, κ = 1, без туннелирования).'))
+            lines.append(tr('k — по Эйрингу (теория переходного состояния, κ = 1, без туннелирования); с туннелированием '
+                            'k умножается на κ — они в таблице «Копировать k(T)».'))
         self.rates_button.setEnabled(r.quantity == 'G' and bool(r.barriers))
         self.summary.setText('\n'.join(lines))
         self.notes.setText('\n'.join('⚠ ' + w for w in r.warnings))
@@ -649,12 +656,16 @@ class ReactionWindow(QWidget):
         """Header and rows of k(T): reaction.rate_table at 200–600 K and at the chosen T."""
         s = self.settings()
         temperatures = sorted(set(reaction.RATE_TEMPERATURES) | {round(s['temperature'], 2)})
-        rows = reaction.rate_table(self.stages, temperatures, s['pressure_atm'] * reaction.ATM, s['qrrho'], s['molar'])
+        rows = reaction.rate_table_tunnelling(self.stages, temperatures, s['pressure_atm'] * reaction.ATM, s['qrrho'],
+                                              s['molar'])
         header = [tr('T, K'), tr('Переходное состояние'), tr('От стадии'), tr('Направление'), 'n',
-                  'ΔG‡, ' + tr('ккал/моль'), 'k', tr('Единица k'), 't½, ' + tr('с')]
+                  'ΔG‡, ' + tr('ккал/моль'), 'k', tr('Единица k'), 't½, ' + tr('с'), tr('κ (Вигнер)'), tr('κ (Эккарт)'),
+                  tr('k·κ (Эккарт)')]
         body = [[f'{t:g}', ts, start, tr('прямое') if d == 'forward' else tr('обратное'), str(n), f'{g:.2f}',
-                 f'{k:.4e}', tr(reaction.rate_unit(n)), '' if half is None else f'{half:.4e}']
-                for t, ts, start, d, n, g, k, half in rows]
+                 f'{k:.4e}', tr(reaction.rate_unit(n)), '' if half is None else f'{half:.4e}',
+                 '' if wigner is None else f'{wigner:.3f}', '' if eckart is None else f'{eckart:.4g}',
+                 '' if eckart is None else f'{k * eckart:.4e}']
+                for t, ts, start, d, n, g, k, half, wigner, eckart in rows]
         return header, body
 
     def copy_rates(self):

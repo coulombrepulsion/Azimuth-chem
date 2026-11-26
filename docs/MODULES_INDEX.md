@@ -241,6 +241,7 @@
 - `modules/compass/chemistry/overlay.py` — Overlay of two structures with the atoms in any order: matching, alignment, deviations.
 - `modules/compass/chemistry/packing_similarity.py` — How alike two crystals of one compound are packed — a cluster of molecules compared, as «Crystal Packing Similarity» (COMPACK, Chisholm & Motherwell 2005) of Mercury.
 - `modules/compass/chemistry/peptide.py` — Peptides built from a sequence: «Правка → Построить пептид…».
+- `modules/compass/chemistry/phonon_thermo.py` — The heat capacity and the thermodynamic functions of a crystal from its phonon density of states; the Debye model.
 - `modules/compass/chemistry/powder.py` — The powder X-ray diffraction pattern of a crystal.
 - `modules/compass/chemistry/powder_match.py` — A measured powder pattern against the calculated one: the background, the zero shift, the agreement, the lines found and missing, the change of the cell — as the comparison of patterns in Mercury.
 - `modules/compass/chemistry/print3d.py` — A model of balls and sticks for 3D printing: STL and VRML (as Mercury's «Print 3D» / «Save as VRML»).
@@ -450,6 +451,7 @@
 - `modules/spectrum/analysis/scan_map.py` — The map of a two-dimensional relaxed scan: energies on a grid, isolines, the valley.
 - `modules/spectrum/analysis/sto_fits.py` — Slater-type radial functions (zeta = 1) as 6 normalized Gaussians each — written by tools/fit_sto.py.
 - `modules/spectrum/analysis/thermo.py` — Thermochemistry of an ideal gas from a frequency calculation: ZPE, E, H, S, G at T and P.
+- `modules/spectrum/analysis/tunnelling.py` — Tunnelling corrections to the rate constant of transition state theory: Wigner and Eckart.
 
 ## modules/spectrum/views
 
@@ -522,6 +524,7 @@
 - `tools/uff_reference.py` — RDKit's UFF numbers for the structures of tests/data/uff/structures.json.
 - `tools/untranslated.py` — What waits for its translation (0.108.75+, the process agreed on the journal of Quill and the manual are written in Russian with each version and translated at a release).
 - `tools/upload_site_yandex.py` — Upload the built site to Yandex Object Storage — the mirror for Russia.
+- `tools/validate_cp2k.py` — The crystals computed through the CP2K inputs of Azimuth and compared with the literature and with Quantum ESPRESSO.
 - `tools/validate_crystals.py` — The crystals of the course computed through the inputs of Azimuth and compared with the literature.
 - `tools/vtk_window_check3.py` — Check, round 3: which part of the VTK scene aborts when VTK draws into a Qt OpenGL widget?
 - `tools/watch_programs.py` — Have new versions of the calculation programs come out since Azimuth was checked with them?

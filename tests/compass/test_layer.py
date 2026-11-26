@@ -172,3 +172,42 @@ def test_the_series_of_vacuum_of_graphene(tmp_path):
     assert all(r.pressure is None for r in table)  # of a cell with vacuum it says nothing
     assert convergence.converged(table) == 0 and abs(table[0].delta) < 0.3  # 8 Å is enough to 1 meV per atom
     assert qe_results.family_lines(kind, table) == []
+
+
+def molybdenite():
+    # 2H-MoS₂, P 6₃/mmc, a = 3.160, c = 12.294 Å: Mo at ±¼, S at 0.121, 0.379, 0.621, 0.879 of c — two S–Mo–S
+    # sandwiches 3.17 Å thick, 2.98 Å apart
+    text = ("data_MoS2\n_cell_length_a 3.160\n_cell_length_b 3.160\n_cell_length_c 12.294\n_cell_angle_alpha 90\n"
+            "_cell_angle_beta 90\n_cell_angle_gamma 120\n_space_group_name_H-M_alt 'P 63/m m c'\nloop_\n_atom_site_label\n"
+            '_atom_site_fract_x\n_atom_site_fract_y\n_atom_site_fract_z\nMo1 0.333333333 0.666666667 0.25\n'
+            'S1 0.333333333 0.666666667 0.621\n')
+    return cr.parse_cif(text)
+
+
+def test_a_monolayer_cut_out_of_a_layered_crystal():
+    from tests.sextant.test_qe_inputs import silicon
+
+    bulk = molybdenite()
+    found = layer.sheets(bulk)
+    assert [[a[0] for a in sheet] for sheet in found] == [['S', 'Mo', 'S'], ['S', 'Mo', 'S']]
+    assert [round(a[3], 3) for a in found[0]] == [0.121, 0.25, 0.379]
+    one = layer.monolayer(bulk, 15.0)
+    atoms = cr.unit_cell(one)
+    thick = (0.379 - 0.121) * 12.294
+    assert one.cell.c == pytest.approx(thick + 15.0) and (one.cell.a, one.cell.gamma) == (3.160, 120.0) and len(atoms) == 3
+    z = [a[3] * one.cell.c for a in atoms]
+    assert z == pytest.approx([7.5, 7.5 + thick / 2, 7.5 + thick])  # the sandwich as it was, 7.5 Å of vacuum each side
+    assert [a[1:3] for a in atoms] == [a[1:3] for a in found[0]]  # nothing moves in the plane
+    assert layer.vacuum_axis(one) == 2 and layer.vacuum(one, 2) == pytest.approx(15.0)
+    # the cell is written without its symmetry (P 1): the path is that of its hexagonal metric, in the plane
+    assert qe_paths.lattice(one) == 'hP' and [label for _, label in qe_paths.path(one).ticks] == ['Γ', 'M', 'K', 'Γ']
+    assert qe_inputs.grid_of(one)[2] == 1 and 'A' in [label for _, label in qe_paths.path(bulk).ticks]
+    # a sheet that goes through the edge of the cell is one sheet
+    shifted = cr.Crystal('s', bulk.cell, tuple(cr.Site(f'{a[0]}{k}', a[0], a[1], a[2], (a[3] + 0.85) % 1.0)
+                                                for k, a in enumerate(cr.unit_cell(bulk))), (cr.operation('x, y, z'),), 'P 1')
+    assert [len(sheet) for sheet in layer.sheets(shifted)] == [3, 3]
+    assert layer.monolayer(shifted).cell.c == pytest.approx(thick + 15.0)
+    with pytest.raises(ValueError, match='нет отдельных слоёв'):
+        layer.monolayer(silicon())
+    with pytest.raises(ValueError, match='нет отдельных слоёв'):
+        layer.monolayer(graphene())  # one sheet already
