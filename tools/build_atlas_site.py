@@ -307,10 +307,9 @@ def with_static(html):
 
 LANDING = ROOT / 'site' / 'index.html'  # the home page of the site: the program and the way to the Atlas
 LANDING_PICTURE = ROOT / 'assets' / 'quill' / 'quill-home-desk.webp'
-# Quill of the parts of the home page (docs/art/QUAIL_ART_SITE.md) — so far the part of the Atlas
-SECTION_PICTURES = tuple(ROOT / 'assets' / 'quill' / 'site' / f'quill-site-{name}.webp'
-                         # and the four of the cards of the parts of the program (approved 2026-11-17)
-                         for name in ('atlas', 'theory', 'molecule', 'calculation', 'result'))
+# Quill of the parts of the home page (docs/art/QUAIL_ART_SITE.md): the part of the Atlas only — the four cards of the
+# parts of the program are without her
+SECTION_PICTURES = (ROOT / 'assets' / 'quill' / 'site' / 'quill-site-atlas.webp',)
 APP_ICON = ROOT / 'assets' / 'app-icon'  # the icon of the program — the icon of the site too
 ATLAS_ICONS = {'d4fffdebdad3.png': 32, '9b516a1bad91.png': 64, 'f8ff4c87ca71.png': 256}  # the icon files of the pages
 # atlas/assets/img/ is kept by browsers for good (IMMUTABLE, sw.js), so a picture written under an old name is not

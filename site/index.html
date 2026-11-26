@@ -112,6 +112,9 @@ details.first code{font-size:13px;background:var(--soft);border:1px solid var(--
 .dl .card p{margin-bottom:14px}
 .manual{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:18px;padding:16px 20px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
 .manual p{margin:0;flex:1 1 260px;color:var(--muted)}
+details.first.top{margin:0 0 0}  /* above the manual and the cards of the systems: read before the download */
+#download .manual{margin:14px 0 18px}
+.ask{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:18px 0 0;color:var(--muted);font-size:15px}  /* the questions, with the button that writes them */
 .author{display:flex;gap:20px;align-items:flex-start}
 /* the cards: a small line picture above the title; the four parts of the program carry the picture of their section
    from the background of the program (hub/chrome.py Ornament, tools/site_scales.py), faint in the lower right corner */
@@ -120,13 +123,6 @@ details.first code{font-size:13px;background:var(--soft);border:1px solid var(--
 .cardLink{display:inline-block;margin-top:10px;font-size:14px;font-weight:600;text-decoration:none}
 .cardLink:hover{text-decoration:underline}
 .card.part{min-height:210px}
-/* Quill of each part — Теория, Молекула, Расчёт, Результат — one series; «пусть Квил в правом верхнем углу карточки,
-   при этом текст если до нее достает - обтекает ее»: floated in the upper right corner, the text around her */
-.cardQuill{float:right;width:96px;height:96px;margin:-6px -6px 6px 16px;object-fit:contain}
-@media (max-width:700px){.cardQuill{width:80px;height:80px}}
-/* «чтоб они с разных сторон были», then «секстант и спектр развернуть относительно текущего положения»: Молекула and
-   Расчёт turned */
-.card.part[data-part="compass"] .cardQuill,.card.part[data-part="sextant"] .cardQuill{transform:scaleX(-1)}
 .card.part>*:not(.cardArt){position:relative;z-index:1}
 .cardArt{position:absolute;right:0;bottom:0;width:240px;height:240px;color:var(--accent);pointer-events:none;z-index:0}
 .cardArt svg{display:block;width:100%;height:100%}
@@ -295,10 +291,10 @@ main,footer{position:relative;z-index:1}
     <h2 data-t="progT"></h2>
     <p class="sub" data-t="progSub"></p>
     <div class="parts">
-      <div class="card part" data-part="atlas"><!--ART book--><img class="cardQuill" src="img/quill-site-theory.webp" width="96" height="96" loading="lazy" alt=""><div class="what" data-t="p1w"></div><h3><!--NAV atlas--><button class="partBtn" type="button" aria-haspopup="dialog" aria-controls="secPanel" data-t="p1T"></button></h3><p data-t="p1"></p></div>
-      <div class="card part" data-part="compass"><!--ART compass--><img class="cardQuill" src="img/quill-site-molecule.webp" width="96" height="96" loading="lazy" alt=""><div class="what" data-t="p2w"></div><h3><!--NAV compass--><button class="partBtn" type="button" aria-haspopup="dialog" aria-controls="secPanel" data-t="p2T"></button></h3><p data-t="p2"></p></div>
-      <div class="card part" data-part="sextant"><!--ART sextant--><img class="cardQuill" src="img/quill-site-calculation.webp" width="96" height="96" loading="lazy" alt=""><div class="what" data-t="p3w"></div><h3><!--NAV sextant--><button class="partBtn" type="button" aria-haspopup="dialog" aria-controls="secPanel" data-t="p3T"></button></h3><p data-t="p3"></p></div>
-      <div class="card part" data-part="spectrum"><!--ART spectrum--><img class="cardQuill" src="img/quill-site-result.webp" width="96" height="96" loading="lazy" alt=""><div class="what" data-t="p4w"></div><h3><!--NAV spectrum--><button class="partBtn" type="button" aria-haspopup="dialog" aria-controls="secPanel" data-t="p4T"></button></h3><p data-t="p4"></p></div>
+      <div class="card part" data-part="atlas"><!--ART book--><div class="what" data-t="p1w"></div><h3><!--NAV atlas--><button class="partBtn" type="button" aria-haspopup="dialog" aria-controls="secPanel" data-t="p1T"></button></h3><p data-t="p1"></p></div>
+      <div class="card part" data-part="compass"><!--ART compass--><div class="what" data-t="p2w"></div><h3><!--NAV compass--><button class="partBtn" type="button" aria-haspopup="dialog" aria-controls="secPanel" data-t="p2T"></button></h3><p data-t="p2"></p></div>
+      <div class="card part" data-part="sextant"><!--ART sextant--><div class="what" data-t="p3w"></div><h3><!--NAV sextant--><button class="partBtn" type="button" aria-haspopup="dialog" aria-controls="secPanel" data-t="p3T"></button></h3><p data-t="p3"></p></div>
+      <div class="card part" data-part="spectrum"><!--ART spectrum--><div class="what" data-t="p4w"></div><h3><!--NAV spectrum--><button class="partBtn" type="button" aria-haspopup="dialog" aria-controls="secPanel" data-t="p4T"></button></h3><p data-t="p4"></p></div>
     </div>
     <p class="note" data-t="progNote"></p>
   </section>
@@ -306,17 +302,16 @@ main,footer{position:relative;z-index:1}
   <section id="download">
     <!-- the files of the latest release of GitHub under names without the version (.github/workflows/build-*.yml) -->
     <h2 data-t="dlT"></h2>
-    <p class="sub" data-t="dlSub"></p>
+    <details class="first top"><summary data-t="firstT"></summary><p data-t="firstWhy"></p><ul class="firstList"><li data-t="firstMac"></li><li data-t="firstWin"></li><li data-t="firstLin"></li></ul></details>
+    <!-- the user manual: the book in the language of the page, of the latest release (.github/workflows/release.yml) -->
+    <div class="manual"><!--ICON manual--><p data-t="manualSub"></p><a class="btn" id="manualPdf" href="https://github.com/coulombrepulsion/Azimuth-chem/releases/latest/download/Azimuth-manual-ru.pdf" rel="noopener" data-t="manualBtn"></a></div>
     <div class="dl">
       <div class="card"><!--ICON laptop--><div class="os">macOS</div><p data-t="mac"></p><a class="btn primary small get" href="https://github.com/coulombrepulsion/Azimuth-chem/releases/latest/download/Azimuth-macOS-arm64.dmg" rel="noopener" data-t="getMac"></a></div>
       <div class="card"><!--ICON desktop--><div class="os">Windows</div><p data-t="win"></p><a class="btn primary small get" href="https://github.com/coulombrepulsion/Azimuth-chem/releases/latest/download/Azimuth-Setup-Windows-x64.exe" rel="noopener" data-t="getWin"></a></div>
       <div class="card"><!--ICON terminal--><div class="os">Linux</div><p data-t="lin"></p><a class="btn primary small get" href="https://github.com/coulombrepulsion/Azimuth-chem/releases/latest" rel="noopener" data-t="getLin"></a></div>
     </div>
-    <!-- the user manual: the book in the language of the page, of the latest release (.github/workflows/release.yml) -->
-    <div class="manual"><!--ICON manual--><p data-t="manualSub"></p><a class="btn" id="manualPdf" href="https://github.com/coulombrepulsion/Azimuth-chem/releases/latest/download/Azimuth-manual-ru.pdf" rel="noopener" data-t="manualBtn"></a></div>
     <p class="note" data-t="dlNote"></p>
-    <details class="first"><summary data-t="firstT"></summary><p data-t="firstWhy"></p><ul class="firstList"><li data-t="firstMac"></li><li data-t="firstWin"></li><li data-t="firstLin"></li></ul></details>
-    <p style="margin:18px 0 0"><a class="btn" id="askProgram" href="#download" data-t="reqBtn"></a></p>
+    <p class="ask"><span data-t="askT"></span> <a class="btn" id="askProgram" href="#download" data-t="reqBtn"></a></p>
   </section>
 
   <section id="author">

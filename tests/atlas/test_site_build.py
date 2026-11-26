@@ -35,16 +35,17 @@ def test_the_site_has_the_pages_and_every_calculating_page_gets_the_static_scrip
     assert (out / 'img' / 'quill-home-desk.webp').is_file() and '/ru/:page /atlas/ru/:page 301' in (out / '_redirects').read_text()
     # Quill of the part of the Atlas — the picture the home page names is in the built site
     assert 'img/quill-site-atlas.webp' in home and (out / 'img' / 'quill-site-atlas.webp').is_file()
-    # Quill over each of the four cards of the parts of the program — Теория, Молекула, Расчёт, Результат
-    for part, name in (('atlas', 'theory'), ('compass', 'molecule'), ('sextant', 'calculation'), ('spectrum', 'result')):
-        start = home.index(f'<div class="card part" data-part="{part}">')
-        card = home[start:home.index('class="what"', start)]  # the card up to its label: the picture is there
-        assert f'<img class="cardQuill" src="img/quill-site-{name}.webp" width="96" height="96"' in card, part
-        assert (out / 'img' / f'quill-site-{name}.webp').is_file(), name
-    # two of the four pictures turned, to face different sides
-    # Quill in the upper right corner, the text around her; Молекула and Расчёт turned
-    assert '.card.part[data-part="compass"] .cardQuill,.card.part[data-part="sextant"] .cardQuill{transform:scaleX(-1)}' in home
-    assert '.cardQuill{float:right;' in home
+    # the four cards of the parts of the program are without Quill, and her pictures of them are not in the site
+    assert home.count('<div class="card part" data-part=') == 4 and 'cardQuill' not in home
+    for name in ('theory', 'molecule', 'calculation', 'result'):
+        assert not (out / 'img' / f'quill-site-{name}.webp').exists(), name
+    # «Скачать»: the first launch, the manual, the systems, the note (free, GitHub, SHA-256), the questions and the
+    # button that writes them
+    download = home[home.index('<section id="download">'):home.index('<section id="author">')]
+    order = ['data-t="dlT"', 'class="first top"', 'id="manualPdf"', 'class="dl"', 'data-t="dlNote"', 'data-t="askT"',
+             'id="askProgram"']
+    assert [download.index(mark) for mark in order] == sorted(download.index(mark) for mark in order)
+    assert 'data-t="dlSub"' not in home
     worker = (out / 'atlas' / 'assets' / 'js' / 'qcworker.js').read_text(encoding='utf-8')
     assert '"https://example.org/pyodide/"' in worker and '__PYODIDE__' not in worker
 
