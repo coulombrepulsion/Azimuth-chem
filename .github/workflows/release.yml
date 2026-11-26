@@ -17,9 +17,9 @@ jobs:
     permissions:
       contents: write
     steps:
+      # the files of the tag; a run by hand takes those of the branch it is run from (a tag made before this workflow
+      # has no packaging/release.sh)
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.release || github.ref }}
       - name: The draft release and the user manual
         env:
           GH_TOKEN: ${{ github.token }}
