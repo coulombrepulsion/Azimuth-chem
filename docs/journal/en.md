@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.224.0 — 26 November 2026
+
+- ### 0.224.0 — Reaction rate from the diagram
+
+In the reaction diagram, with ΔG chosen, every barrier now shows the Eyring rate constant of the forward and the reverse reaction, and a unimolecular step its half-life too. The «Copy k(T)» button gives a table of the constants from 200 to 600 K, ready to paste into a report.
+
 ## 0.223.0 — 26 November 2026
 
 - ### 0.223.0 — The path from a transition state

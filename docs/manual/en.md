@@ -1128,6 +1128,7 @@ Table: Analysis tables
 3. At the top choose the quantity (ΔE, ΔE₀ with zero-point vibrations, ΔH, ΔG), the units, T and P and the stage to count from. ΔH and ΔG need a frequency calculation. For reactions in solution where the number of molecules changes (A + B → C), check «Standard state 1 mol/L».
 4. Under the diagram — the barriers (‡ — a transition state, it has exactly one imaginary frequency) and the reaction energy. The ⚠ signs are checks: atoms or charge do not balance, different levels of theory, extra imaginary frequencies, normal termination not confirmed.
 5. «Picture or table…» — PNG, SVG or CSV; «Save diagram…» — to open it later together with the results.
+6. Rate constant (0.224.0). For ΔG, under every barrier there is the Eyring k, k = (k_B T/h)·(c°)^(1−n)·exp(−ΔG‡/RT), of the forward and the reverse reaction. A unimolecular step also gets its half-life t½. The order n is the number of species in the starting stage; the units of k are s⁻¹, L·mol⁻¹·s⁻¹… For a bimolecular step k is the same with either standard state: the program takes c° = 1 mol/L or P/RT, whichever is ticked. This is transition-state theory with κ = 1, without tunnelling. «Copy k(T)» puts on the clipboard a table of k from 200 to 600 K in steps of 50 K and at the chosen T, ready to paste into a report or a spreadsheet.
 
 Theory — in the Atlas: [«Reaction rate: the transition state»](https://www.azimuth-chem.com/atlas/?lang=en#kin), [«Equilibrium: from energy to the constant»](https://www.azimuth-chem.com/atlas/?lang=en#eqm).
 

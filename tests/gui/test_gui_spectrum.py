@@ -559,6 +559,10 @@ def test_reaction_diagram_window(window, app, tmp_path):
         app.processEvents()
         assert w.result.quantity == 'G' and w.result.values[2] == pytest.approx(0.0, abs=1e-9)
         assert '‡' in w.summary.text()
+        assert 'k прямой' in w.summary.text() and 't½' in w.summary.text() and w.rates_button.isEnabled()
+        header, body = w.rate_rows()
+        assert header[0] == 'T, K' and [row[0] for row in body if row[3] == 'прямое'][:2] == ['200', '250']
+        assert len({row[0] for row in body}) == 10  # 200–600 K and the chosen 298.15 K
         w.rename(1, 'Переходное')
         assert w.reference.itemText(1) == 'Переходное'
         w.move(1, 1)

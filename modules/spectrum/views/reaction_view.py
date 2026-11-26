@@ -397,10 +397,15 @@ class ReactionWindow(QWidget):
         self.picture_button.clicked.connect(self.choose_export)
         self.copy_button = QPushButton(tr('Копировать таблицу'))
         self.copy_button.clicked.connect(self.copy)
+        self.rates_button = QPushButton(tr('Копировать k(T)'))
+        self.rates_button.setToolTip(tr('Константы скорости по Эйрингу от 200 до 600 К (и при выбранной T) для ΔG‡ '
+                                        'каждого барьера — таблицей для отчёта'))
+        self.rates_button.setEnabled(False)
+        self.rates_button.clicked.connect(self.copy_rates)
         for b in (self.open_button, self.save_button):
             files.addWidget(b)
         files.addStretch()
-        for b in (self.picture_button, self.copy_button):
+        for b in (self.picture_button, self.copy_button, self.rates_button):
             files.addWidget(b)
         side.addLayout(files)
         split.addWidget(right)
@@ -579,6 +584,8 @@ class ReactionWindow(QWidget):
 
     # -- the diagram ---------------------------------------------------------------------------------------
     def refresh(self, *args):
+        if hasattr(self, 'rates_button'):
+            self.rates_button.setEnabled(False)  # enabled again for a G profile with barriers
         if not self.stages:
             self.result = None
             self.view.set_result(None, tr('Добавьте стадии: «Стадии из файлов…» или «Ввести вручную…»'))
@@ -608,10 +615,22 @@ class ReactionWindow(QWidget):
             if b.reverse is not None:
                 parts.append(tr(f'обратный {b.reverse:.1f} {unit} (от «{r.labels[b.end]}»)'))
             lines.append(f'‡ «{name}»: ' + '; '.join(parts) if parts else f'‡ «{name}»')
+            for rate in reaction.barrier_rates(r, self.stages, s['temperature'], s['pressure_atm'] * reaction.ATM,
+                                               s['molar']):
+                if rate.ts != b.ts:
+                    continue
+                text = 'k ' + (tr('прямой') if rate.direction == 'forward' else tr('обратной')) + \
+                    f' = {reaction.scientific(rate.k)} {tr(reaction.rate_unit(rate.order))}'
+                if rate.half_life is not None:
+                    text += ', t½ = ' + reaction.duration(rate.half_life)
+                lines.append('    ' + text)
         if r.reaction is not None:
             lines.append(tr(f'{sym} реакции («{r.labels[0]}» → «{r.labels[-1]}»): {r.reaction:+.1f} {unit}'))
         if s['quantity'] in ('H', 'G'):
             lines.append(tr(f'T = {s["temperature"]:.2f} K, P = {s["pressure_atm"]:g} атм') + (tr(', 1 моль/л') if s['molar'] else ''))
+        if r.quantity == 'G' and r.barriers:
+            lines.append(tr('k — по Эйрингу (теория переходного состояния, κ = 1, без туннелирования).'))
+        self.rates_button.setEnabled(r.quantity == 'G' and bool(r.barriers))
         self.summary.setText('\n'.join(lines))
         self.notes.setText('\n'.join('⚠ ' + w for w in r.warnings))
         self.view.set_result(r)
@@ -625,6 +644,29 @@ class ReactionWindow(QWidget):
                   f'{SYMBOL[self.result.quantity]}, ' + tr(UNIT_NAMES[self.result.unit])]
         body = reaction.rows(self.result, self.stages, s['temperature'], s['pressure_atm'] * reaction.ATM, s['qrrho'], s['molar'])
         return header, body
+
+    def rate_rows(self):
+        """Header and rows of k(T): reaction.rate_table at 200–600 K and at the chosen T."""
+        s = self.settings()
+        temperatures = sorted(set(reaction.RATE_TEMPERATURES) | {round(s['temperature'], 2)})
+        rows = reaction.rate_table(self.stages, temperatures, s['pressure_atm'] * reaction.ATM, s['qrrho'], s['molar'])
+        header = [tr('T, K'), tr('Переходное состояние'), tr('От стадии'), tr('Направление'), 'n',
+                  'ΔG‡, ' + tr('ккал/моль'), 'k', tr('Единица k'), 't½, ' + tr('с')]
+        body = [[f'{t:g}', ts, start, tr('прямое') if d == 'forward' else tr('обратное'), str(n), f'{g:.2f}',
+                 f'{k:.4e}', tr(reaction.rate_unit(n)), '' if half is None else f'{half:.4e}']
+                for t, ts, start, d, n, g, k, half in rows]
+        return header, body
+
+    def copy_rates(self):
+        try:
+            header, body = self.rate_rows()
+        except ValueError as exc:
+            self.notes.setText('⚠ ' + str(exc))
+            return
+        QApplication.clipboard().setText('\n'.join('\t'.join(row) for row in [header, *body]))
+        from azimuth.ui import copied
+
+        copied(self, tr('константы скорости'), self.rates_button)
 
     def copy(self):
         header, body = self.table()

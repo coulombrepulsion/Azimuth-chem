@@ -21,6 +21,12 @@ HEADER A reaction is a row of stages (reactants, intermediates, transition state
     Standard state 1 mol/L instead of the ideal gas at P (only for G): each species gets
     ΔG°(1 M) = RT ln(RT c° / P), c° = 1000 mol/m³ — 1.894 kcal/mol at 298.15 K and 1 atm; it matters only when the
     number of molecules changes along the reaction (A + B → C).
+    Rate constant of transition-state theory (Eyring), transmission coefficient κ = 1, no tunnelling:
+    k = (k_B T / h) · (c°)^(1 − n) · exp(−ΔG‡ / k_B T), n — the molecularity (the species of the start stage minus
+    those of the TS stage, plus one), c° — the concentration of the standard state of ΔG‡: 1 mol/L for the 1 M
+    state, P/RT (in mol/L) for the ideal gas at P. Both give the same k in (mol/L)^(1−n)·s⁻¹: the 1 M correction
+    of ΔG‡ is (n − 1)·RT ln(RT c°/P). A first-order step has the half-life t½ = ln 2 / k; k_B T / h is
+    6.2124·10¹² s⁻¹ at 298.15 K.
 
 §2 ALGORITHM
     species_from_output(output, text, path): E, the geometry (that of the frequencies if any), the frequencies,
@@ -34,6 +40,9 @@ HEADER A reaction is a row of stages (reactants, intermediates, transition state
     reference stage, more than one imaginary frequency, different levels of theory, an unconfirmed normal
     termination, corrections typed in by hand (they do not follow T).
     Suitability(species, purpose 'profile' | 'ensemble') -> [warning] — shared with boltzmann.files_table.
+    eyring(ΔG‡ in hartree, T, n, P, molar) -> k; barrier_rates(profile, stages, T, P, molar) -> [Rate] of the
+    barriers of a G profile; rate_table(stages, temperatures, P, qrrho, molar) -> rows of k(T) (a G profile at
+    every T).
     save(stages, settings, folder) -> dict and load(data, folder, read) -> (stages, settings): a .json diagram
     with the paths of the results (relative to the file where possible) and the hand-typed numbers.
 
@@ -48,6 +57,7 @@ HEADER A reaction is a row of stages (reactants, intermediates, transition state
     Stage(label, species). QUANTITIES = ('E', 'E0', 'H', 'G'); UNITS = {'kcal', 'kj', 'ev'}.
     profile(...) -> Profile(quantity, unit, labels, absolute, values, kinds, barriers, reaction, warnings).
     Barrier(ts, start, end, forward, reverse) — stage indices (start / end may be None) and values in the unit.
+    Rate(ts, start, direction 'forward' | 'reverse', order n, barrier ΔG‡ in hartree, k, half_life in s or None).
     rows(profile, stages) -> list of rows for a table (stage, species, kind, X in hartree, ΔX in the unit).
     read_species(path) -> Species. ValueError with a message for the user on every invalid input.
 
@@ -61,7 +71,8 @@ HEADER A reaction is a row of stages (reactants, intermediates, transition state
 
 §7 TEST CASES (tests/spectrum/test_reaction.py)
     Hand-computed ΔE, barriers and energy of reaction in kcal/mol, kJ/mol and eV; sums over a stage; the 1 M
-    correction (1.894 kcal/mol, RT ln 24.465); G without frequencies is missing and named; the atom and charge
+    correction (1.894 kcal/mol, RT ln 24.465); k_B T/h and k of Eyring by hand and against the Atlas
+    (quas_atlas/core/kinetics.py), the same k of a bimolecular step in both standard states; G without frequencies is missing and named; the atom and charge
     balance; two imaginary frequencies; the levels of ORCA and Gaussian; a real result (Psi4, divinylbenzene) —
     the corrections equal those printed by Psi4; save and load.
 
@@ -440,6 +451,87 @@ def profile(stages, quantity='E', unit='kcal', reference=0, temperature=298.15, 
         quantity, unit, tuple(s.label for s in stages), tuple(absolute), values, kinds, tuple(barriers), reaction,
         tuple(dict.fromkeys(warnings)), reference,
     )
+
+
+@dataclass(frozen=True)
+class Rate:
+    ts: int
+    start: int
+    direction: str
+    order: int
+    barrier: float  # ΔG‡, hartree
+    k: float
+    half_life: float | None
+
+
+def eyring(barrier, temperature=298.15, order=1, pressure=ATM, molar=False):
+    """k of §1 in (mol/L)^(1 − order)·s⁻¹ for ΔG‡ in hartree per molecule."""
+    if not temperature > 0 or not pressure > 0 or order < 1:
+        raise ValueError(tr('Константа скорости: нужны T > 0, P > 0 и молекулярность от 1.'))
+    standard = 1.0 if molar else pressure / (thermo.R * temperature) / C_STANDARD  # mol/L
+    exponent = -barrier * thermo.HARTREE / (thermo.KB * temperature)
+    return thermo.KB * temperature / thermo.H * standard ** (1 - order) * math.exp(min(exponent, 700.0))
+
+
+def barrier_rates(result, stages, temperature=298.15, pressure=ATM, molar=False):
+    """[Rate] of the barriers of a G profile, forward and reverse (the steps whose molecularity is at least 1)."""
+    if result is None or result.quantity != 'G':
+        return []
+    out = []
+    for b in result.barriers:
+        for direction, start in (('forward', b.start), ('reverse', b.end)):
+            if start is None or result.absolute[start] is None or result.absolute[b.ts] is None:
+                continue
+            order = len(stages[start].species) - len(stages[b.ts].species) + 1
+            if order < 1:
+                continue
+            barrier = result.absolute[b.ts] - result.absolute[start]
+            k = eyring(barrier, temperature, order, pressure, molar)
+            out.append(Rate(b.ts, start, direction, order, barrier, k, math.log(2) / k if order == 1 and k > 0 else None))
+    return out
+
+
+RATE_TEMPERATURES = tuple(range(200, 601, 50))  # K: the range of the course (200–600 K)
+
+
+def rate_table(stages, temperatures=RATE_TEMPERATURES, pressure=ATM, qrrho=False, molar=False):
+    """Rows (T, TS, from, direction, n, ΔG‡ kcal/mol, k, t½ s or None) — the G profile recomputed at every T."""
+    rows_ = []
+    for t in temperatures:
+        result = profile(stages, 'G', 'kcal', 0, t, pressure, qrrho, molar)
+        for r in barrier_rates(result, stages, t, pressure, molar):
+            rows_.append((t, result.labels[r.ts], result.labels[r.start], r.direction, r.order, r.barrier * thermo.KCAL,
+                          r.k, r.half_life))
+    return rows_
+
+
+def rate_unit(order):
+    """The unit of k for the molecularity: с⁻¹, л·моль⁻¹·с⁻¹, л²·моль⁻²·с⁻¹ (the key of tr)."""
+    if order == 1:
+        return 'с⁻¹'
+    power = '' if order == 2 else str(order - 1).translate(str.maketrans('0123456789', '⁰¹²³⁴⁵⁶⁷⁸⁹'))
+    minus = '⁻' + ('¹' if order == 2 else power)
+    return f'л{power}·моль{minus}·с⁻¹'
+
+
+def scientific(x, digits=3):
+    """1.23·10⁵ (two decimals by default; plain for 0.01 ≤ |x| < 1000)."""
+    if x == 0 or not math.isfinite(x):
+        return f'{x:g}'
+    if 0.01 <= abs(x) < 1000:
+        return f'{x:.{digits}g}'
+    mantissa, exponent = f'{x:.{digits - 1}e}'.split('e')
+    power = str(int(exponent)).translate(str.maketrans('-0123456789', '⁻⁰¹²³⁴⁵⁶⁷⁸⁹'))
+    return f'{mantissa}·10{power}'
+
+
+def duration(seconds):
+    """A half-life in words: мкс, мс, с, мин, ч, сут, лет (the unit names are keys of tr)."""
+    for limit, size, name in ((1e-3, 1e-6, 'мкс'), (1.0, 1e-3, 'мс'), (60.0, 1.0, 'с'), (3600.0, 60.0, 'мин'),
+                              (86400.0, 3600.0, 'ч'), (3.15576e7, 86400.0, 'сут')):
+        if seconds < limit:
+            return f'{scientific(seconds / size)} {tr(name)}'
+    return f'{scientific(seconds / 3.15576e7)} {tr("лет")}'
 
 
 def suitability(species, purpose):
