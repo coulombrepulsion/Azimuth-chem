@@ -314,6 +314,88 @@ class EosPlot(_Plot):
         p.end()
 
 
+class CurvesPlot(_Plot):
+    """Several curves with their points on common axes: series [(name, colour, points [(x, y)], line [(x, y)])]."""
+
+    LEFT = 64
+
+    def __init__(self):
+        super().__init__()
+        self.series = []
+        self.x_axis, self.y_axis = '', ''
+
+    def paintEvent(self, event):
+        from math import floor, log10
+
+        p = QPainter(self)
+        p.setRenderHint(QPainter.RenderHint.Antialiasing)
+        ink = self.palette().text().color()
+        left, right, top, bottom = self.frame()
+        xs = [x for _, _, points, line in self.series for x, _ in points + line]
+        ys = [y for _, _, points, line in self.series for _, y in points + line]
+        if not xs:
+            p.end()
+            return
+        x0, x1 = min(xs), max(xs)
+        y0, y1 = min(ys), max(ys)
+        pad_x, pad_y = 0.04 * (x1 - x0 or 1.0), 0.06 * (y1 - y0 or 1.0)
+        x0, x1, y0, y1 = x0 - pad_x, x1 + pad_x, y0 - pad_y, y1 + pad_y
+
+        def X(v):
+            return left + (right - left) * (v - x0) / (x1 - x0)
+
+        def Y(v):
+            return bottom - (bottom - top) * (v - y0) / (y1 - y0)
+
+        font = QFont(self.font())
+        font.setPixelSize(11)
+        p.setFont(font)
+        p.setPen(QPen(ink, 1))
+        p.drawRect(QRectF(left, top, right - left, bottom - top))
+        for lo, hi, place in ((x0, x1, 'x'), (y0, y1, 'y')):
+            raw = (hi - lo) / 6
+            power = 10 ** floor(log10(raw))
+            step = next(m * power for m in (1, 2, 5, 10) if m * power >= raw)
+            v = int(lo // step + 1) * step
+            while v < hi:
+                if place == 'x':
+                    p.drawLine(QPointF(X(v), bottom), QPointF(X(v), bottom + 4))
+                    p.drawText(QRectF(X(v) - 30, bottom + 6, 60, 14), Qt.AlignmentFlag.AlignCenter, f'{v:g}')
+                else:
+                    p.drawLine(QPointF(left - 4, Y(v)), QPointF(left, Y(v)))
+                    p.drawText(QRectF(0, Y(v) - 7, left - 6, 14), Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter, f'{v:g}')
+                v += step
+        p.drawText(QRectF(right - 200, bottom + 18, 200, 14), Qt.AlignmentFlag.AlignRight, tr(self.x_axis))
+        p.save()
+        p.translate(12, (top + bottom) / 2)
+        p.rotate(-90)
+        p.drawText(QRectF(-110, -10, 220, 14), Qt.AlignmentFlag.AlignCenter, tr(self.y_axis))
+        p.restore()
+        for k, (name, colour, _, _) in enumerate(self.series):  # the legend, inside the frame
+            y = top + 14 + 16 * k
+            p.setPen(QPen(QColor(colour), 2))
+            p.drawLine(QPointF(left + 10, y), QPointF(left + 30, y))
+            p.setPen(QPen(ink, 1))
+            p.drawText(QRectF(left + 36, y - 7, right - left - 46, 14), Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter, name)
+        p.setClipRect(QRectF(left, top, right - left, bottom - top))
+        for _, colour, points, line in self.series:
+            path = QPainterPath()
+            for k, (x, y) in enumerate(line):
+                point = QPointF(X(x), Y(y))
+                if k:
+                    path.lineTo(point)
+                else:
+                    path.moveTo(point)
+            p.setPen(QPen(QColor(colour), 1.4))
+            p.setBrush(Qt.BrushStyle.NoBrush)
+            p.drawPath(path)
+            p.setPen(QPen(QColor(colour).darker(140), 1))
+            p.setBrush(QColor(colour))
+            for x, y in points:
+                p.drawEllipse(QPointF(X(x), Y(y)), 3.6, 3.6)
+        p.end()
+
+
 # the colours of the PDOS of the elements and of their s, p, d, f (Tableau 10, as crystal_packing.PALETTE)
 PARTS = ('#e15759', '#59a14f', '#f28e2b', '#b07aa1', '#76b7b2', '#edc948', '#9c755f', '#ff9da7', '#4e79a7', '#bab0ac')
 

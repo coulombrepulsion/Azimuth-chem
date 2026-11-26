@@ -170,6 +170,13 @@ def start(self):
     self.steps_run = [s[:2] for s in steps]
     if self.task.currentData() in (qe_inputs.BANDS_TASK, qe_inputs.DISPERSION_TASK):  # the path of the plot
         self._write_path()
+    if self.task.currentData() == qe_inputs.ELASTIC_TASK:  # which strain each run is of, and the volume
+        import json
+
+        from modules.compass.chemistry import elastic
+
+        note = {'plan': [[name, e] for name, e in elastic.plan()], 'volume': self.computed()[0].cell.volume()}
+        (self.folder / 'elastic.json').write_text(json.dumps(note), encoding='utf-8', newline='\n')
     if server:
         return self.start_server(steps, safe)
     if cp2k:
@@ -488,6 +495,9 @@ def poll(self):
             from modules.compass.chemistry import layer
 
             text += '<br>' + layer.text(cone[0])
+    strained = self.elastic_data() if self.program != 'cp2k' else None
+    if strained is not None:
+        text = '<br>'.join(self.elastic_lines(strained)) + '<br>' + tr('Ниже — последний расчёт ряда.') + '<br>' + text
     series = self.eos_data() if self.program != 'cp2k' else None
     if series is not None:  # the fit first: the energy above is that of the last volume of the series
         text = '<br>'.join(self.eos_lines(series)) + '<br>' + tr('Ниже — последний объём ряда.') + '<br>' + text

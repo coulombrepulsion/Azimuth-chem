@@ -1266,3 +1266,32 @@ def test_nmr_conformers_dialog(window, app, tmp_path):
     panel.element.setCurrentText('C')
     sigma = sorted(float(panel.table.item(r, 2).text()) for r in range(panel.table.rowCount()))
     assert len(sigma) == 2 and abs(sigma[1] - 175.96) < 0.02 and abs(sigma[0] - 135.67) < 0.02
+
+
+def test_methods_dialog(window, app, tmp_path):
+    # «Методика расчёта…»: the paragraph of the result open in Spectrum and the archive of the inputs of its folder
+    import shutil
+    import zipfile
+
+    from modules.spectrum.views.methods_view import MethodsDialog
+
+    data = Path(__file__).parents[1] / 'data' / 'orca601'
+    folder = tmp_path / 'water'
+    folder.mkdir()
+    for name in ('h2o_cpcm_water.out', 'h2o_cpcm_water.inp'):
+        shutil.copy(data / name, folder / name)
+    empty = MethodsDialog(window)
+    assert not empty.copy_button.isEnabled() and not empty.archive_button.isEnabled() and 'выберите папку' in empty.files.text()
+    path = folder / 'h2o_cpcm_water.out'
+    window.display_output(path.read_text(encoding='utf-8'), path.name, False, path=str(path))
+    dialog = window.spectrum_tools.methods_dialog()
+    assert dialog.folder == folder and 'ORCA 6.0.1' in dialog.text.toPlainText() and 'CPCM(Water)' in dialog.text.toPlainText()
+    assert 'h2o_cpcm_water.inp' in dialog.files.text() and dialog.archive_button.isEnabled()
+    dialog.text.setPlainText(dialog.text.toPlainText() + ' Своя фраза.')
+    assert dialog.copy().endswith('Своя фраза.')
+    saved = dialog.save_archive(tmp_path / 'inputs.zip')
+    with zipfile.ZipFile(saved) as bundle:
+        assert sorted(bundle.namelist()) == ['METHODS.txt', 'h2o_cpcm_water.inp']
+        assert bundle.read('METHODS.txt').decode('utf-8').strip().endswith('Своя фраза.')
+    other = MethodsDialog(window, tmp_path)  # a folder without a calculation
+    assert other.details is None and 'не нашлось расчёта' in other.files.text()

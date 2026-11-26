@@ -630,6 +630,7 @@ def sextant_menus(self, studio, menu, own, help_menu, picture_menu, compare_menu
     calc.addAction(own('Установить программы для расчёта…', lambda: studio.run_tool.install_tools_dialog()))
     calc.addAction(own('Папка расчёта', studio.run_tool.open_job_folder))
     calc.addAction(own('История расчётов…', studio.run_tool.show_history))
+    calc.addAction(own('Методика расчёта…', lambda: studio.spectrum_tools.methods_dialog()))
     calc.addAction(own('Пакеты расчётов…', lambda: studio.batch_tool.show_saved_batches()))
     calc.addAction(own('QTAIM для очереди…', lambda: studio.batch_tool.batch_qtaim(choose=True)))
     calc.addAction(own('Дескрипторы и logK очереди…', lambda: studio.batch_tool.batch_descriptors(choose=True)))
@@ -687,6 +688,7 @@ def spectrum_menus(self, studio, menu, own, help_menu, picture_menu, compare_men
         own('Доли по Больцману…', lambda: studio.spectrum_tools.boltzmann_dialog()),
         own('Равновесие двух форм…', lambda: studio.spectrum_tools.equilibrium_dialog()),
         own('Заторможенный ротатор…', lambda: studio.spectrum_tools.hindered_rotor_dialog()),
+        own('Методика расчёта…', lambda: studio.spectrum_tools.methods_dialog()),
         None,
         own('Множители частот…', lambda: studio.vibrations.open_factor_table()),
         own('Опытные данные для молекулы…', lambda: self._measured_data()),

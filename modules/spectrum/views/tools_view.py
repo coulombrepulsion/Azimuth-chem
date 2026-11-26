@@ -14,6 +14,7 @@
     HinderedRotorDialog(owner) — set_scan(path), cover, sigma, wavenumber (0 — from the curvature of the scan),
     temperature, table (q of the harmonic oscillator, the hindered and the free rotor, ΔG and the factor of K at
     200–600 K and the chosen T), compute(), copy(), save_csv(path); hindered_rotor_dialog(path=None) of the tool.
+    methods_dialog(folder=None) of the tool — «Методика расчёта…» (modules/spectrum/views/methods_view.py).
 §7 TESTS
     tests/test_gui.py::test_spectrum_tools.
 """
@@ -608,6 +609,9 @@ class SpectrumToolsTool:
     PORT = (
         'molecule',
         'output',
+        'output_path',
+        'output_text',
+        'crystal_mode_tool',
     )
 
     def __init__(self, window):
@@ -658,6 +662,31 @@ class SpectrumToolsTool:
         dialog.show()
         if path:
             dialog.set_scan(path)
+        return dialog
+
+    def methods_dialog(self, folder=None):
+        """«Методика расчёта…»: of the folder given, else of the crystal calculation shown in Sextant, else of the
+        result open in Spectrum (its own text — a folder may hold several results)."""
+        from pathlib import Path
+
+        from modules.spectrum.analysis import methods_text
+        from modules.spectrum.views.methods_view import MethodsDialog
+
+        details = None
+        if folder is None:
+            crystal = getattr(self.w, 'crystal_mode_tool', None) if self.w.has('crystal_mode_tool') else None
+            panel = getattr(crystal, 'panel', None) if getattr(crystal, 'active', False) else None
+            if panel is not None and getattr(panel, 'folder', None):
+                folder = panel.folder
+            elif getattr(self.w, 'output_path', None):
+                folder = Path(str(self.w.output_path)).parent
+                try:
+                    details = methods_text.orca(getattr(self.w, 'output_text', '') or '')
+                except ValueError:
+                    details = None
+        dialog = MethodsDialog(self.w.widget, folder, details)
+        self.methods_window = dialog
+        dialog.show()
         return dialog
 
     def boltzmann_dialog(self):

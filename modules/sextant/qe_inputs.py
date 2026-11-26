@@ -88,10 +88,13 @@ CUTOFF_TASK, KGRID_TASK = 'Сходимость по энергии обреза
 HUBBARD_TASK, MAGNETIC_TASK = 'Ряд по U (DFT+U)', 'Магнитный порядок (без спина, ФМ, АФМ)'
 U_VALUES = (0.0, 2.0, 4.0, 6.0, 8.0)  # eV
 MAGNETIC_STATES = ('без спина', 'ферромагнитный', 'антиферромагнитный')
+# the elastic constants of a cubic crystal: the cell as it is and 3 strains × 6 amplitudes (ela1.in …; elastic.plan)
+ELASTIC_TASK = 'Упругие постоянные (кубический кристалл)'
 # the vacuum of a layer raised (vac1.in …): the same layer in cells of layer.vacuums, the other settings as they are
 VACUUM_TASK = 'Сходимость по вакууму (слой)'
 SERIES = {CUTOFF_TASK: 'cut', KGRID_TASK: 'kpt', VACUUM_TASK: 'vac', HUBBARD_TASK: 'hub', MAGNETIC_TASK: 'mag'}
 STEPS = {EOS_TASK: tuple((f'eos{n + 1}.in', 'pw.x') for n in range(len(EOS_FACTORS))),
+         ELASTIC_TASK: tuple((f'ela{n + 1}.in', 'pw.x') for n in range(19)),
          CUTOFF_TASK: tuple((f'cut{n + 1}.in', 'pw.x') for n in range(7)),
          KGRID_TASK: tuple((f'kpt{n + 1}.in', 'pw.x') for n in range(8)),
          VACUUM_TASK: tuple((f'vac{n + 1}.in', 'pw.x') for n in range(7)),
@@ -450,6 +453,28 @@ def steps(crystal, task, pseudo, pseudo_dir='.', prefix='azimuth', spacing=SPACI
         return [(name, tool, pw_input(equation_of_state.scaled(crystal, factor), kind, pseudo, pseudo_dir, prefix, spacing,
                                       options=same))
                 for (name, tool), factor in zip(STEPS[EOS_TASK], EOS_FACTORS)]
+    if task == ELASTIC_TASK:
+        import numpy as np
+
+        from dataclasses import replace
+
+        from modules.compass.chemistry import elastic
+        from modules.sextant import qe_paths
+
+        whole = conventional or crystal
+        if qe_paths.lattice(whole) not in ('cP', 'cF', 'cI'):
+            raise ValueError(tr('Упругие постоянные считаются здесь только для кубического кристалла (C₁₁, C₁₂, C₄₄).'))
+        o = options or Options()
+        kind = 'scf' if o.functional in HYBRIDS else 'relax'  # the atoms move inside a sheared cell (silicon)
+        same = o if o.grid else replace(o, grid=grid_of(crystal, spacing))
+        # the rows of the cell computed in the frame of the cubic axes: the strains are defined there
+        rows = np.array(whole.cell.vectors(), dtype=float)
+        if basis is not None:
+            rows = np.array(basis, dtype=float) @ rows
+        return [(f'ela{n + 1}.in', 'pw.x',
+                 pw_input(elastic.deformed(crystal, rows, elastic.matrix(name, e) if name else np.zeros((3, 3))), kind,
+                          pseudo, pseudo_dir, prefix, spacing, options=same))
+                for n, (name, e) in enumerate(elastic.plan())]
     if task in (PHONON_TASK, DISPERSION_TASK):
         o = options or Options()
         if o.functional in PHONON_REFUSED or o.vdw not in ('', 'd2'):

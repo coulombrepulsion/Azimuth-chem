@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.237.0 — 26 November 2026
+
+- ### 0.237.0 — Elastic constants and «Computational details»
+
+A new Quantum ESPRESSO task computes the elastic constants of a cubic crystal – C₁₁, C₁₂ and C₄₄ – from three strains and draws the curves. And the menu has «Computational details…»: the program writes a paragraph for the report from the files of the calculation and packs the archive of the input files.
+
 ## 0.236.0 — 26 November 2026
 
 - ### 0.236.0 — LDA for crystals

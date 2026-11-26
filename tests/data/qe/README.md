@@ -62,3 +62,8 @@
   layer (k 12 × 12 × 1; the π and π* bands touch at K at −1.6887 eV, ħv_F = 5.47 eV·Å), «Сходимость по k-сетке»
   (N = 6, 8, 9, 10, 12, 15, 18, 24) and «Сходимость по вакууму (слой)» (8 … 20 Å). Used by
   `tests/compass/test_layer.py`.
+- `mgo_elastic_pw76.out` with `mgo_elastic.json` — QE 7.6 on the owner's Mac (2026-11-26, 4 processes), the task
+  «Упругие постоянные (кубический кристалл)» of `qe_inputs.steps` for MgO at the cell PBE gives (a = 4.2486 Å; the
+  primitive cell, SSSP 1.3.0, k 11 × 11 × 11): 19 runs — the cell as it is and 3 strains × 6 amplitudes. Of every run
+  its head and its end are kept (the iterations left out; the energies «!» and «JOB DONE» are there; the paths
+  replaced). C₁₁ = 276.3, C₁₂ = 92.1, C₄₄ = 143.2 GPa, B = 153.5 GPa. Used by `tests/compass/test_elastic.py`.

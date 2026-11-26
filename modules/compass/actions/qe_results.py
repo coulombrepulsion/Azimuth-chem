@@ -332,6 +332,76 @@ def show_eos(self, found):
     return window
 
 
+def elastic_data(self):
+    """(elastic.Elastic | None, {kind: [(e, E eV)]}) of a finished series of strains («Упругие постоянные»): the runs
+    of pw.out by the plan of elastic.json; None when the job is not such a series. The reason of a failed fit — in
+    self.elastic_error."""
+    import json
+
+    from modules.compass.chemistry import elastic
+    from modules.spectrum.readers import qe
+
+    if self.folder is None or not (self.folder / 'elastic.json').is_file() or not (self.folder / 'pw.out').is_file():
+        return None
+    try:
+        note = json.loads((self.folder / 'elastic.json').read_text(encoding='utf-8'))
+        plan, volume = [(name, float(e)) for name, e in note['plan']], float(note['volume'])
+    except (ValueError, KeyError, TypeError):
+        return None
+    runs = qe.runs((self.folder / 'pw.out').read_text(encoding='utf-8', errors='replace'))
+    points = {kind: [] for kind in elastic.KINDS}
+    for (name, e), run in zip(plan, runs):
+        r = qe.read(run)
+        if r.energy is None or not r.done:
+            continue
+        energy = r.energy * 13.605693122994
+        for kind in (elastic.KINDS if name is None else (name,)):  # the unstrained cell is a point of each curve
+            points[kind].append((e, energy))
+    self.elastic_error = ''
+    try:
+        return elastic.fit(points, volume), points
+    except ValueError as exc:
+        self.elastic_error = str(exc)
+        return None, points
+
+
+def elastic_lines(self, found):
+    from modules.compass.chemistry import elastic
+
+    if found[0] is None:
+        return [self.elastic_error]
+    return elastic.lines(found[0])
+
+
+ELASTIC_NAMES = {'c11': 'растяжение вдоль x: C₁₁', 'cp': 'растяжение x, сжатие y: C₁₁ − C₁₂', 'c44': 'сдвиг xy: C₄₄'}
+
+
+def show_elastic(self, found):
+    """ΔE/V₀ of the three strains with the curves of the fit."""
+    from modules.compass.actions import qe_plots
+    from modules.compass.chemistry import elastic
+
+    fit, points = found
+    if fit is None:
+        return None
+    plot = qe_plots.CurvesPlot()
+    plot.x_axis, plot.y_axis = 'Деформация e', 'ΔE/V₀, мэВ/Å³'
+    rows = []
+    for kind, colour in zip(elastic.KINDS, ('#2a62b8', '#c0504d', '#2e8b57')):
+        zero = next(energy for e, energy in points[kind] if abs(e) < 1e-9)
+        dots = sorted((e, 1000 * (energy - zero) / fit.volume) for e, energy in points[kind])
+        lo, hi = dots[0][0], dots[-1][0]
+        line = [(e, 1000 * elastic.curve(fit, kind, e)) for e in (lo + (hi - lo) * k / 80 for k in range(81))]
+        plot.series.append((tr(ELASTIC_NAMES[kind]), colour, dots, line))
+        rows += [(kind, e, energy, 1000 * (energy - zero) / fit.volume) for e, energy in sorted(points[kind])]
+    window = qe_plots.QePlotWindow(self, tr('Упругие постоянные · ') + self.name, plot, rows,
+                                   ['strain', 'e', 'E, eV', 'dE/V0, meV/A^3'], 'elastic.csv')
+    window.note.setText(' '.join(self.elastic_lines(found)))
+    self.plot_window = window
+    window.show()
+    return window
+
+
 def phonon_data(self):
     """(branches [[ν cm⁻¹] per q], path dict, (ν, g) of the phonon DOS or None) of a finished job of the phonon
     branches (the files of matdyn.x), or None."""
@@ -391,6 +461,9 @@ def show_plot(self):
     phonons = self.phonon_data()
     if phonons is not None:
         return self.show_phonons(phonons)
+    strained = self.elastic_data()
+    if strained is not None:
+        return self.show_elastic(strained)
     series = self.eos_data()
     if series is not None:
         return self.show_eos(series)

@@ -1174,7 +1174,7 @@ sys.stdout.write(open({str(data / 'cellopt.out')!r}).read())
     assert not panel.aim_button.isVisibleTo(tool.page) and not panel.charges_button.isVisibleTo(tool.page)
     assert not panel.aim_button.isWindow() and not panel.charges_button.isWindow()
     tool.program_combo.setCurrentIndex(tool.program_combo.findData('qe'))
-    assert panel.program == 'qe' and panel.task.count() == 13 and not panel.form.isRowVisible(panel.basis)  # + E(V), five series
+    assert panel.program == 'qe' and panel.task.count() == 14 and not panel.form.isRowVisible(panel.basis)  # + E(V), E(ε), five series
     assert [b.value() for b in panel.supercell] == [1, 1, 1]  # the k points of pw.x: no supercell of the Γ point
     shutil.rmtree(tmp_path / 'jobs', ignore_errors=True)
     tool.job_card.compass_button.click()  # back to the crystal in Compass

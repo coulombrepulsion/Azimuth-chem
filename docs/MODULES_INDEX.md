@@ -222,6 +222,7 @@
 - `modules/compass/chemistry/crystal_symmetry.py` — The symmetry of a crystal from its operations; whole molecules across the cell faces.
 - `modules/compass/chemistry/crystal_voids.py` — The voids of a crystal: where a probe sphere fits between the van der Waals spheres of the atoms — as «Display Voids» of Mercury (CCDC).
 - `modules/compass/chemistry/editing.py` — Quick structure edits of Compass: hydrogens by valence, H → group, element change.
+- `modules/compass/chemistry/elastic.py` — The elastic constants of a cubic crystal from the energies of strained cells.
 - `modules/compass/chemistry/embed3d.py` — Flat (2D) structures of a file and their 3D coordinates by RDKit.
 - `modules/compass/chemistry/equation_of_state.py` — The equation of state of a crystal from a series of volumes: the Birch–Murnaghan fit, V₀, B₀ and B₀′.
 - `modules/compass/chemistry/formats.py` — Molecule files of other programs: reading and writing for Compass.
@@ -435,6 +436,7 @@
 - `modules/spectrum/analysis/hindered_rotor.py` — A hindered internal rotation from a relaxed scan of a dihedral angle: levels, partition function, the correction of G.
 - `modules/spectrum/analysis/ir_spectrum.py` — Gaussian IR broadening (the lines and the broadened curve). Contract: docs/features/IR_SPECTRUM.md.
 - `modules/spectrum/analysis/isotopes.py` — The isotope pattern of a molecular ion: M, M+1, M+2… with their exact masses.
+- `modules/spectrum/analysis/methods_text.py` — «Методика расчёта»: the paragraph of the computational details of a result, and the archive of its input files.
 - `modules/spectrum/analysis/nci_domains.py` — Weak interactions told apart by NCI: the regions of low RDG split into domains, each named and measured.
 - `modules/spectrum/analysis/nmr_compare.py` — Computed chemical shifts against the measured ones: the errors, the linear correction, the assignment.
 - `modules/spectrum/analysis/nmr_multiplets.py` — NMR multiplets from computed spin-spin couplings: the first-order splitting of every signal.
@@ -461,6 +463,7 @@
 - `modules/spectrum/views/field_view.py` — Spectrum: «Карты и профили» — a function of the wavefunction in the plane of three atoms (a colour map with contours) and along the line through two atoms (a profile), computed by Multiwfn.
 - `modules/spectrum/views/fukui_view.py` — The window «Функции Фукуи» (the calculation: modules/spectrum/analysis/fukui.py).
 - `modules/spectrum/views/ir_plot.py` — The plot of an IR or Raman spectrum (a Qt widget; moved here from modules/spectrum/analysis/ir_spectrum.py, which keeps the broadening). Contract: docs/features/IR_SPECTRUM.md.
+- `modules/spectrum/views/methods_view.py` — «Методика расчёта…»: the paragraph of the computational details of a calculation and the archive of its inputs.
 - `modules/spectrum/views/nist_window.py` — «Найти в NIST…» of the button «Эксперимент и конформеры»: a measured IR or UV-Vis spectrum from the NIST Chemistry WebBook laid over the computed one (modules/spectrum/readers/nist.py).
 - `modules/spectrum/views/nmr_compare_view.py` — «Сравнить с экспериментом…» of the NMR tab: the computed shifts of one nucleus beside the measured ones.
 - `modules/spectrum/views/nmr_conformers_view.py` — «Среднее по конформерам…» of the NMR tab: the shieldings of a flexible molecule averaged by the Boltzmann shares.

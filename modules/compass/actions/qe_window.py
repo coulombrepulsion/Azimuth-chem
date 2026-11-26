@@ -509,6 +509,9 @@ class QePanel(QWidget):
     dos_data = _results.dos_data
     phonon_data = _results.phonon_data
     eos_data = _results.eos_data
+    elastic_data = _results.elastic_data
+    elastic_lines = _results.elastic_lines
+    show_elastic = _results.show_elastic
     series_data = _results.series_data
     cone_data = _results.cone_data
     show_cone = _results.show_cone
