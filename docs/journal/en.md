@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.226.0 — 26 November 2026
+
+- ### 0.226.0 — The complete basis set and the equilibrium of two forms
+
+For an accurate energy in ORCA you can now choose an extrapolation to the complete basis set: it is a group of its own in the list of basis sets and works with MP2, CCSD(T) and DLPNO-CCSD(T). And Spectrum has a new tool, «Equilibrium of two forms»: give it two results with frequencies and get the equilibrium constant and the shares of the forms from 200 to 600 K, with the contributions of the energy, rotation, vibrations and symmetry.
+
 ## 0.225.0 — 26 November 2026
 
 - ### 0.225.0 — The program tells you about a new version

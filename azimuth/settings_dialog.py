@@ -251,8 +251,7 @@ class SettingsDialog(QDialog):
         self.bond_factor.setToolTip(tr('Связь, если расстояние не больше множителя × суммы ковалентных радиусов'))
         form.addRow(tr('Связь — до (× сумма ковалентных радиусов)'), self.bond_factor)
         self.bond_order = self._number('bond_order_min', 0.10, 1.00, 0.05, 2)
-        self.bond_order.setToolTip(tr('«Связи по порядкам Майера»: связь, если порядок не меньше порога (в Chemcraft '
-                                      'для GAMESS — 0,25)'))
+        self.bond_order.setToolTip(tr('«Связи по порядкам Майера»: связь, если порядок не меньше порога'))
         form.addRow(tr('Порог порядка связи'), self.bond_order)
         self.common_orientation = self._switch(
             'common_orientation', 'Шаги оптимизации и скана — в одной ориентации',
@@ -336,8 +335,8 @@ class SettingsDialog(QDialog):
         self.quick_atoms.setSpecialValueText(tr('никогда'))
         self.quick_atoms.setSuffix(tr(' атомов'))
         self.quick_atoms.setValue(defaults.get('quick_atoms'))
-        self.quick_atoms.setToolTip(tr('Большая модель рисуется быстро и чуть грубее, и когда она стоит (как Display → '
-                                       'Quick в Chemcraft); снимки — всегда в полном качестве'))
+        self.quick_atoms.setToolTip(tr('Большая модель рисуется быстро и чуть грубее, и когда она стоит; '
+                                       'снимки — всегда в полном качестве'))
         self.quick_atoms.valueChanged.connect(lambda value: self.put('quick_atoms', value))
         form.addRow(tr('Быстрая отрисовка — от'), self.quick_atoms)
         self._reset_row('view', form)

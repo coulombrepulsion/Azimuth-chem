@@ -64,7 +64,7 @@ EDITION = {
     'ru': ('<p><b>«Азимут» (Azimuth). {title}.</b> Версия программы {version}.</p>'
            '<p>© 2026 С. А. Собалев. Программа распространяется по академической лицензии «Азимута» (файл LICENSE): '
            'свободно для преподавания, обучения и некоммерческих исследований с обязательной ссылкой на программу; '
-           'коммерческое использование — с письменного разрешения автора.</p>'
+           'коммерческое использование – с письменного разрешения автора.</p>'
            '<p><b>Как сослаться.</b> Собалев С. А. Азимут (Azimuth): учебная программа для квантово-химических '
            'расчётов. Версия {version}. 2026. URL: https://azimuth-chem.com</p>'
            '<p>Расчётные программы (ORCA, Gaussian, xtb и другие) в «Азимут» не входят и распространяются на условиях '
@@ -536,7 +536,7 @@ def to_html(markdown, lang, version, pages=None, edition_date=''):
     if lang == 'zh':  # the Chinese letters come from a font of the system, after the Latin ones of Inter
         style = style.replace("'Inter Manual',", "'Inter Manual', " + CJK_FONTS + ",")
         style += '\nbody { text-align: left; hyphens: manual; -webkit-hyphens: manual; }\n'
-    page = (f'<!doctype html><html lang="{lang}"><head><meta charset="utf-8"><title>{words["program"]} — {title}</title>'
+    page = (f'<!doctype html><html lang="{lang}"><head><meta charset="utf-8"><title>{words["program"]} – {title}</title>'
             f'<style>{_font_faces()}\n{style}</style></head><body>{cover}{edition}{"".join(toc)}{body}</body></html>')
     return page, headings
 
@@ -744,7 +744,7 @@ def build(lang='ru', out=None, keep_html=None):
         moved = [h.number for h in headings if second.get(h.id) is not None and second[h.id] + 1 != pages[h.id]]
         if moved:
             raise RuntimeError('the pages moved between the two prints: ' + ', '.join(moved[:10]))
-        data = add_outline(data, headings, title=f'{WORDS.get(lang, WORDS["ru"])["program"]} {version} — {TITLES.get(lang, "")}')
+        data = add_outline(data, headings, title=f'{WORDS.get(lang, WORDS["ru"])["program"]} {version} – {TITLES.get(lang, "")}')
         out.write_bytes(data)
         out.with_name(out.stem + '.sha256').write_text(sources_hash(lang) + '\n', encoding='utf-8')
         return out, len(_pages(_objects(data), _ref(_objects(data)[_ref(_trailer(data), b'Root')], b'Pages')))

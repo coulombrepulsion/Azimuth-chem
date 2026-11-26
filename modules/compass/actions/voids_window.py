@@ -37,7 +37,7 @@ class VoidsWindow(QDialog):
         self.probe.setDecimals(1)
         self.probe.setSuffix(' Å')
         self.probe.setValue(1.2)
-        self.probe.setToolTip(tr('1,2 Å — как в Mercury; 1,4 Å — молекула воды; меньше — любые щели'))
+        self.probe.setToolTip(tr('1,2 Å — обычное значение; 1,4 Å — молекула воды; меньше — любые щели'))
         row.addWidget(self.probe)
         row.addWidget(QLabel(tr('Сетка:')))
         self.step = QComboBox()
@@ -58,7 +58,7 @@ class VoidsWindow(QDialog):
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         layout.addWidget(self.table, 1)
         note = QLabel(tr('Пустота — место, куда помещается пробная сфера, не задевая ван-дер-ваальсовых сфер атомов '
-                         '(радиусы Бонди); на модели — объединение всех таких сфер («контактная поверхность» Mercury). '
+                         '(радиусы Бонди); на модели — объединение всех таких сфер («контактная поверхность»). '
                          'Канал проходит через всю ячейку и продолжается в соседней; полость замкнута. Атомы водорода '
                          'рентгеноструктурных файлов могут отсутствовать — тогда пустоты больше настоящих.'))
         note.setWordWrap(True)

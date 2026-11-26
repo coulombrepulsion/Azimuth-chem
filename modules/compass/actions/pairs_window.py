@@ -43,8 +43,8 @@ class PairsWindow(QDialog):
         self.setWindowTitle(tr('Энергии пар · ') + (title or crystal.title or 'CIF'))
         layout = QVBoxLayout(self)
         note = QLabel(tr('Энергия взаимодействия молекулы с каждым соседом E = E(пара) − E(A) − E(B) в GFN2-xTB при '
-                         'геометрии кристалла; энергия решётки ≈ ½ Σ E по соседям в пределах радиуса (как в '
-                         'CrystalExplorer). Точность — порядка 10–20 %. Составляющие — слагаемые GFN2 (электростатика, '
+                         'геометрии кристалла; энергия решётки ≈ ½ Σ E по соседям в пределах радиуса. '
+                         'Точность — порядка 10–20 %. Составляющие — слагаемые GFN2 (электростатика, '
                          'дисперсия, отталкивание, остальное — поляризация и обмен), каждое как разность пары и молекул.'))
         note.setWordWrap(True)
         note.setObjectName('subtitle')
@@ -58,7 +58,7 @@ class PairsWindow(QDialog):
         self.radius.setPrefix(tr('соседи ближе '))
         self.radius.setSuffix(' Å')
         self.radius.setToolTip(tr('Соседняя молекула — с атомом ближе этого расстояния к атому центральной '
-                                  '(3,8 Å — как в CrystalExplorer)'))
+                                  '(обычно 3,8 Å)'))
         self.radius.editingFinished.connect(self.prepare)
         row.addWidget(self.radius)
         row.addStretch(1)

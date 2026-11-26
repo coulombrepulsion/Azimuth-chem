@@ -81,7 +81,18 @@ BASIS_TABLE = {
     'aug-cc-pVTZ': ('Даннинга (cc)', 'aug-cc-pVTZ', 'Aug-cc-pVTZ', 'aug-cc-pvtz', ((1, 18), (31, 36))),
     'pcseg-1': ('Йенсена (pcseg)', 'pcseg-1', None, 'pcseg-1', _HKR),
     'pcseg-2': ('Йенсена (pcseg)', 'pcseg-2', None, 'pcseg-2', _HKR),
+    # the extrapolation to the complete basis set of ORCA — two calculations (X = 2/3 or 3/4) and E(CBS) of both:
+    # the SCF part by exp(−α√X), the correlation part by X^(−β) (the exponents of Neese and Valeev, JCTC 7, 33,
+    # 2011). An energy of a correlated method only (CBS_BASES, Calculation.validate_settings). ORCA 6.0.1 ran
+    # «Extrapolate(2/3,cc)» with DLPNO-CCSD(T) (tests/data/orca601/cbs_h2o).
+    'CBS(cc-pVDZ/TZ)': ('Экстраполяция к полному базису (CBS)', 'Extrapolate(2/3,cc)', None, None, ((1, 18), (31, 36))),
+    'CBS(cc-pVTZ/QZ)': ('Экстраполяция к полному базису (CBS)', 'Extrapolate(3/4,cc)', None, None, ((1, 18), (31, 36))),
+    'CBS(aug-cc-pVDZ/TZ)': ('Экстраполяция к полному базису (CBS)', 'Extrapolate(2/3,aug-cc)', None, None,
+                            ((1, 18), (31, 36))),
+    'CBS(def2-SVP/TZVPP)': ('Экстраполяция к полному базису (CBS)', 'Extrapolate(2/3,def2)', None, None, _DEF2),
+    'CBS(def2-TZVPP/QZVPP)': ('Экстраполяция к полному базису (CBS)', 'Extrapolate(3/4,def2)', None, None, _DEF2),
 }
+CBS_BASES = frozenset(k for k in BASIS_TABLE if k.startswith('CBS('))
 
 
 PROGRAM_COLUMN = {'orca': 1, 'gaussian': 2, 'psi4': 3, 'mopac': 4}  # MOPAC — methods only, no basis sets
@@ -193,6 +204,8 @@ def element_bases(text):
         key = next((k for k in BASIS_TABLE if k.lower() == basis.lower()), None)
         if key is None:
             raise ValueError(tr(f'Базисы по элементам: нет базиса «{basis}» в списке Секстанта.'))
+        if key in CBS_BASES:
+            raise ValueError(tr(f'Базисы по элементам: «{key}» — экстраполяция, а не базис; её выбирают в поле «Базис».'))
         if symbol in found:
             raise ValueError(tr(f'Базисы по элементам: {symbol} задан дважды.'))
         found[symbol] = key

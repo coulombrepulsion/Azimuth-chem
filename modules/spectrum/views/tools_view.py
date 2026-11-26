@@ -1,4 +1,4 @@
-"""«Инструменты» of Spectrum: the isotope pattern, the energies of several results, the Boltzmann shares.
+"""«Инструменты» of Spectrum: the isotope pattern, the energies of several results, the Boltzmann shares, the equilibrium of two forms.
 
 §1 PURPOSE
     The tools of Chemcraft that belong to results: the windows over modules/spectrum/analysis/isotopes.py and
@@ -8,7 +8,9 @@
     show(formula) -> pattern. EnergiesDialog(owner, paths=None, temperature=298.15) — table, note; fill(paths).
     BoltzmannDialog(owner) — text, unit, temperature, table; compute() -> rows. Each: save_csv(path) -> path.
     SpectrumToolsTool (window.spectrum_tools): show_isotopes(formula=None), energies_of_files(paths=None),
-    boltzmann_dialog(), current_formula().
+    boltzmann_dialog(), equilibrium_dialog(paths=None), current_formula().
+    EquilibriumDialog(owner, read=None) — set_form(k, path), sigmas, mirrors, temperature, qrrho, table (K(T) at
+    200–600 K and the chosen T), factors (what K is made of at the chosen T), compute(), copy(), save_csv(path).
 §7 TESTS
     tests/test_gui.py::test_spectrum_tools.
 """
@@ -275,6 +277,168 @@ class BoltzmannDialog(QDialog):
         return _save(self, self.table, path, 'boltzmann.csv')
 
 
+class EquilibriumDialog(QDialog):
+    """«Равновесие двух форм…»: K(T), the shares and the factors of K (modules/spectrum/analysis/equilibrium.py)."""
+
+    HEADERS = ('T, K', 'ΔG°', 'K', 'Доля A, %', 'Доля B, %')
+    FACTOR_NAMES = (('energy', 'exp(−ΔE₀/RT): разность энергий с нулевыми колебаниями'),
+                    ('translational', 'Поступательная сумма по состояниям'),
+                    ('rotational', 'Вращательная сумма (с числом симметрии σ)'),
+                    ('vibrational', 'Колебательная сумма'),
+                    ('electronic', 'Электронная (мультиплетность)'),
+                    ('mirror', 'Зеркальные формы'))
+
+    def __init__(self, owner, read=None):
+        from PySide6.QtWidgets import QCheckBox, QSpinBox
+
+        super().__init__(owner)
+        self.setWindowTitle(tr('Равновесие двух форм'))
+        self.read = read
+        self.species = [None, None]
+        self.rows = []
+        lay = QVBoxLayout(self)
+        hint = label(tr('A ⇌ B: два результата «Оптимизация + частоты» одной молекулы (конформеры, таутомеры, '
+                        'изомеры), посчитанные одним методом. K = [B]/[A].'), 'subtitle')
+        hint.setWordWrap(True)
+        lay.addWidget(hint)
+        form = QFormLayout()
+        self.names, self.sigmas, self.mirrors = [], [], []
+        for k, letter in enumerate('AB'):
+            row = QHBoxLayout()
+            row.addWidget(button(tr('Выбрать файл…'), lambda *_, k=k: self.choose(k)))
+            name = QLabel('—')
+            self.names.append(name)
+            row.addWidget(name, 1)
+            row.addWidget(QLabel('σ'))
+            sigma = QSpinBox()
+            sigma.setRange(1, 60)
+            sigma.setToolTip(tr('Вращательное число симметрии: число поворотов, совмещающих молекулу с собой. '
+                                'Предложено по точечной группе геометрии — проверьте.'))
+            sigma.valueChanged.connect(lambda *_: self.compute())
+            self.sigmas.append(sigma)
+            row.addWidget(sigma)
+            row.addWidget(QLabel(tr('зеркальных форм')))
+            mirror = QSpinBox()
+            mirror.setRange(1, 2)
+            mirror.setToolTip(tr('2 — форма хиральна и в образце есть оба зеркальных изомера (они одной энергии и '
+                                 'считаются одной формой удвоенного веса); 1 — форма не хиральна. Предложено по '
+                                 'точечной группе.'))
+            mirror.valueChanged.connect(lambda *_: self.compute())
+            self.mirrors.append(mirror)
+            row.addWidget(mirror)
+            form.addRow(tr('Форма') + f' {letter}', row)
+        options = QHBoxLayout()
+        self.temperature = QDoubleSpinBox()
+        self.temperature.setRange(1, 5000)
+        self.temperature.setDecimals(2)
+        self.temperature.setSuffix(' K')
+        self.temperature.setValue(298.15)
+        self.temperature.valueChanged.connect(lambda *_: self.compute())
+        options.addWidget(self.temperature)
+        self.qrrho = QCheckBox(tr('Квази-RRHO для низких частот'))
+        self.qrrho.setToolTip(tr('Энтропия мод ниже ~100 см⁻¹ — по Гримме (как в ORCA); без неё мягкие торсионные '
+                                 'колебания завышают колебательную сумму'))
+        self.qrrho.toggled.connect(lambda *_: self.compute())
+        options.addWidget(self.qrrho)
+        options.addStretch(1)
+        form.addRow(tr('Температура'), options)
+        lay.addLayout(form)
+        self.table = _table(self.HEADERS)
+        lay.addWidget(self.table, 2)
+        self.factors = _table(('Множитель в K', 'Значение'))
+        lay.addWidget(self.factors, 2)
+        self.note = label('', 'subtitle')
+        self.note.setWordWrap(True)
+        lay.addWidget(self.note)
+        bottom = QHBoxLayout()
+        self.copy_button = button(tr('Копировать таблицу'), lambda: self.copy())
+        bottom.addWidget(self.copy_button)
+        bottom.addWidget(button(tr('Сохранить CSV…'), lambda: self.save_csv()))
+        bottom.addStretch(1)
+        bottom.addWidget(button(tr('Закрыть'), self.accept))
+        lay.addLayout(bottom)
+        self.resize(760, 640)
+
+    def choose(self, k):
+        from modules.spectrum.views.reaction_view import RESULT_FILTER
+
+        path, _ = QFileDialog.getOpenFileName(self, tr('Результат расчёта'), '', tr(RESULT_FILTER))
+        if path:
+            self.set_form(k, path)
+        return path
+
+    def set_form(self, k, path):
+        """The result of form k (0 — A, 1 — B): σ and the mirror forms proposed from its geometry."""
+        from pathlib import Path
+
+        from modules.spectrum.analysis import equilibrium, reaction
+
+        read = self.read or reaction.read_species
+        try:
+            species = read(str(path), Path(path).stem)
+        except (ValueError, OSError) as exc:
+            self.note.setText(str(exc))
+            return None
+        self.species[k] = species
+        self.names[k].setText(species.label + (f' ({species.formula})' if species.formula else ''))
+        for box, value in ((self.sigmas[k], species.sigma or 1), (self.mirrors[k], equilibrium.mirror_forms(species.geometry))):
+            box.blockSignals(True)
+            box.setValue(value)
+            box.blockSignals(False)
+        self.compute()
+        return species
+
+    def compute(self):
+        from azimuth import defaults
+        from modules.spectrum.analysis import equilibrium
+
+        a, b = self.species
+        if a is None or b is None:
+            return None
+        sigma = (self.sigmas[0].value(), self.sigmas[1].value())
+        mirror = (self.mirrors[0].value(), self.mirrors[1].value())
+        chosen = round(self.temperature.value(), 2)
+        temperatures = sorted(set(equilibrium.TEMPERATURES) | {chosen})
+        try:
+            self.rows = equilibrium.table(a, b, temperatures, qrrho=self.qrrho.isChecked(), sigma=sigma, mirror=mirror)
+        except ValueError as exc:
+            self.rows = []
+            self.table.setRowCount(0)
+            self.factors.setRowCount(0)
+            self.note.setText(str(exc))
+            return None
+        unit, factor = tr(defaults.energy_name()), defaults.energy_factor()
+        headers = list(self.HEADERS)
+        headers[1] = f'ΔG°, {unit}'
+        self.table.setHorizontalHeaderLabels([tr(h) if k != 1 else h for k, h in enumerate(headers)])
+        _fill(self.table, [(f'{p.temperature:g}', f'{p.delta_g * factor:.2f}', f'{p.constant:.4g}',
+                            f'{100 * p.share_a:.1f}', f'{100 * p.share_b:.1f}') for p in self.rows])
+        at = next(p for p in self.rows if p.temperature == chosen)
+        _fill(self.factors, [(tr(title), f'{at.factors[key]:.4g}') for key, title in self.FACTOR_NAMES]
+              + [(tr('K — произведение множителей') + f' ({chosen:g} K)', f'{at.constant:.4g}')])
+        text = tr('ΔE₀ = {:.2f} {} (B − A, с нулевыми колебаниями). Множители — при {} K.').format(
+            at.delta_e0 * factor, unit, f'{chosen:g}')
+        self.note.setText(text + ''.join(' ⚠ ' + tr(w) for w in equilibrium.warnings(a, b)))
+        return self.rows
+
+    def copy(self):
+        from PySide6.QtWidgets import QApplication
+
+        from azimuth.ui import copied
+
+        lines = []
+        for table in (self.table, self.factors):
+            lines.append('\t'.join(table.horizontalHeaderItem(c).text() for c in range(table.columnCount())))
+            lines += ['\t'.join(table.item(r, c).text() for c in range(table.columnCount()))
+                      for r in range(table.rowCount())]
+            lines.append('')
+        QApplication.clipboard().setText('\n'.join(lines).rstrip())
+        copied(self, tr('таблица равновесия'), self.copy_button)
+
+    def save_csv(self, path=None):
+        return _save(self, self.table, path, 'equilibrium.csv')
+
+
 class SpectrumToolsTool:
     """Was the mixin SpectrumTools of the window; a part of its own — it reaches the window only through
     the names of PORT (azimuth/window_port.WindowPort)."""
@@ -316,6 +480,14 @@ class SpectrumToolsTool:
         dialog.show()
         if paths is None:
             dialog.choose()
+        return dialog
+
+    def equilibrium_dialog(self, paths=None):
+        dialog = EquilibriumDialog(self.w.widget)
+        self.equilibrium_window = dialog
+        dialog.show()
+        for k, path in enumerate(paths or ()):
+            dialog.set_form(k, path)
         return dialog
 
     def boltzmann_dialog(self):

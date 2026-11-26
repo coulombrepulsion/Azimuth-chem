@@ -155,7 +155,7 @@ class HirshfeldWindow(QDialog):
         middle.addWidget(self.plot, 3)
         right = QVBoxLayout()
         self.pair = QComboBox()
-        self.pair.setToolTip(tr('Какие контакты выделить на «отпечатке»: вместе X···Y и Y···X, как в CrystalExplorer'))
+        self.pair.setToolTip(tr('Какие контакты выделить на «отпечатке»: вместе X···Y и Y···X'))
         self.pair.currentIndexChanged.connect(self.redraw)
         right.addWidget(self.pair)
         # the standard scale of CrystalExplorer (0.4–2.6 Å, the plots of all crystals comparable) or one fitted round
@@ -163,7 +163,7 @@ class HirshfeldWindow(QDialog):
         self.scale = QComboBox()
         self.scale.addItem(tr('масштаб: стандартный · 0,4–2,6 Å'), 'standard')
         self.scale.addItem(tr('масштаб: по данным'), 'data')
-        self.scale.setToolTip(tr('Стандартный — как в CrystalExplorer: «отпечатки» разных кристаллов сравнимы на глаз. '
+        self.scale.setToolTip(tr('Стандартный: «отпечатки» разных кристаллов сравнимы на глаз. '
                                  'По данным — оси вокруг пятна, оно крупнее и подробнее'))
         self.scale.currentIndexChanged.connect(lambda _: self.rescale())
         right.addWidget(self.scale)

@@ -108,6 +108,15 @@ def input_geometry(text):
         return None
 
 
+def read_cbs(text):
+    """The block «Extrapolation of energy» of an ORCA Extrapolate job: (scheme, SCF, correlation, total) or None."""
+    found = re.search(
+        r'Extrapolated CBS SCF energy\s+\((\d/\d)\)\s*:\s*(' + NUMBER + r').*?'
+        r'Extrapolated CBS Correlation energy\s+\(\d/\d\)\s*:\s*(' + NUMBER + r').*?'
+        r'Extrapolated CBS Total energy\s+\(\d/\d\)\s*:\s*(' + NUMBER + ')', text, re.S)
+    return (found[1], number(found[2]), number(found[3]), number(found[4])) if found else None
+
+
 def read_output(text):
     if len(text) > MAX_BYTES:
         raise too_large()
@@ -184,4 +193,5 @@ def read_output(text):
         excited_energy=excited,
         raman_skipped='Analytical Hessian not available for calculation of RAMAN' in text,  # 0.90.1 (ORCA 6.0.1)
         couplings=read_couplings(text),
+        cbs=read_cbs(text),
     )

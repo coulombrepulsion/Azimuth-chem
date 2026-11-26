@@ -5,7 +5,7 @@ from math import isfinite, dist
 import json
 import re
 from azimuth.i18n import tr
-from azimuth.core_bases import SYMBOLS, element_bases, element_basis_text, _names, orca_bases, BASIS_TABLE, DUMMY, PROGRAM_COLUMN, Z, _DEF2, program_names, METHOD_TABLE, OWN_TABLES  # noqa: F401 — also named from here
+from azimuth.core_bases import CBS_BASES, SYMBOLS, element_bases, element_basis_text, _names, orca_bases, BASIS_TABLE, DUMMY, PROGRAM_COLUMN, Z, _DEF2, program_names, METHOD_TABLE, OWN_TABLES  # noqa: F401 — also named from here
 from azimuth.core_isotopes import isotope_abundance, isotope_name, isotope_masses, isotope_text, ISOTOPES  # noqa: F401 — also named from here
 
 
@@ -151,6 +151,7 @@ def read_xyz(text):
 
 
 CC_METHODS = frozenset(('CCSD(T)', 'DLPNO-CCSD(T)'))  # the energy only
+CBS_METHODS = frozenset(('MP2', 'CCSD(T)', 'DLPNO-CCSD(T)'))  # a basis of CBS_BASES: the correlation energy extrapolated
 WAVEFUNCTION = ('HF', 'MP2', 'CCSD(T)', 'DLPNO-CCSD(T)')  # no grid of DFT, the reference of the SCF is HF
 # a D3(BJ) / D4 correction is added only to functionals without their own dispersion and with parameters for it
 DISPERSION_METHODS = frozenset(('BLYP', 'BP86', 'PBE', 'TPSS', 'r2SCAN', 'B3LYP', 'PBE0', 'TPSSh', 'CAM-B3LYP', 'B2PLYP'))
@@ -342,6 +343,13 @@ class Calculation:
         if self.method in CC_METHODS and self.task != 'Энергия':
             raise ValueError(tr('CCSD(T) здесь считает только энергию (без градиентов): оптимизируйте геометрию '
                                 'функционалом DFT, затем посчитайте на ней «Энергию» этим методом.'))
+        if self.basis in CBS_BASES:
+            if self.method not in CBS_METHODS or self.task != 'Энергия':
+                raise ValueError(tr('Экстраполяция к полному базису (CBS) — для «Энергии» методами MP2, CCSD(T) и '
+                                    'DLPNO-CCSD(T): геометрию и частоты считайте функционалом DFT в обычном базисе.'))
+            if self.element_basis.strip() or self.relativistic:
+                raise ValueError(tr('С экстраполяцией к полному базису (CBS) свои базисы элементов и релятивистский '
+                                    'гамильтониан здесь не сочетаются — уберите их.'))
         self.validate_advanced()
         if type(self.cores) is not int or not 1 <= self.cores <= 128:
             raise ValueError(tr('Число процессов должно быть от 1 до 128.'))

@@ -1017,6 +1017,20 @@ def test_spectrum_tools(window, app, tmp_path):
     result = files.fill(['x.out', 'y.out'], read=lambda p, label: made[p])
     assert result['by'] == 'E' and files.table.rowCount() == 2 and files.table.item(1, 5).text() == '0.63'
     files.close()
+    # «Равновесие двух форм…»: the same real result (ORCA 6.0.1, water, Opt Freq) as both forms — K = 1; then the
+    # symmetry number of B halved by hand: K = 2 (q_rot ∝ 1/σ), 66.7 % of B
+    water = str(Path(__file__).parents[1] / 'data' / 'orca601' / 'h2o_optfreq.out')
+    pair = window.spectrum_tools.equilibrium_dialog([water, water])
+    assert pair.sigmas[0].value() == 2 and pair.mirrors[0].value() == 1  # C2v
+    assert pair.table.rowCount() == 10 and pair.table.item(0, 0).text() == '200'
+    at = next(r for r in range(10) if pair.table.item(r, 0).text() == '298.15')
+    assert pair.table.item(at, 2).text() == '1' and pair.table.item(at, 4).text() == '50.0'
+    pair.sigmas[1].setValue(1)
+    assert pair.table.item(at, 2).text() == '2' and pair.table.item(at, 4).text() == '66.7'
+    assert pair.factors.item(2, 1).text() == '2' and pair.factors.rowCount() == 7
+    pair.mirrors[0].setValue(2)
+    assert pair.table.item(at, 2).text() == '1'
+    pair.close()
 
 
 def test_experiment_and_conformers_over_the_spectra(window, tmp_path):

@@ -400,7 +400,7 @@ def crystal_menus(self, studio, menu, own, help_menu, picture_menu, compare_menu
         box.setToolTipsVisible(True)
         box.aboutToShow.connect(grey_ionic)
     # outside the beta (AGENTS.md §0): shown, marked — a line that cannot be chosen, on top
-    unverified = QAction(tr('Не проверено: анализ кристаллов ещё не сверен с Mercury и VESTA'), self)
+    unverified = QAction(tr('Не проверено: анализ кристаллов ещё не сверен с другими программами'), self)
     unverified.setEnabled(False)
     crystal_menu = menu(
         'Кристалл',
@@ -685,6 +685,7 @@ def spectrum_menus(self, studio, menu, own, help_menu, picture_menu, compare_men
         own('Изотопный пик молекулярного иона…', lambda: studio.spectrum_tools.show_isotopes()),
         own('Энергии из нескольких файлов…', lambda: studio.spectrum_tools.energies_of_files()),
         own('Доли по Больцману…', lambda: studio.spectrum_tools.boltzmann_dialog()),
+        own('Равновесие двух форм…', lambda: studio.spectrum_tools.equilibrium_dialog()),
         None,
         own('Множители частот…', lambda: studio.vibrations.open_factor_table()),
         own('Опытные данные для молекулы…', lambda: self._measured_data()),

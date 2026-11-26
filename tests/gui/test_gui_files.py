@@ -3234,7 +3234,7 @@ def test_the_fields_of_the_crystal_setup_move_into_the_dialog(window, app, tmp_p
     tool = window.crystal_mode_tool
     panel, rows = tool.panel, tool.setup_rows
     # outside the beta (AGENTS.md §0): shown, marked in the title, the reason in its tip
-    assert tool.unverified.text().endswith('не проверено') and tool.unverified.toolTip().startswith('Не проверено')
+    assert tool.unverified.text().endswith('не проверено') and 'числа ещё не сверены с литературой' in tool.unverified.toolTip()
     try:
         rows.reset()
         inside = tool.options_dialog.forms[-1]

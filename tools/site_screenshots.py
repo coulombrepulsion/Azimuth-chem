@@ -79,7 +79,7 @@ def chinese_letters():
     return found
 
 
-MANUAL_SHOTS = ('home', 'compass', 'compass-optimization', 'compass-scan', 'sextant', 'spectrum-optimization',
+MANUAL_SHOTS = ('home', 'compass', 'compass-ethanol', 'sextant-ethanol', 'compass-optimization', 'compass-scan', 'sextant', 'spectrum-optimization',
                 'spectrum-vibrations', 'spectrum-uv', 'crystal', 'crystal-contacts', 'crystal-powder', 'sextant-crystal')
 
 
@@ -224,6 +224,14 @@ def main(argv=None):
         hub.open_atlas_molecule('Бензол · C₆H₆')
         section('compass')
 
+    def compass_ethanol():  # the worked example of the manual («Первый расчёт»)
+        hub.open_atlas_molecule('Этанол · C₂H₆O')
+        section('compass')
+
+    def sextant_ethanol():
+        hub.open_atlas_molecule('Этанол · C₂H₆O')
+        section('sextant')
+
     def compass_optimization():
         opened('2-optimization/divinylbenzene_opt_gaussian16.log')
         section('compass')
@@ -330,7 +338,8 @@ def main(argv=None):
              ('crystal', crystal), ('crystal-molecular', crystal_molecular), ('crystal-graphite', crystal_graphite),
              ('crystal-contacts', crystal_contacts), ('crystal-hirshfeld', crystal_hirshfeld),
              ('crystal-fingerprint', crystal_fingerprint), ('crystal-powder', crystal_powder),
-             ('sextant-crystal', sextant_crystal)]
+             ('sextant-crystal', sextant_crystal), ('compass-ethanol', compass_ethanol),
+             ('sextant-ethanol', sextant_ethanol)]
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     on_site = set(re.findall(r'<!--SHOT ([a-z-]+) [A-Za-z0-9]+-->',

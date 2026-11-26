@@ -78,8 +78,8 @@ def make_job_card(window, panel):
     return card
 
 
-CRYSTALS_UNVERIFIED = ('Не проверено: расчёты кристаллов (Quantum ESPRESSO, CP2K) не входят в проверенную бету — '
-                       'результаты сверяйте с литературой.')
+CRYSTALS_UNVERIFIED = ('Запуск Quantum ESPRESSO и CP2K проверен (на этом компьютере и на сервере), но числа ещё не '
+                       'сверены с литературой на известных кристаллах — сверяйте результаты сами.')
 
 
 class CrystalModeTool:

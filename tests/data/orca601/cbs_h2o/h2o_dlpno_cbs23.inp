@@ -1,0 +1,10 @@
+# H2O_DLPNO-CCSD(T)_CBS(cc-pVDZ/TZ)
+! DLPNO-CCSD(T) Extrapolate(2/3,cc) AutoAux TightSCF
+%pal nprocs 4 end
+%maxcore 1500
+
+* xyz 0 1
+O   0.00000000  0.00000000  0.11700000
+H   0.75700000  0.00000000 -0.46900000
+H  -0.75700000  0.00000000 -0.46900000
+*

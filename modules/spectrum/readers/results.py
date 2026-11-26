@@ -64,6 +64,9 @@ class Output:
     shieldings: tuple = ()  # orca_spectra.Shielding, NMR
     program: str = 'ORCA'  # also 'Gaussian 16', 'xtb 6.6.1', 'Psi4 1.7' (modules/spectrum/readers/outputs.py)
     final_energy: tuple | None = None  # (method, hartree) when the last energy is correlated (Gaussian archive)
+    # ORCA «Extrapolate(X/Y,…)»: ('2/3', E(SCF, CBS), E(correlation, CBS), E(total, CBS)) in hartree — the last
+    # energy of the result is this total
+    cbs: tuple | None = None
     excited_energy: tuple | None = None  # (root, hartree) — E(tot) of the followed state of a TD-DFT single point
     raman_skipped: bool = False  # ORCA was asked for Raman with analytic frequencies and computed none
     heat_of_formation: float | None = None  # MOPAC ΔHf, kcal/mol (energies stay empty: not a total energy)

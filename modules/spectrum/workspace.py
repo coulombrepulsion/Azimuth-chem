@@ -232,6 +232,11 @@ class SpectrumWorkspace:
                 if output.final_energy
                 else ''
             )
+            + (  # ORCA Extrapolate: the last energy is E(CBS), its two parts here
+                tr(' — экстраполяция к полному базису CBS({}): SCF {:.7f}, корреляция {:.7f} хартри').format(*output.cbs[:3])
+                if getattr(output, 'cbs', None)
+                else ''
+            )
             + (  # TD-DFT — the ground state above, the followed excited state here
                 tr(f' (основное состояние); возбуждённое (корень {output.excited_energy[0]}): '
                    f'{output.excited_energy[1]:.10f} хартри')
