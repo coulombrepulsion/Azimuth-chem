@@ -6,76 +6,50 @@ Azimuth Academic License, version 1.0
 
 РУССКИЙ
 
-1. Программа «Азимут», её исходный код, тексты и иллюстрации Атласа, изображения Квил, документация и прочие
-   материалы этого репозитория (далее — «Программа») охраняются авторским правом и принадлежат автору.
+1. Программа «Азимут», её исходный код, тексты и иллюстрации Атласа, изображения Квил, документация и прочие материалы этого репозитория (далее — «Программа») охраняются авторским правом и принадлежат автору.
 
-2. Автор безвозмездно разрешает любому лицу и любой организации использовать, копировать, изменять и
-   распространять Программу и её части в академических некоммерческих целях:
+2. Автор безвозмездно разрешает любому лицу и любой организации использовать, копировать, изменять и распространять Программу и её части в академических некоммерческих целях:
    а) в преподавании — на лекциях, практических занятиях, в курсах и учебных материалах учебных заведений;
    б) в обучении, в том числе самостоятельном;
    в) в некоммерческих научных исследованиях — в университетах, институтах и других научных и учебных
       организациях, в том числе по грантам.
 
-3. Цитирование обязательно. Публикация, диссертация, выпускная или курсовая работа, отчёт, доклад, постер или
-   учебный материал, результаты которых получены с помощью Программы или которые используют её материалы (в том
-   числе тексты и иллюстрации Атласа), должны ссылаться на Программу. Форма ссылки — в файле CITATION.cff и в
-   README.md; если у Программы есть статья, указанная там, ссылаются и на неё.
+3. Цитирование обязательно. Публикация, диссертация, выпускная или курсовая работа, отчёт, доклад, постер или учебный материал, результаты которых получены с помощью Программы или которые используют её материалы (в том числе тексты и иллюстрации Атласа), должны ссылаться на Программу. Форма ссылки — в файле CITATION.cff и в README.md; если у Программы есть статья, указанная там, ссылаются и на неё.
 
 4. При распространении копий Программы и её изменённых версий:
    а) сохраняются эта лицензия и строка об авторском праве;
    б) изменённая версия помечается как изменённая и не выдаётся за «Азимут» автора;
    в) изменённые версии и производные работы распространяются на условиях этой же лицензии.
 
-5. Коммерческое использование — продажа Программы или её частей, включение в платный продукт или услугу,
-   использование в работе коммерческой организации ради прибыли, платные консультации и расчёты на заказ —
-   допускается только с отдельного письменного разрешения автора: contact@azimuth-chem.com. Плата за обучение в
-   учебном заведении, где Программа используется на занятиях, коммерческим использованием не считается.
+5. Коммерческое использование — продажа Программы или её частей, включение в платный продукт или услугу, использование в работе коммерческой организации ради прибыли, платные консультации и расчёты на заказ — допускается только с отдельного письменного разрешения автора: contact@azimuth-chem.com. Плата за обучение в учебном заведении, где Программа используется на занятиях, коммерческим использованием не считается.
 
-6. Сторонние компоненты (библиотеки, шрифты, тестовые и учебные файлы других авторов) не принадлежат автору
-   Программы и распространяются на условиях своих лицензий; они перечислены в THIRD_PARTY.md и PROVENANCE.md.
-   Настоящая лицензия на них не распространяется и их условий не изменяет. Расчётные программы (ORCA, Gaussian и
-   другие) в Программу не входят и устанавливаются на условиях своих лицензий.
+6. Сторонние компоненты (библиотеки, шрифты, тестовые и учебные файлы других авторов) не принадлежат автору Программы и распространяются на условиях своих лицензий; они перечислены в THIRD_PARTY.md и PROVENANCE.md. Настоящая лицензия на них не распространяется и их условий не изменяет. Расчётные программы (ORCA, Gaussian и другие) в Программу не входят и устанавливаются на условиях своих лицензий.
 
-7. Программа предоставляется «как есть», без каких-либо гарантий. Автор не отвечает за ущерб, возникший при её
-   использовании, в том числе за ошибки в результатах расчётов.
+7. Программа предоставляется «как есть», без каких-либо гарантий. Автор не отвечает за ущерб, возникший при её использовании, в том числе за ошибки в результатах расчётов.
 
 8. При нарушении условий этой лицензии права, которые она даёт нарушителю, прекращаются.
 
 ENGLISH
 
-1. The program Azimuth, its source code, the texts and illustrations of the Atlas, the pictures of Quill, the
-   documentation and the other materials of this repository (the "Program") are protected by copyright and belong
-   to the author.
+1. The program Azimuth, its source code, the texts and illustrations of the Atlas, the pictures of Quill, the documentation and the other materials of this repository (the "Program") are protected by copyright and belong to the author.
 
-2. The author grants any person and any organization, free of charge, permission to use, copy, modify and
-   distribute the Program and its parts for academic, non-commercial purposes:
+2. The author grants any person and any organization, free of charge, permission to use, copy, modify and distribute the Program and its parts for academic, non-commercial purposes:
    a) teaching — lectures, practical classes, courses and teaching materials of educational institutions;
    b) learning, including self-study;
-   c) non-commercial scientific research — at universities, institutes and other research and educational
-      organizations, including research funded by grants.
+   c) non-commercial scientific research — at universities, institutes and other research and educational organizations, including research funded by grants.
 
-3. Citation is required. A publication, thesis, student project, report, talk, poster or teaching material whose
-   results were obtained with the Program, or which uses its materials (including the texts and illustrations of the
-   Atlas), must cite the Program. The form of the citation is given in CITATION.cff and README.md; if a paper about
-   the Program is named there, it is cited as well.
+3. Citation is required. A publication, thesis, student project, report, talk, poster or teaching material whose results were obtained with the Program, or which uses its materials (including the texts and illustrations of the Atlas), must cite the Program. The form of the citation is given in CITATION.cff and README.md; if a paper about the Program is named there, it is cited as well.
 
 4. When copies of the Program or modified versions of it are distributed:
    a) this license and the copyright line are kept;
    b) a modified version is marked as modified and is not presented as the author's Azimuth;
    c) modified versions and derivative works are distributed under this same license.
 
-5. Commercial use — selling the Program or its parts, including it in a paid product or service, using it in the
-   work of a commercial organization for profit, paid consulting and calculations to order — is allowed only with a
-   separate written permission of the author: contact@azimuth-chem.com. Tuition paid to an educational institution
-   where the Program is used in classes is not commercial use.
+5. Commercial use — selling the Program or its parts, including it in a paid product or service, using it in the work of a commercial organization for profit, paid consulting and calculations to order — is allowed only with a separate written permission of the author: contact@azimuth-chem.com. Tuition paid to an educational institution where the Program is used in classes is not commercial use.
 
-6. Third-party components (libraries, fonts, test and example files of other authors) do not belong to the author of
-   the Program and are distributed under their own licenses; they are listed in THIRD_PARTY.md and PROVENANCE.md.
-   This license does not apply to them and does not change their terms. The calculation programs (ORCA, Gaussian
-   and others) are not part of the Program and are installed under their own licenses.
+6. Third-party components (libraries, fonts, test and example files of other authors) do not belong to the author of the Program and are distributed under their own licenses; they are listed in THIRD_PARTY.md and PROVENANCE.md. This license does not apply to them and does not change their terms. The calculation programs (ORCA, Gaussian and others) are not part of the Program and are installed under their own licenses.
 
-7. The Program is provided "as is", without warranty of any kind. The author is not liable for any damage arising
-   from its use, including errors in the results of calculations.
+7. The Program is provided "as is", without warranty of any kind. The author is not liable for any damage arising from its use, including errors in the results of calculations.
 
 8. If the terms of this license are broken, the rights it gives to the one who broke them end.
 
