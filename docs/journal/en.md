@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.222.49 — 26 November 2026
+
+- ### 0.222.49 — Calculation programs on Windows
+
+«Install calculation programs» no longer trips over a mirror set in the conda of the computer: xtb and MOPAC come straight from conda-forge. And if an installation still fails, its reason is now in the log instead of a black window that closes at once.
+
 ## 0.222.48 — 25 November 2026
 
 - ### 0.222.48 — The manual as a book

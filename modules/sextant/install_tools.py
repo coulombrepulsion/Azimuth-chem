@@ -13,7 +13,8 @@
     micro.mamba.pm (the address of the mamba documentation; when Python has no root certificates — the
     python.org build on macOS — with /usr/bin/curl, which uses the keychain) and the file bin/micromamba of the
     archive is unpacked to .tools/bin. command():
-    `<manager> create|install -y -p .tools/calc --override-channels -c conda-forge openmpi=4.1 xtb crest`
+    `<manager> create|install -y -p .tools/calc --override-channels -c https://conda.anaconda.org/conda-forge
+    openmpi=4.1 xtb crest`
     (create when the prefix does not exist yet; micromamba and conda take the same words; «crest=2.12» on
     macOS — CREST 3.0.2 there keeps the energy window of CREGEN at 0, crest-lab/crest#431; an installed 3.0.2 is
     replaced by the same command). main() prints every step (the window shows the end of the log) and checks `mpirun
@@ -69,6 +70,9 @@ import subprocess
 import sys
 import tarfile
 
+# the full address, not the name «conda-forge»: a conda of the computer turns a name into the address of its own
+# .condarc (channel_alias, custom_channels — a mirror), and an unreachable mirror stopped the installation
+CHANNEL = 'https://conda.anaconda.org/conda-forge'
 PACKAGES = {'openmpi': 'openmpi=4.1', 'xtb': 'xtb', 'crest': 'crest', 'mopac': 'mopac'}  # MOPAC (conda-forge, 23.x)
 WINDOWS_PACKAGES = {'openmpi': 'msmpi', 'xtb': 'xtb', 'mopac': 'mopac'}  # no CREST for Windows
 # CREST 3.0.2 of conda-forge on macOS keeps the energy window of CREGEN at 0 («sorting energy window (EWIN) :
@@ -300,25 +304,25 @@ def command(tool, root, packages, windows=None, darwin=None):
     if list(packages) == ['cp2k']:  # CP2K into its own prefix
         target = cp2k_prefix(root)
         verb = 'install' if (target / 'conda-meta').is_dir() else 'create'
-        return [str(tool), verb, '-y', '-p', str(target), '--override-channels', '-c', 'conda-forge', CP2K_PACKAGES['cp2k']]
+        return [str(tool), verb, '-y', '-p', str(target), '--override-channels', '-c', CHANNEL, CP2K_PACKAGES['cp2k']]
     if list(packages) == ['nwchem']:  # NWChem into its own prefix
         target = nwchem_prefix(root)
         verb = 'install' if (target / 'conda-meta').is_dir() else 'create'
-        return [str(tool), verb, '-y', '-p', str(target), '--override-channels', '-c', 'conda-forge',
+        return [str(tool), verb, '-y', '-p', str(target), '--override-channels', '-c', CHANNEL,
                 NWCHEM_PACKAGES['nwchem']]
     if list(packages) == ['psi4']:  # Psi4 into its own prefix
         target = psi4_prefix(root)
         verb = 'install' if (target / 'conda-meta').is_dir() else 'create'
-        return [str(tool), verb, '-y', '-p', str(target), '--override-channels', '-c', 'conda-forge',
+        return [str(tool), verb, '-y', '-p', str(target), '--override-channels', '-c', CHANNEL,
                 PSI4_PACKAGES['psi4'], *PSI4_EXTRAS]
     if list(packages) == ['qe']:  # Quantum ESPRESSO into its own prefix
         target = qe_prefix(root)
         verb = 'install' if (target / 'conda-meta').is_dir() else 'create'
-        return [str(tool), verb, '-y', '-p', str(target), '--override-channels', '-c', 'conda-forge', QE_PACKAGES['qe']]
+        return [str(tool), verb, '-y', '-p', str(target), '--override-channels', '-c', CHANNEL, QE_PACKAGES['qe']]
     target = prefix(root)
     verb = 'install' if (target / 'conda-meta').is_dir() else 'create'
     specs = [(WINDOWS_PACKAGES if windows else MACOS_PACKAGES if darwin else PACKAGES)[p] for p in packages]
-    return [str(tool), verb, '-y', '-p', str(target), '--override-channels', '-c', 'conda-forge', *specs]
+    return [str(tool), verb, '-y', '-p', str(target), '--override-channels', '-c', CHANNEL, *specs]
 
 
 def own_copy(path):
@@ -410,6 +414,31 @@ def curl(url, program='/usr/bin/curl'):
     return done.stdout
 
 
+def manager_env(root):
+    """The environment of the package manager: micromamba keeps its cache in .tools; conda does not ask the channel
+    for its notices (the notices of a channel of the mirror in .condarc were asked even with the full address)."""
+    env = dict(os.environ)
+    env.setdefault('MAMBA_ROOT_PREFIX', str(Path(root) / '.tools' / 'mamba'))
+    env['CONDA_NUMBER_CHANNEL_NOTICES'] = '0'
+    return env
+
+
+def run_manager(argv, env):
+    """The package manager run with its output copied to this output (the log of the window): with an inherited
+    console conda.exe of Windows opened a window of its own and its reason never reached install.log."""
+    flags = getattr(subprocess, 'CREATE_NO_WINDOW', 0) if os.name == 'nt' else 0
+    try:
+        process = subprocess.Popen(argv, env=env, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                                   stderr=subprocess.STDOUT, creationflags=flags)
+    except OSError as exc:
+        print(f'[tools] ERROR: the package manager does not start: {exc}', flush=True)
+        return 1
+    for line in iter(process.stdout.readline, b''):
+        print(line.decode('utf-8', 'replace').rstrip(), flush=True)
+    process.stdout.close()
+    return process.wait()
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description='Install Open MPI 4.1, xtb and CREST into .tools/calc')
     parser.add_argument('packages', nargs='*', help='openmpi, xtb, crest (default: all three)')
@@ -479,9 +508,8 @@ def main(argv=None):
         return _separate(tool, root, qe, nwchem, cp2k, psi4)
     argv_ = command(tool, root, packages)
     print('[tools] 2/3 ' + ' '.join(argv_), flush=True)
-    env = dict(os.environ)
-    env.setdefault('MAMBA_ROOT_PREFIX', str(root / '.tools' / 'mamba'))
-    code = subprocess.call(argv_, env=env)
+    env = manager_env(root)
+    code = run_manager(argv_, env)
     if code != 0:
         print(f'[tools] ERROR: the package manager ended with code {code}', flush=True)
         return code
@@ -552,9 +580,8 @@ def install_nwchem(tool, root):
 
     argv_ = command(tool, root, ['nwchem'])
     print('[tools] NWChem: ' + ' '.join(argv_), flush=True)
-    env = dict(os.environ)
-    env.setdefault('MAMBA_ROOT_PREFIX', str(Path(root) / '.tools' / 'mamba'))
-    code = subprocess.call(argv_, env=env)
+    env = manager_env(root)
+    code = run_manager(argv_, env)
     if code != 0:
         print(f'[tools] ERROR: the package manager ended with code {code}', flush=True)
         return code
@@ -590,9 +617,8 @@ def install_psi4(tool, root):
 
     argv_ = command(tool, root, ['psi4'])
     print('[tools] Psi4: ' + ' '.join(argv_), flush=True)
-    env = dict(os.environ)
-    env.setdefault('MAMBA_ROOT_PREFIX', str(Path(root) / '.tools' / 'mamba'))
-    code = subprocess.call(argv_, env=env)
+    env = manager_env(root)
+    code = run_manager(argv_, env)
     if code != 0:
         print(f'[tools] ERROR: the package manager ended with code {code}', flush=True)
         return code
@@ -639,9 +665,8 @@ def install_cp2k(tool, root):
     """CP2K into .tools/cp2k; checked by «cp2k --version» (it starts, its libraries load)."""
     argv_ = command(tool, root, ['cp2k'])
     print('[tools] CP2K: ' + ' '.join(argv_), flush=True)
-    env = dict(os.environ)
-    env.setdefault('MAMBA_ROOT_PREFIX', str(Path(root) / '.tools' / 'mamba'))
-    code = subprocess.call(argv_, env=env)
+    env = manager_env(root)
+    code = run_manager(argv_, env)
     if code != 0:
         print(f'[tools] ERROR: the package manager ended with code {code}', flush=True)
         return code
@@ -692,9 +717,8 @@ def install_qe(tool, root):
     and prints «Program PWSCF v.…» before it stops for want of an input."""
     argv_ = command(tool, root, ['qe'])
     print('[tools] Quantum ESPRESSO: ' + ' '.join(argv_), flush=True)
-    env = dict(os.environ)
-    env.setdefault('MAMBA_ROOT_PREFIX', str(Path(root) / '.tools' / 'mamba'))
-    code = subprocess.call(argv_, env=env)
+    env = manager_env(root)
+    code = run_manager(argv_, env)
     if code != 0:
         print(f'[tools] ERROR: the package manager ended with code {code}', flush=True)
         return code

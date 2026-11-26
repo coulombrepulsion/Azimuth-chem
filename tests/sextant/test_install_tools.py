@@ -2,7 +2,7 @@
 
 A fake conda in a temporary PATH records its arguments and creates the prefix with mpirun (printing
 «Open MPI 4.1.6»), xtb and crest; the oracles are the command line conda-forge documents
-(create -p PREFIX -c conda-forge openmpi=4.1 …) and the files the script must check. The environment of an ORCA
+(create -p PREFIX -c https://conda.anaconda.org/conda-forge openmpi=4.1 …) and the files the script must check. The environment of an ORCA
 job gets OPAL_PREFIX and the library folder of a conda Open MPI.
 """
 
@@ -74,7 +74,7 @@ def test_command_and_manager(tmp_path, monkeypatch):
     tool = fake_conda(tmp_path / 'bin', tmp_path / 'log')
     assert it.manager(root, home=tmp_path / 'home', path_env=str(tool.parent), system=False) == tool
     assert it.command(tool, root, ['openmpi', 'xtb'], windows=False, darwin=False) == [
-        str(tool), 'create', '-y', '-p', str(root / '.tools' / 'calc'), '--override-channels', '-c', 'conda-forge', 'openmpi=4.1', 'xtb',
+        str(tool), 'create', '-y', '-p', str(root / '.tools' / 'calc'), '--override-channels', '-c', 'https://conda.anaconda.org/conda-forge', 'openmpi=4.1', 'xtb',
     ]
     (root / '.tools' / 'calc' / 'conda-meta').mkdir(parents=True)
     assert it.command(tool, root, ['crest'], windows=False)[1] == 'install'  # the prefix exists: add to it
@@ -132,8 +132,8 @@ def test_main_with_a_fake_conda(tmp_path):
         assert it.main(['--root', str(root), 'xtb']) == 0  # a second run installs into the same prefix
     calls = log.read_text().splitlines()
     crest = 'crest=2.12' if platform.system() == 'Darwin' else 'crest'
-    assert calls[0].startswith('create -y -p ') and calls[0].endswith('--override-channels -c conda-forge openmpi=4.1 xtb ' + crest)
-    assert calls[1].startswith('install -y -p ') and calls[1].endswith('conda-forge xtb')
+    assert calls[0].startswith('create -y -p ') and calls[0].endswith('--override-channels -c https://conda.anaconda.org/conda-forge openmpi=4.1 xtb ' + crest)
+    assert calls[1].startswith('install -y -p ') and calls[1].endswith('https://conda.anaconda.org/conda-forge xtb')
     assert (root / '.tools' / 'calc' / 'bin' / 'mpirun').is_file()
 
 
@@ -272,8 +272,8 @@ def test_quantum_espresso_into_its_own_prefix(tmp_path, monkeypatch):
         assert it.main(['--root', str(root), 'qe']) == 0
         assert it.main(['--root', str(root), 'xtb', 'qe']) == 0
     calls = log.read_text().splitlines()
-    assert calls[0] == f'create -y -p {root / ".tools" / "qe"} --override-channels -c conda-forge qe'
-    assert calls[1].endswith('conda-forge xtb') and str(root / '.tools' / 'calc') in calls[1]
+    assert calls[0] == f'create -y -p {root / ".tools" / "qe"} --override-channels -c https://conda.anaconda.org/conda-forge qe'
+    assert calls[1].endswith('https://conda.anaconda.org/conda-forge xtb') and str(root / '.tools' / 'calc') in calls[1]
     assert calls[2].startswith('install -y -p ' + str(root / '.tools' / 'qe'))
     assert it.qe_program(root) == root / '.tools' / 'qe' / 'bin' / 'pw.x' and len(fetched) == 2
 
@@ -321,8 +321,8 @@ def test_nwchem_into_its_own_prefix(tmp_path):
         assert it.main(['--root', str(root), 'nwchem']) == 0
         assert it.main(['--root', str(root), 'xtb', 'nwchem']) == 0
     calls = log.read_text().splitlines()
-    assert calls[0] == f'create -y -p {root / ".tools" / "nwchem"} --override-channels -c conda-forge nwchem'
-    assert calls[1].endswith('conda-forge xtb') and str(root / '.tools' / 'calc') in calls[1]
+    assert calls[0] == f'create -y -p {root / ".tools" / "nwchem"} --override-channels -c https://conda.anaconda.org/conda-forge nwchem'
+    assert calls[1].endswith('https://conda.anaconda.org/conda-forge xtb') and str(root / '.tools' / 'calc') in calls[1]
     assert calls[2].startswith('install -y -p ' + str(root / '.tools' / 'nwchem'))
     assert it.nwchem_program(root) == root / '.tools' / 'nwchem' / 'bin' / 'nwchem'
     assert it.command(tool, root, ['nwchem'])[-1] == 'nwchem'
@@ -339,9 +339,9 @@ def test_psi4_into_its_own_prefix(tmp_path, monkeypatch):
         assert it.main(['--root', str(root), 'psi4']) == 0
         assert it.main(['--root', str(root), 'xtb', 'psi4']) == 0
     calls = log.read_text().splitlines()
-    assert calls[0] == (f'create -y -p {root / ".tools" / "psi4"} --override-channels -c conda-forge psi4 '
+    assert calls[0] == (f'create -y -p {root / ".tools" / "psi4"} --override-channels -c https://conda.anaconda.org/conda-forge psi4 '
                         'dftd3-python dftd4-python>=3.5 gcp-correction')  # D3 and D4 for Psi4: programs of their own
-    assert calls[1].endswith('conda-forge xtb') and str(root / '.tools' / 'calc') in calls[1]
+    assert calls[1].endswith('https://conda.anaconda.org/conda-forge xtb') and str(root / '.tools' / 'calc') in calls[1]
     assert calls[2].startswith('install -y -p ' + str(root / '.tools' / 'psi4'))
     assert it.psi4_program(root) == root / '.tools' / 'psi4' / 'bin' / 'psi4'
     assert it.places(root, ('xtb', 'psi4')) == [root / '.tools' / 'calc', root / '.tools' / 'psi4']
@@ -395,3 +395,26 @@ def test_the_folders_of_an_installation_are_said_as_they_are(tmp_path):
     assert install_tools.places(tmp_path, ('nwchem',)) == [tmp_path / '.tools' / 'nwchem']
     assert install_tools.places(tmp_path, ('openmpi', 'xtb', 'crest', 'qe', 'nwchem')) == [
         tmp_path / '.tools' / 'calc', tmp_path / '.tools' / 'qe', tmp_path / '.tools' / 'nwchem']
+
+
+def test_the_channel_is_an_address_that_no_condarc_turns_into_a_mirror(tmp_path):
+    # a conda of the computer with «custom_channels: conda-forge: <mirror>» in its .condarc took the mirror for the name
+    # «conda-forge» even with --override-channels (Windows check, the mirror did not answer): the address goes as it is
+    for packages in (['xtb', 'mopac'], ['qe'], ['nwchem'], ['psi4'], ['cp2k']):
+        argv = it.command(tmp_path / 'conda', tmp_path, packages, windows=True, darwin=False)
+        assert argv[argv.index('-c') + 1] == 'https://conda.anaconda.org/conda-forge'
+        assert 'conda-forge' not in argv  # never the bare name
+    assert it.manager_env(tmp_path)['CONDA_NUMBER_CHANNEL_NOTICES'] == '0'
+
+
+def test_the_output_of_the_package_manager_goes_to_the_log(tmp_path, capsys):
+    # the reason of a failure must reach install.log: the output is read and printed here, not left to a console
+    talker = tmp_path / 'talker.py'
+    talker.write_text('import sys\nprint("Collecting package metadata")\n'
+                      'print("CondaHTTPError: HTTP 000 CONNECTION FAILED", file=sys.stderr)\nsys.exit(3)\n',
+                      encoding='utf-8')
+    assert it.run_manager([sys.executable, str(talker)], dict(os.environ)) == 3
+    said = capsys.readouterr().out
+    assert 'Collecting package metadata' in said and 'CONNECTION FAILED' in said
+    assert it.run_manager([str(tmp_path / 'no-such-manager')], dict(os.environ)) == 1
+    assert 'does not start' in capsys.readouterr().out
