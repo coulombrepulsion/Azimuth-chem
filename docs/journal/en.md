@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.240.0 — 26 November 2026
+
+- ### 0.240.0 — The CP2K grid by the elements
+
+A check of CP2K on MgO showed that a density grid of 400 Ry is too coarse for magnesium and sodium: the optimization of the cell did not converge. The program now proposes the grid by the elements of the crystal – 1250 Ry with Mg, 950 with Na. CP2K calculations with these elements made earlier are worth repeating.
+
 ## 0.239.0 — 26 November 2026
 
 - ### 0.239.0 — Tunnelling, heat capacity and monolayers

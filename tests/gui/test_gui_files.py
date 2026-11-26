@@ -3374,3 +3374,23 @@ sys.stdout.write('     Program PWSCF' + runs[index])
         shown.plot.grab()
         shown.reject()
     panel.reject()
+
+
+def test_the_grid_of_cp2k_follows_the_elements(window):
+    # the box «CUTOFF» takes what the elements need while nobody typed in it; a value typed stays
+    from modules.compass.chemistry import crystal as cr
+
+    examples = Path(__file__).resolve().parents[2] / 'examples' / '10-crystals'
+    window.dirty = False
+    window.opening_tool.open_example_path(str(examples / 'Si_diamond.cif'))
+    window.crystal_window.reject()
+    panel = window.crystal_mode_tool.panel
+    salt = cr.parse_cif((examples / 'NaCl_rock_salt.cif').read_text(encoding='utf-8'))
+    silicon = cr.parse_cif((examples / 'Si_diamond.cif').read_text(encoding='utf-8'))
+    assert panel.set_crystal(silicon, 'Si') and panel.cutoff.value() == 400
+    assert panel.set_crystal(salt, 'NaCl') and panel.cutoff.value() == 950
+    assert panel.set_crystal(silicon, 'Si') and panel.cutoff.value() == 400
+    panel.cutoff.setValue(600)
+    assert panel.set_crystal(salt, 'NaCl') and panel.cutoff.value() == 600
+    for d in window.all_documents():
+        d.dirty = False

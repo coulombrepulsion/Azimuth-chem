@@ -11,7 +11,8 @@ proposes for a calculation at the Γ point (edges of about 10 Å), the input of 
 
 SPECIFICATION
     SYSTEMS {name: {'cif', 'supercell' (n1, n2, n3) of the conventional cell}}; run(folder, text, processes) -> the
-    output; relaxed(name, processes) -> {'a', 'lengths', 'steps', 'converged', 'energy_hartree', 'atoms', 'seconds'}.
+    output; cutoffs(name, values, stretch, processes) -> [{'cutoff', 'rel_cutoff', 'atoms', 'energies_hartree', 'difference_ev_per_atom'}];
+    relaxed(name, processes) -> {'a', 'lengths', 'steps', 'converged', 'energy_hartree', 'atoms', 'seconds'}.
 """
 
 import argparse
@@ -73,7 +74,8 @@ def relaxed(name, processes=4):
 
     system = systems()[name]
     cell = cr.supercell(cr.parse_cif(system['cif']), system['supercell'])
-    options = cp2k_inputs.Options(vdw='')  # plain PBE, as the numbers of the literature
+    cutoff = cp2k_inputs.cutoff_for({a[0] for a in cr.unit_cell(cell)})  # as the panel proposes
+    options = cp2k_inputs.Options(vdw='', cutoff=cutoff)  # plain PBE, as the numbers of the literature
     started = time.time()
     folder = OUT / name / 'cellopt'
     text = run(folder, cp2k_inputs.cp2k_input(cell, 'Оптимизация с ячейкой', options), processes)
@@ -82,14 +84,52 @@ def relaxed(name, processes=4):
     return {'a': lengths[0] / system['supercell'][0] if lengths else None,
             'lengths': [length / n for length, n in zip(lengths, system['supercell'])], 'steps': r.steps,
             'converged': bool(r.converged and r.done), 'energy_hartree': r.energy_hartree, 'atoms': r.nat,
-            'version': r.version, 'seconds': round(time.time() - started)}
+            'cutoff': cutoff, 'version': r.version, 'seconds': round(time.time() - started)}
+
+
+def cutoffs(name, values=(400, 600, 800, 1000, 1200), stretch=1.02, processes=4, rels=(50,), supercell=None):
+    """The grid cut-off of a crystal: E(stretch·a) − E(a) in eV per atom for every CUTOFF of values and REL_CUTOFF of rels
+    (a — the lattice parameter of the CIF; supercell — instead of that of systems(): one conventional cell is enough
+    for the grid, though not for the physics). The difference stops changing where the grid no longer decides the
+    lattice parameter."""
+    from modules.compass.chemistry import crystal as cr
+    from modules.compass.chemistry import equation_of_state as eos
+    from modules.sextant import cp2k_inputs
+    from modules.spectrum.readers import cp2k
+
+    system = systems()[name]
+    cell = cr.supercell(cr.parse_cif(system['cif']), supercell or system['supercell'])
+    rows = []
+    for cutoff, rel in [(c, r) for r in rels for c in values]:
+        energies = []
+        for label, factor in (('a', 1.0), ('b', stretch ** 3)):
+            folder = OUT / name / f"cutoff{cutoff}rel{rel}cell{''.join(map(str, supercell or system['supercell']))}{label}"
+            options = cp2k_inputs.Options(vdw='', cutoff=float(cutoff), rel_cutoff=float(rel))
+            text = run(folder, cp2k_inputs.cp2k_input(eos.scaled(cell, factor), 'Энергия', options), processes)
+            r = cp2k.read(text, folder)
+            energies.append(r.energy_hartree)
+        row = {'cutoff': cutoff, 'rel_cutoff': rel, 'atoms': r.nat, 'energies_hartree': energies,
+               'difference_ev_per_atom': (energies[1] - energies[0]) * 27.211386 / r.nat}
+        rows.append(row)
+        print(name, json.dumps(row), flush=True)
+    return rows
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.split('\n')[0])
     parser.add_argument('--only', nargs='*')
     parser.add_argument('--processes', type=int, default=4)
+    parser.add_argument('--cutoffs', help='the crystal whose grid cut-off is scanned')
+    parser.add_argument('--values', nargs='*', type=int, default=[400, 600, 800, 1000, 1200])
+    parser.add_argument('--rels', nargs='*', type=int, default=[50])
+    parser.add_argument('--cell', nargs=3, type=int, help='the supercell of the scan')
     args = parser.parse_args(argv)
+    if args.cutoffs:
+        rows = cutoffs(args.cutoffs, args.values, processes=args.processes, rels=args.rels,
+                       supercell=tuple(args.cell) if args.cell else None)
+        target = OUT / args.cutoffs / f"cutoffs{'-'.join(map(str, args.cell)) if args.cell else ''}.json"
+        target.write_text(json.dumps(rows, indent=1), encoding='utf-8')
+        return 0
     for name in args.only or list(systems()):
         target = OUT / name / 'result.json'
         try:

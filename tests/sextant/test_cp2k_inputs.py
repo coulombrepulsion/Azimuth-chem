@@ -210,3 +210,13 @@ def test_quantum_espresso_starts_through_mpirun_first():
     lines = '\n'.join(cluster.qe_lines(4, (('pw.in', 'pw.x'),)))
     assert lines.index('RUN="mpirun -np 4"') < lines.index('RUN="srun -n 4"')
     assert '$RUN "$PW" -in pw.in >> pw.out' in lines
+
+
+def test_the_grid_proposed_for_the_elements():
+    # MgO at 400 Ry (CP2K 2026.2, PBE, 8 atoms): the energy of the cell moved by 9 mEh from 400 to 600 Ry and E(1.02 a) −
+    # E(a) from −25 to −49 meV per atom; from 1200 to 1600 Ry — by 0.6 meV per atom. Mg and Na keep 2s and 2p
+    assert ci.cutoff_for(['Mg', 'O']) == 1250 and ci.cutoff_for(['Na', 'Cl']) == 950
+    assert ci.cutoff_for(['Si']) == 400 and ci.cutoff_for(['C', 'H']) == 450 and ci.cutoff_for([]) == 400
+    assert ci.cutoff_for(['Gd']) == 400  # no basis set here: xTB, which has no grid of this kind
+    assert set(ci.SHARPEST) == set(ci.ELEMENTS)
+    assert max(ci.cutoff_for([e]) for e in ci.SHARPEST) <= 2000  # the box of the panel holds it

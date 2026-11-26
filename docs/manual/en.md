@@ -779,6 +779,7 @@ Table: Programs for periodic calculations
 - The hybrids PBE0 and HSE06 give the band gap more accurately than PBE (HSE06 is the standard for semiconductors), but take tens of times longer and work only in the «Energy» task: optimize the geometry with PBE or PBEsol, then compute the energy and the gap with a hybrid.
 - GFN1-xTB in CP2K is hundreds of times faster than DFT: it is convenient for a preliminary optimization of big cells, with the geometry refined with PBE afterwards.
 - CP2K basis sets: DZVP-MOLOPT-SR – for all elements and for solids; the full DZVP, TZVP and TZV2P exist only for H, C, N, O, F, Si, P, S, Cl.
+- The density grid of CP2K (CUTOFF) is proposed by the elements of the crystal (0.240.0): 400 Ry for Si, 450 Ry for C, H, O, 950 Ry with Na and 1250 Ry with Mg – these two keep the 2s and 2p shells in the valence, and on a coarse grid the energy of the cell changes with its size more than the lattice itself costs: an optimization of the cell wanders. A number typed by hand is kept. To check the grid for your crystal, compute «Energy» with CUTOFF one and a half times larger.
 
 **Electronic state** («Additional settings… → Electronic state»):
 

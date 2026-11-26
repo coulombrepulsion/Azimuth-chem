@@ -262,6 +262,21 @@ class QePanel(QWidget):
                         '{} (рёбра от {} Å), иначе энергия и особенно ячейка недостоверны.').format(
             f'{short:.1f}', ' × '.join(str(n) for n in self.gamma_supercell()), f'{self.GAMMA_LENGTH:g}')
 
+    def propose_cutoff(self, crystal):
+        """CUTOFF of CP2K for the elements of the crystal (cp2k_inputs.cutoff_for: 1250 Ry with Mg, 950 with Na) — while
+        the box still holds what was proposed for the crystal before; a value typed stays."""
+        from modules.compass.chemistry import crystal as cr
+        from modules.sextant import cp2k_inputs
+
+        if crystal is None or not hasattr(self, 'cutoff'):
+            return
+        proposed = cp2k_inputs.cutoff_for({a[0] for a in cr.unit_cell(crystal)})
+        if self.cutoff.value() == getattr(self, '_cutoff_proposed', cp2k_inputs.CUTOFF):
+            self.cutoff.blockSignals(True)
+            self.cutoff.setValue(proposed)
+            self.cutoff.blockSignals(False)
+        self._cutoff_proposed = proposed
+
     def keep_for_crystal(self, crystal):
         """The settings of one crystal that make no sense for another — the U of elements not in its cell are dropped,
         the charge of the cell goes back to 0. Returns what was dropped."""
@@ -351,6 +366,7 @@ class QePanel(QWidget):
         self.primitive.blockSignals(False)
         self._gamma_cells = None  # another crystal: its own supercell for the Γ point
         self.keep_for_crystal(crystal)
+        self.propose_cutoff(crystal)
         if hasattr(self, 'note'):
             for box in self.supercell:
                 box.blockSignals(True)

@@ -23,6 +23,7 @@
 §4 SPECIFICATION
     TASKS = {'Энергия': 'ENERGY', 'Оптимизация атомов': 'GEO_OPT', 'Оптимизация с ячейкой': 'CELL_OPT'};
     BASES — the basis sets offered; ELEMENTS — the elements with DZVP-MOLOPT-SR-GTH in BASIS_MOLOPT of CP2K 2026.2;
+    cutoff_for(symbols) -> CUTOFF Ry proposed for the elements (SHARPEST, CUTOFF_PER_EXPONENT);
     Options(cutoff=400, rel_cutoff=50, basis='DZVP-MOLOPT-SR-GTH', vdw='d3bj', occupations='auto', temperature=300 K,
     eps_scf=1e-6, max_iter=200, spin=False); cp2k_input(crystal, task, options=None) -> text; ValueError for an element
     without the basis set; INPUT = 'azimuth.inp', OUTPUT = 'cp2k.out'.
@@ -78,6 +79,31 @@ POTENTIALS = {'PBE': 'GTH-PBE', 'PBESOL': 'GTH-PBE', 'REVPBE': 'GTH-PBE', 'BLYP'
 # the elements with the alias GTH-BLYP in GTH_POTENTIALS of CP2K (read 2026-11-15) — of the same valence as GTH-PBE
 BLYP = frozenset('H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Sr Y '
                  'Zr Mo Ru Rh Pd Ag In Sb Te I Ba W Au Bi'.split())
+
+# the largest exponent (bohr⁻²) of the Gaussians of DZVP-MOLOPT-SR-GTH per element — BASIS_MOLOPT of CP2K 2026.2. The
+# density of such a Gaussian needs a grid as fine as its exponent: Mg and Na keep the 2s and 2p shells in the valence
+SHARPEST = {
+    'H': 10.07, 'He': 11.04, 'Li': 7.13, 'Be': 14.93, 'B': 3.05, 'C': 5.61, 'N': 7.34, 'O': 10.39, 'F': 13.70,
+    'Ne': 19.14, 'Na': 23.52, 'Mg': 30.65, 'Al': 1.21, 'Si': 1.26, 'P': 1.63, 'S': 2.22, 'Cl': 2.38, 'Ar': 3.94,
+    'K': 2.89, 'Ca': 5.28, 'Sc': 7.60, 'Ti': 7.88, 'V': 7.98, 'Cr': 8.51, 'Mn': 8.54, 'Fe': 8.42, 'Co': 8.37,
+    'Ni': 10.08, 'Cu': 5.80, 'Zn': 6.40, 'Ga': 7.07, 'Ge': 3.75, 'As': 1.10, 'Se': 1.47, 'Br': 1.74, 'Kr': 1.78,
+    'Rb': 7.11, 'Sr': 7.29, 'Y': 7.17, 'Zr': 7.57, 'Nb': 3.45, 'Mo': 2.54, 'Tc': 3.16, 'Ru': 2.79, 'Rh': 3.16,
+    'Pd': 3.41, 'Ag': 2.59, 'Cd': 2.62, 'In': 3.10, 'Sn': 0.67, 'Sb': 0.76, 'Te': 0.87, 'I': 0.97, 'Xe': 1.06,
+    'Cs': 1.00, 'Ba': 1.10, 'Hf': 2.67, 'Ta': 2.95, 'W': 3.10, 'Re': 3.24, 'Os': 3.25, 'Ir': 3.38, 'Pt': 3.63,
+    'Au': 2.95, 'Hg': 3.03, 'Tl': 3.38, 'Pb': 1.93, 'Bi': 1.67, 'Po': 1.76, 'At': 1.80, 'Rn': 2.00}
+CUTOFF, CUTOFF_PER_EXPONENT, CUTOFF_STEP = 400.0, 40.0, 50.0
+
+
+def cutoff_for(symbols):
+    """CUTOFF (Ry) proposed for the elements of a cell: CUTOFF_PER_EXPONENT Ry per bohr⁻² of the sharpest Gaussian
+    (SHARPEST), rounded up to CUTOFF_STEP, at least CUTOFF. MgO: 1250 Ry — with 400 the energy of a cell changes
+    with its size by more than the lattice costs (tools/validate_cp2k.py --cutoffs MgO), and an optimization of the
+    cell wanders; Si, C, O, H: 400–450."""
+    from math import ceil
+
+    top = max((SHARPEST.get(s, 0.0) for s in symbols), default=0.0)
+    return max(CUTOFF, ceil(top * CUTOFF_PER_EXPONENT / CUTOFF_STEP - 1e-9) * CUTOFF_STEP)
+
 
 
 @dataclass(frozen=True)
