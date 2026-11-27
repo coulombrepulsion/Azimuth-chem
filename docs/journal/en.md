@@ -1,5 +1,11 @@
 # What’s new
 
+## 0.248.12 — 27 November 2026
+
+- ### 0.248.12 — A steady header
+
+The header of a section no longer blinks when you go from one section to another.
+
 ## 0.248.11 — 27 November 2026
 
 - ### 0.248.11 — Frames in «What’s new»

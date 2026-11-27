@@ -136,11 +136,13 @@ class SectionHeader(QFrame):
             if dark
             else ('#1b2230', '#5b6474', '#2a62b8', '#d8dce3', '#ffffff')
         )
-        # glass (0.248.6): the header lets the page through a little; the Ornament draws the background under it
-        glass = 'rgba(25, 31, 40, 0.55)' if dark else 'rgba(255, 255, 255, 0.55)'
-        self.setStyleSheet(
-            f'QFrame#sectionHeader {{background: {glass}; border: none;}}QWidget#sectionBar {{background: transparent;}}'
-        )
+        # glass (0.248.6): the Ornament draws the background of the page under the header as through the panels. Its own
+        # ground is the colour 55 % white over the page would give — opaque (0.248.12: a translucent ground blinked
+        # while the sections changed); set only when it changes (setStyleSheet repolishes every button of the header)
+        glass = '#151b23' if dark else '#fafbfc'
+        sheet = f'QFrame#sectionHeader {{background: {glass}; border: none;}}QWidget#sectionBar {{background: transparent;}}'
+        if self.styleSheet() != sheet:
+            self.setStyleSheet(sheet)
         self.rule.setStyleSheet(f'background: {line}; border: none;')
         self.menu_rule.setStyleSheet(f'background: {line}; border: none;')
         self.colors, self.dark, self.family = (ink, muted, accent, line, back), dark, family
