@@ -1,5 +1,11 @@
 # What’s new
 
+## 0.248.7 — 27 November 2026
+
+- ### 0.248.7 — Glass tabs
+
+The tabs of the projects have become thin panes of glass – almost clear, with a light edge.
+
 ## 0.248.6 — 27 November 2026
 
 - ### 0.248.6 — A glass header

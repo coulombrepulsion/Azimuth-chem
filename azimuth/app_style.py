@@ -131,9 +131,10 @@ QTabBar::tab {background: #eaf0f3; color: #526d7c; padding: 9px 22px; margin-rig
 QTabBar::tab:hover:!selected {background: #e1e8ee; color: #1b2230;}
 QTabBar::tab:selected {background: #2a62b8; color: white;}
 QTabBar#documents {background: transparent;}
-QTabBar#documents::tab {height: 24px; min-width: 104px; padding: 0 8px 0 14px; margin: 0 2px 0 0; background: transparent; color: #5b6474; border: none; border-bottom: 2px solid transparent; border-radius: 0; font-size: 12px; font-weight: 500;}
-QTabBar#documents::tab:selected {color: #1b2230; border-bottom: 2px solid #2a62b8;}
-QTabBar#documents::tab:hover:!selected {color: #1b2230; background: #eef2f7; border-top-left-radius: 6px; border-top-right-radius: 6px;}
+/* 0.248.7 (the owner: «пусть каждая вкладка проекта имеет вид тонкого стекла, практически полностью прозрачного»): each tab a thin pane of glass — almost clear, a light edge above, a darker one below */
+QTabBar#documents::tab {height: 24px; min-width: 104px; padding: 0 8px 0 14px; margin: 0 0 2px 0; background: rgba(255, 255, 255, 0.22); color: #5b6474; border: 1px solid rgba(255, 255, 255, 0.75); border-bottom-color: rgba(27, 34, 48, 0.12); border-right-color: rgba(27, 34, 48, 0.08); border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom-left-radius: 0; border-bottom-right-radius: 0; font-size: 12px; font-weight: 500;}
+QTabBar#documents::tab:selected {color: #1b2230; background: rgba(255, 255, 255, 0.42); border-bottom: 2px solid #2a62b8;}
+QTabBar#documents::tab:hover:!selected {color: #1b2230; background: rgba(255, 255, 255, 0.34);}
 QTabBar#documents::close-button {image: url(TABCLOSE); subcontrol-position: right; width: 12px; height: 12px; margin-left: 4px; border-radius: 3px;}
 QTabBar#documents::close-button:hover {background: #e1e6ed;}
 QFrame#documentRow {border: none; background: transparent;}
@@ -199,6 +200,10 @@ DARK_STYLE = DARK_STYLE.replace('TABCLOSE', (ROOT / 'assets' / 'ui' / 'tab-close
 DARK_STYLE = DARK_STYLE.replace('ARROWUP', (ROOT / 'assets' / 'ui' / 'chevron-up-dark.svg').as_posix())
 DARK_STYLE = DARK_STYLE.replace('CHEVRON', (ROOT / 'assets' / 'ui' / 'chevron-down-dark.svg').as_posix())
 # a dark pill with a light frame
+DARK_STYLE += ('\nQTabBar#documents::tab {background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.14);'
+               ' border-bottom-color: rgba(0, 0, 0, 0.35); border-right-color: rgba(0, 0, 0, 0.25);}'
+               '\nQTabBar#documents::tab:selected {background: rgba(255, 255, 255, 0.09); border-bottom: 2px solid #6ea2f0;}'
+               '\nQTabBar#documents::tab:hover:!selected {background: rgba(255, 255, 255, 0.07);}')  # glass tabs (0.248.7)
 DARK_STYLE += '\nQLabel#toast {background: rgba(46, 54, 68, 240); color: #e7eaf0; border: 1px solid #4a5568;}'
 DARK_STYLE += ('\nQFrame#statusPill {background: rgba(46, 54, 68, 240); border: 1px solid #4a5568;}'
                '\nQFrame#statusPill QLabel {color: #e7eaf0;}'
