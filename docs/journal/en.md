@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.246.0 — 27 November 2026
+
+- ### 0.246.0 — The pictures of the sections come alive
+
+When you open a section, its picture in the lower left corner comes alive for a moment: the needle of the compass swings and settles, the index arm of the sextant stops in its place, the bands of the spectrum rise one after another.
+
 ## 0.245.0 — 27 November 2026
 
 - ### 0.245.0 — A background with depth

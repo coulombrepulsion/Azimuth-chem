@@ -57,6 +57,8 @@ class Ornament(QWidget):
     THROUGH = 0.45  # share of the scales seen through a surface (0.2 in 0.35–0.46; the pictures were hidden too much)
     MARGIN = 240  # px left of the page the background is drawn for: what continues under the side panel (PanelGlass)
     TICK = 40  # ms between the frames of the gyroscope
+    INTRO = 2.6  # s: the picture of a section moves this long after the section opens (0.246.0)
+    CORNER = 340  # px: the square of the lower left corner a frame of that motion repaints
     PANEL = (120, 60)  # px: a surface at least this large throws a shadow
     PANEL_NAMES = {'card', 'trajectoryDrawer', 'projectPane', 'bubble', 'notice', 'error', 'code'}
     SURFACE_NAMES = {'card', 'trajectoryDrawer', 'projectPane', 'bubble', 'notice', 'error', 'toolRule', 'panelRule', 'code'}
@@ -73,6 +75,7 @@ class Ornament(QWidget):
         from hub.backdrop import Gyro
 
         self.gyro = Gyro()  # flat and still until the home page is shown
+        self.intro = None  # s since the section opened while its picture moves; None — at rest
         self.panels = []  # the rectangles that throw shadows (surface_region fills it)
         self.listeners = []  # called when what lies on the background changed (PanelGlass redraws itself)
         self._glass = (None, None)  # (what it was drawn for, the picture seen under the panels)
@@ -92,13 +95,30 @@ class Ornament(QWidget):
     def set_section(self, ident):
         """The picture in the lower left corner follows the section (the home page: the isolines); the gyroscope
         turns on the home page and comes to its flat position elsewhere."""
+        changed = ident != self.section
         self.section = ident
         if ident == 'home':
             self.gyro.start()
         else:
             self.gyro.leave()
+        if changed and ident in ('compass', 'crystal', 'sextant', 'spectrum'):
+            self.intro = 0.0  # the needle swings and settles, the index arm too, the bands rise
+        elif changed:
+            self.intro = None
         self._run()
         self._changed()
+
+    def phase(self):
+        """The time of the motion of the picture of the section (large when it is at rest)."""
+        return self.INTRO * 4 if self.intro is None else self.intro
+
+    @staticmethod
+    def swing(t, amplitude, decay, rate):
+        """A swing that dies away: degrees at the time t s."""
+        return amplitude * math.exp(-t / decay) * math.cos(t * rate)
+
+    def corner_rect(self):
+        return QRect(0, self.height() - self.CORNER, self.CORNER, self.CORNER)
 
     def _changed(self):
         self._glass = (None, None)
@@ -113,7 +133,7 @@ class Ornament(QWidget):
         return QRect(round(self.width() - 125 - side / 2), round(68 - side / 2), side, side)
 
     def _run(self):
-        if self.gyro.moving and self.isVisible():
+        if (self.gyro.moving or self.intro is not None) and self.isVisible():
             if not self.timer.isActive():
                 import time
 
@@ -126,15 +146,28 @@ class Ornament(QWidget):
         import time
 
         now = time.monotonic()
-        moving = self.gyro.advance(now - (self._clock or now))
+        step = now - (self._clock or now)
+        turning = self.gyro.moving
+        moving = self.gyro.advance(step)
         self._clock = now
-        self._gyro_picture = (None, None, None)
+        corner = self.intro is not None
+        if corner:
+            self.intro += max(0.0, min(step, 0.1))
+            if self.intro >= self.INTRO:
+                self.intro = None  # the last frame draws the picture at rest
         self._frame = True
         try:
-            self.repaint(self.gyro_rect())
+            if turning:
+                self._gyro_picture = (None, None, None)
+                self.repaint(self.gyro_rect())
+            if corner:
+                self._glass = (None, None)
+                self.repaint(self.corner_rect())
+                for listener in self.listeners:  # the side panel shows the corner through its glass
+                    listener()
         finally:
             self._frame = False
-        if not moving or not self.isVisible():
+        if not (moving or self.intro is not None) or not self.isVisible():
             self.timer.stop()
 
     def showEvent(self, event):
@@ -336,7 +369,7 @@ class Ornament(QWidget):
         """The picture of the background seen under the panels (kept until the size, the section or the ink changes)."""
         from hub import backdrop
 
-        key = (self.width(), self.height(), self.ink.rgba(), self.section)
+        key = (self.width(), self.height(), self.ink.rgba(), self.section, self.intro)
         if self._glass[0] != key:
             self._glass = (key, backdrop.glass_picture(self._art, self.width(), self.height(), self.MARGIN))
         return self._glass[1]
@@ -397,9 +430,10 @@ class Ornament(QWidget):
         painter.setPen(self._pen(0.11, 1.1))
         for r in (R, R * 0.74, R * 0.3):
             painter.drawArc(QRectF(cx - r, cy - r, 2 * r, 2 * r), 0, 90 * 16)
-        a = math.radians(-45)  # the needle: a long thin diamond from the centre to the north-east
+        turn = -45 + self.swing(self.phase(), 34.0, 1.0, 4.4)  # 0.246.0: it swings when the section opens
+        a = math.radians(turn)  # the needle: a long thin diamond from the centre to the north-east
         tip = QPointF(cx + R * 0.92 * math.cos(a), cy + R * 0.92 * math.sin(a))
-        side = math.radians(-45 + 90)
+        side = math.radians(turn + 90)
         w = 9.0
         mid = QPointF(cx + R * 0.38 * math.cos(a), cy + R * 0.38 * math.sin(a))
         left = mid + QPointF(w * math.cos(side), w * math.sin(side))
@@ -408,7 +442,8 @@ class Ornament(QWidget):
         painter.drawPolygon(QPolygonF([QPointF(cx, cy), left, tip, right]))
         painter.setPen(self._pen(0.08, 1.0, Qt.PenStyle.DashLine))
         painter.drawLine(QPointF(cx, cy), tip)
-        self._star(painter, cx + R * 1.12 * math.cos(a), cy + R * 1.12 * math.sin(a))
+        north_east = math.radians(-45)  # the star stays where the needle comes to rest
+        self._star(painter, cx + R * 1.12 * math.cos(north_east), cy + R * 1.12 * math.sin(north_east))
 
     def _spectrum(self, painter):
         """Спектр: an axis with marks and a few bands of a spectrum rising from it. Its start outside the corner, as the
@@ -423,7 +458,10 @@ class Ornament(QWidget):
             painter.setPen(self._pen(0.16 if long else 0.09, 1.0))
             x = x0 + k * width / 20
             painter.drawLine(QPointF(x, y0), QPointF(x, y0 + (9 if long else 5)))
-        bands = ((0.18, 120, 9), (0.33, 62, 6), (0.47, 168, 7), (0.6, 40, 5), (0.74, 96, 11), (0.88, 54, 6))
+        moment = self.phase()  # 0.246.0: on opening the bands rise one after another, from the left
+        rise = [1 - (1 - max(0.0, min(1.0, (moment - 0.12 * k) / 0.8))) ** 3 for k in range(6)]
+        bands = tuple((c, hgt * up, g) for (c, hgt, g), up in zip(
+            ((0.18, 120, 9), (0.33, 62, 6), (0.47, 168, 7), (0.6, 40, 5), (0.74, 96, 11), (0.88, 54, 6)), rise))
         path = [QPointF(x0, y0)]
         for t in range(0, 381, 2):
             y = sum(hgt * g * g / ((t - c * width) ** 2 + g * g) for c, hgt, g in bands)
@@ -432,8 +470,9 @@ class Ornament(QWidget):
         painter.drawPolyline(QPolygonF(path))
         painter.setPen(self._pen(0.07, 1.0, Qt.PenStyle.DashLine))
         for c, hgt, _ in bands[::2]:
-            painter.drawLine(QPointF(x0 + c * width, y0), QPointF(x0 + c * width, y0 - hgt - 12))
-        self._star(painter, x0 + 0.47 * width, y0 - 168 - 30)
+            painter.drawLine(QPointF(x0 + c * width, y0), QPointF(x0 + c * width, y0 - hgt - 12 * rise[2]))
+        if rise[2] > 0:
+            self._star(painter, x0 + 0.47 * width, y0 - (168 + 30) * rise[2], alpha=0.22 * rise[2])
 
     def _sextant(self, painter):
         h = self.height()
@@ -456,8 +495,9 @@ class Ornament(QWidget):
         painter.drawArc(QRectF(cx - inner, cy - inner, 2 * inner, 2 * inner), 0, 90 * 16)
         color.setAlphaF(0.08)
         painter.setPen(QPen(color, 1.0, Qt.PenStyle.DashLine))
-        a = math.radians(-38)  # the index arm of the sextant
+        a = math.radians(-38 + self.swing(self.phase(), -24.0, 0.9, 3.6))  # the index arm; 0.246.0: it swings
         painter.drawLine(QPointF(cx, cy), QPointF(cx + R * 1.06 * math.cos(a), cy + R * 1.06 * math.sin(a)))
+        a = math.radians(-38)  # the guide star stays
         color.setAlphaF(0.22)  # the guide star, as after the name
         painter.setPen(Qt.PenStyle.NoPen)
         painter.setBrush(color)

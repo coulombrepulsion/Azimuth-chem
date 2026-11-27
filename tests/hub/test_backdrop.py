@@ -167,6 +167,7 @@ def test_the_window_turns_the_gyroscope_on_the_home_page_only(app, tmp_path):
         assert ornament.gyro.mode == 'settle'
         for _ in range(200):
             ornament.gyro.advance(0.05)
+        ornament.intro = None  # the needle of Sextant has settled too (0.246.0)
         ornament._tick()
         assert ornament.gyro.mode == 'rest' and not ornament.timer.isActive()  # no timer while it stands
         assert isinstance(window.panel_art, PanelGlass) and window.panel_art.source() is ornament
@@ -183,3 +184,43 @@ def test_the_window_turns_the_gyroscope_on_the_home_page_only(app, tmp_path):
             document.dirty = False
         window.close()
         window.deleteLater()
+
+
+def test_the_picture_of_a_section_moves_when_the_section_opens(app):
+    # 0.246.0: the needle of Compass swings and settles, the index arm of Sextant too, the bands of Spectrum rise
+    from hub.chrome import Ornament
+
+    ornament = Ornament()
+    ornament.resize(900, 700)
+
+    def ink():
+        image = _image(900, 700)
+        painter = QPainter(image)
+        ornament._art(painter)
+        painter.end()
+        return image
+
+    for section in ('compass', 'sextant', 'spectrum'):
+        ornament.set_section('home')
+        ornament.set_section(section)
+        assert ornament.intro == 0.0 and ornament.corner_rect().bottom() == 699
+        opening = ink()
+        ornament.intro = None
+        rest = ink()
+        assert opening != rest, section  # the picture at the start differs from the one at rest
+    ornament.set_section('spectrum')
+    assert ornament.intro is None  # the same section again: no motion
+    # at rest after INTRO: the motion has died away
+    assert abs(Ornament.swing(Ornament.INTRO, 34.0, 1.0, 4.4)) < 3.0
+    ornament.set_section('compass')
+    ornament.gyro.mode = 'rest'  # only the picture of the section moves
+    ornament.show()
+    assert ornament.timer.isActive()
+    ornament._clock -= 0.0
+    for _ in range(80):
+        ornament._clock -= 0.05
+        ornament._tick()
+        if ornament.intro is None:
+            break
+    assert ornament.intro is None and not ornament.timer.isActive()  # no timer once it has settled
+    ornament.hide()
