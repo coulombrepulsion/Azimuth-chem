@@ -20,8 +20,8 @@
        (a geometric row) by marching squares on a grid of STEP px; computed once, in coordinates of the lower left
        corner of the page. A model, not a calculation: geometry C–C 1.39, C–N 1.47, N–O 1.22 Å, O–N–O 125°.
     4. Gyroscope. Three frames, one inside another: the outer ring turns about the vertical axis of the screen, the
-       inner ring about the horizontal axis of the outer one, the needle with its small ring about the axis it lies
-       on in the inner ring. Each point is turned and projected (weak perspective), every line is of one width
+       inner ring about the horizontal axis of the outer one, the needle (on the diagonal of its ring, NEEDLE_TURN, since
+       0.249.3) with its small ring about the vertical axis of the inner ring. Each point is turned and projected (weak perspective), every line is of one width
        whatever its turn; the strength of a line falls smoothly with its depth (no threshold: in the flat position
        all lines are alike). Gyro.start: the speeds rise from zero (RISE_FIRST s at the first start, RISE s later);
        Gyro.leave: every angle goes on to the next flat position (the inner ring — to a whole turn, so that the
@@ -239,6 +239,27 @@ def isolines():
     return _ISOLINES
 
 
+STAR = '#e3b341'  # the yellow of the stars at the atoms (0.249.3, the owner: «в месте положения атомов на изолиниях
+# добавить звезды желтые»)
+STAR_SIZE = {1.0: 4.5}  # px, the half-span of a star: H smaller, the heavy atoms STAR_HEAVY
+STAR_HEAVY = 7.0
+STAR_ALPHA = 0.55
+
+
+def star(cx, cy, r):
+    """A four-pointed star (as the sparkles of the pictures of the program) round (cx, cy), its tips r away."""
+    from PySide6.QtCore import QPointF
+    from PySide6.QtGui import QPolygonF
+
+    inner = r * 0.3
+    points = []
+    for k in range(8):
+        a = math.radians(45 * k - 90)
+        d = r if k % 2 == 0 else inner
+        points.append(QPointF(cx + d * math.cos(a), cy + d * math.sin(a)))
+    return QPolygonF(points)
+
+
 def draw_isolines(painter, height, ink, strength=1.0):
     painter.save()
     painter.translate(0, height)
@@ -248,22 +269,34 @@ def draw_isolines(painter, height, ink, strength=1.0):
         colour.setAlphaF(min(1.0, alpha * strength))
         painter.setPen(QPen(colour, width))
         painter.drawPath(path)
+    gold = QColor(STAR)  # a yellow star where each atom is
+    gold.setAlphaF(min(1.0, STAR_ALPHA * strength))
+    painter.setPen(Qt.PenStyle.NoPen)
+    painter.setBrush(gold)
+    for ax, ay, weight in nitrobenzene():
+        painter.drawPolygon(star(ax, ay, STAR_SIZE.get(weight, STAR_HEAVY)))
     painter.restore()
 
 
 # -- the gyroscope of the azimuth ---------------------------------------------------------------------------------
 class Gyro:
-    """The gyroscope: the angles of its three frames and their motion."""
+    """The gyroscope: the angles of its three frames and their motion. (0.249.3: a fourth, outer ring was tried and
+    taken back — the owner: «внешнее кольцо все же перегружает»; «верни 3 кольца».)"""
 
     SPEED = (360 / 44, 360 / 30, -360 / 16)  # °/s: the outer ring, the inner ring, the needle
-    FLAT = (180.0, 360.0, 180.0)  # ° between the positions in which a frame lies in the plane as at rest
+    # ° between the positions in which a frame lies as at rest: a whole turn — the needle lies on the diagonal, its tip to
+    # the north-east, and half a turn of the outer ring or of the needle would mirror it to the north-west (180 until
+    # 0.249.3, when the needle stood upright)
+    FLAT = (360.0, 360.0, 360.0)
     RISE_FIRST, RISE, SETTLE = 3.0, 1.2, 4.2  # s
     AHEAD = 30.0  # °: a frame closer than this to a flat position goes on to the next one
     SIDE, OUTER, INNER, ROTOR = 352, 150.0, 116.0, 78.0  # px: the picture and the radii (drawn GROW times larger)
     GROW = 1.75  # 0.248.0 (the owner: «гироскоп побольше, и сместить больше в угол»): 1.5; 0.248.13 — «увеличить гироскоп немного»
     CENTRE = (70.0, 70.0)  # px from the right and the top edge of the page: as the flat dial of 0.244.0
     EYE = 1100.0  # px: the distance of the eye (weak perspective)
-    LINE = 0.8  # px
+    LINE = 0.55  # px; 0.8 until 0.249.3 (the owner: «А можно линии гироскопа сделать еще тоньше?»)
+    NEEDLE_TURN = 45.0  # °, clockwise: the needle turned in its plane — on the diagonal, its tip to the north-east as in the
+    # pictures of the program (0.249.3, the owner: «чтобы стрелка была по диагонали относительно текущего положения»)
     RIDGE = 7.0  # px: how high the ridge of the needle stands over its plane, on each side (0.248.3: both)
     LIGHT = (-0.45, 0.55, 0.7)  # where the light comes from (the screen: x right, y up, z to the eye)
     SHADES = 6  # the strengths a line is drawn in by its depth
@@ -334,10 +367,19 @@ class Gyro:
         """frame: 0 the outer ring, 1 the inner ring, 2 the needle."""
         points = np.asarray(points, dtype=float)
         if frame >= 2:
+            if self.NEEDLE_TURN:  # the needle on the diagonal of its ring, the tip to the north-east
+                points = self._in_plane(points, -self.NEEDLE_TURN)
             points = self._about_y(points, self.angles[2])
         if frame >= 1:
             points = self._about_x(points, self.angles[1])
         return self._about_y(points, self.angles[0])
+
+    @staticmethod
+    def _in_plane(points, degrees):
+        """Turned in the plane of the frame (about z), counter-clockwise."""
+        a = math.radians(degrees)
+        x, y = points[:, 0], points[:, 1]
+        return np.stack([x * math.cos(a) - y * math.sin(a), x * math.sin(a) + y * math.cos(a), points[:, 2]], axis=1)
 
     def lines(self):
         """[(points (n, 3) of a broken line in its frame, frame, strength)]."""
@@ -346,7 +388,11 @@ class Gyro:
             return np.stack([r * np.cos(t), r * np.sin(t), np.zeros_like(t)], axis=1)
 
         found = [(ring(self.OUTER), 0, 0.6)]
-        for k in range(12):  # twelve marks, every third one longer
+        for k in range(12):  # the marks, every third one longer — none where the axle of the inner ring is: drawn
+            # over the axle, a mark made its outer end look thicker (0.249.3, the owner: «одна линия начинается более
+            # толстой, а потом утончается»)
+            if k in (0, 6):
+                continue
             c, s = math.cos(math.radians(30 * k)), math.sin(math.radians(30 * k))
             r0 = self.OUTER - (13 if k % 3 == 0 else 7)
             found.append(([[r0 * c, r0 * s, 0], [self.OUTER * c, self.OUTER * s, 0]], 0, 0.6))

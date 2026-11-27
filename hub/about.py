@@ -329,8 +329,10 @@ def split_journal(markdown):
 
 PROGRAM = {
     'ru': {
-        'intro': '«Азимут» — учебная программа по квантовой химии: теория в Атласе на сайте azimuth-chem.com, '
-        'молекула в Компасе, подготовка расчёта в Секстанте и разбор его результатов в Спектре — в одном окне.',
+        # 0.249.3 (the owner: «перепиши общее описание программы - настоящая формулировка меня не устраивает»)
+        'intro': '«Азимут» — учебная программа по квантовой химии, которая ведёт по всему пути работы: разобраться в '
+        'теории, построить молекулу или кристалл, подготовить и запустить расчёт, понять, что он дал. У каждого шага '
+        'свой раздел, а структура и результаты переходят между ними сами, без промежуточных файлов.',
         'sections': [
             ('Атлас', '43 интерактивные темы теории на русском, английском и китайском — на сайте azimuth-chem.com: численные модели считаются прямо в браузере, у каждой темы есть демонстрация и задания с выбором ответа; программа открывает его в браузере, а молекулу из темы — в Компасе.'),
             ('Компас · Молекула', 'построение и редактирование молекул: фрагменты, библиотека из 106 молекул, SMILES, ChemDraw, пептиды и координационные центры, силовое поле UFF, симметрия, название по IUPAC, редактор Z-матрицы; проверка структуры, явный растворитель, протоны и изотопы; шаги оптимизации, сканы и путь IRC, заряды, порядки связей и силы, орбитали, плотность и карта ESP прямо на модели; проекты с наборами молекул и историей их расчётов, в том числе из готовых расчётов; рисунки PNG, SVG, PDF.'),
@@ -351,8 +353,10 @@ PROGRAM = {
         'journal_sub': 'Что нового в программе и в каждом её разделе.',
     },
     'en': {
-        'intro': 'Azimuth is a teaching program for quantum chemistry: theory in the Atlas on azimuth-chem.com, the '
-        'molecule in Compass, preparing a calculation in Sextant and reading its results in Spectrum — in one window.',
+        'intro': 'Azimuth is a teaching program for quantum chemistry that leads along the whole way of the work: '
+        'understand the theory, build a molecule or a crystal, prepare and run a calculation, see what it gave. Each '
+        'step has a section of its own, and the structure and the results pass between them by themselves, with no '
+        'files in between.',
         'sections': [
             ('Atlas', '43 interactive theory topics in Russian, English and Chinese — on azimuth-chem.com: the numerical models run right in the browser, every topic has a demo and multiple-choice tasks; the program opens it in the browser, and a molecule of a topic in Compass.'),
             ('Compass · Molecule', 'building and editing molecules: fragments, a library of 106 molecules, SMILES, ChemDraw, peptides and coordination centres, the UFF force field, symmetry, IUPAC names, a Z-matrix editor; a structure check, explicit solvent, protons and isotopes; optimization steps, scans and the IRC path, charges, bond orders and forces, orbitals, densities and an ESP map right on the model; projects with sets of molecules and the history of their calculations, also made from finished calculations; PNG, SVG, PDF pictures.'),
@@ -373,8 +377,8 @@ PROGRAM = {
         'journal_sub': 'What is new in the program and in each of its sections.',
     },
     'zh': {
-        'intro': '“方位”是一个量子化学教学程序：在 azimuth-chem.com 网站上的图谱中学习理论，在罗盘中构建分子，在六分仪中准备计算，'
-        '在光谱中分析结果——都在同一个窗口中。',
+        'intro': '“方位”是一个量子化学教学程序，带你走完整个工作流程：理解理论，构建分子或晶体，准备并运行计算，读懂计算结果。'
+        '每一步都有自己的版块，结构和结果会在版块之间自动传递，无需中间文件。',
         'sections': [
             ('图谱', '43 个交互式理论主题，俄语、英语和中文——在 azimuth-chem.com 网站上：数值模型直接在浏览器中计算，每个主题都有演示和选择题；程序在浏览器中打开它，并在罗盘中打开主题里的分子。'),
             ('罗盘 · 分子', '构建和编辑分子：片段、106 个分子的分子库、SMILES、ChemDraw、肽和配位中心、UFF 力场、对称性、IUPAC 命名、Z 矩阵编辑器；结构检查、显式溶剂、质子和同位素；优化步骤、扫描和 IRC 路径，电荷、键级和受力，以及直接显示在模型上的轨道、密度和 ESP 图；包含分子集及其计算历史的项目，也可由已完成的计算创建；PNG、SVG、PDF 图片。'),

@@ -135,7 +135,7 @@ class CompassCard(QFrame):
             part.layout().addStretch(1)
             part.layout().setStretch(2, 0)
             part.icon.setFixedSize(30, 30)
-            part.text.setWordWrap(False)  # one line: the half is wide enough
+            part.text.setWordWrap(False)  # one short line (0.249.3, the owner: «у Молекула и Кристалл в одну строку коротко»)
             part.layout().setAlignment(part.icon, Qt.AlignmentFlag.AlignVCenter)
             halves.addWidget(part, 1)
             self.parts[kind] = part
@@ -172,16 +172,33 @@ def thin(svg):
 
 
 # one line about each section on its card (0.248.0, the owner: «добавь какое-нибудь краткое описание каждого раздела»)
+# 0.249.3 (the owner: «Можешь расширить еще описание разделов на главной. И что-то написать для Компаса тоже»):
+# what each section does in a sentence; 'compass_head' — the line under the name of Compass, over its two halves
 BRIEF = {
-    'ru': {'atlas': 'Теория в интерактивных темах – на сайте', 'compass': 'Построить и изменить молекулу',
+    'ru': {'atlas': 'Теория в интерактивных темах на сайте: модели считаются прямо в браузере, к каждой теме – '
+                    'демонстрация и задания',
+           'compass_head': 'Здесь строится структура для расчёта – молекула или кристалл – и здесь же на ней видны его '
+                           'результаты: заряды, орбитали, электронная плотность',
+           'compass': 'Построить и изменить молекулу',
            'crystal': 'Открыть и изучить кристалл',
-           'sextant': 'Подготовить и запустить расчёт', 'spectrum': 'Разобрать результат расчёта'},
-    'en': {'atlas': 'Theory in interactive topics – on the site', 'compass': 'Build and edit a molecule',
+           'sextant': 'Выбрать метод и базис, проверить входной файл и запустить расчёт – на этом компьютере или '
+                      'на сервере',
+           'spectrum': 'Энергии, колебания, спектры и термохимия – графики и таблицы, готовые для отчёта'},
+    'en': {'atlas': 'Theory in interactive topics on the site: the models run right in the browser, every topic has '
+                    'a demo and tasks',
+           'compass_head': 'The structure for a calculation – a molecule or a crystal – is built here, and here its '
+                           'results are seen on it: charges, orbitals, the electron density',
+           'compass': 'Build and edit a molecule',
            'crystal': 'Open and study a crystal',
-           'sextant': 'Prepare and run a calculation', 'spectrum': 'Read the result of a calculation'},
-    'zh': {'atlas': '交互式主题中的理论——在网站上', 'compass': '构建和编辑分子',
+           'sextant': 'Choose the method and basis, check the input and run the calculation – on this computer or '
+                      'on a server',
+           'spectrum': 'Energies, vibrations, spectra and thermochemistry – plots and tables ready for a report'},
+    'zh': {'atlas': '网站上的交互式理论主题：模型直接在浏览器中计算，每个主题都有演示和练习',
+           'compass_head': '在这里构建计算所需的结构——分子或晶体——计算结果也在这里显示在结构上：电荷、轨道、电子密度',
+           'compass': '构建和编辑分子',
            'crystal': '打开并研究晶体',
-           'sextant': '准备并运行计算', 'spectrum': '解读计算结果'},
+           'sextant': '选择方法和基组，检查输入文件，在本机或服务器上运行计算',
+           'spectrum': '能量、振动、光谱和热化学——可直接用于报告的图表'},
 }
 
 
@@ -653,10 +670,13 @@ class HomePage(QScrollArea):
                 card.icon.setPixmap(svg_pixmap(COMPASS_SVG, accent, 36, ratio))
                 card.title.setText(compass)
                 card.title.setStyleSheet(f'font-size: 18px; font-weight: 600; {face}')
-                # 0.248.4 (the owner: «Пусть у компаса не будет подписи, а ниже в разделении подписать
-                # соответствующий подраздел»): the line under each half, none under the name
-                card.text.setText('')
-                card.text.hide()
+                # 0.248.4: no line under the name, one under each half; 0.249.3 (the owner: «И что-то написать для
+                # Компаса тоже»): a line under the name again — what Compass is, over its two halves
+                card.text.setText(BRIEF.get(language, BRIEF['ru'])['compass_head'])
+                card.text.setStyleSheet(f'color: {muted}; font-size: 14px; {face}')
+                card.text.setWordWrap(True)  # two lines (the owner: «у компаса было пару строк»)
+                card.text.setFixedWidth(600)  # the centred head would squeeze it into four lines
+                card.text.show()
                 card.setStyleSheet(f'QFrame#compassRule {{background: {line}; border: none;}}'
                                    f'QFrame#compassPart {{background: transparent; border: none; border-radius: 8px;}}'
                                    f'QFrame#compassPart:hover {{background: {line};}}')

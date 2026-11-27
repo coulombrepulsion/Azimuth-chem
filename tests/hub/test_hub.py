@@ -284,14 +284,14 @@ def test_home_page_blocks_open_sections(hub, app):
     for item in SECTIONS:
         card = hub.home.cards[item['id']]
         assert card.title.text()
-        if item['id'] != 'compass':  # one line about the section; of Compass — under each of its halves (0.248.4)
-            assert card.text.text() and len(card.text.text()) < 60 and not card.text.isHidden()
+        # a sentence about the section (0.249.3); Compass — under its name and under each of its halves
+        assert card.text.text() and len(card.text.text()) < 160 and not card.text.isHidden()
         if item['id'] not in ('compass', 'crystal'):
             assert card.title.text() == item['title']
         QTest.mouseClick(card if item['id'] != 'compass' else compass.parts['compass'], Qt.MouseButton.LeftButton)
         assert hub.current == (hub_window.HOME if item['id'] == 'atlas' else item['id'])  # the site
         hub.show_section(hub_window.HOME, animate=False)
-    assert compass.text.isHidden() and compass.parts['compass'].text.text() == 'Построить и изменить молекулу'
+    assert compass.text.text().startswith('Здесь строится') and compass.parts['compass'].text.text() == 'Построить и изменить молекулу'
     hub.set_language('en')
     assert hub.home.intro.text().startswith('Azimuth is') and hub.home.cards['atlas'].title.text() == 'Atlas'
     hub.set_language('ru')
@@ -443,7 +443,7 @@ def test_tips_live_on_the_site(hub, app):
     # on the site; the greeting went too
     hub.show_section(hub_window.HOME, animate=False)
     assert not hasattr(hub.home, 'tips') and not hasattr(hub.home, 'tip') and not hasattr(hub.home, 'hello')
-    assert 'на сайте' in hub.home.intro.text()
+    assert 'на сайте' in hub.home.cards['atlas'].text.text()  # 0.249.3: the line of the Atlas says it
     # no note and no e-mail on the home page
     assert hub.home.note.isHidden() and '@' not in hub.home.note.text()
 

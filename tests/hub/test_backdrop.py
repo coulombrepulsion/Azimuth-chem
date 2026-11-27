@@ -81,7 +81,7 @@ def test_the_gyroscope_starts_turns_and_comes_to_rest_flat():
     for _ in range(round(gyro.SETTLE / 0.05) + 2):
         gyro.advance(0.05)
     assert gyro.mode == 'rest'
-    for angle, turn in zip(gyro.angles, gyro.FLAT):  # flat; the inner ring a whole turn — the needle to the north
+    for angle, turn in zip(gyro.angles, gyro.FLAT):  # flat, whole turns — the needle on its diagonal again
         assert angle % turn == pytest.approx(0.0, abs=1e-9) or angle % turn == pytest.approx(turn)
     # back to the home page: the second start is quicker than the first
     gyro.start()

@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.3 — 27 November 2026
+
+- ### 0.249.3 — The home page says more
+
+On the home page every section now has a whole sentence on what it does, Compass has its line again, and the program itself is described anew – as the way from the theory to the result. The gyroscope in the corner is thinner, its needle now settles on the diagonal, and yellow stars shine on the isolines below where the atoms are.
+
 ## 0.249.2 — 27 November 2026
 
 - ### 0.249.2 — Pictures alike
