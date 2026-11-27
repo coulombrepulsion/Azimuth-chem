@@ -151,17 +151,20 @@ class CompassCard(QFrame):
 # (assets/navigation/compass.svg, crystal.svg), without the compass
 PART_SVG = {
     'compass': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="10.4 1.2 13.4 13.4" fill="none" stroke="currentColor" '
-               'stroke-width="0.85" stroke-linecap="round" stroke-linejoin="round"><circle cx="17.6" cy="7" r="2.5"/>'
+               'stroke-width="0.85" stroke-linecap="round" stroke-linejoin="round"><circle cx="17.6" cy="7" r="2.5" stroke="currentBrown"/>'
                '<circle cx="12.6" cy="3.4" r="1.5"/><circle cx="21.6" cy="11.2" r="1.5"/>'
                '<path d="M15.6 5.6 13.9 4.3M19.3 8.8 20.6 10"/></svg>',
     'crystal': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="12.4 3.2 11.4 11.4" fill="none" stroke="currentColor" '
                'stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round">'
-               '<path d="M13.6 7.4h6.2v6.2h-6.2zM13.6 7.4l2.8-3h6.2l-2.8 3M22.6 4.4v6.2l-2.8 3"/></svg>',
+               '<path stroke="currentBrown" d="M13.6 7.4l2.8-3h6.2l-2.8 3M22.6 4.4v6.2l-2.8 3"/>'
+               '<path d="M13.6 7.4h6.2v6.2h-6.2z"/></svg>',
 }
-# the compass alone, for the head of the card
+# the compass alone, for the head of the card. The accent of the icons of the sections (currentBrown, 0.248.9 — the owner:
+# «у компаса стрелка будет оранжевой, у молекулы — центральный атом оранжевый, а у кристалла — задние линии куба»): the
+# needle here, the middle atom and the back edges of the cube in PART_SVG
 COMPASS_SVG = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1.8 5.8 20 20" fill="none" stroke="currentColor" '
                'stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.2" cy="15.8" r="6"/>'
-               '<path d="M11.6 12.4 9.4 17 4.8 19.2 7 14.6Z"/></svg>')
+               '<path stroke="currentBrown" d="M11.6 12.4 9.4 17 4.8 19.2 7 14.6Z"/></svg>')
 PART_NAMES = {'ru': ('Компас', 'Молекула', 'Кристалл'), 'en': ('Compass', 'Molecule', 'Crystal'), 'zh': ('罗盘', '分子', '晶体')}
 def thin(svg):
     """The icon of a section in thinner lines on the cards of the home page (0.248.0; the panel keeps its own)."""

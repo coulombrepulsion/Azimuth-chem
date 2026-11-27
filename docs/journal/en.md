@@ -1,5 +1,11 @@
 # What’s new
 
+## 0.248.9 — 27 November 2026
+
+- ### 0.248.9 — Orange accents
+
+On the Compass card of the home page the needle of the compass, the middle atom of the molecule and the back edges of the crystal cube are orange now – as the accents of the icons on the panel.
+
 ## 0.248.8 — 27 November 2026
 
 - ### 0.248.8 — The line on the edge
