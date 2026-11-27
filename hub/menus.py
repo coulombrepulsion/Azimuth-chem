@@ -347,7 +347,7 @@ class HubMenus:
             quill.headline(box, tr('Проверка установки'), '\n'.join(lines))
             box.setText(f'<b>{head}</b>')
             box.setStandardButtons(QMessageBox.StandardButton.Ok)
-            quill.set_icon(box, 'install' if passed else 'error',
+            quill.set_icon(box, 'install-done' if passed else 'error',
                            QMessageBox.Icon.Information if passed else QMessageBox.Icon.Warning)
             box.setWindowModality(Qt.WindowModality.ApplicationModal)
             box.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)

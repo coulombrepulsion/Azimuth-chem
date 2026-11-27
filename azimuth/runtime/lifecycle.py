@@ -260,7 +260,7 @@ def _row_ended(queue, item, job, text, history_settings):
             history_error = str(exc)
     energy = geometry = gibbs = heat = None
     if state == 'done':
-        energy, geometry, gibbs, heat = batches.result_of(job.spec.kind, text)
+        energy, geometry, gibbs, heat = batches.result_of(job.spec.kind, text, job.spec.output)
         if job.spec.kind == 'orca' and job.spec.command and job.spec.command[0] != 'server':
             try:  # the orbitals of every conformer, as after a single calculation
                 runner.molden_from_gbw(job.spec.output.with_suffix('.gbw'), job.spec.command[0])

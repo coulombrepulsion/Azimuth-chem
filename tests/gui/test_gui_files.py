@@ -3375,3 +3375,45 @@ def test_the_grid_of_cp2k_follows_the_elements(window):
     assert panel.set_crystal(salt, 'NaCl') and panel.cutoff.value() == 600
     for d in window.all_documents():
         d.dirty = False
+
+
+def test_an_output_of_pw_x_opens_as_its_crystal(window, tmp_path, monkeypatch):
+    # 0.249.1 (the feedback of 2026-11-18: «Файл → Открыть…» or a drop of a pw.out did nothing — it was taken for an
+    # output of ORCA): a pw.out alone — its crystal in a project of its own, the run in it, Spectrum on its results; a
+    # pw.out of a run of a crystal project — that project, Spectrum on that run
+    import shutil
+
+    from azimuth import crystal_projects
+    from modules.compass.chemistry.surface import write_cif
+    from modules.spectrum.readers import qe
+
+    data = Path(__file__).resolve().parents[1] / 'data' / 'qe'
+    run = tmp_path / 'qe-graphite_scf-20261118'
+    run.mkdir()
+    shutil.copy(data / 'graphite_scf_pw76_mpi.out', run / 'pw.out')
+    (run / 'out').mkdir()  # the wave functions: left where they are
+    (run / 'out' / 'wfc1.hdf5').write_bytes(b'0' * 16)
+    warned = []
+    monkeypatch.setattr(window, 'error', lambda exc: warned.append(exc))
+    assert window.opening_tool.file_kind(str(run / 'pw.out')) == 'qe_output'
+    window.dirty = False
+    window.opening_tool.open_path(str(run / 'pw.out'))
+    assert not warned and window.crystal[0].title.startswith('qe_graphite')  # the name of the folder, as CIF writes it
+    project = Path(window.research_path())
+    assert crystal_projects.is_crystal(project) and (project.parent / 'calculations' / run.name / 'pw.out').is_file()
+    assert not (project.parent / 'calculations' / run.name / 'out').exists()
+    view = window.crystal_results
+    assert window.results_stack.currentWidget() is view and len(view.run_list) == 1
+    assert '-36.884726 Eh' in view.line.text() and 'a = 2.4640' in view.line.text()
+    # a run of a crystal project
+    cif = write_cif(qe.crystal_of((data / 'si_primitive_scf_pw76.out').read_text(encoding='utf-8'), 'Si'))
+    manifest = crystal_projects.create(tmp_path / 'projects', 'Si', cif)
+    for name, source in (('first', 'si_scf_pw76.out'), ('second', 'si_primitive_scf_pw76.out')):
+        folder = Path(manifest).parent / 'calculations' / name
+        folder.mkdir(parents=True)
+        shutil.copy(data / source, folder / 'pw.out')
+        crystal_projects.record_run(manifest, {'folder': f'calculations/{name}', 'task': 'Энергия', 'time': '',
+                                               'program': 'qe'})
+    window.opening_tool.open_path(str(Path(manifest).parent / 'calculations' / 'first' / 'pw.out'))
+    assert not warned and Path(window.research_path()).resolve() == Path(manifest).resolve()
+    assert window.crystal_results.run.folder.name == 'first' and window.crystal_results.runs.currentIndex() == 0

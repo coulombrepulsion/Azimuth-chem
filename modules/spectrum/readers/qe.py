@@ -15,7 +15,9 @@
     is_qe(text) -> bool; Result(version, calculation, nat, energies (Ry), energy (Ry), energy_hartree, highest, lowest,
     fermi (eV), pressures (kbar), forces (Ry/bohr), steps, converged, done, error, cell (3 × 3 Å), atoms [(symbol,
     (fx, fy, fz))], enthalpy (Ry), magnetization and absolute_magnetization (μB per cell), moments ((atom, μB), …) of
-    a spin-polarized run); read(text) -> Result; final_crystal(result, title) -> crystal.Crystal or None.
+    a spin-polarized run); read(text) -> Result; final_crystal(result, title) -> crystal.Crystal or None;
+    start_atoms(text, cell=None) — the atoms of the start; crystal_of(text, title) -> the final crystal or the start one
+    (to open a pw.out by «Файл → Открыть…», 0.249.1) or None.
     Runs(text) — the texts of the runs of pw.x one after another (the steps of one job, «Program PWSCF»);
     bands(text) -> Bands(k (Å⁻¹ … in 2π/alat as printed), energies [[eV] per k-point]) of the run of calculation 'bands'
     (verbosity 'high': «k = … bands (ev):» and the eigenvalues, which may run together as «-10.1234-9.8765»);
@@ -204,6 +206,44 @@ def final_crystal(result, title='QE'):
     cell = cr.Cell(a, b, c, angle(rows[1], rows[2]), angle(rows[0], rows[2]), angle(rows[0], rows[1]))
     sites = tuple(cr.Site(f'{s}{k + 1}', s, *f) for k, (s, f) in enumerate(result.atoms))
     return cr.Crystal(title, cell, sites, (cr.operation('x, y, z'),), 'P 1')
+
+
+def start_atoms(text, cell=None):
+    """The atoms of the start as the output prints them («site n. atom positions (alat units)»): ((symbol, (fx, fy,
+    fz)), …) in fractions of the cell of the start; () when the table or the cell is not there."""
+    import numpy as np
+
+    cell = cell or _initial(text)
+    alat = re.search(r'lattice parameter \(alat\)\s*=\s*(' + _FLOAT + r')\s*a\.u\.', text)
+    head = text.find('positions (alat units)')
+    if cell is None or not alat or head < 0:
+        return ()
+    inverse = np.linalg.inv(np.array(cell, dtype=float))
+    scale = _f(alat.group(1)) * BOHR
+    found = []
+    for line in text[head:].splitlines()[1:]:
+        row = re.match(r'\s*\d+\s+(\S+)\s+tau\(\s*\d+\)\s*=\s*\(\s*(' + _FLOAT + r')\s+(' + _FLOAT + r')\s+(' + _FLOAT
+                       + r')\s*\)', line)
+        if row is None:
+            break
+        f = np.array([_f(row.group(k)) for k in (2, 3, 4)]) * scale @ inverse
+        found.append((_symbol(row.group(1)), tuple(float(x) % 1.0 for x in f)))
+    return tuple(found)
+
+
+def crystal_of(text, title='QE'):
+    """The crystal of an output of pw.x to open it: the final structure of a relaxation, else the start (an scf run
+    has no final coordinates); None when neither is printed."""
+    result = read(text)
+    final = final_crystal(result, title)
+    if final is not None:
+        return final
+    atoms = start_atoms(text, result.cell)
+    if result.cell is None or not atoms:
+        return None
+    from dataclasses import replace as _replace
+
+    return final_crystal(_replace(result, atoms=atoms), title)
 
 
 def steps(text):

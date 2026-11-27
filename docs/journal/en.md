@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.1 — 27 November 2026
+
+- ### 0.249.1 — I open pw.out
+
+An output of Quantum ESPRESSO now opens by «Open…» and by a drop on the window: I build the crystal and show the results of the run in Spectrum at once. And the Spectrum of a project with xtb runs is no longer empty – I found the final geometry beside the output. Every message now has a picture of its own too: the update, resetting the settings, help.
+
 ## 0.249.0 — 27 November 2026
 
 - ### 0.249.0 — Structures from a language model

@@ -45,6 +45,7 @@ class OpeningTool:
         'confirm_replace',
         'structure_as_new_molecule',
         'coordinate_tool',
+        'crystal_results',  # Spectrum of a crystal project: an output of pw.x opened on its run
         'crystal_tool',
         'display_output',
         'document',
@@ -66,6 +67,7 @@ class OpeningTool:
         'output',
         'preferences',
         'project_path',
+        'projects_root',  # an output of pw.x opened — a crystal project of its own
         'refresh_project_navigation',  # an output of CRYSTAL — its method and energy in the list
         'remember_recent',
         'research_document_path',
@@ -402,6 +404,14 @@ class OpeningTool:
             except (OSError, ValueError, UnicodeError) as exc:
                 self.w.error(exc)
             return
+        if kind == 'qe_output':  # Quantum ESPRESSO — the crystal and its results (crystal_code_window.open_qe_output)
+            from modules.compass.actions import crystal_code_window
+
+            try:
+                crystal_code_window.open_qe_output(self.w, path, formats.read_text(path))
+            except (OSError, ValueError, UnicodeError) as exc:
+                self.w.error(exc)
+            return
         if kind == 'cdx':  # the binary ChemDraw file — its XML twin is read
             self.w.error(ValueError(tr('Двоичный файл ChemDraw (.cdx) не читается — сохраните его в ChemDraw как '
                                        '«ChemDraw XML (.cdxml)» и откройте тот.')))
@@ -507,7 +517,10 @@ class OpeningTool:
         if head.lstrip().lower().startswith('[molden format]'):  # also orca_2mkl's <name>.molden.input
             return 'molden'
         if suffix in ('.out', '.outp', '.log', '.txt') or not suffix:  # CRYSTAL and TOPOND
-            from modules.spectrum.readers import crystal_out
+            from modules.spectrum.readers import crystal_out, qe
+
+            if qe.is_qe(head):  # pw.x — not an output of a molecule (0.249.1: it was read as ORCA)
+                return 'qe_output'
 
             if crystal_out.is_crystal(text) or crystal_out.is_topond(text):
                 return 'crystal_output'

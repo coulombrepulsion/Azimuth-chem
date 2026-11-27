@@ -68,7 +68,7 @@ def restore_completed_results(queue):
             text = Path(item.output).read_text(encoding='utf-8', errors='replace')
         except OSError:
             continue
-        energy, geometry, gibbs, heat = batch.result_of(queue.kind, text)
+        energy, geometry, gibbs, heat = batch.result_of(queue.kind, text, item.output)
         if geometry is not None:
             item.geometry = geometry
             if item.energy is None:

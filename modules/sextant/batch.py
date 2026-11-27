@@ -26,7 +26,7 @@ with the same settings of Sextant, one after another on this computer.
     'cda' — 0.91.40, extra={} — 0.91.40);
     .save(), Batch.load(folder) -> Batch (an item running on a server — job.json in its folder — stays 'running');
     .next_waiting() -> BatchItem | None; .counts() -> {state: n}; .done() -> bool; .summary(T=298.15) -> [dict name,
-    energy, gibbs, delta (kcal/mol), share, item]; .table() -> (header, rows); result_of(kind, text) -> (energy |
+    energy, gibbs, delta (kcal/mol), share, item]; .table() -> (header, rows); result_of(kind, text, path=None) -> (energy |
     None, Molecule | None, gibbs | None).
 §7 TESTS tests/sextant/test_batch.py.
 """
@@ -286,13 +286,14 @@ def batch_folder(root, molecule, kind, now=None):
     return folder
 
 
-def result_of(kind, text):
+def result_of(kind, text, path=None):
     """(final energy hartree | None, final geometry | None, G hartree | None, ΔHf kcal/mol | None — MOPAC) of an
-    output of the program kind."""
+    output of the program kind. path — the output file: xtb writes its final geometry beside it (xtbopt.xyz), not into
+    the output; without the path an xtb run gave no geometry and its project never took the result (0.249.1)."""
     from modules.spectrum.readers.outputs import read_any
 
     try:
-        output = read_any(text)
+        output = read_any(text, str(path) if path else None)
     except Exception:  # noqa: BLE001 — an output that cannot be read gives no energy
         return None, None, None, None
     energy = None

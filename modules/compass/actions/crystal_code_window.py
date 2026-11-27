@@ -10,7 +10,11 @@
     show(studio) -> CrystalInputWindow | None; CrystalInputWindow(parent, crystal, studio): text() — the input as the
     choices make it (ValueError shown under it); save() / save_topond() -> path | None. open_output(studio, path, text)
     -> True when it was an output of CRYSTAL or of TOPOND; summary(result) -> the line of what the run gave;
-    elastic_rows(result), topond_rows(points) -> rows of the tables.
+    elastic_rows(result), topond_rows(points) -> rows of the tables. open_qe_output(studio, path, text) — an output of
+    pw.x (Quantum ESPRESSO) by «Файл → Открыть…» or dropped on the window (0.249.1; the feedback of 2026-11-18: it was
+    taken for ORCA and nothing opened): in the folder of a run of a crystal project — that project, Spectrum on that
+    run; elsewhere — the crystal of the output in a new project, the run copied into it (without out/, the wave
+    functions), Spectrum on it.
 §7 TESTS tests/gui/test_gui_files.py::test_crystal_input_window, ::test_a_crystal_output_opens_with_its_steps."""
 
 from pathlib import Path
@@ -215,6 +219,74 @@ def topond_rows(points):
                      '' if p.h is None else f'{p.h:.5f}', '' if p.ratio is None else f'{p.ratio:.3f}',
                      '' if p.ellipticity is None else f'{p.ellipticity:.3f}'))
     return rows
+
+
+def _run_of_project(folder):
+    """(manifest, index of the run) when folder is a run of a crystal project (<project>/calculations/<run>), else
+    None."""
+    from azimuth import crystal_projects, projects
+    from modules.compass.chemistry import crystal_results
+
+    manifest = folder.parent.parent / projects.MANIFEST
+    if folder.parent.name != 'calculations' or not manifest.is_file():
+        return None
+    try:
+        if not crystal_projects.is_crystal(manifest):
+            return None
+        found = [k for k, run in enumerate(crystal_results.runs(manifest)) if run.folder.resolve() == folder.resolve()]
+    except (OSError, ValueError, KeyError):
+        return None
+    return (manifest, found[-1]) if found else None
+
+
+def _show_run(studio, index=None):
+    """Spectrum on the results of the crystal project shown: the run index (the last one when None)."""
+    if hasattr(studio, 'navigate'):
+        studio.navigate(2)
+    view = getattr(studio, 'crystal_results', None)
+    if view is not None and index is not None and 0 <= index < len(getattr(view, 'run_list', [])):
+        view.runs.setCurrentIndex(index)
+        view.choose(index)
+    return view
+
+
+def open_qe_output(studio, path, text):
+    """§4: an output of pw.x opened as the crystal it computed, with its results in Spectrum."""
+    import shutil
+    from datetime import datetime
+
+    from azimuth import crystal_projects
+    from modules.compass.chemistry.surface import write_cif
+    from modules.spectrum.readers import qe
+
+    path = Path(path)
+    folder = path.parent
+    known = _run_of_project(folder)
+    if known is not None:  # a run of a project: the project, Spectrum on this run
+        manifest, index = known
+        studio.open_project_path(str(manifest))
+        return _show_run(studio, index)
+    crystal = qe.crystal_of(text, folder.name if path.stem == 'pw' else path.stem)
+    if crystal is None:
+        raise ValueError(tr('В выводе Quantum ESPRESSO нет ячейки и атомов — кристалл не построить.'))
+    text_cif, name = write_cif(crystal), crystal.title
+    made = None
+    if hasattr(studio, 'projects_root'):  # a project of its own — not one more crystal of the project shown
+        made = crystal_projects.create(studio.projects_root('crystal'), name, text_cif)
+    studio.crystal_tool.open_crystal_text(text_cif, name + '.out', project=made)
+    project = studio.research_path() if hasattr(studio, 'research_path') else None
+    if not project or not crystal_projects.is_crystal(project):
+        return None
+    target = Path(project).parent / 'calculations' / folder.name
+    if not target.exists():  # the run beside the project, its wave functions left where they are (gigabytes)
+        shutil.copytree(folder, target, ignore=shutil.ignore_patterns('out', '*.save', '*.wfc*', '*.hdf5'))
+    result = qe.read(text)
+    stamp = datetime.fromtimestamp(path.stat().st_mtime).isoformat(timespec='seconds')
+    crystal_projects.record_run(project, {'folder': f'calculations/{folder.name}', 'task': result.calculation or 'scf',
+                                          'time': stamp, 'energy_ry': result.energy, 'place': 'local', 'program': 'qe'})
+    if hasattr(studio, 'refresh_project_navigation'):
+        studio.refresh_project_navigation()
+    return _show_run(studio)
 
 
 def open_output(studio, path, text):

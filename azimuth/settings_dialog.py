@@ -507,9 +507,13 @@ class SettingsDialog(QDialog):
         if ask:
             from PySide6.QtWidgets import QMessageBox
 
-            answer = QMessageBox.question(self, tr('Сбросить все настройки'),
-                                          tr('Забыть все настройки программы — вид, папки, пути к программам, сервер, '
-                                             'свои схемы? Отменить это нельзя; можно сначала «Сохранить в файл…».'))
+            from azimuth import quill
+
+            answer = quill.question(self, tr('Сбросить все настройки'),
+                                    tr('Забыть все настройки программы — вид, папки, пути к программам, сервер, '
+                                       'свои схемы? Отменить это нельзя; можно сначала «Сохранить в файл…».'),
+                                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                                    QMessageBox.StandardButton.No, 'reset')
             if answer != QMessageBox.StandardButton.Yes:
                 return False
         store.clear()

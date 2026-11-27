@@ -185,8 +185,10 @@ def offer(parent, release, language='ru', manual=False, settings=None, open_url=
     from PySide6.QtWidgets import QMessageBox
 
     source = from_source()
+    from azimuth import quill
+
     box = QMessageBox(parent)
-    box.setIcon(QMessageBox.Icon.Information)
+    quill.set_icon(box, 'update', QMessageBox.Icon.Information)  # the picture of the state, as the other dialogs
     box.setWindowTitle(tr('Обновление'))
     box.setText(message(release, current(), source))
     download = None if source else box.addButton(tr('Скачать'), QMessageBox.ButtonRole.AcceptRole)
@@ -233,15 +235,15 @@ def check_later(window, language='ru', delay_ms=4000):
 
 def check_now(window, language='ru', fetch=latest):
     """«Справка → Проверить обновления…»: the answer in any case."""
-    from PySide6.QtWidgets import QMessageBox
+    from azimuth import quill
 
     release = fetch()
     language = getattr(window, 'language', language)
     if release is None:
-        QMessageBox.information(window, tr('Обновление'), tr('Не удалось узнать последнюю версию: нет связи с GitHub. '
-                                                             'Попробуйте позже или загляните на сайт.'))
+        quill.information(window, tr('Обновление'), tr('Не удалось узнать последнюю версию: нет связи с GitHub. '
+                                                       'Попробуйте позже или загляните на сайт.'), 'offline')
         return None
     if newer(release.version, current()):
         return offer(window, release, language, manual=True)
-    QMessageBox.information(window, tr('Обновление'), tr('У вас последняя версия «Азимута»: {}.').format(current()))
+    quill.information(window, tr('Обновление'), tr('У вас последняя версия «Азимута»: {}.').format(current()), 'update')
     return 'latest'

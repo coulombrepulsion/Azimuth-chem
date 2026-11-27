@@ -281,7 +281,7 @@ def test_a_calculation_opened_is_current_until_a_newer_one_gives_a_result(tmp_pa
     # the choice is kept through saving and reopening (refresh); a calculation that gives a result after
     # it becomes current by itself
     water = read_xyz('3\nwater\nO 0 0 0.117\nH 0.757 0 -0.469\nH -0.757 0 -0.469\n')
-    monkeypatch.setattr(projects.batch, 'result_of', lambda kind, text: (-76.0, water, None, None))
+    monkeypatch.setattr(projects.batch, 'result_of', lambda kind, text, path=None: (-76.0, water, None, None))
     project = projects.Project.create(tmp_path / 'Вода')
     entry = project.add(water, Calculation(), 'orca', name='H2O')
 
@@ -331,3 +331,26 @@ def test_the_calculations_of_a_project_left_on_a_server_are_found_to_be_watched(
     assert found[0]['place'] == 'hpc' and found[0]['title'] == 'H2O' and found[0]['kind'] == 'orca'
     assert found[0]['output'].endswith('water.out') and 'method' in found[0]
     assert [rec['folder'] for rec in projects.server_attempts(project, skip={new})] == [old]
+
+
+def test_an_xtb_result_is_taken_with_its_geometry_beside_the_output(tmp_path):
+    # 0.249.1 (the feedback of 2026-11-18: the Spectrum of a project of methane stayed empty): xtb writes its final
+    # geometry beside its output (xtbopt.xyz) — the output alone gave none, the attempt stayed «геометрия не
+    # прочитана» for good: its stamp was kept, and an output once found unreadable was never read again
+    from pathlib import Path
+
+    source = Path(__file__).resolve().parents[1] / 'data' / 'xtb' / 'dvb_opt'
+    project = projects.Project.create(tmp_path / 'DVB')
+    entry = project.add(WATER, Calculation(), 'xtb', name='DVB')
+    folder = project.root / 'calculations' / 'run'
+    shutil.copytree(source, folder)
+    output = folder / 'dvb_opt.out'
+    attempt = project.record(entry['id'], 'a1', WATER, Calculation(), 'xtb', 'done', folder, output)
+    assert attempt['usable'] and attempt['energy'] < 0 and len(attempt['geometry']['atoms']) == 20
+    assert project.current(entry)['id'] == 'a1'
+    # an attempt saved by an older version as unreadable, with the stamp of this very output: read again
+    attempt.update(usable=False)
+    attempt.pop('geometry')
+    entry['current'] = None
+    again = project.record(entry['id'], 'a1', WATER, Calculation(), 'xtb', 'done', folder, output)
+    assert again['usable'] and again['geometry'] and project.current(entry)['id'] == 'a1'

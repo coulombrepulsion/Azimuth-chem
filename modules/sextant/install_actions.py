@@ -215,7 +215,7 @@ class InstallTool:
         self.w.job_window.finish()
         self.w.folder_button.setEnabled(True)
         if code == 0 and '[tools] done' in job.text():
-            self.w.job_window.show_picture('calc-done')
+            self.w.job_window.show_picture('install-done')  # not «Расчёт закончен»: the programs are installed
             # where they are, and that Finder hides
             # the folders whose names begin with a dot
             from modules.sextant import install_tools

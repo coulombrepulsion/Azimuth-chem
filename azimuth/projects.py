@@ -273,12 +273,14 @@ class Project:
         if state == 'done' and output and Path(output).is_file():
             stat = Path(output).stat()
             stamp = [stat.st_size, stat.st_mtime_ns]
-        cached = stamp is not None and attempt.get('stamp') == stamp
+        # an output read before is not read again — unless it gave nothing then: an older version may not have read it
+        # (the feedback of 2026-11-18: an xtb run of methane stayed «геометрия не прочитана» for good, Spectrum empty)
+        cached = stamp is not None and attempt.get('stamp') == stamp and bool(attempt.get('usable'))
         if not cached:
             attempt['usable'] = False
         if stamp is not None and not cached:
             text = Path(output).read_text(encoding='utf-8', errors='replace')
-            energy, geometry, gibbs, heat = batch.result_of(kind, text)
+            energy, geometry, gibbs, heat = batch.result_of(kind, text, output)
             if geometry is not None:
                 try:
                     read_xyz(geometry.xyz())

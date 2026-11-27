@@ -69,6 +69,14 @@ PICTURES = {
      '<path d="M12 6h24v36H12z"/><path d="M17 14h14M17 20h14M17 26h9" stroke-opacity="0.5"/><path d="M30 34l8-8 3 3-8 8h-3z" stroke="#c99a3a"/>'),
     'home-desk': ('Главная',
      '<circle cx="24" cy="24" r="21" stroke-opacity="0.35"/><circle cx="24" cy="24" r="15" stroke-opacity="0.25"/><path d="M24 9l3.5 15L24 39l-3.5-15z"/><path d="M24 9l3.5 15h-7z" fill="currentColor" fill-opacity="0.25" stroke="none"/>'),
+    'install-done': ('Установка закончена',
+     '<path d="M24 6v17M17.5 16.5L24 23l6.5-6.5" stroke-opacity="0.6"/><path d="M8 30v10h32V30"/><path d="M17.5 33.5l4.5 4.5 9-9" stroke="#c99a3a" stroke-width="1.4"/>'),
+    'update': ('Обновление программы',
+     '<path d="M38.5 19A15.5 15.5 0 0 0 10.6 15"/><path d="M10 7.5v8h8"/><path d="M9.5 29A15.5 15.5 0 0 0 37.4 33"/><path d="M38 40.5v-8h-8"/><path d="M24 31V17M18.5 22.5L24 17l5.5 5.5" stroke="#c99a3a"/>'),
+    'reset': ('Сбросить настройки',
+     '<path d="M11.5 15A16 16 0 1 1 8.4 27.5"/><path d="M11 6.5V15h8.5"/><path d="M17 21h14M17 29h14" stroke-opacity="0.5"/><circle cx="21" cy="21" r="2.2"/><circle cx="28" cy="29" r="2.2"/><path d="M37 5l4.5 4.5M41.5 5L37 9.5" stroke="#d0603a"/>'),
+    'info': ('Справка',
+     '<circle cx="24" cy="24" r="21" stroke-opacity="0.35"/><circle cx="24" cy="14.5" r="1.6" fill="currentColor" stroke="none"/><path d="M21 21h3v13" stroke-width="1.4"/><path d="M19.5 34h9"/><path d="M38 6l1 2.2 2.2 1-2.2 1-1 2.2-1-2.2-2.2-1 2.2-1z" stroke="#c99a3a"/>'),
 }
 # the names of the pictures of Quill without one of their own here
 ALIASES = {'empty-model-mirrored': 'empty-model'}

@@ -67,3 +67,8 @@
   primitive cell, SSSP 1.3.0, k 11 × 11 × 11): 19 runs — the cell as it is and 3 strains × 6 amplitudes. Of every run
   its head and its end are kept (the iterations left out; the energies «!» and «JOB DONE» are there; the paths
   replaced). C₁₁ = 276.3, C₁₂ = 92.1, C₄₄ = 143.2 GPa, B = 153.5 GPa. Used by `tests/compass/test_elastic.py`.
+- `graphite_scf_pw76_mpi.out` — QE 7.6 on the Mac of a tester (2026-11-18), the task «Энергия» of graphite (P 1, 4
+  atoms, PAW of pslibrary), several MPI processes: the output ends with the notes «floating-point exceptions are
+  signalling» of each process after «JOB DONE». The scf run has no final coordinates — the crystal is taken from the
+  table «positions (alat units)» of the start. Used by `tests/spectrum/test_qe_open.py` and
+  `tests/gui/test_gui_files.py::test_an_output_of_pw_x_opens_as_its_crystal` (it was read as ORCA before 0.249.1).

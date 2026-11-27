@@ -1025,6 +1025,7 @@ Spectrum reads the result of a calculation: energies and convergence, vibrations
 
 - The result of a calculation from Sextant opens by itself – in the tab from which the calculation was started.
 - «File → Open a calculation result…» – an output of ORCA (`.out`), Gaussian (`.log`), xtb, Psi4 and other programs.
+- An output of Quantum ESPRESSO (`pw.out`) – «File → Open…» or dropped on the window (0.249.1): in the folder of a run of a crystal project it opens that project with this run in Spectrum; elsewhere the crystal of the output becomes a new project, the run is copied into it (without the folder `out` of the wave functions), and Spectrum shows its results.
 - «File → Open orbitals…» – Molden, fchk, an ORCA output; «File → Open CUBE (3D)…».
 - Teaching ORCA results (energy, vibrations, an orbital) are in the «File» menu, without files.
 - «Edit → Use geometry from result» moves the final structure to Compass.

@@ -32,7 +32,8 @@
     its left (_Side), the headline, the text, the check box and the buttons at her right (relayout, when the box is
     shown); her height is the height of the text and the buttons, she adds none; no blue edge (it stays on the clouds of
     Quill, paint_edge);
-    question(parent, title, text, buttons, default, name) -> StandardButton, warning(…) — the title is the headline.
+    question(parent, title, text, buttons, default, name) -> StandardButton, warning(…), information(…) — the title
+    is the headline.
 §5 PROCEDURES - below.
 §6 NOTES
     A missing picture never stops a dialog: the system icon is shown instead.
@@ -57,7 +58,8 @@ NAMES = ('calc-done', 'calc-failed', 'calc-stopped', 'save', 'stop-running', 'in
          'empty-crystal',  # the empty field of «Компас · Кристалл»
          # the dialogs and the empty places of docs/art/QUAIL_ART_DIALOGS.md
          'error', 'file-unreadable', 'delete', 'no-points', 'no-orbitals', 'nothing-found', 'offline', 'sextant-empty',
-         'empty-model-mirrored')  # the empty field of «Компас · Молекула», Quill turned to her bubble
+         'empty-model-mirrored',  # the empty field of «Компас · Молекула», Quill turned to her bubble
+         'install-done', 'update', 'reset', 'info')  # 0.249.1: pictures of their own, not borrowed (the owner: «И проверь, что иконки не повторяются»)
 
 
 def path(name):
@@ -398,6 +400,19 @@ class EmptyNote(QFrame):
 
     def text(self):
         return self.label.text()
+
+
+def information(parent, title, text, name='notes'):
+    """QMessageBox.information with the picture of the state instead of the system «i» (0.249.1: the dialogs of the
+    updates had the system icon). A replaced QMessageBox.information (the tests) answers instead, as in warning()."""
+    if isinstance(QMessageBox.information, types.FunctionType):
+        return QMessageBox.information(parent, title, text)
+    box = QMessageBox(parent)
+    headline(box, title, text)
+    box.setStandardButtons(QMessageBox.StandardButton.Ok)
+    set_icon(box, name, QMessageBox.Icon.Information)
+    box.exec()
+    return QMessageBox.StandardButton.Ok
 
 
 def question(parent, title, text, buttons, default, name, labels=None):

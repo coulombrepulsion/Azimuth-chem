@@ -437,6 +437,7 @@ class CrystalWindow(QDialog):
             quill.warning(self, tr('Символ группы'), str(exc))
             return None
         box = QMessageBox(self)
+        quill.set_icon(box, 'info', QMessageBox.Icon.Information)  # «Справка», as the other dialogs have their pictures
         box.setWindowTitle(tr('Символ группы {}').format(self.data.space_group))
         box.setText('<br>'.join(lines))
         box.setTextFormat(Qt.TextFormat.RichText)
