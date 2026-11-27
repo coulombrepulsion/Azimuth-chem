@@ -135,7 +135,8 @@ class CompassCard(QFrame):
             part.layout().addStretch(1)
             part.layout().setStretch(2, 0)
             part.icon.setFixedSize(30, 30)
-            part.text.hide()
+            part.text.setWordWrap(False)  # one line: the half is wide enough
+            part.layout().setAlignment(part.icon, Qt.AlignmentFlag.AlignVCenter)
             halves.addWidget(part, 1)
             self.parts[kind] = part
         column.addLayout(halves)
@@ -169,11 +170,14 @@ def thin(svg):
 
 # one line about each section on its card (0.248.0, the owner: «добавь какое-нибудь краткое описание каждого раздела»)
 BRIEF = {
-    'ru': {'atlas': 'Теория в интерактивных темах – на сайте', 'compass': 'Построить молекулу или кристалл',
+    'ru': {'atlas': 'Теория в интерактивных темах – на сайте', 'compass': 'Построить и изменить молекулу',
+           'crystal': 'Открыть и изучить кристалл',
            'sextant': 'Подготовить и запустить расчёт', 'spectrum': 'Разобрать результат расчёта'},
-    'en': {'atlas': 'Theory in interactive topics – on the site', 'compass': 'Build a molecule or a crystal',
+    'en': {'atlas': 'Theory in interactive topics – on the site', 'compass': 'Build and edit a molecule',
+           'crystal': 'Open and study a crystal',
            'sextant': 'Prepare and run a calculation', 'spectrum': 'Read the result of a calculation'},
-    'zh': {'atlas': '交互式主题中的理论——在网站上', 'compass': '构建分子或晶体',
+    'zh': {'atlas': '交互式主题中的理论——在网站上', 'compass': '构建和编辑分子',
+           'crystal': '打开并研究晶体',
            'sextant': '准备并运行计算', 'spectrum': '解读计算结果'},
 }
 
@@ -646,8 +650,10 @@ class HomePage(QScrollArea):
                 card.icon.setPixmap(svg_pixmap(COMPASS_SVG, accent, 36, ratio))
                 card.title.setText(compass)
                 card.title.setStyleSheet(f'font-size: 18px; font-weight: 600; {face}')
-                card.text.setText(BRIEF.get(language, BRIEF['ru'])['compass'])
-                card.text.setStyleSheet(f'color: {muted}; font-size: 14px; {face}')
+                # 0.248.4 (the owner: «Пусть у компаса не будет подписи, а ниже в разделении подписать
+                # соответствующий подраздел»): the line under each half, none under the name
+                card.text.setText('')
+                card.text.hide()
                 card.setStyleSheet(f'QFrame#compassRule {{background: {line}; border: none;}}'
                                    f'QFrame#compassPart {{background: transparent; border: none; border-radius: 8px;}}'
                                    f'QFrame#compassPart:hover {{background: {line};}}')
@@ -655,7 +661,9 @@ class HomePage(QScrollArea):
                     part = card.parts[kind]
                     part.icon.setPixmap(svg_pixmap(PART_SVG[kind], accent, 26, ratio))
                     part.title.setText(title)
-                    part.title.setStyleSheet(f'font-size: 15px; font-weight: 500; {face}')
+                    part.title.setStyleSheet(f'font-size: 15px; font-weight: 600; {face}')
+                    part.text.setText(BRIEF.get(language, BRIEF['ru'])[kind])
+                    part.text.setStyleSheet(f'color: {muted}; font-size: 13px; {face}')
                     part.setToolTip(names.get(kind, title))
                     part.setAccessibleName(names.get(kind, title))
                 card.setToolTip(compass)

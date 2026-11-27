@@ -17,18 +17,18 @@ slides out of the square to the right, the results are listed over it.
     the bottom of the window. Enter or a click — the result shown where it is (menu_search.reveal); Up and Down move in
     the list; Escape, a click elsewhere or the result chosen — the panel slides back into the square.
 §4 SPECIFICATION
-    SidebarSearch(hub, parent): button (QToolButton), panel (QFrame), field (QLineEdit), results (QListWidget),
+    SidebarSearch(hub, parent): button (QPushButton), panel (QFrame), field (QLineEdit), results (QListWidget),
     found ([menu_search.Entry]); open(animate=True), close(animate=True), is_open(), set_dark(dark), choose(row).
 §7 TESTS
     tests/hub/test_menu_search.py.
 """
 
 from PySide6.QtCore import QEasingCurve, QEvent, QObject, QPoint, QRect, QSize, Qt, QTimer, QVariantAnimation
-from PySide6.QtWidgets import QApplication, QFrame, QHBoxLayout, QLineEdit, QListWidget, QListWidgetItem, QPushButton, QToolButton
+from PySide6.QtWidgets import QApplication, QFrame, QHBoxLayout, QLineEdit, QListWidget, QListWidgetItem, QPushButton
 
 from azimuth.i18n import tr
 
-WIDTH = 340  # px: the panel with the field slid out
+WIDTH = 380  # px: the panel with the field slid out
 SLIDE = 170  # ms
 ROW = 28  # px: a row of the results
 TITLE = 'Поиск по меню и кнопкам'
@@ -59,8 +59,10 @@ class SidebarSearch(QObject):
         self.field.setPlaceholderText(tr(TITLE))
         self.field.setClearButtonEnabled(True)
         row.addWidget(self.field)
-        self.glass = QToolButton(self.panel)  # the magnifier stays where the button was
-        self.glass.setObjectName('sideSearchGlass')
+        # the magnifier stays where it was: a button of the same style as that of the panel (its icon as far from the
+        # left), 0.248.4 — it moved to the middle when the panel opened
+        self.glass = QPushButton(self.panel)
+        self.glass.setObjectName('nav')
         self.glass.setIconSize(QSize(22, 22))
         self.glass.move(0, 0)
         self.glass.clicked.connect(lambda: self.close())
@@ -92,7 +94,7 @@ class SidebarSearch(QObject):
         accent = '#6ea2f0' if dark else '#2a62b8'
         # as the other buttons of the panel: no frame, a light ground under the mouse (0.248.1, the owner: «Убери вокруг
         # лупы рамку, пусть будет как другие кнопки на панели»)
-        self.glass.setStyleSheet('QToolButton {border: none; background: transparent;}')
+        self.glass.setStyleSheet('QPushButton#nav, QPushButton#nav:hover {background: transparent; border: none;}')
         for button in (self.button, self.glass):
             button.setIcon(icon('search', ink))
         self.panel.setStyleSheet(
@@ -109,8 +111,14 @@ class SidebarSearch(QObject):
         return self.panel.isVisible() and (self._opening or self.motion.state() != QVariantAnimation.State.Running)
 
     def _place(self):
-        """Where the square is, in the coordinates of the window."""
-        return QRect(self.button.mapTo(self.hub, QPoint(0, 0)), self.button.size())
+        """Where the button is seen, in the coordinates of the window: the column of the panel is as wide as the open
+        panel, the rail shows its left part only (0.248.4: the field began far to the right of the magnifier)."""
+        place = QRect(self.button.mapTo(self.hub, QPoint(0, 0)), self.button.size())
+        sidebar = getattr(self.hub, 'sidebar', None)
+        if sidebar is not None and sidebar.isVisible():
+            left = self.button.mapTo(sidebar, QPoint(0, 0)).x()
+            place.setWidth(max(1, min(place.width(), sidebar.width() - 2 * left)))
+        return place
 
     def open(self, animate=True):
         if self.is_open():

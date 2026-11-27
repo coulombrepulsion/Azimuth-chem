@@ -74,6 +74,10 @@ def test_the_magnifier_stands_in_the_side_panel_over_the_languages(hub, app):
     search.open(animate=False)  # the field out of the square, to the right
     assert search.is_open() and search.panel.width() == WIDTH and search.panel.x() == button.mapTo(hub, button.rect().topLeft()).x()
     assert search.field.isVisible()
+    # the magnifier stays where it was: the button in the panel is as wide as the button is seen in the rail
+    glass, seen = search.glass, search.button.mapTo(hub, search.button.rect().topLeft())
+    assert glass.mapTo(hub, glass.rect().topLeft()) == seen and glass.width() <= hub.sidebar.width()
+    assert glass.objectName() == button.objectName() and glass.iconSize() == button.iconSize()
     search.field.setText('хиршфельд')
     assert search.results.isVisible() and search.results.geometry().bottom() < search.panel.geometry().top()  # over it
     search.close(animate=False)

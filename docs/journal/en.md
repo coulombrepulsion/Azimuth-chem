@@ -1,5 +1,11 @@
 # What’s new
 
+## 0.248.4 — 27 November 2026
+
+- ### 0.248.4 — Compass captions
+
+Both halves of the Compass card carry their own line now: the molecule and the crystal.
+
 ## 0.248.3 — 27 November 2026
 
 - ### 0.248.3 — A needle with two sides

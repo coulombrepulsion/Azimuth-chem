@@ -284,13 +284,14 @@ def test_home_page_blocks_open_sections(hub, app):
     for item in SECTIONS:
         card = hub.home.cards[item['id']]
         assert card.title.text()
-        if item['id'] != 'crystal':  # one line about the section (the crystal is a half of the card of Compass)
+        if item['id'] != 'compass':  # one line about the section; of Compass — under each of its halves (0.248.4)
             assert card.text.text() and len(card.text.text()) < 60 and not card.text.isHidden()
         if item['id'] not in ('compass', 'crystal'):
             assert card.title.text() == item['title']
         QTest.mouseClick(card if item['id'] != 'compass' else compass.parts['compass'], Qt.MouseButton.LeftButton)
         assert hub.current == (hub_window.HOME if item['id'] == 'atlas' else item['id'])  # the site
         hub.show_section(hub_window.HOME, animate=False)
+    assert compass.text.isHidden() and compass.parts['compass'].text.text() == 'Построить и изменить молекулу'
     hub.set_language('en')
     assert hub.home.intro.text().startswith('Azimuth is') and hub.home.cards['atlas'].title.text() == 'Atlas'
     hub.set_language('ru')
