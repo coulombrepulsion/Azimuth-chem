@@ -101,7 +101,7 @@ def refresh(self):
 
         program = install_tools.cp2k_program(self.root())
         if program is None:  # where CP2K comes from on this system
-            if os.name == 'nt':
+            if os.name == 'nt':  # qe_windows.install_cp2k is written, not offered until it has run on Windows
                 self.status.setText(tr('Для Windows нет сборки CP2K: считайте на сервере.'))
             else:  # on a Mac too — through Homebrew
                 self.status.setText(tr('CP2K не найден: «Расчёт → Установить программы для расчёта…» → CP2K.'))
@@ -270,7 +270,8 @@ def windows_command(steps, program, processes):
     from modules.sextant import qe_inputs, qe_windows
 
     folder = str(Path(program).parent)
-    changes = {'PATH': os.pathsep.join([folder, os.environ.get('PATH', '')]), 'OMP_NUM_THREADS': str(max(1, int(processes)))}
+    changes = {'PATH': os.pathsep.join([folder, os.environ.get('PATH', '')]), 'OMP_NUM_THREADS': str(max(1, int(processes))),
+               'OMP_STACKSIZE': qe_windows.OMP_STACK}
     if len(steps) == 1:
         return [str(program), '-in', steps[0][0]], '', changes
     lines = ['@echo off']
@@ -323,13 +324,12 @@ def set_crystal_for_batch(self, crystal, name, primitive=True):
 
 
 def _start_cp2k(self, program):
-    """CP2K on this computer — its MPI build through the mpirun next to it (or of its prefix)."""
-    from modules.sextant import runner
+    """CP2K on this computer — its MPI build through the mpirun next to it (or of its prefix); a build without MPI
+    (Windows) — with the processes asked for as threads (install_tools.cp2k_environment)."""
+    from modules.sextant import install_tools, runner
 
-    env = dict(os.environ)
-    env['OMP_NUM_THREADS'] = '1'
-    env['PATH'] = os.pathsep.join([str(Path(program).parent), env.get('PATH', '')])
     n = self.processes.value()
+    env = install_tools.cp2k_environment(program, n)
     mpirun = Path(program).with_name('mpirun')
     parallel = [str(mpirun), '-np', str(n)] if n > 1 and mpirun.is_file() and 'smp' in Path(program).name else []
     command = [*parallel, str(program), '-i', 'azimuth.inp']

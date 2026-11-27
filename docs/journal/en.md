@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.241.0 — 27 November 2026
+
+- ### 0.241.0 — Quantum ESPRESSO runs on Windows
+
+The first crystal calculation on Windows failed: the programs of Quantum ESPRESSO ran out of stack. The installer now widens it. If Quantum ESPRESSO is already installed on Windows, install it once more from «Calculation → Install calculation programs…». The chain of a reaction calculation – from the optimization to the IRC and the rate constant – has been checked on Windows in ORCA and xtb.
+
 ## 0.240.0 — 26 November 2026
 
 - ### 0.240.0 — The CP2K grid by the elements

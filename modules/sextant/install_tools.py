@@ -96,7 +96,7 @@ PSI4_PACKAGES = {'psi4': 'psi4'}
 PSI4_EXTRAS = ('dftd3-python', 'dftd4-python>=3.5', 'gcp-correction')
 PSI4_CHECK = 'molecule {\n  He 0 0 0\n}\nset basis sto-3g\nenergy(\'scf\')\n'
 NWCHEM_CHECK = 'start check\ngeometry\n  He 0 0 0\nend\nbasis\n  * library sto-3g\nend\ntask scf\n'
-CP2K_NAMES = ('cp2k.psmp', 'cp2k.ssmp', 'cp2k.popt', 'cp2k.sopt', 'cp2k')
+CP2K_NAMES = ('cp2k.psmp', 'cp2k.ssmp', 'cp2k.popt', 'cp2k.sopt', 'cp2k', 'cp2k.ssmp.exe')  # the last — Windows (MSYS2)
 CP2K_DIRS = ('/opt/homebrew/bin', '/usr/local/bin', str(Path.home() / '.homebrew' / 'bin'))  # Homebrew: «brew install cp2k»
 MICROMAMBA_VERSION = '2.10.0'
 MICROMAMBA_URL = 'https://micro.mamba.pm/api/micromamba/{}/' + MICROMAMBA_VERSION
@@ -239,7 +239,8 @@ def places(root, packages):
 
 def cp2k_installable(system=None):
     """conda-forge has CP2K for Linux (x86-64, aarch64) only; a Mac takes it from Homebrew («brew install
-    cp2k» run by the installer, cp2k_by_brew), Windows — a server."""
+    cp2k» run by the installer, cp2k_by_brew), Windows — a server (the build of MSYS2, qe_windows.install_cp2k, is
+    written and reached by «install_tools cp2k» of the command line; not offered until it has run on Windows)."""
     return (system or platform.system()) in ('Linux', 'Darwin')
 
 
@@ -265,7 +266,7 @@ def cp2k_program(root=None):
     for base in ([root] if root else tool_roots()):  # of another version next to this one too
         for name in CP2K_NAMES:
             path = cp2k_prefix(base) / 'bin' / name
-            if _executable(path):
+            if _executable(path) or (name.endswith('.exe') and path.is_file()):  # a Windows program has no such bit
                 return path
     for name in CP2K_NAMES:
         found = shutil.which(name)
@@ -276,6 +277,23 @@ def cp2k_program(root=None):
             if _executable(Path(folder) / name):
                 return Path(folder) / name
     return None
+
+
+def cp2k_environment(program, processes=1, environ=None):
+    """The environment of a run of CP2K: its folder first in PATH; a build without MPI (cp2k.ssmp — Windows) takes the
+    processes asked for as threads of OpenMP with a stack of their own, an MPI build one thread per process; the data
+    of a CP2K of MSYS2 (the path compiled into it is that of the machine it was built on) — by CP2K_DATA_DIR."""
+    env = dict(os.environ if environ is None else environ)
+    program = Path(program)
+    threads = 'ssmp' in program.name.lower()
+    env['OMP_NUM_THREADS'] = str(max(1, int(processes))) if threads else '1'
+    if threads:
+        env['OMP_STACKSIZE'] = '512M'
+    env['PATH'] = os.pathsep.join([str(program.parent), env.get('PATH', '')])
+    data = program.parent.parent / 'share' / 'cp2k' / 'data'
+    if program.suffix.lower() == '.exe' and (data / 'BASIS_MOLOPT').is_file():
+        env['CP2K_DATA_DIR'] = str(data)
+    return env
 
 
 def _executable(path):
@@ -478,6 +496,12 @@ def main(argv=None):
         rest = [p for p in packages if p != 'qe']
         code = main(rest + ['--root', str(root)]) if rest else 0  # the others first: they bring the package manager
         return qe_windows.install(root, say=lambda line: print(line, flush=True)) if code == 0 else code
+    if windows and 'cp2k' in packages:  # no CP2K for Windows on conda-forge either: the build of MSYS2
+        from modules.sextant import qe_windows
+
+        rest = [p for p in packages if p != 'cp2k']
+        code = main(rest + ['--root', str(root)]) if rest else 0
+        return qe_windows.install_cp2k(root, say=lambda line: print(line, flush=True)) if code == 0 else code
     if windows and 'nwchem' in packages:  # no NWChem for Windows on conda-forge
         print('[tools] NWChem has no build for Windows — skipped (it runs on macOS and Linux, or on a server).', flush=True)
         packages.remove('nwchem')
