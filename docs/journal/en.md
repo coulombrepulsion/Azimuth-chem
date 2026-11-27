@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.245.0 — 27 November 2026
+
+- ### 0.245.0 — A background with depth
+
+The background of the window has depth now: the light falls from the upper left corner, the panels cast a soft shadow, and the pictures of the background are seen through the panels as through glass. On the home page the isolines of the density of a nitro group lie behind the panels, and the azimuth in the corner has become a gyroscope that turns slowly and comes to rest when you go to another section.
+
 ## 0.244.1 — 27 November 2026
 
 - ### 0.244.1 — A download on Windows no longer breaks off

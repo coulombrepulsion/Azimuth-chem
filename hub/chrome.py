@@ -1,4 +1,8 @@
-"""Hub window decorations: faint scales (Ornament), the wordmark widget, the sidebar scrim (moved from window.py)."""
+"""Hub window decorations: faint scales (Ornament), the side panel as glass (PanelGlass), the wordmark widget, the sidebar
+scrim (moved from window.py).
+
+0.245.0: the depth of the background — light, shadows of the panels, isolines of the home page, the gyroscope of the
+azimuth, panels as glass (hub/backdrop.py holds the drawing; Ornament and PanelGlass put it on the window)."""
 
 import math
 
@@ -10,6 +14,7 @@ from PySide6.QtCore import (
     QRectF,
     QSize,
     Qt,
+    QTimer,
 )
 from PySide6.QtGui import (
     QColor,
@@ -50,6 +55,10 @@ class Ornament(QWidget):
     clipped to what is on screen, rebuilt on every paint (cheap: no path arithmetic)."""
 
     THROUGH = 0.45  # share of the scales seen through a surface (0.2 in 0.35–0.46; the pictures were hidden too much)
+    MARGIN = 240  # px left of the page the background is drawn for: what continues under the side panel (PanelGlass)
+    TICK = 40  # ms between the frames of the gyroscope
+    PANEL = (120, 60)  # px: a surface at least this large throws a shadow
+    PANEL_NAMES = {'card', 'trajectoryDrawer', 'projectPane', 'bubble', 'notice', 'error', 'code'}
     SURFACE_NAMES = {'card', 'trajectoryDrawer', 'projectPane', 'bubble', 'notice', 'error', 'toolRule', 'panelRule', 'code'}
     BACKGROUNDS = {'HomeBackdrop', 'Ornament', 'Scrim', 'BrandMark'}  # custom-drawn, but page or decoration
     DRAWN = {'MoleculeView', 'IRSpectrum', 'EnergyPlot', 'ElementTile'}  # custom-drawn fields
@@ -59,16 +68,82 @@ class Ornament(QWidget):
         self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
         self.setAttribute(Qt.WidgetAttribute.WA_NoSystemBackground)
         self.ink = QColor('#2a62b8')
+        self.dark = False
         self.section = 'sextant'
+        from hub.backdrop import Gyro
 
-    def set_color(self, ink):
+        self.gyro = Gyro()  # flat and still until the home page is shown
+        self.panels = []  # the rectangles that throw shadows (surface_region fills it)
+        self.listeners = []  # called when what lies on the background changed (PanelGlass redraws itself)
+        self._glass = (None, None)  # (what it was drawn for, the picture seen under the panels)
+        self._regions = None  # (surfaces, opaque) of the last whole painting: the frames of the gyroscope reuse them
+        self._gyro_picture = (None, None, None)
+        self._frame = False
+        self._clock = None
+        self.timer = QTimer(self)
+        self.timer.setInterval(self.TICK)
+        self.timer.timeout.connect(self._tick)
+
+    def set_color(self, ink, dark=None):
         self.ink = QColor(ink)
-        self.update()
+        self.dark = self.ink.lightnessF() > 0.6 if dark is None else bool(dark)  # the ink of the dark theme is light
+        self._changed()
 
     def set_section(self, ident):
-        """The picture in the lower left corner follows the section (the home page: none)."""
+        """The picture in the lower left corner follows the section (the home page: the isolines); the gyroscope
+        turns on the home page and comes to its flat position elsewhere."""
         self.section = ident
+        if ident == 'home':
+            self.gyro.start()
+        else:
+            self.gyro.leave()
+        self._run()
+        self._changed()
+
+    def _changed(self):
+        self._glass = (None, None)
+        self._gyro_picture = (None, None, None)
         self.update()
+        for listener in self.listeners:
+            listener()
+
+    # the gyroscope: a timer while it moves and the layer is seen; a frame repaints its square only
+    def gyro_rect(self):
+        side = self.gyro.SIDE
+        return QRect(round(self.width() - 125 - side / 2), round(68 - side / 2), side, side)
+
+    def _run(self):
+        if self.gyro.moving and self.isVisible():
+            if not self.timer.isActive():
+                import time
+
+                self._clock = time.monotonic()
+                self.timer.start()
+        else:
+            self.timer.stop()
+
+    def _tick(self):
+        import time
+
+        now = time.monotonic()
+        moving = self.gyro.advance(now - (self._clock or now))
+        self._clock = now
+        self._gyro_picture = (None, None, None)
+        self._frame = True
+        try:
+            self.repaint(self.gyro_rect())
+        finally:
+            self._frame = False
+        if not moving or not self.isVisible():
+            self.timer.stop()
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        self._run()
+
+    def hideEvent(self, event):
+        super().hideEvent(event)
+        self.timer.stop()
 
     @classmethod
     def is_surface(cls, widget):
@@ -95,6 +170,7 @@ class Ornament(QWidget):
     def surface_region(self):
         """The visible surfaces under the ornament, in its own coordinates."""
         region = QRegion()
+        panels = self.panels = []
         host = self.parentWidget()
         if host is None:
             return region
@@ -119,7 +195,19 @@ class Ornament(QWidget):
             seen = seen.intersected(bounds)
             if ancestor is not None and not header and not seen.isEmpty():
                 region = region.united(seen)
+                if seen.width() >= self.PANEL[0] and seen.height() >= self.PANEL[1] and self.is_panel(widget):
+                    panels.append(seen)
+        self.panels = [p for p in panels if not any(q is not p and q.contains(p) and q != p for q in panels)]
         return region
+
+    @classmethod
+    def is_panel(cls, widget):
+        """A surface that lies on the page as a panel (it throws a shadow): a card or a drawer, a field drawn by the
+        program, a table or a text, a pane of tabs — not a button or a field of one line."""
+        name, kind = QWidget.objectName(widget), type(widget).__name__
+        if name in cls.PANEL_NAMES or kind in cls.DRAWN or isinstance(widget, QTabWidget):
+            return True
+        return isinstance(widget, QAbstractScrollArea) and not isinstance(widget, QScrollArea)
 
     ZONE = 430  # px: the corner squares where the scales are drawn (dial R 330 top right, cards about 270 lower left)
 
@@ -173,7 +261,9 @@ class Ornament(QWidget):
         painter = QPainter(picture)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         try:
-            self.paint_layers(painter, self.surface_region(), self.opaque_region())
+            surfaces, opaque = self.surface_region(), self.opaque_region()
+            self.paint_depth(painter, surfaces)
+            self.paint_layers(painter, surfaces, opaque)
         except Exception:  # noqa: BLE001 — drawn as usual then
             painter.end()
             return
@@ -195,7 +285,12 @@ class Ornament(QWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         try:
-            self.paint_layers(painter, self.surface_region(), self.opaque_region())
+            if self._frame and self._regions is not None:  # a frame of the gyroscope: the window has not changed
+                surfaces, opaque = self._regions
+            else:
+                surfaces, opaque = self._regions = (self.surface_region(), self.opaque_region())
+            self.paint_depth(painter, surfaces)
+            self.paint_layers(painter, surfaces, opaque)
         except Exception as exc:  # noqa: BLE001 — 0.91.52: the background ornament never stops the painting
             if not getattr(self, '_paint_error', False):  # written once; no window «Что-то пошло не так» in a paint
                 self._paint_error = True
@@ -205,8 +300,20 @@ class Ornament(QWidget):
         finally:  # ended even after an error (Qt warned «endPaint() called with active painter»)
             painter.end()
 
+    def paint_depth(self, painter, surfaces):
+        """The light and the shadows of the panels, on the bare page only (hub/backdrop.py)."""
+        from hub import backdrop
+
+        painter.save()
+        painter.setClipRegion(QRegion(self.rect()).subtracted(surfaces))
+        backdrop.shade(painter, QRectF(self.rect()), self.dark)
+        backdrop.edge_shadow(painter, self.height(), self.dark)
+        backdrop.shadows(painter, self.panels, self.dark)
+        painter.restore()
+
     def paint_layers(self, painter, surfaces, opaque=None):
-        """The scales at full strength on the background and at THROUGH under the surfaces; none under `opaque`."""
+        """The scales at full strength on the background; under the surfaces — at THROUGH and as through glass
+        (blurred and moved); none under `opaque`. The gyroscope too, from a small copy of its picture made each frame."""
         if opaque is not None and not opaque.isEmpty():
             painter.setClipRegion(QRegion(self.rect()).subtracted(opaque))
             surfaces = surfaces.subtracted(opaque)
@@ -219,13 +326,37 @@ class Ornament(QWidget):
         self._scales(painter)
         painter.restore()
         painter.save()
-        painter.setClipRegion(surfaces)
+        painter.setClipRegion(surfaces if opaque is None else surfaces.intersected(base))
         painter.setOpacity(self.THROUGH)
-        self._scales(painter)
+        self.paint_glass(painter)
+        self._azimuth(painter, glass=True)
         painter.restore()
 
+    def glass(self):
+        """The picture of the background seen under the panels (kept until the size, the section or the ink changes)."""
+        from hub import backdrop
+
+        key = (self.width(), self.height(), self.ink.rgba(), self.section)
+        if self._glass[0] != key:
+            self._glass = (key, backdrop.glass_picture(self._art, self.width(), self.height(), self.MARGIN))
+        return self._glass[1]
+
+    def paint_glass(self, painter):
+        """The background as through a panel, in the coordinates of this layer (PanelGlass draws it on the side panel)."""
+        from hub import backdrop
+
+        backdrop.draw_glass(painter, self.glass(), self.MARGIN)
+
     def _scales(self, painter):
+        self._art(painter)
         self._azimuth(painter)  # top right, in every section
+
+    def _art(self, painter):
+        """What lies still on the background: the isolines of the home page or the picture of the section."""
+        if self.section == 'home':
+            from hub import backdrop
+
+            backdrop.draw_isolines(painter, self.height(), self.ink, 1.5 if self.dark else 1.6)
         corner = {
             'sextant': self._sextant,
             'compass': self._compass,
@@ -341,30 +472,31 @@ class Ornament(QWidget):
         ]
         painter.drawPolygon(QPolygonF(pts))
 
-    def _azimuth(self, painter):
-        w = self.width()
-        R = 330.0
-        cx, cy = w - 70.0, 70.0
-        color = QColor(self.ink)
-        for deg in range(90, 271, 5):  # the visible part of the dial
-            a = math.radians(deg)
-            long = deg % 30 == 0
-            color.setAlphaF(0.16 if long else 0.08)
-            painter.setPen(QPen(color, 1.6 if long else 1.0))
-            r0 = R - (22 if long else 11)
-            painter.drawLine(
-                QPointF(cx + R * math.cos(a), cy + R * math.sin(a)),
-                QPointF(cx + r0 * math.cos(a), cy + r0 * math.sin(a)),
-            )
-        color.setAlphaF(0.09)
-        painter.setPen(QPen(color, 1.2))
-        painter.setBrush(Qt.BrushStyle.NoBrush)
-        painter.drawEllipse(QPointF(cx, cy), R, R)
-        painter.drawEllipse(QPointF(cx, cy), R * 0.62, R * 0.62)
-        color.setAlphaF(0.07)
-        painter.setPen(QPen(color, 1.0, Qt.PenStyle.DashLine))
-        painter.drawLine(QPointF(cx, cy - R), QPointF(cx, cy + R))
-        painter.drawLine(QPointF(cx - R, cy), QPointF(cx + R, cy))
+    def _azimuth(self, painter, glass=False):
+        """The azimuth as a gyroscope, top right, in every section: turning on the home page, flat and still elsewhere
+        (hub.backdrop.Gyro). Drawn from a picture made once for each of its positions."""
+        ratio = self.devicePixelRatioF() or 1.0
+        key = (tuple(self.gyro.angles), self.ink.rgba(), ratio)
+        if self._gyro_picture[0] != key:
+            self._gyro_picture = (key, self.gyro.picture(self.ink, ratio), None)
+        picture = self._gyro_picture[1]
+        if not glass:
+            painter.drawPixmap(self.gyro_rect().topLeft(), picture)
+            return
+        from hub import backdrop
+
+        if self._gyro_picture[2] is None:  # under a panel: as the rest of the background — small, then enlarged
+            side = max(1, round(self.gyro.SIDE / backdrop.GLASS))
+            small = picture.scaled(side, side, Qt.AspectRatioMode.IgnoreAspectRatio, Qt.TransformationMode.SmoothTransformation)
+            small.setDevicePixelRatio(1.0)
+            self._gyro_picture = (*self._gyro_picture[:2], small)
+        place = QRectF(self.gyro_rect())
+        grown = place.width() * backdrop.GROW
+        target = QRectF(place.center().x() - grown / 2 + backdrop.SHIFT[0], place.center().y() - grown / 2 + backdrop.SHIFT[1], grown, grown)
+        painter.save()
+        painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
+        painter.drawPixmap(target, self._gyro_picture[2], QRectF(self._gyro_picture[2].rect()))
+        painter.restore()
 
 
 class BrandMark(QWidget):
@@ -435,8 +567,62 @@ class Scrim(QWidget):
         event.accept()
 
 
+class PanelGlass(QWidget):
+    """The side panel as glass (0.245.0, the owner: «нужно, чтоб панели имели прозрачность. В том числе левая панель.
+    и убери у нее молекулы на бэкграунде, пусть она пропускает сквозь себя изолинии и картинки компаса/спектра»): the
+    background of the page continued under the panel, blurred and moved as under the other panels. A child of the
+    panel that follows its size and lies under its buttons; transparent for the mouse. source() gives the Ornament of
+    the window (None: nothing is drawn)."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
+        self.setMinimumHeight(0)
+        self.ink, self.dark = QColor('#2a62b8'), False
+        self.reserve = lambda: 0  # px taken from the bottom by a widget that comes and goes (none does)
+        self.source = lambda: None
+        if parent is not None:
+            parent.installEventFilter(self)
+            self.setGeometry(parent.rect())
+            self.lower()
+
+    def eventFilter(self, watched, event):
+        if watched is self.parent() and event.type() == QEvent.Type.Resize:
+            self.setGeometry(watched.rect())
+            self.lower()
+        return False
+
+    def set_color(self, ink, dark):
+        self.ink, self.dark = QColor(ink), bool(dark)
+        self.update()
+
+    def offset(self):
+        """Where the page begins, in the coordinates of this widget (None: the page is not in this window)."""
+        ornament = self.source()
+        if ornament is None or QWidget.window(ornament) is not self.window():
+            return None
+        window = self.window()
+        return self.mapFrom(window, ornament.mapTo(window, QPoint(0, 0)))
+
+    def paintEvent(self, event):
+        ornament, offset = self.source(), self.offset()
+        if offset is None or ornament.width() <= 0:
+            return
+        painter = QPainter(self)
+        try:
+            painter.setOpacity(ornament.THROUGH)
+            painter.translate(offset)
+            ornament.paint_glass(painter)
+        except Exception:  # noqa: BLE001 — a background never stops the painting of the panel
+            pass
+        finally:
+            painter.end()
+
+
 class MoleculeArt(QWidget):
     """Molecules drawn in thin lines on the side panel, in the spirit of the scales on the pages.
+    Since 0.245.0 the window does not show them (PanelGlass took their place); the class stays as the source of the
+    same drawings of the site (tests/hub/test_hub.py compares the two).
     The background of the whole panel, under its buttons (a child of the panel
     that follows its size, not an item of its column): two columns — the rail (seen when the panel is narrow)
     and the wide part — from the line under the name to the bottom, scattered about a row every ROW px; twelve molecules

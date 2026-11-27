@@ -185,6 +185,7 @@ class HubWindow(HubMenus, QMainWindow):
         self.fader.setGraphicsEffect(self.fader_effect)
         self.fader.hide()
         self.ornament = Ornament(self.content)  # the azimuth dial top right; the section's picture lower left
+        self.ornament.listeners.append(self.panel_art.update)  # the side panel shows the same background
         self.content.installEventFilter(self)
         self.history, self.history_pos, self._history_nav = [], -1, False
 
@@ -506,7 +507,7 @@ class HubWindow(HubMenus, QMainWindow):
         # (it followed the appearance of the system); the tiles have the panel colours
         self._system_icon()
         if hasattr(self, 'ornament'):
-            self.ornament.set_color('#6ea2f0' if self.dark else '#2a62b8')
+            self.ornament.set_color('#6ea2f0' if self.dark else '#2a62b8', self.dark)
         self._style_sidebar()
         self._label_theme_button()
         self._update_header()

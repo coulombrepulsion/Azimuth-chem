@@ -10,7 +10,7 @@ from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QButtonGroup, QFrame, QHBoxLayout, QPushButton, QVBoxLayout, QWidget
 from hub import registry
 from hub.branding import SvgIconEngine, glyph_logo, sidebar_family
-from hub.chrome import BrandMark, MoleculeArt, NavGroup, SiteArrow
+from hub.chrome import BrandMark, NavGroup, PanelGlass, SiteArrow
 
 
 SLIDE_MS = 320  # the sidebar slides over the page (full travel; a partial one takes its share)
@@ -151,10 +151,10 @@ def _build_sidebar(self):
             self.atlas_rule.setStyleSheet('QFrame#atlasRule {background: rgba(255, 255, 255, 0.14); border: none;}')
             column.addWidget(self.atlas_rule)
             column.addSpacing(4)
-    # molecules in thin lines, like the scales on the pages; under the whole panel (its child
-    # that follows its size), not only in the free height of the column
-    self.panel_art = MoleculeArt(bar)
-    self.panel_art.top = lambda: self.brand_rule.geometry().bottom()  # nothing above the line under the name
+    # the panel as glass: the background of the page continues under it (0.245.0; the molecules in thin lines that
+    # were drawn here went); under the whole panel — its child that follows its size
+    self.panel_art = PanelGlass(bar)
+    self.panel_art.source = lambda: getattr(self, 'ornament', None)
     column.addStretch(1)
     from hub.job_indicator import JobIndicator
 

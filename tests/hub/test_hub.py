@@ -825,8 +825,9 @@ def test_crystal_section_follows_the_compass_page(hub, app, tmp_path):
 
 
 def test_ornament_picture_follows_the_section(hub, app):
-    # the home page keeps only the azimuth dial; every section draws its own picture lower left (sextant, the compass
-    # card in both Compasses, a spectrum, an open book for the Atlas); thin-line molecules on the panel
+    # every section draws its own picture lower left (sextant, the compass card in both Compasses, a spectrum); the
+    # home page — the isolines of a nitro group (0.245.0, hub/backdrop.py); the side panel shows the same background
+    # as glass (PanelGlass, 0.245.0: the molecules in thin lines went)
     from PySide6.QtGui import QImage, QPainter, QRegion
 
     hub.resize(1200, 800)
@@ -847,12 +848,15 @@ def test_ornament_picture_follows_the_section(hub, app):
 
     home = ink(hub_window.HOME)
     pictures = {ident: ink(ident) for ident in ('compass', 'crystal', 'sextant', 'spectrum')}
-    assert home == 0 and all(v > 0 for v in pictures.values())
+    assert home > 0 and all(v > 0 for v in pictures.values()) and home not in pictures.values()
     assert pictures['crystal'] == pictures['compass'] and len(set(pictures.values())) == 3  # both Compasses: the compass
     assert ink('atlas') == 0  # the book of the Atlas went with it (the Atlas is no section of the window)
     hub.show_section('crystal', animate=False)
     assert ornament.section == 'crystal'
-    assert hub.panel_art.drawings() and hub.panel_art.testAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
+    from hub.chrome import PanelGlass
+
+    assert isinstance(hub.panel_art, PanelGlass) and hub.panel_art.source() is ornament and hub.panel_art.offset() is not None
+    assert hub.panel_art.testAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
 
 
 def test_a_molecule_of_the_atlas_opens_in_compass(hub, app):

@@ -95,8 +95,9 @@
 ## hub
 
 - `hub/about.py` — «О программе», the manual and the change log dialogs of the hub (moved from window.py).
+- `hub/backdrop.py` — The depth of the background of the hub: light, shadows of the panels, isolines, the gyroscope, the glass.
 - `hub/branding.py` — Hub drawing helpers: SVG icons in currentColor, the Azimuth wordmark, the sidebar typeface (moved from window.py).
-- `hub/chrome.py` — Hub window decorations: faint scales (Ornament), the wordmark widget, the sidebar scrim (moved from window.py).
+- `hub/chrome.py` — Hub window decorations: faint scales (Ornament), the side panel as glass (PanelGlass), the wordmark widget, the sidebar scrim (moved from window.py).
 - `hub/dock_icon.py` — The icon of Azimuth.app on macOS follows the theme of the program.
 - `hub/header.py` — Section header above Compass, Sextant and Spectrum (moved from window.py).
 - `hub/home.py` — Hub home page: the name and the motto, what the program is, «continue where you left off», four section cards (moved from window.py).
