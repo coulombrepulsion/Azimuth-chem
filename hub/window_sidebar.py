@@ -165,6 +165,16 @@ def _build_sidebar(self):
     self.job_indicator = JobIndicator(lambda: getattr(self, 'studio', None), bar)
     self.job_indicator.hide()
     self._indicator_gap = column.spacing()
+    # the search of the menus and the buttons: a magnifier in a rounded square over the languages; the field slides out
+    # of it (hub/sidebar_search.py, 0.248.0 — until then at the right end of the row of the menus)
+    from hub.sidebar_search import SidebarSearch
+
+    self.search = SidebarSearch(self, bar)
+    search_row = QHBoxLayout()
+    search_row.setContentsMargins(4, 0, 0, 6)
+    search_row.addWidget(self.search.button)
+    search_row.addStretch(1)
+    column.addLayout(search_row)
     self.language_row = QWidget()
     self.language_row.installEventFilter(self)  # the hourglass follows it
     self.job_indicator.installEventFilter(self)
@@ -285,6 +295,8 @@ def _style_sidebar(self):
     self.edge.setStyleSheet('QFrame#sidebarEdge {background: %s; border: none;}' % ('#33435f' if dark else '#cfd7e2'))
     self.language_row.setStyleSheet(LANGUAGE_STYLE if dark else LANGUAGE_STYLE_LIGHT)
     self.panel_art.set_color('#6ea2f0' if dark else '#2a62b8', dark)
+    if hasattr(self, 'search'):
+        self.search.set_dark(dark)
     if hasattr(self, 'compass_group'):
         self.compass_group.set_color('#6ea2f0' if dark else '#2a62b8')
     for widget in [self.logo, self.back_button, self.forward_button, self.theme_button, self.about_button,

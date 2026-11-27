@@ -31,9 +31,9 @@
 §4 SPECIFICATION
     shade(painter, rect, dark); shadows(painter, panels, dark); edge_shadow(painter, height, dark);
     isolines() -> [(QPainterPath, alpha, width)] in (x, y − height of the page); draw_isolines(painter, height, ink);
-    segments(field, xs, ys, level) -> array (n, 4) of x1, y1, x2, y2;
+    segments(field, xs, ys, level) -> array (n, 4) of x1, y1, x2, y2; chains(pieces) -> [[(x, y)]] (0.248.0);
     Gyro: angles, mode ('rest' | 'run' | 'settle'), moving, start(), leave(), advance(seconds) -> moving,
-    picture(ink, ratio) -> QPixmap of SIDE × SIDE px;
+    size() -> px, picture(ink, ratio) -> QPixmap of size() × size() px;
     glass_picture(draw, width, height, margin) -> QPixmap; draw_glass(painter, picture, margin).
 §7 TESTS
     tests/hub/test_backdrop.py.
@@ -162,6 +162,64 @@ def segments(field, xs, ys, level):
     return np.concatenate(found) if found else np.zeros((0, 4))
 
 
+def chains(pieces):
+    """The pieces of segments() joined end to end into broken lines [[(x, y), …], …]: the neighbouring cells compute
+    the point of their common side alike, so the ends meet exactly (rounded to 1e-4 px)."""
+    def key(x, y):
+        return round(x, 4), round(y, 4)
+
+    ends = {}
+    for k, (x1, y1, x2, y2) in enumerate(pieces.tolist()):
+        ends.setdefault(key(x1, y1), []).append((k, 0))
+        ends.setdefault(key(x2, y2), []).append((k, 1))
+    used = [False] * len(pieces)
+    found = []
+    data = pieces.tolist()
+
+    def walk(k, end):
+        line = []
+        while True:
+            used[k] = True
+            x1, y1, x2, y2 = data[k]
+            point = (x2, y2) if end == 0 else (x1, y1)  # the other end of the piece
+            line.append(point)
+            nxt = next(((j, e) for j, e in ends.get(key(*point), []) if not used[j]), None)
+            if nxt is None:
+                return line
+            k, end = nxt
+
+    for k in range(len(data)):
+        if used[k]:
+            continue
+        x1, y1, x2, y2 = data[k]
+        forward = walk(k, 0)  # from (x1, y1) on
+        used[k] = False
+        backward = walk(k, 1)  # from (x2, y2) back
+        found.append(list(reversed(backward[:-1])) + [(x1, y1)] + forward if len(backward) > 1 else [(x1, y1)] + forward)
+    return found
+
+
+def smooth(path, line):
+    """A broken line drawn smooth: through the middles of its pieces, the corners as the control points."""
+    if len(line) < 3:
+        path.moveTo(*line[0])
+        for point in line[1:]:
+            path.lineTo(*point)
+        return
+    closed = line[0] == line[-1]
+    points = line[:-1] if closed else line
+    middles = [((a[0] + b[0]) / 2, (a[1] + b[1]) / 2) for a, b in zip(points, points[1:] + points[:1])]
+    if closed:
+        path.moveTo(*middles[-1])
+        for corner, middle in zip(points, middles):
+            path.quadTo(corner[0], corner[1], middle[0], middle[1])
+    else:
+        path.moveTo(*points[0])
+        for corner, middle in zip(points[1:-1], middles[1:-1]):
+            path.quadTo(corner[0], corner[1], middle[0], middle[1])
+        path.lineTo(*points[-1])
+
+
 def isolines():
     """[(path, alpha, width)]: the lines of LEVELS, x from the left edge of the page, y from its bottom edge."""
     global _ISOLINES
@@ -172,9 +230,8 @@ def isolines():
         lines = []
         for k, level in enumerate(LEVELS):
             path = QPainterPath()
-            for x1, y1, x2, y2 in segments(field, xs, ys, level).tolist():
-                path.moveTo(x1, y1)
-                path.lineTo(x2, y2)
+            for line in chains(segments(field, xs, ys, level)):  # whole lines: pieces drawn one by one showed beads
+                smooth(path, line)
             strong = k % 4 == 1
             fade = 0.55 + 0.45 * min(1.0, k / 4)  # the far lines fainter
             lines.append((path, (0.21 if strong else 0.13) * fade, 1.1 if strong else 0.7))
@@ -202,7 +259,9 @@ class Gyro:
     FLAT = (180.0, 360.0, 180.0)  # ° between the positions in which a frame lies in the plane as at rest
     RISE_FIRST, RISE, SETTLE = 3.0, 1.2, 4.2  # s
     AHEAD = 30.0  # °: a frame closer than this to a flat position goes on to the next one
-    SIDE, OUTER, INNER, ROTOR = 352, 150.0, 116.0, 78.0  # px: the picture and the radii
+    SIDE, OUTER, INNER, ROTOR = 352, 150.0, 116.0, 78.0  # px: the picture and the radii (drawn GROW times larger)
+    GROW = 1.5  # 0.248.0 (the owner: «гироскоп побольше, и сместить больше в угол»)
+    CENTRE = (70.0, 70.0)  # px from the right and the top edge of the page: as the flat dial of 0.244.0
     EYE = 1100.0  # px: the distance of the eye (weak perspective)
     LINE = 0.8  # px
     SHADES = 6  # the strengths a line is drawn in by its depth
@@ -303,13 +362,17 @@ class Gyro:
 
     def project(self, points):
         """(n, 3) on the screen → x, y of the picture (its centre SIDE / 2) and the depth z."""
-        factor = self.EYE / (self.EYE - points[:, 2])
-        half = self.SIDE / 2
+        factor = self.EYE / (self.EYE - points[:, 2]) * self.GROW
+        half = self.size() / 2
         return half + points[:, 0] * factor, half - points[:, 1] * factor, points[:, 2]
 
+    def size(self):
+        """px: the side of the picture."""
+        return round(self.SIDE * self.GROW)
+
     def picture(self, ink, ratio=1.0):
-        """The gyroscope as it stands now, on a transparent picture of SIDE × SIDE px."""
-        side = max(1, round(self.SIDE * ratio))
+        """The gyroscope as it stands now, on a transparent picture of size() × size() px."""
+        side = max(1, round(self.size() * ratio))
         picture = QPixmap(side, side)
         picture.setDevicePixelRatio(ratio)
         picture.fill(Qt.GlobalColor.transparent)
@@ -348,14 +411,14 @@ class Gyro:
         colour.setAlphaF(0.6)
         painter.setPen(Qt.PenStyle.NoPen)
         painter.setBrush(colour)
-        half = self.SIDE / 2
+        half = self.size() / 2
         painter.drawEllipse(QPointF(half, half), 2.5, 2.5)
         painter.setBrush(Qt.BrushStyle.NoBrush)
 
 
 # -- glass --------------------------------------------------------------------------------------------------------
 GLASS = 3  # the picture under the panels is kept 1/GLASS of its size: drawn enlarged, it is blurred
-SHIFT, GROW = (9.0, 6.0), 1.03  # px the picture is moved by under a panel; how much larger it is shown
+SHIFT, GROW = (4.0, 3.0), 1.015  # px the picture is moved by under a panel; how much larger it is shown (0.248.0: was 9, 6 and 3 %)
 
 
 def glass_picture(draw, width, height, margin):

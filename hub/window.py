@@ -198,11 +198,9 @@ class HubWindow(HubMenus, QMainWindow):
             shortcut = QShortcut(QKeySequence(f'Ctrl+{number}'), self)
             shortcut.activated.connect(lambda ident=ident: self.show_section(ident))
             self.shortcuts.append(shortcut)
-        # ⌘? (Ctrl+? elsewhere) — «Справка» with its field of the search open, as the Help menu of macOS
-        from hub import menu_search
-
+        # ⌘? (Ctrl+? elsewhere) — the field of the search slides out of its square in the side panel
         self.help_search_shortcut = QShortcut(QKeySequence('Ctrl+?'), self)
-        self.help_search_shortcut.activated.connect(lambda: menu_search.open_help(self.header))
+        self.help_search_shortcut.activated.connect(lambda: self.search.open())
 
         self._theme_changed()
         # While the panel is open a light veil lies over the page; a click on it closes the panel.

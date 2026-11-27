@@ -106,7 +106,7 @@ GLYPHS = {
     'computer': '<rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M9 20h6M12 16v4"/>',
     'server': '<rect x="4" y="3.5" width="16" height="7" rx="1.5"/><rect x="4" y="13.5" width="16" height="7" rx="1.5"/><path d="M7.5 7h.5M7.5 17h.5M11 7h5.5M11 17h5.5"/>',
     'density': '<circle cx="12" cy="12" r="2"/><ellipse cx="12" cy="12" rx="5.5" ry="4.5"/><ellipse cx="12" cy="12" rx="9" ry="7.5" stroke-dasharray="2.2 2"/>',
-    'search': '<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L20.5 20.5"/>',
+    'search': '<circle cx="10.6" cy="10.6" r="6.4"/><path d="M15.3 15.3L19.6 19.6"/>',
     'crystal': '<path d="M5 8l7-4 7 4v8l-7 4-7-4z"/><path d="M5 8l7 4 7-4M12 12v8"/><circle cx="12" cy="4" r="1.3"/><circle cx="5" cy="8" r="1.3"/><circle cx="19" cy="8" r="1.3"/><circle cx="12" cy="12" r="1.3"/>',
     'cell': '<rect x="4" y="4" width="16" height="16" rx="1" stroke-dasharray="2.4 2.2"/><circle cx="4" cy="4" r="1.4"/><circle cx="20" cy="4" r="1.4"/><circle cx="4" cy="20" r="1.4"/><circle cx="20" cy="20" r="1.4"/><circle cx="12" cy="12" r="1.6"/>',
     'surface-slab': '<path d="M3 15l9-4 9 4-9 4z"/><path d="M3 15v2.5l9 4 9-4V15"/><circle cx="8" cy="11" r="1.3"/><circle cx="12" cy="9" r="1.3"/><circle cx="16" cy="11" r="1.3"/>',

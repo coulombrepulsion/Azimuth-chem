@@ -61,6 +61,10 @@ class Ornament(QWidget):
     CORNER = 340  # px: the square of the lower left corner a frame of that motion repaints
     PANEL = (120, 60)  # px: a surface at least this large throws a shadow
     PANEL_NAMES = {'card', 'trajectoryDrawer', 'projectPane', 'bubble', 'notice', 'error', 'code'}
+    ROUND = {'card': 12, 'projectPane': 12, 'densityDrawer': 12, 'resultCard': 12, 'resultGroup': 14, 'bubble': 12,
+             'sideSearchPanel': 10}  # px: the radius of the corners of a surface (0.248.0: its corners are page)
+    PANEL_THROUGH = 0.9  # how strongly the side panel shows the background (0.248.0: «Левая панель как-то слабо
+    # прозрачная»; THROUGH until then)
     SURFACE_NAMES = {'card', 'trajectoryDrawer', 'projectPane', 'bubble', 'notice', 'error', 'toolRule', 'panelRule', 'code'}
     BACKGROUNDS = {'HomeBackdrop', 'Ornament', 'Scrim', 'BrandMark'}  # custom-drawn, but page or decoration
     DRAWN = {'MoleculeView', 'IRSpectrum', 'EnergyPlot', 'ElementTile'}  # custom-drawn fields
@@ -129,8 +133,9 @@ class Ornament(QWidget):
 
     # the gyroscope: a timer while it moves and the layer is seen; a frame repaints its square only
     def gyro_rect(self):
-        side = self.gyro.SIDE
-        return QRect(round(self.width() - 125 - side / 2), round(68 - side / 2), side, side)
+        side = self.gyro.size()
+        right, top = self.gyro.CENTRE
+        return QRect(round(self.width() - right - side / 2), round(top - side / 2), side, side)
 
     def _run(self):
         if (self.gyro.moving or self.intro is not None) and self.isVisible():
@@ -227,11 +232,24 @@ class Ornament(QWidget):
                 ancestor = QWidget.parentWidget(ancestor)
             seen = seen.intersected(bounds)
             if ancestor is not None and not header and not seen.isEmpty():
-                region = region.united(seen)
+                radius = self.ROUND.get(QWidget.objectName(widget), 0)
+                if radius:  # the rounded corners are not of the surface (they showed as square corners, 0.245.0)
+                    whole = QRect(self.mapFrom(host, QWidget.mapTo(widget, host, QPoint(0, 0))), QWidget.size(widget))
+                    region = region.united(self._rounded(whole, radius).intersected(QRegion(seen)))
+                else:
+                    region = region.united(seen)
                 if seen.width() >= self.PANEL[0] and seen.height() >= self.PANEL[1] and self.is_panel(widget):
                     panels.append(seen)
         self.panels = [p for p in panels if not any(q is not p and q.contains(p) and q != p for q in panels)]
         return region
+
+    @staticmethod
+    def _rounded(rect, radius):
+        from PySide6.QtGui import QPainterPath
+
+        path = QPainterPath()
+        path.addRoundedRect(QRectF(rect), radius, radius)
+        return QRegion(path.toFillPolygon().toPolygon())
 
     @classmethod
     def is_panel(cls, widget):
@@ -526,7 +544,7 @@ class Ornament(QWidget):
         from hub import backdrop
 
         if self._gyro_picture[2] is None:  # under a panel: as the rest of the background — small, then enlarged
-            side = max(1, round(self.gyro.SIDE / backdrop.GLASS))
+            side = max(1, round(self.gyro.size() / backdrop.GLASS))
             small = picture.scaled(side, side, Qt.AspectRatioMode.IgnoreAspectRatio, Qt.TransformationMode.SmoothTransformation)
             small.setDevicePixelRatio(1.0)
             self._gyro_picture = (*self._gyro_picture[:2], small)
@@ -650,7 +668,7 @@ class PanelGlass(QWidget):
             return
         painter = QPainter(self)
         try:
-            painter.setOpacity(ornament.THROUGH)
+            painter.setOpacity(ornament.PANEL_THROUGH)
             painter.translate(offset)
             ornament.paint_glass(painter)
         except Exception:  # noqa: BLE001 — a background never stops the painting of the panel

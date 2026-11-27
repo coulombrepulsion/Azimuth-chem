@@ -1,0 +1,232 @@
+"""The search of the menus and the buttons in the side panel: a magnifier in a rounded square over the languages; the field
+slides out of the square to the right, the results are listed over it.
+
+§0 STATE
+    0.248.0 (2026-11-27, the owner: «Лупа пусть будет расположена в левой панели над языком, в виде иконки внутри
+    квадратика со скругленными краями, и при нажатии поле выдвигается из квадратика»). Until then the magnifier stood
+    at the right end of the row of the menus (0.244.0) and before that in «Справка».
+§1 PURPOSE
+    What hub/menu_search.py finds (the items of the menus of the section shown and the buttons of the window), asked
+    from the side panel in every section.
+§2 ALGORITHM
+    The square (button, SIDE px) lies in the column of the panel. open(): the panel (a frame over the page, a child of
+    the window) takes the place of the square and grows to the right to WIDTH px in SLIDE ms; the field in it gets the
+    cursor. A word typed lists the results (menu_search.find, LIMIT) in a list over the field — the square stands at
+    the bottom of the window. Enter or a click — the result shown where it is (menu_search.reveal); Up and Down move in
+    the list; Escape, a click elsewhere or the result chosen — the panel slides back into the square.
+§4 SPECIFICATION
+    SidebarSearch(hub, parent): button (QToolButton), panel (QFrame), field (QLineEdit), results (QListWidget),
+    found ([menu_search.Entry]); open(animate=True), close(animate=True), is_open(), set_dark(dark), choose(row).
+§7 TESTS
+    tests/hub/test_menu_search.py.
+"""
+
+from PySide6.QtCore import QEasingCurve, QEvent, QObject, QPoint, QRect, Qt, QTimer, QVariantAnimation
+from PySide6.QtWidgets import QFrame, QHBoxLayout, QLineEdit, QListWidget, QListWidgetItem, QToolButton
+
+from azimuth.i18n import tr
+
+SIDE = 40  # px: the square of the magnifier
+WIDTH = 340  # px: the panel with the field slid out
+SLIDE = 170  # ms
+ROW = 28  # px: a row of the results
+TITLE = 'Поиск по меню и кнопкам'
+
+
+class SidebarSearch(QObject):
+    def __init__(self, hub, parent):
+        super().__init__(parent)
+        self.hub = hub
+        self.found = []
+        self.dark = False
+        self.button = QToolButton(parent)
+        self.button.setObjectName('sideSearch')
+        self.button.setFixedSize(SIDE, SIDE)
+        self.button.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.button.setToolTip(tr(TITLE))
+        self.button.setAccessibleName(tr(TITLE))
+        self.button.clicked.connect(lambda: self.close() if self.is_open() else self.open())
+        self.panel = QFrame(hub)  # over the page and over the panel, a child of the window
+        self.panel.setObjectName('sideSearchPanel')
+        self.panel.hide()
+        row = QHBoxLayout(self.panel)
+        row.setContentsMargins(SIDE, 4, 8, 4)  # the field begins where the square ends
+        self.field = QLineEdit(self.panel)
+        self.field.setObjectName('sideSearchField')
+        self.field.setPlaceholderText(tr(TITLE))
+        self.field.setClearButtonEnabled(True)
+        row.addWidget(self.field)
+        self.glass = QToolButton(self.panel)  # the magnifier stays where the square was
+        self.glass.setObjectName('sideSearchGlass')
+        self.glass.setFixedSize(SIDE, SIDE)
+        self.glass.move(0, 0)
+        self.glass.clicked.connect(lambda: self.close())
+        self.results = QListWidget(hub)
+        self.results.setObjectName('sideSearchResults')
+        self.results.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.results.setUniformItemSizes(True)
+        self.results.hide()
+        self.results.itemClicked.connect(lambda item: self.choose(self.results.row(item)))
+        self.field.textChanged.connect(self._fill)
+        self.field.installEventFilter(self)
+        self.motion = QVariantAnimation(self)
+        self.motion.setDuration(SLIDE)
+        self.motion.setEasingCurve(QEasingCurve.Type.OutCubic)
+        self.motion.valueChanged.connect(self._grow)
+        self.motion.finished.connect(self._moved)
+        self._opening = False
+        self.set_dark(False)
+
+    # -- the look ----------------------------------------------------------------------------------------------
+    def set_dark(self, dark):
+        from azimuth.icons import icon
+
+        self.dark = bool(dark)
+        ink = '#c9d3e2' if dark else '#3f4d61'
+        line = 'rgba(255, 255, 255, 0.16)' if dark else 'rgba(27, 34, 48, 0.16)'
+        hover = 'rgba(255, 255, 255, 0.10)' if dark else 'rgba(27, 34, 48, 0.06)'
+        back = '#1a2130' if dark else '#ffffff'
+        text = '#e8ecf3' if dark else '#1b2230'
+        accent = '#6ea2f0' if dark else '#2a62b8'
+        square = (f'QToolButton {{border: 1px solid {line}; border-radius: 10px; background: transparent;}}'
+                  f'QToolButton:hover {{background: {hover};}}')
+        self.button.setStyleSheet(square)
+        self.glass.setStyleSheet('QToolButton {border: none; background: transparent;}')
+        for button in (self.button, self.glass):
+            button.setIcon(icon('search', ink))
+        self.panel.setStyleSheet(
+            f'QFrame#sideSearchPanel {{background: {back}; border: 1px solid {accent}; border-radius: 10px;}}'
+            f'QLineEdit#sideSearchField {{border: none; background: transparent; color: {text}; font-size: 13px;}}')
+        self.results.setStyleSheet(
+            f'QListWidget#sideSearchResults {{background: {back}; border: 1px solid {line}; border-radius: 10px;'
+            f' color: {text}; padding: 4px; font-size: 13px;}}'
+            f'QListWidget#sideSearchResults::item {{padding: 4px 8px; border-radius: 6px;}}'
+            f'QListWidget#sideSearchResults::item:selected {{background: {accent}; color: white;}}')
+
+    # -- opening and closing -----------------------------------------------------------------------------------
+    def is_open(self):
+        return self.panel.isVisible() and (self._opening or self.motion.state() != QVariantAnimation.State.Running)
+
+    def _place(self):
+        """Where the square is, in the coordinates of the window."""
+        return QRect(self.button.mapTo(self.hub, QPoint(0, 0)), self.button.size())
+
+    def open(self, animate=True):
+        if self.is_open():
+            self.field.setFocus()
+            return
+        place = self._place()
+        self.panel.setGeometry(place)
+        self.glass.resize(place.size())
+        self.panel.show()
+        self.panel.raise_()
+        self._opening = True
+        if animate:
+            self.motion.stop()
+            self.motion.setStartValue(float(place.width()))
+            self.motion.setEndValue(float(WIDTH))
+            self.motion.start()
+        else:
+            self._grow(float(WIDTH))
+            self._moved()
+        self.field.setFocus()
+
+    def close(self, animate=True):
+        if not self.panel.isVisible():
+            return
+        self.results.hide()
+        self._opening = False
+        if animate:
+            self.motion.stop()
+            self.motion.setStartValue(float(self.panel.width()))
+            self.motion.setEndValue(float(self.button.width()))
+            self.motion.start()
+        else:
+            self._moved()
+
+    def _grow(self, width):
+        place = self._place()
+        self.panel.setGeometry(place.left(), place.top(), round(width), place.height())
+        self._place_results()
+
+    def _moved(self):
+        if not self._opening:
+            self.panel.hide()
+            self.field.blockSignals(True)
+            self.field.clear()
+            self.field.blockSignals(False)
+            self.found = []
+            self.results.clear()
+
+    # -- the results -------------------------------------------------------------------------------------------
+    def _fill(self, text):
+        from hub import menu_search
+
+        header = getattr(self.hub, 'header', None)
+        self.found = menu_search.find(menu_search.entries(header, getattr(self.hub, 'studio', None)), text) if header else []
+        self.results.clear()
+        if text.strip() and not self.found:
+            item = QListWidgetItem(tr('Ничего не найдено'))
+            item.setFlags(Qt.ItemFlag.NoItemFlags)
+            self.results.addItem(item)
+        for entry in self.found:
+            item = QListWidgetItem(entry.label())
+            if entry.tip:
+                item.setToolTip(entry.tip)
+            self.results.addItem(item)
+        if self.found:
+            self.results.setCurrentRow(0)
+        self.results.setVisible(bool(text.strip()))
+        self._place_results()
+
+    def _place_results(self):
+        if not self.results.isVisible():
+            return
+        place = self.panel.geometry()
+        count = max(1, self.results.count())
+        height = min(count, menu_limit()) * ROW + 12
+        width = max(WIDTH, min(560, self.results.sizeHintForColumn(0) + 32))
+        top = place.top() - height - 6  # over the field: the square stands low in the window
+        if top < 8:
+            top = place.bottom() + 6
+        self.results.setGeometry(place.left(), top, width, height)
+        self.results.raise_()
+
+    def choose(self, row):
+        """The result of the row shown where it is (the panel slides back first)."""
+        from hub import menu_search
+
+        if not 0 <= row < len(self.found):
+            return None
+        entry = self.found[row]
+        self.close()
+        QTimer.singleShot(SLIDE + 40, lambda: menu_search.reveal(self.hub.header, entry))
+        return entry
+
+    def eventFilter(self, watched, event):
+        if watched is self.field and event.type() == QEvent.Type.KeyPress:
+            key = event.key()
+            if key == Qt.Key.Key_Escape:
+                self.close()
+                return True
+            if key in (Qt.Key.Key_Return, Qt.Key.Key_Enter):
+                self.choose(max(0, self.results.currentRow()))
+                return True
+            if key in (Qt.Key.Key_Down, Qt.Key.Key_Up) and self.found:
+                step = 1 if key == Qt.Key.Key_Down else -1
+                self.results.setCurrentRow((self.results.currentRow() + step) % len(self.found))
+                return True
+        if watched is self.field and event.type() == QEvent.Type.FocusOut:
+            QTimer.singleShot(150, self._lost)
+        return False
+
+    def _lost(self):
+        """A click elsewhere: the field gave up the cursor and no result is being chosen."""
+        if self.panel.isVisible() and self._opening and not self.field.hasFocus() and not self.results.underMouse():
+            self.close()
+
+
+def menu_limit():
+    from hub import menu_search
+
+    return menu_search.LIMIT

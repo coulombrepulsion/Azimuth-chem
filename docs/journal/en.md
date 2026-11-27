@@ -1,5 +1,11 @@
 # What’s new
 
+## 0.248.0 — 27 November 2026
+
+- ### 0.248.0 — Search on the left panel and a new motto
+
+Menu search has moved to the left panel: a magnifier in a small square above the languages, the field slides out of it. On the home page each section now has one line instead of a long list, and Compass is one card with two halves: the molecule and the crystal. The program has a new motto – «Chart your course to the result». The gyroscope has grown, the isolines are smooth, and the corners of the panels are round again.
+
 ## 0.247.0 — 27 November 2026
 
 - ### 0.247.0 — Pictures instead of Quail

@@ -95,12 +95,13 @@ def test_the_lines_of_the_gyroscope_are_of_one_width_and_of_even_strength_when_f
     for _, frame, _ in gyro.lines():
         assert frame in (0, 1, 2)
     picture = gyro.picture(QColor('#2a62b8'))
-    assert picture.width() == picture.height() == gyro.SIDE
+    assert picture.width() == picture.height() == gyro.size() == round(gyro.SIDE * gyro.GROW)
     image = picture.toImage()
-    half = gyro.SIDE // 2
+    half = gyro.size() // 2
+    r = round(gyro.OUTER * gyro.GROW)  # 0.248.0: 1.5 times larger
     # flat: the outer ring is equally strong on the left and on the right (there was a jump of the light)
-    left = max(image.pixelColor(x, half + 20).alpha() for x in range(half - 155, half - 145))
-    right = max(image.pixelColor(x, half + 20).alpha() for x in range(half + 145, half + 155))
+    left = max(image.pixelColor(x, half + 20).alpha() for x in range(half - r - 5, half - r + 5))
+    right = max(image.pixelColor(x, half + 20).alpha() for x in range(half + r - 5, half + r + 5))
     assert left > 0 and abs(left - right) <= 8
     # turned: the near half of a ring is stronger than the far one, but the strength changes smoothly
     gyro.angles = [60.0, 0.0, 0.0]
@@ -161,7 +162,8 @@ def test_the_window_turns_the_gyroscope_on_the_home_page_only(app, tmp_path):
         assert isinstance(ornament, Ornament) and ornament.gyro.mode == 'run' and ornament.timer.isActive()
         assert ornament.timer.interval() == ornament.TICK
         ornament._tick()
-        assert ornament.gyro_rect().right() > ornament.width() - 60 and ornament.gyro_rect().top() < 0
+        place = ornament.gyro_rect()  # its centre where the centre of the flat dial was (0.248.0)
+        assert place.center().x() == pytest.approx(ornament.width() - 70, abs=2) and place.center().y() == pytest.approx(70, abs=2)
         window.show_section('sextant', animate=False)
         app.processEvents()
         assert ornament.gyro.mode == 'settle'
@@ -224,3 +226,34 @@ def test_the_picture_of_a_section_moves_when_the_section_opens(app):
             break
     assert ornament.intro is None and not ornament.timer.isActive()  # no timer once it has settled
     ornament.hide()
+
+
+def test_the_isolines_are_whole_smooth_lines():
+    # 0.248.0 (the owner: «изолинии какие-то пиксельные слишком»): the pieces of the squares joined into lines
+    xs = ys = np.arange(-50.0, 51.0, 1.0)
+    x, y = np.meshgrid(xs, ys)
+    field = np.exp(-np.hypot(x, y) / 10.0)
+    lines = backdrop.chains(backdrop.segments(field, xs, ys, math.exp(-3.0)))
+    longest = max(lines, key=len)
+    assert len(longest) > 200 and longest[0] == longest[-1]  # the circle, closed
+    assert sum(len(line) for line in lines) - len(lines) == len(backdrop.segments(field, xs, ys, math.exp(-3.0)))
+
+
+def test_round_corners_of_a_card_are_page(app):
+    from PySide6.QtCore import QPoint
+    from PySide6.QtWidgets import QFrame, QWidget
+
+    from hub.chrome import Ornament
+
+    host = QWidget()
+    host.resize(400, 300)
+    card = QFrame(host)
+    card.setObjectName('card')
+    card.setGeometry(100, 100, 200, 100)
+    ornament = Ornament(host)
+    ornament.setGeometry(host.rect())
+    host.show()
+    region = ornament.surface_region()
+    assert region.contains(QPoint(200, 150)) and not region.contains(QPoint(101, 101))  # the corner is not the card
+    assert region.contains(QPoint(112, 101))
+    host.close()

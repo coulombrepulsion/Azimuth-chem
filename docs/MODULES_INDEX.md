@@ -108,6 +108,7 @@
 - `hub/menus.py` — HubMenus: the menus of the header of the hub — the menus of each section (Compass, Sextant, Spectrum) built from the actions of Studio, and the label of the theme button; «Проект» of Compass, «Сервер» of Sextant and «Справка» of every se…
 - `hub/menus_sections.py` — The menus of each section of the hub: Compass, Compass · Crystal, Sextant, Spectrum. Each function is the branch of HubMenus._section_menus for its section and gets the helpers made there (menu, own, help_menu…).
 - `hub/registry.py` — Section registry of the Azimuth hub (contract: docs/MODULES.md §4).
+- `hub/sidebar_search.py` — The search of the menus and the buttons in the side panel: a magnifier in a rounded square over the languages; the field slides out of the square to the right, the results are listed over it.
 - `hub/texts.py` — Hub texts per language and shared sizes/colours of the hub chrome (moved from window.py).
 - `hub/theme_wipe.py` — The change of theme as a circle from the theme button.
 - `hub/window.py` — Azimuth hub window: own sidebar, sections in one content area, smooth switching.

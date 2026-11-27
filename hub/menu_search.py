@@ -1,8 +1,8 @@
 """The magnifier of the header: a search of the menus by a word, as in the Help menu of macOS, pointing to the item found.
 
 §1 PURPOSE
-    A magnifier at the right end of the row of the menus of every section (hub/header.py: SectionHeader.search_button;
-    in «Справка» until 0.244.0) opens a field: a word typed — the items of the menus of the section (with their
+    The magnifier of the side panel (hub/sidebar_search.py, 0.248.0; at the right end of the row of the menus in
+    0.244.0–0.247.0, in «Справка» before) opens a field: a word typed — the items of the menus of the section (with their
     submenus) and the buttons of the window whose name or tooltip has it are listed under the field, with their path
     («Кристалл ▸ Межмолекулярные взаимодействия ▸ Поверхность Хиршфельда…»). A result chosen is shown where it is, as
     the Help menu of macOS does: its menus open one after another and the item is highlighted (Enter runs it), or the
@@ -15,7 +15,7 @@
 §4 SPECIFICATION
     Entry(path, title, action | None, widget | None, tip); entries(header, window) -> [Entry]; find(entries, text,
     limit)
-    -> [Entry]; install(menu, hub) — the field into the menu «Справка»; reveal(header, entry) — the result shown.
+    -> [Entry]; reveal(header, entry) — the result shown.
 §7 TESTS
     tests/hub/test_menu_search.py.
 """
@@ -23,8 +23,7 @@
 from dataclasses import dataclass, field
 
 from PySide6.QtCore import QTimer
-from PySide6.QtGui import QAction
-from PySide6.QtWidgets import QLineEdit, QPushButton, QWidgetAction
+from PySide6.QtWidgets import QPushButton, QWidgetAction
 
 from azimuth.i18n import tr
 
@@ -161,68 +160,3 @@ def _restore(widget, sheet):
         widget.setStyleSheet(sheet)
     except RuntimeError:
         pass
-
-
-def install(menu, hub):
-    """The field at the top of a menu — that of the magnifier of the header (SectionHeader.set_search): what is typed
-    lists the results under it (as the Help menu of macOS)."""
-    edit = QLineEdit()
-    edit.setPlaceholderText(tr('Поиск по меню и кнопкам'))
-    edit.setClearButtonEnabled(True)
-    edit.setMinimumWidth(300)
-    holder = QWidgetAction(menu)
-    holder.setText(tr(FIELD))
-    holder.setDefaultWidget(edit)
-    holder.triggered.connect(lambda: edit.setFocus())  # the item of the field: its text in focus
-    first = menu.actions()[0] if menu.actions() else None
-    menu.insertAction(first, holder)
-    divider = menu.insertSeparator(first) if first is not None else menu.addSeparator()
-    state = {'results': []}
-
-    def fill(text):
-        for action in state['results']:
-            menu.removeAction(action)
-            action.deleteLater()
-        state['results'] = []
-        found = find(entries(hub.header, getattr(hub, 'studio', None)), text)
-        if text.strip() and not found:
-            none = QAction(tr('Ничего не найдено'), menu)
-            none.setEnabled(False)
-            found_items = [(none, None)]
-        else:
-            found_items = [(QAction(entry.label(), menu), entry) for entry in found]
-        for item, entry in found_items:
-            item.setProperty('menuSearchResult', True)
-            menu.insertAction(divider, item)
-            if entry is not None:
-                if entry.tip:
-                    item.setToolTip(entry.tip)
-                item.triggered.connect(lambda checked=False, e=entry: QTimer.singleShot(120, lambda: reveal(hub.header, e)))
-            state['results'].append(item)
-        menu.adjustSize()
-
-    edit.textChanged.connect(fill)
-    def first():
-        chosen = state['results'][0] if state['results'] else None
-        if chosen is not None and chosen.isEnabled():
-            menu.close()
-            chosen.trigger()
-
-    edit.returnPressed.connect(first)
-    menu.aboutToShow.connect(lambda: QTimer.singleShot(0, edit.setFocus))
-    # cleared after the item chosen has run (the menu hides before it triggers its action)
-    menu.aboutToHide.connect(lambda: QTimer.singleShot(0, edit.clear))
-    menu.search_field = edit
-    menu.search_results = lambda: list(state['results'])
-    return edit
-
-
-def open_help(header):
-    """Ctrl+Shift+/ (⌘?): the menu of the magnifier of the header, the cursor in its field."""
-    button, menu = getattr(header, 'search_button', None), getattr(header, 'search_menu', None)
-    if button is None or menu is None or not button.isVisible():
-        return None
-    menu.popup(button.mapToGlobal(button.rect().bottomLeft()))
-    menu.search_field.setFocus()
-    return menu
-

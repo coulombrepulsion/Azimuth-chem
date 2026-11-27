@@ -118,7 +118,6 @@ class HubMenus:
                 None,
                 own('О программе', self.show_about),
             )
-            self.header.set_search(self)  # the search: the magnifier at the right end of the row of the menus
             return box
 
         def picture_menu(gif='GIF: вращение молекулы'):

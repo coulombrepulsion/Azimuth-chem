@@ -37,12 +37,13 @@ DOC_SVG = (
     '<path d="M15 3v4h4M9 11h7M9 15h7M9 19h4"/></g></svg>'
 )
 EMAIL = 'contact@azimuth-chem.com'  # the address of the site
-# The motto (moved from the Atlas home page together with Quill, 0.24.0; here since the home page
-# shows it under the name, About under the wordmark)
+# The motto: the home page shows it under the name, About under the wordmark. 0.248.0 (the owner: «Девиз думаю надо
+# сменить у программы — этот девиз сейчас скорее к Атласу относится»; chosen: «Проложите курс к результату»); until
+# then «Твой путеводитель по квантовой химии», which stays the Atlas's
 MOTTO = {
-    'ru': 'Твой путеводитель по квантовой химии',
-    'en': 'Your guide to quantum chemistry',
-    'zh': '你的量子化学向导',
+    'ru': 'Проложите курс к результату',
+    'en': 'Chart your course to the result',
+    'zh': '规划通往结果的航线',
 }
 # the manual and the in-app journal (written for the reader, in Quail's voice); the technical
 # changelog stays in CHANGELOG.md in the program folder

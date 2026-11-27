@@ -260,19 +260,29 @@ def test_home_page_blocks_open_sections(hub, app):
     column = hub.home.intro.parentWidget().layout()
     assert column.indexOf(hub.home.intro) < column.indexOf(hub.home.continue_title) < column.indexOf(hub.home.sections_title)
     assert not hub.home.mark.pixmap().isNull()
-    assert hub.home.motto.text() == 'ТВОЙ ПУТЕВОДИТЕЛЬ ПО КВАНТОВОЙ ХИМИИ'  # the tagline under the name
+    assert hub.home.motto.text() == 'ПРОЛОЖИТЕ КУРС К РЕЗУЛЬТАТУ'  # the tagline under the name (0.248.0)
     before = hub.dark
     hub.toggle_theme()  # the icon follows the theme
     assert hub.home.app_icon.property('variant') == ('dark' if hub.dark else 'light')
     hub.toggle_theme()
     assert hub.dark is before and hub.home.app_icon.property('variant') == ('dark' if before else 'light')
+    # 0.248.0: the name only, no list of functions; one card of Compass — the molecule and the crystal its halves
+    from hub.home import CompassCard
+
+    compass = hub.home.cards['compass']
+    assert isinstance(compass, CompassCard) and compass.title.text() == 'Компас'
+    assert hub.home.cards['crystal'] is compass.parts['crystal'] and compass.parts['compass'].title.text() == 'Молекула'
+    assert compass.parts['crystal'].title.text() == 'Кристалл'
     for item in SECTIONS:
         card = hub.home.cards[item['id']]
-        assert card.title.text() == item['title'] and card.text.text()
-        QTest.mouseClick(card, Qt.MouseButton.LeftButton)
+        assert card.title.text()
+        if item['id'] != 'crystal':  # one line about the section (the crystal is a half of the card of Compass)
+            assert card.text.text() and len(card.text.text()) < 60 and not card.text.isHidden()
+        if item['id'] not in ('compass', 'crystal'):
+            assert card.title.text() == item['title']
+        QTest.mouseClick(card if item['id'] != 'compass' else compass.parts['compass'], Qt.MouseButton.LeftButton)
         assert hub.current == (hub_window.HOME if item['id'] == 'atlas' else item['id'])  # the site
         hub.show_section(hub_window.HOME, animate=False)
-    assert 'azimuth-chem.com' in hub.home.cards['atlas'].text.text()
     hub.set_language('en')
     assert hub.home.intro.text().startswith('Azimuth is') and hub.home.cards['atlas'].title.text() == 'Atlas'
     hub.set_language('ru')
@@ -406,7 +416,7 @@ def test_about_window_without_the_atlas(hub, app):
                     modules.spectrum.__version__):
         assert version in line
     assert 'Секстант' in line and 'Спектр' in line and 'загружается' not in line
-    assert dialog.motto.text() == 'ТВОЙ ПУТЕВОДИТЕЛЬ ПО КВАНТОВОЙ ХИМИИ'  # as on the home page
+    assert dialog.motto.text() == 'ПРОЛОЖИТЕ КУРС К РЕЗУЛЬТАТУ'  # as on the home page
     assert '* Расчётные программы' in dialog.body.toPlainText() and 'azimuth-chem.com' in dialog.body.toPlainText()
     assert not hasattr(dialog, 'copy_button') and dialog.bug_button.isEnabled()
     dialog.close()

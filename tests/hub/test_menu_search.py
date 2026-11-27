@@ -1,19 +1,16 @@
 # ruff: noqa: F811 — the fixtures app and hub are imported from test_hub
-"""Hub/menu_search.py — the field of «Справка», its results, the item shown where it is."""
+"""Hub/menu_search.py and hub/sidebar_search.py — the search of the side panel, its results, the item shown."""
 
 from tests.hub.test_hub import app, hub  # noqa: F401 — the fixtures
 
 
-def _help(hub):
-    """The menu of the magnifier at the right end of the row of the menus (in «Справка» until 0.244.0)."""
+def _search(hub):
+    """The search of the side panel (0.248.0; the magnifier of the row of the menus until then)."""
     from azimuth.i18n import to_source
 
     helps = next(b.menu() for b in hub.header.menu_buttons if to_source(b.text()) == 'Справка')
-    assert not hasattr(helps, 'search_field') and 'Поиск по меню' not in [to_source(a.text()) for a in helps.actions()]
-    assert hub.header.search_button.menu() is hub.header.search_menu
-    assert hub.header.search_button.property('quail_icon') in (None, 'search') and not hub.header.search_button.icon().isNull()
-    assert hub.header.search_button not in hub.header.menu_buttons  # the search does not list itself
-    return hub.header.search_menu
+    assert not hasattr(helps, 'search_field') and not hasattr(hub.header, 'search_button')
+    return hub.search
 
 
 def test_the_search_of_the_help_finds_a_menu_item_and_shows_it(hub):
@@ -25,12 +22,12 @@ def test_the_search_of_the_help_finds_a_menu_item_and_shows_it(hub):
     assert any(label.endswith('Межмолекулярные взаимодействия ▸ Поверхность Хиршфельда…') for label in labels)
     assert menu_search.find(menu_search.entries(hub.header), 'КОНТАКТЫ водородные')  # case ignored, the words in any order
     assert menu_search.find(menu_search.entries(hub.header), '') == []
-    helps = _help(hub)
-    field = helps.search_field
+    search = _search(hub)
+    search.open(animate=False)
+    field = search.field
     field.setText('vc-relax')  # the words of the tooltips and of the paths count too
     field.setText('поверхность хиршфельда')
-    results = helps.search_results()
-    assert results and 'Поверхность Хиршфельда' in results[0].text()
+    assert search.results.count() and 'Поверхность Хиршфельда' in search.results.item(0).text()
     entry = next(e for e in found if e.title.startswith('Поверхность Хиршфельда'))
     last = menu_search.reveal(hub.header, entry, step=0)
     assert last is not None and entry.action in last.actions()
@@ -42,10 +39,10 @@ def test_the_search_of_the_help_finds_a_menu_item_and_shows_it(hub):
     for button in hub.header.menu_buttons:
         button.menu().close()
     field.setText('такого пункта нет нигде')
-    assert [a.text() for a in helps.search_results()] == ['Ничего не найдено']
+    assert [search.results.item(k).text() for k in range(search.results.count())] == ['Ничего не найдено']
     field.clear()
-    assert helps.search_results() == []
-
+    assert search.results.isHidden()
+    search.close(animate=False)
 
 def test_the_search_finds_the_buttons_of_the_window(hub):
     from hub import menu_search
@@ -56,25 +53,33 @@ def test_the_search_finds_the_buttons_of_the_window(hub):
     assert any(e.widget is hub.studio.crystal_results_button or e.action is not None for e in found)
 
 
-def test_the_magnifier_stands_at_the_end_of_the_row_of_the_menus(hub, app):
-    # the owner, 2026-11-27: the search out of «Справка», a magnifier at the right on the level of the menus
-    from hub import menu_search
+def test_the_magnifier_stands_in_the_side_panel_over_the_languages(hub, app):
+    # the owner, 2026-11-27: «Лупа пусть будет расположена в левой панели над языком, в виде иконки внутри квадратика со
+    # скругленными краями, и при нажатии поле выдвигается из квадратика»
+    from hub.sidebar_search import SIDE, WIDTH
 
     hub.show_section('compass', animate=False)
     hub.show()
     app.processEvents()
-    header = hub.header
-    button = header.search_button
-    assert button.isVisible() and button.toolTip() == 'Поиск по меню и кнопкам'
-    last = header.menu_buttons[-1]
-    assert button.mapTo(header, button.rect().topLeft()).x() > last.mapTo(header, last.rect().topRight()).x()
-    assert abs(button.mapTo(header, button.rect().center()).y() - last.mapTo(header, last.rect().center()).y()) <= 3
-    assert header.width() - button.mapTo(header, button.rect().topRight()).x() <= 24  # at the right end of the row
-    menu = menu_search.open_help(header)  # Ctrl+Shift+/
-    assert menu is header.search_menu
+    search = hub.search
+    button = search.button
+    assert button.isVisible() and button.toolTip() == 'Поиск по меню и кнопкам' and button.size().width() == SIDE
+    assert 'border-radius' in button.styleSheet() and not button.icon().isNull()
+    languages = hub.language_row
+    assert button.mapTo(hub, button.rect().bottomLeft()).y() < languages.mapTo(hub, languages.rect().topLeft()).y()
+    assert button.window() is hub and hub.sidebar.isAncestorOf(button)
+    search.open(animate=False)  # the field out of the square, to the right
+    assert search.is_open() and search.panel.width() == WIDTH and search.panel.x() == button.mapTo(hub, button.rect().topLeft()).x()
+    assert search.field.isVisible()
+    search.field.setText('хиршфельд')
+    assert search.results.isVisible() and search.results.geometry().bottom() < search.panel.geometry().top()  # over it
+    search.close(animate=False)
+    assert search.panel.isHidden() and search.field.text() == '' and search.results.isHidden()
+    hub.help_search_shortcut.activated.emit()  # Ctrl+Shift+/
     app.processEvents()
-    menu.close()
-    for section in ('sextant', 'spectrum', 'crystal'):  # the same magnifier in every section with menus
+    assert search.panel.isVisible()
+    search.close(animate=False)
+    for section in ('sextant', 'spectrum', 'crystal', 'home'):  # the same square in every section
         hub.show_section(section, animate=False)
         app.processEvents()
-        assert header.search_button.isVisible() and header.search_menu is menu, section
+        assert button.isVisible(), section

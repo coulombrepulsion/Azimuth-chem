@@ -85,6 +85,94 @@ class SectionCard(QFrame):
         event.accept()
 
 
+class CompassCard(QFrame):
+    """The card of Compass on the home page (0.248.0, the owner: «объедини компас в одну панель, и внизу панели раздели
+    на 2 части линией, слева молекула, справа кристалл»): the compass and its name over a line; under it two halves
+    divided by a line — the molecule and the crystal, each with its own picture; a click on a half opens its part,
+    on the head — the molecule."""
+
+    def __init__(self, on_open, parent=None):
+        super().__init__(parent)
+        self.ident = 'compass'
+        self.on_open = on_open
+        self.setObjectName('card')
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+        column = QVBoxLayout(self)
+        column.setContentsMargins(18, 16, 18, 10)
+        column.setSpacing(10)
+        head = QHBoxLayout()
+        head.setSpacing(16)
+        self.icon = QLabel()
+        self.icon.setFixedSize(40, 40)
+        head.addWidget(self.icon, 0, Qt.AlignmentFlag.AlignVCenter)
+        self.title = QLabel()
+        column.addLayout(head)
+        texts = QVBoxLayout()
+        texts.setSpacing(4)
+        texts.addWidget(self.title)
+        self.text = QLabel()  # one line about the section, as on the other cards
+        texts.addWidget(self.text)
+        head.addLayout(texts, 1)
+        self.rule = QFrame()
+        self.rule.setObjectName('compassRule')
+        self.rule.setFixedHeight(1)
+        column.addWidget(self.rule)
+        halves = QHBoxLayout()
+        halves.setSpacing(0)
+        self.parts = {}
+        for kind in ('compass', 'crystal'):
+            if kind == 'crystal':
+                self.divider = QFrame()
+                self.divider.setObjectName('compassRule')
+                self.divider.setFixedWidth(1)
+                halves.addWidget(self.divider)
+            part = SectionCard(kind, on_open)
+            part.setObjectName('compassPart')
+            part.layout().setContentsMargins(6, 4, 6, 4)
+            part.icon.setFixedSize(30, 30)
+            part.text.hide()
+            halves.addWidget(part, 1)
+            self.parts[kind] = part
+        column.addLayout(halves)
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.on_open('compass')
+        event.accept()
+
+
+# the pictures of the halves of the card of Compass: the molecule and the crystal of the icons of the two parts
+# (assets/navigation/compass.svg, crystal.svg), without the compass
+PART_SVG = {
+    'compass': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="10.4 1.2 13.4 13.4" fill="none" stroke="currentColor" '
+               'stroke-width="0.85" stroke-linecap="round" stroke-linejoin="round"><circle cx="17.6" cy="7" r="2.5"/>'
+               '<circle cx="12.6" cy="3.4" r="1.5"/><circle cx="21.6" cy="11.2" r="1.5"/>'
+               '<path d="M15.6 5.6 13.9 4.3M19.3 8.8 20.6 10"/></svg>',
+    'crystal': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="12.4 3.2 11.4 11.4" fill="none" stroke="currentColor" '
+               'stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round">'
+               '<path d="M13.6 7.4h6.2v6.2h-6.2zM13.6 7.4l2.8-3h6.2l-2.8 3M22.6 4.4v6.2l-2.8 3"/></svg>',
+}
+# the compass alone, for the head of the card
+COMPASS_SVG = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1.8 5.8 20 20" fill="none" stroke="currentColor" '
+               'stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.2" cy="15.8" r="6"/>'
+               '<path d="M11.6 12.4 9.4 17 4.8 19.2 7 14.6Z"/></svg>')
+PART_NAMES = {'ru': ('Компас', 'Молекула', 'Кристалл'), 'en': ('Compass', 'Molecule', 'Crystal'), 'zh': ('罗盘', '分子', '晶体')}
+def thin(svg):
+    """The icon of a section in thinner lines on the cards of the home page (0.248.0; the panel keeps its own)."""
+    return svg.replace('stroke-width="1.7"', 'stroke-width="1.15"')
+
+
+# one line about each section on its card (0.248.0, the owner: «добавь какое-нибудь краткое описание каждого раздела»)
+BRIEF = {
+    'ru': {'atlas': 'Теория в интерактивных темах – на сайте', 'compass': 'Построить молекулу или кристалл',
+           'sextant': 'Подготовить и запустить расчёт', 'spectrum': 'Разобрать результат расчёта'},
+    'en': {'atlas': 'Theory in interactive topics – on the site', 'compass': 'Build a molecule or a crystal',
+           'sextant': 'Prepare and run a calculation', 'spectrum': 'Read the result of a calculation'},
+    'zh': {'atlas': '交互式主题中的理论——在网站上', 'compass': '构建分子或晶体',
+           'sextant': '准备并运行计算', 'spectrum': '解读计算结果'},
+}
+
+
 HOME_TEXT = {  # + the cards of the molecule and of the crystal (the two parts of Compass)
     'ru': {'continue': 'Продолжить', 'molecule': 'Компас · Молекула', 'crystal': 'Компас · Кристалл'},
     'en': {'continue': 'Continue', 'molecule': 'Compass · Molecule', 'crystal': 'Compass · Crystal'},
@@ -376,12 +464,16 @@ class HomePage(QScrollArea):
         grid = QGridLayout()
         grid.setSpacing(14)
         self.cards = {}
-        for i, item in enumerate(sections.values()):
-            card = SectionCard(item['id'], on_open)
+        # one card of Compass for its two parts (0.248.0); the other sections — their icon and name only
+        shown = [ident for ident in sections if not (ident == 'crystal' and 'compass' in sections)]
+        for i, ident in enumerate(shown):
+            card = CompassCard(on_open) if ident == 'compass' and 'crystal' in sections else SectionCard(ident, on_open)
             card.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)  # the text never widens a
             # column
             grid.addWidget(card, i // 2, i % 2)
-            self.cards[item['id']] = card
+            self.cards[ident] = card
+            if isinstance(card, CompassCard):
+                self.cards['crystal'] = card.parts['crystal']
         grid.setColumnStretch(0, 1)  # two columns of one width (the left one was narrower)
         grid.setColumnStretch(1, 1)
         lay.addLayout(grid)
@@ -532,13 +624,43 @@ class HomePage(QScrollArea):
         self.sections_title.setStyleSheet(
             f'color: {muted}; font-size: 13px; font-weight: 500; letter-spacing: 2px; {face}'
         )
-        for (ident, card), (name, about) in zip(self.cards.items(), words['sections']):
+        names = dict(zip(self.sections, (name for name, _ in words['sections'])))
+        compass, molecule, crystal = PART_NAMES.get(language, PART_NAMES['ru'])
+        for ident, card in self.cards.items():
+            if ident == 'crystal' and isinstance(self.cards.get('compass'), CompassCard):
+                continue  # a half of the card of Compass
             item = self.sections[ident]
-            card.icon.setPixmap(svg_pixmap(registry.icon_svg(item), accent, 36, ratio))
+            if isinstance(card, CompassCard):  # the compass and its name; the molecule and the crystal under the line
+                card.icon.setPixmap(svg_pixmap(COMPASS_SVG, accent, 36, ratio))
+                card.title.setText(compass)
+                card.title.setStyleSheet(f'font-size: 18px; font-weight: 600; {face}')
+                card.text.setText(BRIEF.get(language, BRIEF['ru'])['compass'])
+                card.text.setStyleSheet(f'color: {muted}; font-size: 14px; {face}')
+                card.setStyleSheet(f'QFrame#compassRule {{background: {line}; border: none;}}'
+                                   f'QFrame#compassPart {{background: transparent; border: none; border-radius: 8px;}}'
+                                   f'QFrame#compassPart:hover {{background: {line};}}')
+                for kind, title in (('compass', molecule), ('crystal', crystal)):
+                    part = card.parts[kind]
+                    part.icon.setPixmap(svg_pixmap(PART_SVG[kind], accent, 26, ratio))
+                    part.title.setText(title)
+                    part.title.setStyleSheet(f'font-size: 15px; font-weight: 500; {face}')
+                    part.setToolTip(names.get(kind, title))
+                    part.setAccessibleName(names.get(kind, title))
+                card.setToolTip(compass)
+                card.setAccessibleName(compass)
+                continue
+            name = names.get(ident, '')
+            card.icon.setPixmap(svg_pixmap(thin(registry.icon_svg(item)), accent, 36, ratio))
             card.title.setText(name)
             card.title.setStyleSheet(f'font-size: 18px; font-weight: 600; {face}')
-            card.text.setText(about[:1].upper() + about[1:])
+            # 0.248.0: one line instead of the list of the functions (the owner: «убери подробную опись»; «добавь
+            # какое-нибудь краткое описание каждого раздела»)
+            card.text.setText(BRIEF.get(language, BRIEF['ru']).get(ident, ''))
             card.text.setStyleSheet(f'color: {muted}; font-size: 14px; {face}')
+            card.layout().setAlignment(card.icon, Qt.AlignmentFlag.AlignVCenter)
+            if not getattr(card, 'centred', False):  # the name and its line in the middle of the card, by the icon
+                card.layout().itemAt(1).layout().insertStretch(0, 1)
+                card.centred = True
             card.setToolTip(name)
             card.setAccessibleName(name)
         # the note on the calculation programs moved to Sextant, the author and the e-mail are in About
