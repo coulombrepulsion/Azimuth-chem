@@ -433,6 +433,10 @@ class HubWindow(HubMenus, QMainWindow):
             button.setVisible(not self.collapsed or code == self.language)
             button.setToolTip(text['language'])
         self.about_button.setText('' if self.collapsed else text['about'])
+        if hasattr(self, 'search'):
+            from azimuth.i18n import tr
+
+            self.search.button.setText('' if self.collapsed else tr('Поиск'))
         self.settings_button.setText('' if self.collapsed else text['settings'])
         self.settings_button.setToolTip(text['settings'])
         self.settings_button.setAccessibleName(text['settings'])

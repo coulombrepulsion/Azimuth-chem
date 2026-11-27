@@ -9,8 +9,9 @@ slides out of the square to the right, the results are listed over it.
     What hub/menu_search.py finds (the items of the menus of the section shown and the buttons of the window), asked
     from the side panel in every section.
 §2 ALGORITHM
-    The square (button, SIDE px, without a frame as the other buttons of the panel since 0.248.1) lies in the column of
-    the panel. open(): the panel (a frame over the page, a child of
+    The magnifier is a button of the column of the panel as the others (QPushButton#nav, 0.248.3).
+    A press anywhere but on the field, its list and the button puts the field away (an event filter of the
+    application while it is out). open(): the panel (a frame over the page, a child of
     the window) takes the place of the square and grows to the right to WIDTH px in SLIDE ms; the field in it gets the
     cursor. A word typed lists the results (menu_search.find, LIMIT) in a list over the field — the square stands at
     the bottom of the window. Enter or a click — the result shown where it is (menu_search.reveal); Up and Down move in
@@ -23,11 +24,10 @@ slides out of the square to the right, the results are listed over it.
 """
 
 from PySide6.QtCore import QEasingCurve, QEvent, QObject, QPoint, QRect, QSize, Qt, QTimer, QVariantAnimation
-from PySide6.QtWidgets import QFrame, QHBoxLayout, QLineEdit, QListWidget, QListWidgetItem, QToolButton
+from PySide6.QtWidgets import QApplication, QFrame, QHBoxLayout, QLineEdit, QListWidget, QListWidgetItem, QPushButton, QToolButton
 
 from azimuth.i18n import tr
 
-SIDE = 40  # px: the square of the magnifier
 WIDTH = 340  # px: the panel with the field slid out
 SLIDE = 170  # ms
 ROW = 28  # px: a row of the results
@@ -40,10 +40,11 @@ class SidebarSearch(QObject):
         self.hub = hub
         self.found = []
         self.dark = False
-        self.button = QToolButton(parent)
-        self.button.setObjectName('sideSearch')
-        self.button.setFixedSize(SIDE, SIDE)
-        self.button.setIconSize(QSize(22, 22))  # as the icons of the buttons of the panel
+        # a button of the panel as the theme, the settings and «О программе» (0.248.3, the owner: «у лупы при наведении
+        # отличается область выделения, от других иконок на панели»): QPushButton#nav, the whole width of the column
+        self.button = QPushButton(parent)
+        self.button.setObjectName('nav')
+        self.button.setIconSize(QSize(22, 22))
         self.button.setCursor(Qt.CursorShape.PointingHandCursor)
         self.button.setToolTip(tr(TITLE))
         self.button.setAccessibleName(tr(TITLE))
@@ -52,15 +53,15 @@ class SidebarSearch(QObject):
         self.panel.setObjectName('sideSearchPanel')
         self.panel.hide()
         row = QHBoxLayout(self.panel)
-        row.setContentsMargins(SIDE, 4, 8, 4)  # the field begins where the square ends
+        row.setContentsMargins(48, 4, 8, 4)  # set again when it opens: the field begins where the button ends
         self.field = QLineEdit(self.panel)
         self.field.setObjectName('sideSearchField')
         self.field.setPlaceholderText(tr(TITLE))
         self.field.setClearButtonEnabled(True)
         row.addWidget(self.field)
-        self.glass = QToolButton(self.panel)  # the magnifier stays where the square was
+        self.glass = QToolButton(self.panel)  # the magnifier stays where the button was
         self.glass.setObjectName('sideSearchGlass')
-        self.glass.setFixedSize(SIDE, SIDE)
+        self.glass.setIconSize(QSize(22, 22))
         self.glass.move(0, 0)
         self.glass.clicked.connect(lambda: self.close())
         self.results = QListWidget(hub)
@@ -86,15 +87,11 @@ class SidebarSearch(QObject):
         self.dark = bool(dark)
         ink = '#c9d3e2' if dark else '#3f4d61'
         line = 'rgba(255, 255, 255, 0.16)' if dark else 'rgba(27, 34, 48, 0.16)'
-        hover = 'rgba(255, 255, 255, 0.12)' if dark else 'rgba(42, 98, 184, 0.08)'  # as QPushButton#nav
         back = '#1a2130' if dark else '#ffffff'
         text = '#e8ecf3' if dark else '#1b2230'
         accent = '#6ea2f0' if dark else '#2a62b8'
         # as the other buttons of the panel: no frame, a light ground under the mouse (0.248.1, the owner: «Убери вокруг
         # лупы рамку, пусть будет как другие кнопки на панели»)
-        square = (f'QToolButton {{border: none; border-radius: 8px; background: transparent;}}'
-                  f'QToolButton:hover {{background: {hover};}}')
-        self.button.setStyleSheet(square)
         self.glass.setStyleSheet('QToolButton {border: none; background: transparent;}')
         for button in (self.button, self.glass):
             button.setIcon(icon('search', ink))
@@ -121,7 +118,9 @@ class SidebarSearch(QObject):
             return
         place = self._place()
         self.panel.setGeometry(place)
-        self.glass.resize(place.size())
+        self.glass.setFixedSize(place.size())
+        self.panel.layout().setContentsMargins(place.width(), 4, 8, 4)  # the field begins where the button ends
+        QApplication.instance().installEventFilter(self)  # a click anywhere else puts the field away
         self.panel.show()
         self.panel.raise_()
         self._opening = True
@@ -140,6 +139,9 @@ class SidebarSearch(QObject):
             return
         self.results.hide()
         self._opening = False
+        app = QApplication.instance()
+        if app is not None:
+            app.removeEventFilter(self)
         if animate:
             self.motion.stop()
             self.motion.setStartValue(float(self.panel.width()))
@@ -207,7 +209,19 @@ class SidebarSearch(QObject):
         QTimer.singleShot(SLIDE + 40, lambda: menu_search.reveal(self.hub.header, entry))
         return entry
 
+    def _inside(self, event):
+        """The press is on the field, its list or the button of the search."""
+        point = event.globalPosition().toPoint()
+        for widget in (self.panel, self.results, self.button):
+            if widget.isVisible() and widget.rect().contains(widget.mapFromGlobal(point)):
+                return True
+        return False
+
     def eventFilter(self, watched, event):
+        if event.type() == QEvent.Type.MouseButtonPress and self.panel.isVisible() and self._opening:
+            if not self._inside(event):  # a click on the panel, the page or anywhere else (0.248.3)
+                self.close()
+            return False
         if watched is self.field and event.type() == QEvent.Type.KeyPress:
             key = event.key()
             if key == Qt.Key.Key_Escape:

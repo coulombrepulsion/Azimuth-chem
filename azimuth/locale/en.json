@@ -6546,5 +6546,6 @@
   "Монослой: {} атомов в ячейке, вакуум {:g} Å вдоль c.": "Monolayer: {} atoms in the cell, {:g} Å of vacuum along c.",
   "Убрать с модели все измерения (ни один атом не выделен)": "Take every measurement off the model (no atom is selected)",
  "Откройте кристалл из файла CIF": "Open a crystal from a CIF file",
- "или возьмите пример": "or take an example"
+ "или возьмите пример": "or take an example",
+ "Поиск": "Search"
 }

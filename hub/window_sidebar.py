@@ -170,11 +170,7 @@ def _build_sidebar(self):
     from hub.sidebar_search import SidebarSearch
 
     self.search = SidebarSearch(self, bar)
-    search_row = QHBoxLayout()
-    search_row.setContentsMargins(4, 0, 0, 6)
-    search_row.addWidget(self.search.button)
-    search_row.addStretch(1)
-    column.addLayout(search_row)
+    column.addWidget(self.search.button)
     self.language_row = QWidget()
     self.language_row.installEventFilter(self)  # the hourglass follows it
     self.job_indicator.installEventFilter(self)

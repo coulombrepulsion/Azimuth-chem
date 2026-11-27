@@ -264,7 +264,7 @@ class Gyro:
     CENTRE = (70.0, 70.0)  # px from the right and the top edge of the page: as the flat dial of 0.244.0
     EYE = 1100.0  # px: the distance of the eye (weak perspective)
     LINE = 0.8  # px
-    RIDGE = 7.0  # px: how high the ridge of the needle stands over its plane
+    RIDGE = 7.0  # px: how high the ridge of the needle stands over its plane, on each side (0.248.3: both)
     LIGHT = (-0.45, 0.55, 0.7)  # where the light comes from (the screen: x right, y up, z to the eye)
     SHADES = 6  # the strengths a line is drawn in by its depth
 
@@ -362,8 +362,9 @@ class Gyro:
         found.append(([[0, 66, 0], [13, 0, 0], [0, -66, 0], [-13, 0, 0], [0, 66, 0]], 2, 0.7))
         # the needle has a ridge (0.248.1, the owner: «Можно ли стрелку объемной тоже сделать немного?»): its top
         # along the needle and across it
-        found.append(([[0, 66, 0], [0, 0, self.RIDGE], [0, -66, 0]], 2, 0.45))
-        found.append(([[13, 0, 0], [0, 0, self.RIDGE], [-13, 0, 0]], 2, 0.3))
+        for ridge in (self.RIDGE, -self.RIDGE):  # 0.248.3: on both sides («с обеих сторон выпячивание»)
+            found.append(([[0, 66, 0], [0, 0, ridge], [0, -66, 0]], 2, 0.45))
+            found.append(([[13, 0, 0], [0, 0, ridge], [-13, 0, 0]], 2, 0.3))
         return found
 
     def project(self, points):
@@ -408,16 +409,20 @@ class Gyro:
                 painter.drawLines([line for line, s in bucket if s == strength])
         # the four faces of the needle, each as bright as it is turned to the light; the northern half the stronger
         light = np.array(self.LIGHT) / np.linalg.norm(self.LIGHT)
-        n, south, east, west, top = [0, 66, 0], [0, -66, 0], [13, 0, 0], [-13, 0, 0], [0, 0, self.RIDGE]
-        for tip, side, base in ((n, east, 0.34), (n, west, 0.34), (south, east, 0.12), (south, west, 0.12)):
-            corners = self.placed([tip, side, top], 2)
+        n, south, east, west = [0, 66, 0], [0, -66, 0], [13, 0, 0], [-13, 0, 0]
+        faces = [(tip, side, [0, 0, ridge], base) for ridge in (self.RIDGE, -self.RIDGE)
+                 for tip, side, base in ((n, east, 0.34), (n, west, 0.34), (south, east, 0.12), (south, west, 0.12))]
+        for tip, side, apex, base in faces:
+            corners = self.placed([tip, side, apex], 2)
             normal = np.cross(corners[1] - corners[0], corners[2] - corners[0])
             length = np.linalg.norm(normal)
             if length == 0:
                 continue
             normal = normal / length
-            if normal[2] < 0:
-                normal = -normal  # the face seen from the eye
+            if normal @ corners.mean(axis=0) < 0:
+                normal = -normal  # outwards: away from the middle of the needle
+            if normal[2] <= 0:
+                continue  # turned away from the eye: behind the needle
             lit = 0.35 + 0.65 * max(0.0, float(normal @ light))
             x, y, _ = self.project(corners)
             path = QPainterPath(QPointF(x[0], y[0]))

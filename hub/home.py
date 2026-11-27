@@ -102,6 +102,7 @@ class CompassCard(QFrame):
         column.setSpacing(10)
         head = QHBoxLayout()
         head.setSpacing(16)
+        head.addStretch(1)  # 0.248.3: the head in the middle of the wide card («центрируй компас на главной»)
         self.icon = QLabel()
         self.icon.setFixedSize(40, 40)
         head.addWidget(self.icon, 0, Qt.AlignmentFlag.AlignVCenter)
@@ -112,7 +113,8 @@ class CompassCard(QFrame):
         texts.addWidget(self.title)
         self.text = QLabel()  # one line about the section, as on the other cards
         texts.addWidget(self.text)
-        head.addLayout(texts, 1)
+        head.addLayout(texts, 0)
+        head.addStretch(1)
         self.rule = QFrame()
         self.rule.setObjectName('compassRule')
         self.rule.setFixedHeight(1)
@@ -129,6 +131,9 @@ class CompassCard(QFrame):
             part = SectionCard(kind, on_open)
             part.setObjectName('compassPart')
             part.layout().setContentsMargins(6, 4, 6, 4)
+            part.layout().insertStretch(0, 1)  # the picture and the name in the middle of the half
+            part.layout().addStretch(1)
+            part.layout().setStretch(2, 0)
             part.icon.setFixedSize(30, 30)
             part.text.hide()
             halves.addWidget(part, 1)

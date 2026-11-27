@@ -1,5 +1,11 @@
 # What’s new
 
+## 0.248.3 — 27 November 2026
+
+- ### 0.248.3 — A needle with two sides
+
+The needle of the gyroscope bulges on both sides now. The Compass card on the home page is centred. The search magnifier is an ordinary button of the panel, and the search field folds away at a click anywhere else.
+
 ## 0.248.2 — 27 November 2026
 
 - ### 0.248.2 — Even cards
