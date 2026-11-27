@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.244.1 — 27 November 2026
+
+- ### 0.244.1 — A download on Windows no longer breaks off
+
+If the connection breaks in the middle of a large archive while the calculation programs are installed on Windows, the download goes on from the same place instead of stopping with an error. Quantum ESPRESSO 7.5 on Windows has been checked: the band structure, the density of states and the frequencies of silicon run.
+
 ## 0.244.0 — 27 November 2026
 
 - ### 0.244.0 — The magnifier, the ruler and the system font

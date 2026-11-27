@@ -12,6 +12,7 @@
        every archive are asked of MIRRORS in turn (Mirrors.get): the first mirror that gives the file whole serves,
        and is asked first for the next file. pinned() then puts the versions of PINNED in place of those offered:
        Quantum ESPRESSO 7.5-6, since 7.6-1 of the repository does not read its own saved folder on Windows.
+       A download that broke goes on from the byte it stopped at (_fetch: the header Range).
     2. closure(packages, PACKAGE): the package and everything it depends on, through «provides» (omp is libgomp,
        fc-libs is libgfortran) and without the version conditions («>=1.2»).
     3. Each archive is downloaded, its SHA-256 compared with that of the list, unpacked, and the files of
@@ -47,6 +48,7 @@
 from __future__ import annotations
 
 import hashlib
+import http.client
 import io
 import re
 import tarfile
@@ -186,7 +188,7 @@ class Mirrors:
             except (ValueError, tarfile.TarError) as exc:
                 damaged = f'{mirror}: {exc}'
                 continue
-            except OSError as exc:
+            except (OSError, http.client.HTTPException) as exc:  # IncompleteRead is not an OSError
                 last = f'{mirror}: {type(exc).__name__}: {exc}'
                 continue
             self.order.remove(mirror)
@@ -311,22 +313,46 @@ def install_zstd(root, say=print):
     return find_zstd(root) if code == 0 else None
 
 
-def _fetch(url, timeout=600, attempts=3):
-    """The bytes of an address; a connection that broke is tried again (attempts in all)."""
+def _fetch(url, timeout=600, attempts=4):
+    """The bytes of an address. A download that broke goes on from the byte it stopped at (the header Range; a server
+    that answers with the whole file — from the start). attempts — breaks in a row that brought no new byte, after
+    which the error is raised (an OSError). An answer 4xx is raised at once."""
+    import http.client
     import time
+    import urllib.error
     import urllib.request
 
     from modules.compass.chemistry.pubchem import _urlopen  # the certificates of the system, as the other downloads
 
-    for attempt in range(attempts):
+    got, idle = bytearray(), 0
+    while True:
+        before = len(got)
+        headers = {'User-Agent': 'Azimuth'}
+        if got:
+            headers['Range'] = f'bytes={len(got)}-'
         try:
-            request = urllib.request.Request(url, headers={'User-Agent': 'Azimuth'})
-            with _urlopen(request, timeout) as response:
-                return response.read()
-        except OSError:
-            if attempt + 1 == attempts:
+            with _urlopen(urllib.request.Request(url, headers=headers), timeout) as response:
+                if got and getattr(response, 'status', 200) != 206:  # the whole file again
+                    del got[:]
+                    before = 0
+                while True:
+                    block = response.read(1 << 20)
+                    if not block:
+                        return bytes(got)
+                    got += block
+        except urllib.error.HTTPError as exc:
+            if 400 <= exc.code < 500:
                 raise
-            time.sleep(2.0 * (attempt + 1))
+            failure = exc
+        except http.client.IncompleteRead as exc:
+            got += exc.partial
+            failure = exc
+        except (OSError, http.client.HTTPException) as exc:
+            failure = exc
+        idle = 0 if len(got) > before else idle + 1
+        if idle >= attempts:
+            raise OSError(f'{type(failure).__name__}: {failure} ({len(got)} bytes received)') from failure
+        time.sleep(min(2.0 * (idle + 1), 8.0))
 
 
 def _starts(program, folder):

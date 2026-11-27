@@ -200,6 +200,81 @@ def test_a_file_comes_from_the_first_mirror_that_gives_it_whole():
     assert len(qw.MIRRORS) >= 4 and qw.MIRROR == qw.MIRRORS[0] and all(m.endswith('/mingw/ucrt64/') for m in qw.MIRRORS)
 
 
+def test_a_download_that_broke_goes_on_from_where_it_stopped(monkeypatch):
+    # Windows, 2026-11-27: the archive of CP2K (331 MB) — «IncompleteRead(54439959 bytes read, 276133065 more
+    # expected)», which is not an OSError: the installer ended with a traceback
+    import http.client
+    import urllib.error
+
+    from modules.compass.chemistry import pubchem
+
+    whole = bytes(range(256)) * 20
+    asked = []
+
+    class Answer:
+        def __init__(self, data, status, cut=None):
+            self.data, self.status, self.cut = data, status, cut
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+        def read(self, n):
+            if self.cut is not None and not self.data[:self.cut]:
+                raise http.client.IncompleteRead(b'', 10)
+            block = self.data[:min(n, self.cut or n)]
+            self.data = self.data[len(block):]
+            if self.cut is not None:
+                self.cut -= len(block)
+            return block
+
+    def serve(honours):
+        def urlopen(request, timeout):
+            start = int((request.get_header('Range') or 'bytes=0-')[6:-1])
+            asked.append(start)
+            if len(asked) == 2:
+                raise OSError('EOF occurred in violation of protocol')
+            if len(asked) == 1:
+                return Answer(whole, 200, cut=1000)  # breaks after 1000 bytes
+            return Answer(whole[start:], 206) if honours else Answer(whole, 200)
+        return urlopen
+
+    monkeypatch.setattr('time.sleep', lambda seconds: None)
+    monkeypatch.setattr(pubchem, '_urlopen', serve(True))
+    assert qw._fetch('https://a/x') == whole and asked == [0, 1000, 1000]
+    del asked[:]
+    monkeypatch.setattr(pubchem, '_urlopen', serve(False))  # a server without Range: the whole file, not a mix
+    assert qw._fetch('https://a/x') == whole and asked == [0, 1000, 1000]
+
+    def silent(request, timeout):
+        asked.append('x')
+        raise http.client.RemoteDisconnected('Remote end closed connection without response')
+
+    del asked[:]
+    monkeypatch.setattr(pubchem, '_urlopen', silent)
+    with pytest.raises(OSError) as error:
+        qw._fetch('https://a/x', attempts=3)
+    assert len(asked) == 3 and 'RemoteDisconnected' in str(error.value)
+
+    def missing(request, timeout):
+        asked.append('x')
+        raise urllib.error.HTTPError('https://a/x', 404, 'Not Found', {}, None)
+
+    del asked[:]
+    monkeypatch.setattr(pubchem, '_urlopen', missing)
+    with pytest.raises(OSError):
+        qw._fetch('https://a/x')
+    assert len(asked) == 1  # not asked again
+    # what a fetch of a test raises that is not an OSError is the next mirror too
+    def broken(url):
+        raise http.client.IncompleteRead(b'abc', 100)
+
+    with pytest.raises(qw.Unreachable):
+        qw.Mirrors(broken, ['https://a/']).get('x')
+
+
 def test_the_version_of_quantum_espresso_is_the_checked_one(tmp_path, monkeypatch):
     # Windows 11, 2026-11-27: 7.6-1 of MSYS2 computes the energy and cannot read what it saved (bands, DOS, phonons)
     version, filename, sha256, size = qw.PINNED[qw.PACKAGE]

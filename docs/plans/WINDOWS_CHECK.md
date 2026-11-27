@@ -179,3 +179,14 @@ Windows не проверялся ни разу — это и есть цель 
 - Перенос пункта меню на панель Компаса (знак запрета, если путь начинается над полем) — исправлено в 0.244.0, на
   Windows посмотреть глазами. Шрифт системы: посмотреть строки Секстанта, не обрезаются ли.
 
+## Отметки по ходу (Claude, 27.11, версия 0.244.0 → 0.244.1)
+
+- 4а.1 ✓ установка Quantum ESPRESSO 7.5-6 установщиком программы: 15 пакетов, 88 МБ, «the mirror: mirror.msys2.org»,
+  «Program PWSCF v.7.5», 38 файлов в `.tools\qe\bin`.
+- 4а.4 (без окна, `azimuth_crystal_run`, кремний): «Зонная структура», «Плотность состояний», «Частоты (точка Γ)» —
+  код 0 на всех шагах. В окне панели на 7.5-6 не запускалось.
+- CP2K: архив 331 МБ оборвался на 54 МБ (`IncompleteRead`), установщик упал; 0.244.1 продолжает загрузку с того же
+  байта. Повторить: `.venv\Scripts\python.exe -c "import sys; sys.path[:0]=['.','tests']; import qeinst_tmp as t;
+  t.test_cp2kinst_run()"` (файл `tests\qeinst_tmp.py` лежит на ноутбуке), результат — `artifacts\cp2kinst_tmp.json`.
+- На ноутбуке `modules\sextant\qe_windows.py` и его тест изменены вручную (то же исправление): перед `git pull` —
+  `git checkout -- modules/sextant/qe_windows.py tests/sextant/test_qe_windows.py`.
