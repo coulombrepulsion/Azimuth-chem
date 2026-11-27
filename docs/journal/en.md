@@ -1,5 +1,17 @@
 # What’s new — Quail’s notes
 
+## 0.249.5 — 27 November 2026
+
+- ### 0.249.5 — The buttons of a calculation in their places
+
+In Sextant «Stop», «Program output» and «Calculation folder» now stand next to «Run the calculation», and «Open in Compass», «Open in Spectrum» and the way back to the input file at the bottom inside the card of the calculation.
+
+## 0.249.4 — 27 November 2026
+
+- ### 0.249.4 — Clean glass
+
+When the structure panel slides out, the glass of the panels no longer stays in strips where the panels stood before. And the headings of the groups have no gold line – the gold is now in little stars on the icons before the headings.
+
 ## 0.249.3 — 27 November 2026
 
 - ### 0.249.3 — The home page says more

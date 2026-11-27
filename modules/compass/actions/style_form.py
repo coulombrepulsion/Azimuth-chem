@@ -184,7 +184,7 @@ def relaid_colour_dialog(dialog):
     left.setSpacing(6)
     basic_label, custom_label = labels[wells.index(basic)], labels[wells.index(custom)]
     # the swatches in two group boxes (rounded,
-    # the heading underlined in gold — the style of the groups of the program); the labels of Qt (the buddies of the
+    # the heading semibold — the style of the groups of the program); the labels of Qt (the buddies of the
     # wells, their keys) stay in them, hidden — the heading of the group says it
     from PySide6.QtWidgets import QGroupBox
 

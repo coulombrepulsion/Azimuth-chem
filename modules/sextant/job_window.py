@@ -267,15 +267,27 @@ class JobWindow(QWidget):
         # in Sextant the panel stands in the place of the input file — this brings the file back
         self.input_button = icon_button(tr('Входной файл'), lambda: owner.show_input_card(), 'back')
         self.input_button.hide()
+        # 0.249.5 (the owner: «Как-то странно выглядят кнопки снизу. Может их перенести в область справа от запустить
+        # расчет?» — «Но кнопки открыть в спектре или в Компасе снизу, но чтоб в той же панели были, и кнопка
+        # вернуться к входному файлу тоже»): the control of the calculation is a group of its own — in Sextant it
+        # stands in the row of «Запустить расчёт» (dock), in the window of its own at the bottom; the results and «Входной
+        # файл» at the bottom inside the card (the row was under the card, outside it)
+        self.controls = QWidget()
+        self.controls.setObjectName('jobControls')
+        controls = QHBoxLayout(self.controls)
+        controls.setContentsMargins(0, 0, 0, 0)
+        controls.setSpacing(8)
         for item in (self.stop_button, self.skip_button, self.output_button, self.folder_button):
-            row.addWidget(item)
+            controls.addWidget(item)
+        self._row = row
+        row.addWidget(self.controls)
         row.addStretch(1)
         for item in (self.qtaim_button, self.compass_button, self.spectrum_button,
                      self.input_button, self.close_button):
             row.addWidget(item)
         self.compass_button.hide()
         self.spectrum_button.hide()
-        outer.addLayout(row)
+        layout.addLayout(row)
         self.resize(560, 340)
 
     place = None  # 'local' or 'server' — whose calculation this window shows (Sextant sets it)
@@ -616,9 +628,33 @@ class JobWindow(QWidget):
         super().hideEvent(event)
 
     # a card in Sextant or a window ---------------------------------------------------------------------
+    def place_controls(self, host):
+        """The group stop / skip / output / folder: into the row of «Запустить расчёт» of Sextant when the card is in its
+        job_slot (job_controls_slot of the owner), back to the bottom of the card otherwise. In the slot only the group of
+        the window docked now is shown (each place — this computer, the server — has its window)."""
+        slot = getattr(self.owner, 'job_controls_slot', None)
+        if slot is not None and host is not None and host is getattr(self.owner, 'job_slot', None):
+            box = slot.layout()
+            for k in range(box.count()):
+                widget = box.itemAt(k).widget()
+                if widget is not None and widget is not self.controls:
+                    widget.hide()
+            if self.controls.parentWidget() is not slot:
+                self._row.removeWidget(self.controls)
+                box.addWidget(self.controls)
+            slot.show()
+        elif self.controls.parentWidget() is not self.frame:
+            parent = self.controls.parentWidget()
+            if parent is not None and parent.layout() is not None:
+                parent.layout().removeWidget(self.controls)
+            self._row.insertWidget(0, self.controls)
+        self.controls.show()
+        return self.controls.parentWidget()
+
     def dock(self, host):
         """Into Sextant, in the place of the input file: a child of host, «Входной файл» instead of «Скрыть»."""
         if self.docked and self.parentWidget() is host:
+            self.place_controls(host)
             return self
         if self.isWindow():
             self.followed = False
@@ -632,6 +668,7 @@ class JobWindow(QWidget):
         self.close_button.hide()
         self.input_button.show()
         self.set_picture_size(DOCKED_PICTURE)
+        self.place_controls(host)
         return self
 
     def undock(self):
@@ -650,6 +687,7 @@ class JobWindow(QWidget):
         self.input_button.hide()
         self.close_button.show()
         self.set_picture_size(PICTURE)
+        self.place_controls(None)  # the group back at the bottom of the window
         self.resize(560, 340)
         return self
 

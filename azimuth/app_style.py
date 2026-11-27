@@ -24,7 +24,7 @@ QFrame#card {background: white; border: 1px solid #d8dce3; border-radius: 12px;}
    элементов золотого цвета»): the heading of a group — semibold, a little larger, a short gold line under it; the
    group a rounded frame of the cards (the square native one went with the heading drawn by the style sheet) */
 QGroupBox {border: 1px solid #d8dce3; border-radius: 9px; margin-top: 26px; padding: 12px 8px 8px 8px; font-weight: 600;}
-QGroupBox::title {subcontrol-origin: margin; subcontrol-position: top left; left: 2px; top: 0px; padding: 0 2px 3px 2px; color: #1b2230; border-bottom: 2px solid #e2bf78;}
+QGroupBox::title {subcontrol-origin: margin; subcontrol-position: top left; left: 2px; top: 0px; padding: 0 2px 3px 2px; color: #1b2230;}  /* no gold line under it since 0.249.4 (the owner: «убрать золотое подчеркивание заголовков… Лучше в иконки рядом с заголовком добавить золотые элементы») */
 /* 2026-11-19 (the owner: «заголовки с подчёркиванием золотым пусть будут полужирными»): the font of the title is the
    font of the group (::title takes no font) — semibold there, and the rows inside back to the usual weight */
 QGroupBox > QWidget {font-weight: 400;}
@@ -220,7 +220,6 @@ DARK_STYLE += ('\nQPushButton:checked, QPushButton[on="true"] {background: rgba(
                # a blue button under the mouse
                # — a thin gold frame (the frame of the next step stays 2 px, always)
                '\nQPushButton#primary:hover {border-color: #f2d595;}'
-               '\nQGroupBox::title {border-bottom-color: #f2d595;}'  # the gold of the dark theme
                '\nQTabBar::tab:selected {background: #2a62b8; color: white;}'
                '\nQCheckBox::indicator:checked, QAbstractItemView::indicator:checked {background: #2a62b8; border-color: #2a62b8;}'
                '\nQProgressBar#jobBar::chunk {background: #2a62b8;}')

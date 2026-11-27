@@ -26,7 +26,7 @@ def _styles_window(self, title, rows, name, live=(), first=''):
     outer.setSpacing(4)
 
     def section(heading=''):
-        """A group of rows with a heading — a group box (rounded, its heading underlined in gold, the
+        """A group of rows with a heading — a group box (rounded, its heading semibold, the
         style sheet of azimuth/app.py); rows without a heading — on the window itself."""
         holder = QGroupBox(tr(heading)) if heading else QWidget()
         outer.addWidget(holder)

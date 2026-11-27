@@ -590,10 +590,14 @@ def run_card(self, box):
     self.run_time.hide()
     self.job_window_button = icon_button(tr('Окно расчёта'), self.show_job_window, 'forward')
     self.job_window_button.hide()
-    # «Вывод программы» is in the window of the calculation only; the folder button chooses where the
-    # calculations go (Документы/Azimuth/Расчёты until changed; the choice is kept)
-    self.jobs_folder_button = icon_button(tr('Папка для расчётов…'), self.run_tool.choose_jobs_folder, 'folder')
-    self.run_tool.update_jobs_folder_tip()
+    # 0.249.5: no «Папка для расчётов…» here (the owner: «не запускается, ее можно убрать и оставить Папка расчета») —
+    # where the calculations go is chosen in «Настройки → Расчёты»; «Папка расчёта» of the calculation shown stands in
+    # job_controls_slot with «Остановить» and «Вывод программы» (JobWindow.place_controls)
+    self.job_controls_slot = QWidget()
+    controls = QHBoxLayout(self.job_controls_slot)
+    controls.setContentsMargins(0, 0, 0, 0)
+    controls.setSpacing(8)
+    self.job_controls_slot.hide()  # until a calculation's card is docked
     if os.name == 'nt':  # Open MPI is not for Windows; ORCA needs Microsoft MPI
         # installed at one click from conda-forge (msmpi: mpiexec.exe, smpd.exe), as Open MPI elsewhere
         self.mpi_button = icon_button(tr('Установить MS-MPI…'), lambda: self.run_tool.install_tools_dialog(('openmpi',)),
@@ -611,9 +615,9 @@ def run_card(self, box):
     self.run_spinner = Spinner(18)  # logging in to the server before a calculation — no waiting window
     row.addWidget(self.run_spinner)
     row.addWidget(self.run_time)
+    row.addWidget(self.job_controls_slot)
     row.addStretch()
-    for item in (self.jobs_folder_button, self.mpi_button):
-        row.addWidget(item)
+    row.addWidget(self.mpi_button)
     box.addLayout(row)
     # the calculation as a card in the place of the input file (added to the right column below)
     self.job_slot = QWidget()

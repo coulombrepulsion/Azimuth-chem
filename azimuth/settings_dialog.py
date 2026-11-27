@@ -49,7 +49,7 @@ LANGUAGE_NAMES = (('ru', 'Русский'), ('en', 'English'), ('zh', '中文'))
 
 
 SCROLL_ROOM = 16  # px between the cards and the right edge — the scroll bar is there
-HEADING_ICON = 18  # px, the icon of a section before its heading
+HEADING_ICON = 22  # px, the icon of a section before its heading (18 until 0.249.4: the glyph is 20 of 24 now, the gold star in its corner)
 
 
 class SettingsDialog(QDialog):
@@ -154,7 +154,7 @@ class SettingsDialog(QDialog):
 
             mark = QToolButton(box)
             mark.setObjectName('sectionMark')
-            mark.setIcon(icon(glyph))  # drawn in the colour of the theme at every paint
+            mark.setIcon(icon(glyph, spark=True))  # in the colour of the theme, a gold star at its corner (0.249.4)
             mark.setIconSize(QSize(HEADING_ICON, HEADING_ICON))
             mark.setAutoRaise(True)
             mark.setFocusPolicy(Qt.FocusPolicy.NoFocus)

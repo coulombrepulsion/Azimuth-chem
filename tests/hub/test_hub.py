@@ -1530,3 +1530,34 @@ def test_an_item_carried_in_over_the_field_can_still_be_dropped_on_a_panel(hub, 
     other = QDragEnterEvent(middle, Qt.DropAction.MoveAction, foreign, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier)
     assert bar.drags.eventFilter(card, other) and not other.isAccepted()  # not ours: as before
     bar.show_slot(None, at_once=True)
+
+
+def test_the_glass_follows_a_panel_that_moved(hub, app):
+    # 0.249.4 (the owner, Sextant: «При открытии панели структуры» the glass stayed in strips where the panels had
+    # stood): the frames of the gyroscope reuse the regions of the last painting — a widget of the window moved or
+    # resized drops them, and the whole background is painted again where the panels are now
+    from PySide6.QtCore import QPoint
+    from PySide6.QtWidgets import QFrame
+
+    hub.show()
+    hub.show_section(hub_window.HOME, animate=False)  # the bare page under the cards
+    app.processEvents()
+    ornament = hub.ornament
+    panel = QFrame(hub.content)
+    panel.setObjectName('card')  # a surface: its glass is drawn under it
+    panel.setGeometry(300, 700, 120, 60)
+    panel.show()
+    app.processEvents()
+    ornament.repaint()
+    surfaces, _ = ornament._regions
+    assert surfaces.contains(QPoint(360, 730)) and not surfaces.contains(QPoint(760, 730))
+    panel.move(700, 700)  # the drawer slides: a move alone
+    assert ornament._layout_pending  # one painting after all the widgets that move at once
+    app.processEvents()
+    ornament._frame = True  # a frame of the gyroscope uses what the painting after the move found
+    ornament.repaint()
+    ornament._frame = False
+    surfaces, _ = ornament._regions
+    assert surfaces.contains(QPoint(760, 730)) and not surfaces.contains(QPoint(360, 730))
+    panel.deleteLater()
+    app.processEvents()

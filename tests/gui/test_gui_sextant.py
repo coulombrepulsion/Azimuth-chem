@@ -593,7 +593,13 @@ def test_sextant_job_window_and_options(window, app, tmp_path, monkeypatch):
         assert window.show_job_window() is jw and jw.docked and not jw.isWindow() and window.job_slot.isAncestorOf(jw)
         assert jw.isVisible() and jw.close_button.isHidden() and not jw.input_button.isHidden() and not jw.parked
         assert window.preview_card.isHidden() and not window.job_slot.isHidden() and window.job_window_button.isHidden()
+        # 0.249.5: stop, output and the folder of the calculation in the row of «Запустить расчёт»; the results and
+        # «Входной файл» at the bottom inside the card
+        assert jw.controls.parentWidget() is window.job_controls_slot and jw.controls.isVisible()
+        assert jw.frame.isAncestorOf(jw.input_button) and jw.frame.isAncestorOf(jw.compass_button)
+        assert not hasattr(window, 'jobs_folder_button')
         jw.input_button.click()  # the file back, the calculation goes on
+        assert jw.controls.isVisible()  # «Остановить» stays at hand with the file shown
         assert not window.preview_card.isHidden() and window.job_slot.isHidden() and not window.job_window_button.isHidden()
         assert window.preview_card.isAncestorOf(window.job_window_button)  # on the card of the input file
         window.job_window_button.click()
@@ -602,6 +608,7 @@ def test_sextant_job_window_and_options(window, app, tmp_path, monkeypatch):
         assert not jw.docked and jw.isWindow() and not jw.isVisible() and jw.parked
         assert window.show_job_window().isVisible() and jw.isWindow() and not jw.close_button.isHidden()
         assert jw.input_button.isHidden()
+        assert jw.controls.parentWidget() is jw.frame  # a window of its own: the group at its bottom
         window.navigate(1)
         assert jw.docked and jw.isVisible() and not jw.isWindow() and not jw.parked and window.preview_card.isHidden()
         window.hide()
@@ -979,7 +986,7 @@ def test_sextant_launch_card_and_two_places(window, app, tmp_path, monkeypatch):
     saved = {key: window.preferences.value(key) for key in ('jobs_folder', remote.PROFILES_KEY, remote.CURRENT_KEY, remote.WHERE_KEY)}
     try:
         assert window.run_tool.choose_jobs_folder(str(tmp_path / 'calcs')) == tmp_path / 'calcs'
-        assert window.run_tool.jobs_root() == tmp_path / 'calcs' and str(tmp_path / 'calcs') in window.jobs_folder_button.toolTip()
+        assert window.run_tool.jobs_root() == tmp_path / 'calcs'  # the button «Папка для расчётов…» went (0.249.5)
         # the check logs in as the calculation does (the fake server), shows the free cores and memory, then
         # asks again every SERVER_PING_S seconds: the server goes offline — a cross, back — a tick
         import time

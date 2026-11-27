@@ -28,6 +28,7 @@ from PySide6.QtWidgets import (
     QAbstractButton,
     QAbstractScrollArea,
     QAbstractSpinBox,
+    QApplication,
     QComboBox,
     QLineEdit,
     QPushButton,
@@ -91,6 +92,28 @@ class Ornament(QWidget):
         self.timer = QTimer(self)
         self.timer.setInterval(self.TICK)
         self.timer.timeout.connect(self._tick)
+        # a panel moved or resized (the drawer of the structure slid out, a splitter dragged): the whole background
+        # again, its glass under the panels where they are now — not the regions of the last frame of the gyroscope
+        # (0.249.4, the owner: «При открытии панели структуры» the glass stayed in strips where the panels had stood)
+        self._layout_pending = False
+        app = QApplication.instance()
+        if app is not None:
+            app.installEventFilter(self)
+
+    LAYOUT_EVENTS = (QEvent.Type.Move, QEvent.Type.Resize, QEvent.Type.Show, QEvent.Type.Hide)
+
+    def eventFilter(self, watched, event):
+        if event.type() in self.LAYOUT_EVENTS and not self._layout_pending and watched is not self \
+                and isinstance(watched, QWidget) and QWidget.window(watched) is QWidget.window(self):
+            self._layout_pending = True  # many widgets move at once: one painting after them
+            QTimer.singleShot(0, self._relaid)
+        return False
+
+    def _relaid(self):
+        self._layout_pending = False
+        self._regions = None
+        if self.isVisible():
+            self.update()
 
     def set_color(self, ink, dark=None):
         self.ink = QColor(ink)
@@ -327,7 +350,11 @@ class Ornament(QWidget):
     def thaw_ornament(self):
         if getattr(self, '_frozen', None) is not None:
             self._frozen = None
+            self._regions = None
             self.update()
+            # once more on the next turn of the loop: the slide ends by setting the last width after thawing, and the
+            # panels take it when their layout is done (0.249.5: strips of glass stayed where the panel had been)
+            QTimer.singleShot(0, self._relaid)
 
     def paintEvent(self, event):
         frozen = getattr(self, '_frozen', None)

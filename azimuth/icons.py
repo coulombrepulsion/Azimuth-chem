@@ -125,13 +125,14 @@ GLYPHS.update({k: v for k, v in BUTTON_GLYPHS.items() if k not in GLYPHS})
 
 
 class GlyphEngine(QIconEngine):
-    def __init__(self, name, color=None):
+    def __init__(self, name, color=None, spark=False):
         super().__init__()
         self.name = name
         self.color = color  # a fixed colour (white on the blue «primary» buttons)
+        self.spark = spark  # a small gold star at the top right (the icon beside a heading, 0.249.4)
 
     def clone(self):
-        return GlyphEngine(self.name, self.color)
+        return GlyphEngine(self.name, self.color, self.spark)
 
     def pixmap(self, size, mode, state):
         pixmap = QPixmap(size)
@@ -200,12 +201,24 @@ class GlyphEngine(QIconEngine):
         painter.scale(rect.width() / 24, rect.height() / 24)
         from PySide6.QtCore import QRectF
 
-        QSvgRenderer(QByteArray(svg.encode())).render(painter, QRectF(0, 0, 24, 24))
+        if self.spark:  # the glyph in the lower left 20 of 24, the star in the corner left free
+            QSvgRenderer(QByteArray(svg.encode())).render(painter, QRectF(0, 4, 20, 20))
+            gold = SPARK['dark' if dark else 'light']
+            star = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="' + gold + '" d="M20 0.6l1 '
+                    '2.6 2.6 1-2.6 1-1 2.6-1-2.6-2.6-1 2.6-1z"/></svg>')
+            QSvgRenderer(QByteArray(star.encode())).render(painter, QRectF(0, 0, 24, 24))
+        else:
+            QSvgRenderer(QByteArray(svg.encode())).render(painter, QRectF(0, 0, 24, 24))
         painter.restore()
 
 
-def icon(name, color=None):
-    return QIcon(GlyphEngine(name, color))
+SPARK = {'light': '#c99a3a', 'dark': '#e2bf78'}  # the gold of the stars of the pictures of the program
+
+
+def icon(name, color=None, spark=False):
+    """spark — the icon of a heading: the glyph a little smaller, a gold four-pointed star at its top right (the gold
+    of the headings moved from the line under them into their icons, 0.249.4)."""
+    return QIcon(GlyphEngine(name, color, spark))
 
 
 def iconify(button, name, title):
