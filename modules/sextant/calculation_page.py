@@ -35,6 +35,8 @@ from azimuth.i18n import set_combo_key, tr
 from modules.sextant.workspace_texts import DISPERSION_NAMES, ORCA_NOTICE, PROGRAMS
 from modules.sextant.workspace_widgets import GuessPicker, WrappedNote
 
+COMPACT_CARD = 480  # px: a card of the molecule narrower than this shows its lines without the picture of the model
+
 
 def calculation_page(self):
     page = QWidget()
@@ -324,7 +326,6 @@ def calculation_page(self):
     self.calc_thumb = MoleculeThumb()
     self.calc_thumb.setFixedSize(160, 118)  # lower: the input file below gets the room (0.222.7; was 190 × 150)
     self.calc_thumb.setToolTip(tr('Структура вкладки · потяните мышью, чтобы повернуть'))
-    calc_row.addWidget(self.calc_thumb)
     # no atoms yet — Quill instead of the empty model; her own pose, the sextant at her eye looking
     # to the right, towards «К молекуле в Компасе» (was the magnifier of Spectrum), clear edges cut off
     self.calc_quill = QLabel()
@@ -335,7 +336,17 @@ def calculation_page(self):
     if not picture.isNull():
         self.calc_quill.setPixmap(picture)
     self.calc_quill.hide()
-    calc_row.addWidget(self.calc_quill)
+    # the model (or Quill) in a holder of its own: on a narrow card — the panel of structures out on a window of
+    # about 1130 px — the holder goes and the lines of the molecule take its room; they were wrapped into a column
+    # of 100 px, word under word, and ran under «Примерное время расчёта» (the owner, 2026-11-27: «В секстанте при
+    # разворачивании списка структур текст криво сворачивается»)
+    self.calc_picture = QWidget()
+    pictured = QHBoxLayout(self.calc_picture)
+    pictured.setContentsMargins(0, 0, 0, 0)
+    pictured.setSpacing(0)
+    pictured.addWidget(self.calc_thumb)
+    pictured.addWidget(self.calc_quill)
+    calc_row.addWidget(self.calc_picture)
     info = QVBoxLayout()
     # Windows: the lines of Segoe UI made this column 136 px, taller than the picture (118), and the card took the
     # room of the input file below (2026-11-25); macOS: the picture is the taller, the gaps change nothing there
@@ -370,12 +381,44 @@ def calculation_page(self):
             from PySide6.QtCore import QEvent
 
             if event.type() in (QEvent.Type.Resize, QEvent.Type.LayoutRequest, QEvent.Type.Show):
+                picture = getattr(owner, 'calc_picture', None)
+                if picture is not None and event.type() != QEvent.Type.LayoutRequest:
+                    wide = watched.width() >= COMPACT_CARD
+                    if picture.isVisibleTo(watched) != wide:
+                        picture.setVisible(wide)
                 need = watched.layout().heightForWidth(watched.width())
                 need = max(need, watched.minimumSizeHint().height()) if need > 0 else 0
                 if need and need != watched.maximumHeight():
                     watched.setMaximumHeight(need)
+                    # the column asked once more on the next turn: a change made while it lays itself out (a Resize
+                    # from it) is not seen by it
+                    QTimer.singleShot(0, lambda: self.relay(watched))
+                else:
+                    fitting = getattr(owner, '_preview_note_fit', None)
+                    if fitting is not None:
+                        QTimer.singleShot(0, lambda: fitting.fit(owner.preview_card))
             return False
 
+        @staticmethod
+        def relay(watched, fit=True):
+            holder = watched.parentWidget()
+
+            def invalidate(layout):  # a box layout keeps what it found of its rows until it is invalidated itself
+                for k in range(layout.count()):
+                    if layout.itemAt(k).layout() is not None:
+                        invalidate(layout.itemAt(k).layout())
+                layout.invalidate()
+
+            if owner.preview_card.layout() is not None:  # its least height again, after the note came or went
+                invalidate(owner.preview_card.layout())
+            if holder is not None and holder.layout() is not None:
+                holder.layout().invalidate()
+                holder.layout().activate()
+            fitting = getattr(owner, '_preview_note_fit', None)
+            if fit and fitting is not None:  # the card taller: the note under the input file may have to go
+                fitting.fit(owner.preview_card)
+
+    owner = self
     self._calc_card_fit = FitHeight(self.calc_card)
     self.calc_card.installEventFilter(self._calc_card_fit)
     preview, preview_layout = card(tr('Входной файл ORCA'))
@@ -467,11 +510,55 @@ def calculation_page(self):
         'subtitle',
     )
     note.setWordWrap(True)
+    # its height is set by NarrowNote at its width: a height for the width of the card made the column take the
+    # whole preferred height of the card (the editor at its full size) for its least, and squeeze the card above
+    policy = note.sizePolicy()
+    policy.setHeightForWidth(False)
+    note.setSizePolicy(policy)
+    self.preview_note = note
     bottom.addWidget(note, 1)
     # «Окно расчёта» at the bottom right — where the calculation has «Входной файл», the arrow the other way
     bottom.addWidget(self.job_window_button, 0, Qt.AlignmentFlag.AlignBottom)
     preview_layout.addLayout(bottom)
     right.addWidget(preview, 1)
+
+    class NarrowNote(QObject):
+        """On a narrow or low card (the panel of structures out on a window of about 1130 px) the note under the file
+        goes: wrapped into a dozen lines it asked for 410 px, and the column squeezed the card of the molecule above
+        under its lines (2026-11-27). It comes back when the card has the room for it."""
+
+        @staticmethod
+        def need(watched):
+            height = watched.heightForWidth(watched.width())
+            return height if height > 0 else watched.minimumSizeHint().height()
+
+        def eventFilter(self, watched, event):
+            from PySide6.QtCore import QEvent
+
+            if event.type() in (QEvent.Type.Resize, QEvent.Type.Move, QEvent.Type.Show):
+                self.fit(watched)
+            return False
+
+        def fit(self, watched):
+            note = owner.preview_note
+            wide = watched.width() >= COMPACT_CARD
+            if note.isVisibleTo(watched):
+                # the card of the molecule above squeezed under its own lines: the column has no room for both
+                above = owner.calc_card
+                squeezed = above.height() < above.maximumHeight() < 16777215 or watched.geometry().top() <= above.geometry().bottom()
+                if not wide or squeezed or watched.height() < self.need(watched):
+                    note.hide()
+                    QTimer.singleShot(0, lambda: FitHeight.relay(owner.calc_card, fit=False))
+            elif wide and watched.height() >= self.need(watched) + note.heightForWidth(max(100, watched.width() - 120)) + 12:
+                note.show()
+                QTimer.singleShot(0, lambda: FitHeight.relay(owner.calc_card, fit=False))
+            if note.isVisibleTo(watched) and note.width() > 50:
+                height = note.heightForWidth(note.width())
+                if height > 0 and height != note.minimumHeight():
+                    note.setFixedHeight(height)
+
+    self._preview_note_fit = NarrowNote(preview)
+    preview.installEventFilter(self._preview_note_fit)
     right.addWidget(self.job_slot, 1)  # shown instead of the input file while the calculation is
     self.calc_stack.addWidget(self.crystal_mode_tool.build())
     self.stack.addWidget(page)

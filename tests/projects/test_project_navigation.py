@@ -1316,3 +1316,24 @@ def test_a_project_of_calculations_done_elsewhere(window, tmp_path, monkeypatch)
     manifest = window.project_from_calculations(str(source), 'Расчёты ORCA')
     assert manifest is not None and window.research_path() == manifest
     assert window.project_molecules.rowCount() == 2 and any('3 с результатом из 3' in t for t in said), said
+
+
+def test_the_list_opened_in_the_crystal_makes_no_project_of_the_molecule(window):
+    # 0.249.7, the owner: «открываю кристалл, затем открываю список структур, у меня открывается снова молекула с
+    # новым проектом воды, и так каждый раз»
+    empty(window)
+    window.opening_tool.load_smiles('O')
+    window.stack.setCurrentIndex(0)
+    window.crystal_tool.set_compass_mode('molecule')
+    before = list(window.project_sessions)
+    try:
+        window.crystal_tool.set_compass_mode('crystal')
+        for _ in range(2):
+            window.project_menu_button.setChecked(True)
+            window.toggle_project_molecules()
+            window.project_menu_button.setChecked(False)
+            window.toggle_project_molecules()
+        assert window.project_sessions == before
+        assert window.compass_mode == 'crystal'
+    finally:
+        window.crystal_tool.set_compass_mode('molecule')

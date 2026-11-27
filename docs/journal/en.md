@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.7 — 27 November 2026
+
+- ### 0.249.7 — The list of structures without extra projects
+
+The list of structures opened in Crystal no longer makes a new project of the molecule every time. In Sextant, beside the open list, the lines of the molecule card are no longer squeezed to a word per line: on a narrow window the model gives them its room.
+
 ## 0.249.6 — 27 November 2026
 
 - ### 0.249.6 — The structures panel without strips

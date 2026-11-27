@@ -1561,3 +1561,31 @@ def test_the_glass_follows_a_panel_that_moved(hub, app):
     assert surfaces.contains(QPoint(760, 730)) and not surfaces.contains(QPoint(360, 730))
     panel.deleteLater()
     app.processEvents()
+
+
+def test_the_card_of_the_molecule_keeps_its_lines_whole_beside_the_panel_of_structures(hub, app):
+    # 0.249.7, the owner: «В секстанте при разворачивании списка структур текст криво сворачивается» — on a window of
+    # about 1130 px the lines of the molecule were wrapped into a column of 100 px beside the model and ran under
+    # «Примерное время расчёта». A narrow card shows them without the model; the note under the input file goes
+    st = hub.studio
+    st.opening_tool.load_smiles('O')
+    hub.resize(1132, 700)
+    hub.show()
+    hub.show_section('sextant', animate=False)
+    QTest.qWait(400)
+    try:
+        st.project_menu_button.setChecked(True)
+        st.toggle_project_molecules()
+        QTest.qWait(1000)
+        assert st.calc_card.width() < 480 and not st.calc_picture.isVisible()
+        assert st.state_info.geometry().bottom() < st.time_estimate.geometry().top()
+        assert st.state_info.width() > 180  # the room of the model given to the lines
+        assert st.preview_card.geometry().top() > st.calc_card.geometry().bottom()
+        st.project_menu_button.setChecked(False)
+        st.toggle_project_molecules()
+        hub.resize(1600, 900)
+        QTest.qWait(1000)
+        assert st.calc_card.width() >= 480 and st.calc_picture.isVisible()
+    finally:
+        st.project_menu_button.setChecked(False)
+        st.slide_project_pane(False, animate=False)

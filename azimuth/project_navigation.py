@@ -275,7 +275,12 @@ class ProjectNavigation(ProjectCrystals, ProjectRows, ProjectMoves, ProjectSavin
     def toggle_project_molecules(self):
         opened = self.project_menu_button.isChecked()
         if opened:  # the list is read again when the panel comes out, not when it goes away
-            self.ensure_project_tab()
+            # a molecule shown with no project gets one (its tab); «Компас · Кристалл» with no crystal open makes
+            # none — the molecule left in «Молекула» became a new project «Новый проект» at every opening of the list
+            # (the owner, 2026-11-27: «открываю кристалл, затем открываю список структур, у меня открывается снова
+            # молекула с новым проектом воды, и так каждый раз»)
+            if getattr(self, 'compass_mode', 'molecule') != 'crystal':
+                self.ensure_project_tab()
             self.refresh_project_navigation()
         self.slide_project_pane(opened)
 
