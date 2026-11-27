@@ -260,7 +260,7 @@ class Gyro:
     RISE_FIRST, RISE, SETTLE = 3.0, 1.2, 4.2  # s
     AHEAD = 30.0  # °: a frame closer than this to a flat position goes on to the next one
     SIDE, OUTER, INNER, ROTOR = 352, 150.0, 116.0, 78.0  # px: the picture and the radii (drawn GROW times larger)
-    GROW = 1.5  # 0.248.0 (the owner: «гироскоп побольше, и сместить больше в угол»)
+    GROW = 1.75  # 0.248.0 (the owner: «гироскоп побольше, и сместить больше в угол»): 1.5; 0.248.13 — «увеличить гироскоп немного»
     CENTRE = (70.0, 70.0)  # px from the right and the top edge of the page: as the flat dial of 0.244.0
     EYE = 1100.0  # px: the distance of the eye (weak perspective)
     LINE = 0.8  # px

@@ -98,7 +98,7 @@ def test_the_lines_of_the_gyroscope_are_of_one_width_and_of_even_strength_when_f
     assert picture.width() == picture.height() == gyro.size() == round(gyro.SIDE * gyro.GROW)
     image = picture.toImage()
     half = gyro.size() // 2
-    r = round(gyro.OUTER * gyro.GROW)  # 0.248.0: 1.5 times larger
+    r = round(gyro.OUTER * gyro.GROW)  # 0.248.0: larger (1.5; 1.75 since 0.248.13)
     # flat: the outer ring is equally strong on the left and on the right (there was a jump of the light)
     left = max(image.pixelColor(x, half + 20).alpha() for x in range(half - r - 5, half - r + 5))
     right = max(image.pixelColor(x, half + 20).alpha() for x in range(half + r - 5, half + r + 5))

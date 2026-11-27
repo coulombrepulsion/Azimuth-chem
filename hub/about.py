@@ -189,19 +189,21 @@ def fill_journal(page, markdown, line='#d8dce3'):
 
     page.clear()
     document = page.document()
-    frames = []
+    frames, after_heading = [], False
     for framed, text in frame_parts(markdown):
         cursor = QTextCursor(document)
         cursor.movePosition(QTextCursor.MoveOperation.End)
         if not framed:
             cursor.insertMarkdown(text + '\n')
+            after_heading = text.startswith('## ')  # room under the heading of a version (0.248.13)
             continue
         shape = QTextFrameFormat()
         shape.setBorder(0)  # the line round it is drawn by JournalBrowser, with round corners
         shape.setPadding(9)
         shape.setLeftMargin(6)
         shape.setRightMargin(6)
-        shape.setTopMargin(0)
+        shape.setTopMargin(10 if after_heading else 0)
+        after_heading = False
         shape.setBottomMargin(0)  # the empty line Qt keeps after a frame is the gap between two
         frame = cursor.insertFrame(shape)
         inner = frame.firstCursorPosition()
@@ -578,9 +580,14 @@ class AboutDialog(QDialog):
         head = QHBoxLayout()
         head.setSpacing(14)
         icon = QLabel()
-        icon.setPixmap(parent.windowIcon().pixmap(QSize(64, 64)))
+        # the tile of the theme of the program (0.248.13 — the owner: «иконка в О программе будет соответствующей темы,
+        # как и сама программа»; the icon of the window follows the appearance of the system)
+        from azimuth.app import app_icon
+
+        icon.setPixmap(app_icon(dark).pixmap(QSize(64, 64)))
         head.addWidget(icon)
         names = QVBoxLayout()
+        names.setSpacing(2)  # the motto close under the name (0.248.13)
         mark = QLabel()
         if language == 'zh':
             mark.setPixmap(
@@ -604,7 +611,7 @@ class AboutDialog(QDialog):
             self.motto.setText(MOTTO[language].upper())
         strict = motto_family() or sidebar_family()
         face = f"font-family: '{strict}'; " if strict else ''
-        self.motto.setStyleSheet(f"color: {'#9aa3b2' if dark else '#5b6474'}; {face}font-size: 13px; font-weight: 600;")
+        self.motto.setStyleSheet(f"color: {'#9aa3b2' if dark else '#5b6474'}; {face}font-size: 11px; font-weight: 600;")  # 13 until 0.248.13
         mfont = QFont(self.motto.font())
         mfont.setLetterSpacing(QFont.SpacingType.PercentageSpacing, 114)
         self.motto.setFont(mfont)

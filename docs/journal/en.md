@@ -1,5 +1,11 @@
 # What’s new
 
+## 0.248.13 — 27 November 2026
+
+- ### 0.248.13 — Small touches
+
+There is room now between the cross of a project tab and its edge. The icon in «About» follows the theme, the motto is smaller and closer to the name. In «What’s new» there is more air under the version number, and the gyroscope on the home page is larger.
+
 ## 0.248.12 — 27 November 2026
 
 - ### 0.248.12 — A steady header
