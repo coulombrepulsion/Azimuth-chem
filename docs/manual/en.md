@@ -1195,6 +1195,7 @@ Table: Tools of the Azimuth MCP server
 | Options | Tasks, methods and basis sets of a program |
 | Input file | An input file for a molecule (SMILES, XYZ or a file) and settings – without running |
 | Calculation | Runs a calculation on this computer |
+| Crystal (0.243.0) | A calculation of a crystal from a CIF in Quantum ESPRESSO or CP2K on this computer: the tasks and the settings of the panel of the crystal calculation, the input files without running, the run, the result (energy, cell, pressure, the levels at the gap, the runs of a series) |
 | Status and result | The progress and the result: energy, convergence, frequencies, thermochemistry, excitations, errors and the advice of the doctor |
 | Server | An ORCA or MOPAC calculation on the SLURM server of a Sextant profile – with the limits below |
 | Tests | Runs the tests of the program |

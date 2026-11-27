@@ -32,7 +32,7 @@ PROTECTED_FILES = (
     'azimuth/core.py', 'azimuth/core_bases.py', 'azimuth/core_isotopes.py', 'azimuth/projects.py', 'azimuth/project_store.py', 'azimuth/project_folders.py',
     'modules/sextant/runner.py', 'modules/sextant/remote_job.py', 'modules/sextant/cluster.py',
     'modules/sextant/ssh.py', 'modules/sextant/inputs.py', 'modules/sextant/batch.py', 'modules/sextant/history.py',
-    'modules/sextant/remote.py', 'modules/compass/constraints.py', 'azimuth/headless.py', 'azimuth/headless_server.py', 'azimuth/files.py',
+    'modules/sextant/remote.py', 'modules/compass/constraints.py', 'azimuth/headless.py', 'azimuth/headless_server.py', 'azimuth/headless_crystal.py', 'modules/sextant/qe_local.py', 'azimuth/files.py',
     'azimuth/handbook.py',
 )
 EXCEPTIONS = {

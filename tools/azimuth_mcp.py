@@ -11,7 +11,8 @@ calculations, reads their results and runs the checks of the program, by the com
        notifications get no answer; an unknown method — error -32601.
     2. A tool answers JSON as text; a ValueError of the command is a tool result with isError (the model reads why),
        any other exception too, with its type — the server goes on.
-    3. Only what TOOLS declares can be done: programs of Sextant on this computer, tools/test.py with safe options,
+    3. Only what TOOLS declares can be done: programs of Sextant on this computer (a crystal — Quantum ESPRESSO and
+       CP2K, azimuth/headless_crystal.py), tools/test.py with safe options,
        and — the owner, 2026-11-22 — one calculation of ORCA or MOPAC sent to the SLURM server of a profile of
        Sextant (azimuth/headless_server.py: the login by the key only, never a password; the cores and the memory
        of a queue of SLURM — those asked for, of a server without it — within what is free; a time limit; a journal; stop is
@@ -48,6 +49,18 @@ SETTINGS = {
                    '"solvent": "water", "dispersion": "D3BJ"}; tasks, methods and bases — azimuth_options.',
 }
 PROGRAM = {'type': 'string', 'enum': ['orca', 'gaussian', 'psi4', 'xtb', 'crest', 'mopac', 'gamess', 'nwchem']}
+CRYSTAL_PROGRAM = {'type': 'string', 'enum': ['qe', 'cp2k'], 'description': 'qe — Quantum ESPRESSO, cp2k — CP2K.'}
+CRYSTAL = {
+    'type': 'object',
+    'description': 'One of: {"cif": "<text of a CIF file>"}, {"path": "<a .cif file>"}; optional "title".',
+    'properties': {'cif': {'type': 'string'}, 'path': {'type': 'string'}, 'title': {'type': 'string'}},
+}
+CRYSTAL_SETTINGS = {
+    'type': 'object',
+    'description': 'Settings of the panel of the crystal calculation, e.g. {"task": "Зонная структура", "primitive": '
+                   'true, "supercell": [1, 1, 1], "spacing": 0.25, "functional": "pbesol", "vdw": "d3bj", "processes": '
+                   '4}; the tasks and the names — azimuth_crystal_options.',
+}
 TOOLS = [
     {'name': 'azimuth_programs', 'description': 'Which calculation programs are installed on this computer.',
      'inputSchema': {'type': 'object', 'properties': {}}},
@@ -62,6 +75,20 @@ TOOLS = [
                                            'of Azimuth). Returns a job id; follow it with azimuth_status.',
      'inputSchema': {'type': 'object', 'properties': {'program': PROGRAM, 'molecule': MOLECULE, 'settings': SETTINGS},
                      'required': ['program', 'molecule']}},
+    {'name': 'azimuth_crystal_options', 'description': 'The tasks and the settings of a calculation of a crystal in '
+                                                       'Quantum ESPRESSO or CP2K, with their defaults.',
+     'inputSchema': {'type': 'object', 'properties': {'program': CRYSTAL_PROGRAM}, 'required': ['program']}},
+    {'name': 'azimuth_crystal_preview', 'description': 'The input files Azimuth would write for a crystal and '
+                                                       'settings (nothing is run). Use it before azimuth_crystal_run.',
+     'inputSchema': {'type': 'object', 'properties': {'program': CRYSTAL_PROGRAM, 'crystal': CRYSTAL,
+                                                      'settings': CRYSTAL_SETTINGS}, 'required': ['program', 'crystal']}},
+    {'name': 'azimuth_crystal_run', 'description': 'Start a calculation of a crystal on this computer: Quantum '
+                                                   'ESPRESSO (energy, optimizations, bands, density of states, '
+                                                   'phonons, series of convergence, equation of state …) or CP2K (at '
+                                                   'the Γ point of a supercell). Returns a job id for azimuth_status '
+                                                   'and azimuth_stop; azimuth_result reads its folder.',
+     'inputSchema': {'type': 'object', 'properties': {'program': CRYSTAL_PROGRAM, 'crystal': CRYSTAL,
+                                                      'settings': CRYSTAL_SETTINGS}, 'required': ['program', 'crystal']}},
     {'name': 'azimuth_status', 'description': 'The state of a job (calculation or tests): running or finished, its '
                                               'progress, the end of its output; for a finished calculation — its result.',
      'inputSchema': {'type': 'object', 'properties': {'job': {'type': 'string'}, 'lines': {'type': 'integer'}},
@@ -72,7 +99,8 @@ TOOLS = [
      'inputSchema': {'type': 'object', 'properties': {}}},
     {'name': 'azimuth_result', 'description': 'Read an output (or the folder of a calculation): energy, convergence, '
                                               'frequencies, thermochemistry, excitations, problems and the remedies '
-                                              'of the doctor of Sextant.',
+                                              'of the doctor of Sextant; of a crystal (pw.out, cp2k.out) — energy, '
+                                              'cell, pressure, the levels at the gap, the runs of a series.',
      'inputSchema': {'type': 'object', 'properties': {'path': {'type': 'string'}}, 'required': ['path']}},
     {'name': 'azimuth_server', 'description': 'What the SLURM server of a profile of Sextant says now (login by the '
                                               'SSH key only): free cores and memory, the most one calculation may '
@@ -149,6 +177,16 @@ class Server:
         if name == 'azimuth_run':
             return self.jobs.start_calculation(args['program'], args['molecule'], args.get('settings'),
                                                configured=self.configured)
+        if name == 'azimuth_crystal_options':
+            from azimuth import headless_crystal
+
+            return headless_crystal.options(args['program'])
+        if name == 'azimuth_crystal_preview':
+            from azimuth import headless_crystal
+
+            return headless_crystal.preview(args['program'], args['crystal'], args.get('settings'))
+        if name == 'azimuth_crystal_run':
+            return self.jobs.start_crystal(args['program'], args['crystal'], args.get('settings'))
         if name == 'azimuth_status':
             return self.jobs.status(args['job'], int(args.get('lines', 40)))
         if name == 'azimuth_stop':

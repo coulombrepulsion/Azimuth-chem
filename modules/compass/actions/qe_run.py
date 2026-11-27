@@ -198,30 +198,12 @@ def start(self):
             self.status.setText(str(exc))
             return None
         return self._started(tr('Считается… Папка расчёта: ') + str(self.folder))
-    prefix = install_tools.qe_prefix(self.root())
-    env = dict(os.environ)
-    env['OMP_NUM_THREADS'] = '1'
-    if (prefix / 'bin').is_dir():
-        env['PATH'] = os.pathsep.join([str(prefix / 'bin'), env.get('PATH', '')])
-        env['OPAL_PREFIX'] = str(prefix)  # the Open MPI 5 of the package, apart from the 4.1 of ORCA
-    n = self.processes.value()
-    mpirun = prefix / 'bin' / 'mpirun'
-    parallel = [str(mpirun), '-np', str(n)] if n > 1 and mpirun.is_file() else []
-    if len(steps) == 1:
-        command = [*parallel, str(program), '-in', 'pw.in']
-    else:  # the steps one after another, each only after the one before ended well
-        import shlex
+    from modules.sextant import qe_local
 
-        lines = ['#!/bin/sh', 'set -e']
-        for name, tool, _ in steps:
-            exe = Path(program).with_name(tool) if tool != 'pw.x' else Path(program)
-            line = ' '.join(shlex.quote(w) for w in [*(parallel if tool in qe_inputs.PARALLEL else []), str(exe),
-                                                      '-in', name])
-            if tool in qe_inputs.OPTIONAL:  # projwfc.x — its own output, its error not the job's
-                line += f' > {qe_inputs.OPTIONAL[tool]} 2>&1 || true'
-            lines.append(line)
-        (self.folder / 'run.sh').write_text('\n'.join(lines) + '\n', encoding='utf-8', newline='\n')
-        command = ['/bin/sh', 'run.sh']
+    command, script, changes = qe_local.posix_command(steps, program, self.processes.value(), install_tools.qe_prefix(self.root()))
+    if script:
+        (self.folder / qe_local.POSIX_SCRIPT).write_text(script, encoding='utf-8', newline='\n')
+    env = {**os.environ, **changes}
     spec = runner.JobSpec('qe', self.folder, tuple(command), self.folder / 'pw.out', env)
     try:
         self.job = runner.Job(spec).start()
@@ -254,34 +236,16 @@ def copy_pseudo(self, steps):
     qe_pseudo.table(self.root(), self.library())  # raises when the library is not there
     source = qe_pseudo.folder(self.root(), self.library())
     species = steps[0][2].split('ATOMIC_SPECIES')[1].split('CELL_PARAMETERS')[0].strip().splitlines()
-    for file in {line.split()[2] for line in species}:  # «Si 28.0850 Si.upf»
+    for file in {line.split()[2] for line in species}:  # «Si 28.0850 Si.upf» (qe_local.pseudo_files — without the panel)
         shutil.copy2(source / file, pseudo / file)
     return pseudo
 
 
 def windows_command(steps, program, processes):
-    """(command, the text of run.bat or '', the changes of the environment) of a run on Windows.
+    """(command, the text of run.bat or '', the changes of the environment) of a run on Windows — qe_local."""
+    from modules.sextant import qe_local
 
-    The Windows build (modules/sextant/qe_windows.py) has no MPI: the processes asked for become OpenMP threads.
-    Nothing in the inputs or in the script names a folder: the programs are found by PATH (their folder put first —
-    their DLLs lie there too), the pseudopotentials are in ./pseudo of the job folder. A path with Russian letters —
-    the name of the user, the folder of the program — would otherwise have to pass through the code page of cmd.exe
-    and through the Fortran run-time, which reads the input as bytes."""
-    from modules.sextant import qe_inputs, qe_windows
-
-    folder = str(Path(program).parent)
-    changes = {'PATH': os.pathsep.join([folder, os.environ.get('PATH', '')]), 'OMP_NUM_THREADS': str(max(1, int(processes))),
-               'OMP_STACKSIZE': qe_windows.OMP_STACK}
-    if len(steps) == 1:
-        return [str(program), '-in', steps[0][0]], '', changes
-    lines = ['@echo off']
-    for name, tool, _ in steps:
-        line = f'{qe_windows.exe_name(tool)} -in {name}'
-        if tool in qe_inputs.OPTIONAL:  # projwfc.x — its own output, its error not the job's
-            lines.append(f'{line} > {qe_inputs.OPTIONAL[tool]} 2>&1')
-        else:
-            lines.append(f'{line} || exit /b 1')
-    return ['cmd', '/d', '/c', WINDOWS_SCRIPT], '\n'.join(lines) + '\n', changes
+    return qe_local.windows_command(steps, program, processes)
 
 
 def batch_idents(self):

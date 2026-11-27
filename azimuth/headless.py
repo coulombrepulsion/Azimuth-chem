@@ -57,6 +57,10 @@ def programs(configured=None):
     for kind in inputs.KINDS:
         path = runner.find_program(kind, configured.get(kind))
         found[kind] = str(path) if path else None
+    from modules.sextant import install_tools  # the programs of crystals (azimuth/headless_crystal.py)
+
+    for kind, path in (('qe', install_tools.qe_program()), ('cp2k', install_tools.cp2k_program())):
+        found[kind] = str(path) if path else None
     return found
 
 
@@ -208,6 +212,12 @@ def result(path, kind=None, settings=None, code=None):
     from modules.spectrum.readers.outputs import program, read_any
 
     path = Path(str(path)).expanduser()
+    crystal = kind in ('qe', 'cp2k') or path.name in ('pw.out', 'cp2k.out') or (
+        path.is_dir() and any((path / name).is_file() for name in ('pw.out', 'cp2k.out')))
+    if crystal:  # a calculation of a crystal: its own readers (azimuth/headless_crystal.py)
+        from azimuth import headless_crystal
+
+        return headless_crystal.result(path)
     if path.is_dir():
         candidates = sorted((p for p in path.iterdir() if p.suffix in ('.out', '.log') and p.is_file()),
                             key=lambda p: p.stat().st_size, reverse=True)
@@ -342,6 +352,22 @@ class Jobs:
         self.jobs[ident] = {'kind': 'calculation', 'program': kind, 'job': job, 'spec': spec_, 'settings': settings,
                             'started': time.time()}
         return {'job': ident, 'folder': str(spec_.folder), 'output': str(spec_.output)}
+
+    def start_crystal(self, kind, spec, settings=None, root=None, tools_root=None):
+        """A calculation of a crystal in Quantum ESPRESSO or CP2K on this computer (azimuth/headless_crystal.py)."""
+        from azimuth import headless_crystal
+        from modules.sextant import runner
+
+        prepared = headless_crystal.prepare(kind, spec, settings, tools_root)
+        spec_ = headless_crystal.job(prepared, root, tools_root)
+        job = runner.Job(spec_)
+        job.start()
+        ident = self._id('calculation')
+        self.jobs[ident] = {'kind': 'calculation', 'program': kind, 'job': job, 'spec': spec_, 'settings': settings,
+                            'started': time.time()}
+        return {'job': ident, 'folder': str(spec_.folder), 'output': str(spec_.output), 'task': prepared.task,
+                'atoms': prepared.atoms,
+                'files': [name for name, _, _ in prepared.steps], 'processes': prepared.processes}
 
     # -- a server (azimuth/headless_server.py: the key only, the limits, the journal) ----------------------------------
     def start_server(self, kind, spec, settings=None, store=None, server=None, cores=None, memory_mb=None, hours=None,

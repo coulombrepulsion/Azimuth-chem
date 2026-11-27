@@ -32,6 +32,7 @@
 - `azimuth/handbook.py` — The handbook of «Справка → Справочник» (azimuth/handbook_window.py): units and constants, solvents, scaling factors of frequencies and where to find experimental data — what one looks up while preparing a calculation or reading it.
 - `azimuth/handbook_window.py` — «Справка → Справочник»: units and constants, solvents, scaling factors of frequencies and where to find measured data (azimuth/handbook.py — the data and their sources).
 - `azimuth/headless.py` — Azimuth without its window: a molecule, the settings of a calculation, its input file, the run on this computer, its state and its result — the same code Sextant and Spectrum use; and the checks of the program (tools/test.py) as jobs.
+- `azimuth/headless_crystal.py` — Azimuth without its window: a calculation of a crystal in Quantum ESPRESSO or CP2K on this computer.
 - `azimuth/headless_server.py` — Azimuth without its window: a calculation sent to the SLURM server of a profile of Sextant, watched and read here.
 - `azimuth/i18n.py` — Languages of Compass, Sextant and Spectrum.
 - `azimuth/icons.py` — Original, scalable toolbar glyphs. No external icon assets or fonts.
@@ -347,6 +348,7 @@
 - `modules/sextant/molecule_card.py` — The molecule to be calculated, small, in Sextant.
 - `modules/sextant/program_actions.py` — ProgramTool: the program of Sextant shown and chosen — its mark, name and tick (the path in the tooltip), «Указать…», «Искать самой», «Установить…» shown when it is missing, and, with «Сервер», what the check of the server found there. W…
 - `modules/sextant/qe_inputs.py` — The input of pw.x (Quantum ESPRESSO) for a crystal of Compass.
+- `modules/sextant/qe_local.py` — How a job of Quantum ESPRESSO is started on this computer: the command, its script and its environment.
 - `modules/sextant/qe_paths.py` — The path through the Brillouin zone for a band structure of Quantum ESPRESSO.
 - `modules/sextant/qe_pseudo.py` — The pseudopotentials of Quantum ESPRESSO: the library SSSP downloaded once into the folder of the program.
 - `modules/sextant/qe_windows.py` — Quantum ESPRESSO for Windows: the native build of the MSYS2 project, put into .tools/qe without MSYS2 itself.

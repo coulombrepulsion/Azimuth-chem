@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.243.0 — 27 November 2026
+
+- ### 0.243.0 — Crystals for a language model
+
+A language model connected to Azimuth can now compute a crystal: from a CIF file it prepares the input files of Quantum ESPRESSO or CP2K, runs the calculation on this computer and reads the result.
+
 ## 0.242.0 — 27 November 2026
 
 - ### 0.242.0 — The queue of a server
