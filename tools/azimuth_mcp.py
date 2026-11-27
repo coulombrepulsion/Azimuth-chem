@@ -14,7 +14,7 @@ calculations, reads their results and runs the checks of the program, by the com
     3. Only what TOOLS declares can be done: programs of Sextant on this computer, tools/test.py with safe options,
        and — the owner, 2026-11-22 — one calculation of ORCA or MOPAC sent to the SLURM server of a profile of
        Sextant (azimuth/headless_server.py: the login by the key only, never a password; the cores and the memory
-       within what the server says is free; a time limit; at most three at once; a journal of what was sent; stop is
+       of a queue of SLURM — those asked for, of a server without it — within what is free; a time limit; a journal; stop is
        scancel of its own job). Nothing is deleted, nothing is pushed, no command of the model is run on the server.
     4. The paths of the programs chosen in «Настройки → Программы» are read from the settings of Azimuth when
        PySide6 is there (QtCore only, no window); without it the programs are searched as Sextant searches them.
@@ -76,18 +76,20 @@ TOOLS = [
      'inputSchema': {'type': 'object', 'properties': {'path': {'type': 'string'}}, 'required': ['path']}},
     {'name': 'azimuth_server', 'description': 'What the SLURM server of a profile of Sextant says now (login by the '
                                               'SSH key only): free cores and memory, the most one calculation may '
-                                              'take, ORCA and MOPAC found there, the calculations sent from here and '
+                                              'ask (with SLURM a job asking more than is free waits in the queue), '
+                                              'ORCA and MOPAC found there, the calculations sent from here and '
                                               'still open. Call it before azimuth_run_server.',
      'inputSchema': {'type': 'object', 'properties': {'server': {'type': 'string', 'description': 'The title of a '
                      'profile; without it — the one chosen in Azimuth.'}}}},
     {'name': 'azimuth_run_server', 'description': 'Send one calculation of ORCA or MOPAC to the server (sbatch; a '
                                                   'server without SLURM — nohup, only on free cores) and watch it: a '
                                                   'job id for azimuth_status and azimuth_stop (the end of this job '
-                                                  'alone). The server is shared: cores — at most what is free and so '
-                                                  'that no more than 80 % of the node is busy with the cores busy '
-                                                  'already (default 8 or fewer), memory_mb per process '
-                                                  '(default 2000), hours — the time limit when the profile has none '
-                                                  '(default 4, at most 24); at most 3 calculations at once. The cores '
+                                                  'alone). With SLURM the job is queued: cores — those asked for '
+                                                  '(default 8), at most 80 % of the node for one job; more than are '
+                                                  'free — it waits (waits_in_queue). Without SLURM: at most what is '
+                                                  'free, no more than 80 % of the node busy, at most 3 calculations '
+                                                  'at once. memory_mb per process (default 2000), hours — the time '
+                                                  'limit when the profile has none (default 4, at most 24). The cores '
                                                   'and memory of settings are replaced by these.',
      'inputSchema': {'type': 'object', 'properties': {
          'program': {'type': 'string', 'enum': ['orca', 'mopac']}, 'molecule': MOLECULE, 'settings': SETTINGS,

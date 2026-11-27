@@ -126,6 +126,12 @@ _GROUPS_LOCK = threading.Lock()
 _GROUP_MARK = '@@azimuth-group@@'
 
 
+def _by_number(job_id):
+    """The order of the numbers of jobs in a note: 101 before 102 before 1000."""
+    text = str(job_id)
+    return (len(text), text)
+
+
 def group_command(job_id, parent, names):
     """One command for a group — the state of its job in squeue, then a line «folder|finished|started|skip»
     for each member folder in parent."""
@@ -304,7 +310,7 @@ def send_batch(specs, profile, connection, chosen, setup, name, kind='orca'):
                 runs.write(folder, group)
                 job_id = group.job_id
                 break
-            why = str(exc) if found[0] == 'uncertain' else f'several jobs of the token: {", ".join(found[1])}'
+            why = str(exc) if found[0] == 'uncertain' else f'several jobs of the token: {", ".join(sorted(found[1], key=_by_number))}'
             group = runs.moved(group, 'uncertain', note=why)
             runs.write(folder, group)
             break
@@ -743,7 +749,7 @@ class RemoteJob:
         return runs.verdict(text.out.decode('utf-8', errors='replace'))
 
     def _uncertain(self, sub, found, job, why):
-        ids = ', '.join(job) if found == 'conflict' else ''
+        ids = ', '.join(sorted(job, key=_by_number)) if found == 'conflict' else ''  # squeue lists them in any order
         note = f'several jobs of the token: {ids}' if ids else (why or 'the answer of the server is not known')
         if sub.state != 'uncertain':
             self._record(runs.moved(sub, 'uncertain', note=note))
@@ -974,7 +980,7 @@ class BatchItemJob(RemoteJob):
                 self._end(1, 'failed', tr('Сервер не получал эту очередь — расчёт не в очереди. Запустите его заново.'))
                 return False
             else:
-                ids = ', '.join(job) if found == 'conflict' else ''
+                ids = ', '.join(sorted(job, key=_by_number)) if found == 'conflict' else ''  # squeue lists them in any order
                 self._end(1, 'uncertain', tr(f'Неизвестно, принял ли сервер очередь (метка {group.name}'
                                              + (f'; заданий с ней несколько: {ids}' if ids else '')
                                              + f', папка {group.folder}). Повторно ничего не отправлено.'))

@@ -14,16 +14,20 @@
        server is asked once more; no profile chosen — said so, nothing is switched on. The VPN is never switched off
        from here.
     2. Only the programs a server runs (remote_job.REMOTE_KINDS: ORCA, MOPAC), found there by the probe.
-    3. Cores: never more than are free now (cluster.plan().physical_free) and never so many that more than
-       cluster.BUSY_SHARE (80 %) of the node is busy, the cores busy already counted (the owner, 2026-11-22;
-       cluster.room, ceiling()); nothing to take — refused. A server without SLURM (serv1): the calculation is started
-       by nohup (azimuth/runtime/runs.py: the number is the pid, the time limit kept by timeout), its busy cores are
-       the load average; stop ends its own process alone. Asked for more than the
-       ceiling — refused with the ceiling, not cut silently. Without a wish: DEFAULT_CORES or the ceiling.
-       Memory: DEFAULT_MAXCORE per process unless asked; the request of the job (processes × memory × 1.25) at most
-       1 / SHARE of the memory free there.
+    3. Cores. A server with SLURM has a queue (the owner, 2026-11-27: «Пусть сам пользователь задает количество ядер —
+       если оно больше свободных — встает в очередь»): the cores are those asked for (DEFAULT_CORES without a wish),
+       at most cluster.BUSY_SHARE (80 %) of the node for one calculation (queue_ceiling: a larger job would never
+       start); more than are free now — sbatch takes the job and it waits (Plan.queued). Memory there: the request
+       (processes × memory × 1.25) at most BUSY_SHARE of the memory of the node.
+       A server without SLURM (serv1): the calculation is started at once by nohup (azimuth/runtime/runs.py: the
+       number is the pid, the time limit kept by timeout), so never more cores than are free now and never so many
+       that more than BUSY_SHARE of the node is busy, the cores busy already counted — its load average (the owner,
+       2026-11-22; cluster.room, ceiling()); nothing to take — refused; stop ends its own process alone. Memory
+       there: the request at most 1 / SHARE of the memory free. Asked for more than a ceiling — refused with the
+       ceiling, not cut silently. DEFAULT_MAXCORE per process unless asked.
     4. A time limit is always written: the «-t» of the profile, else HOURS (asked: at most MAX_HOURS).
-    5. At most ACTIVE of these calculations on the servers at once — those of the journal not known to have ended.
+    5. At most ACTIVE of these calculations at once on a server without SLURM — those of the journal sent to it and
+       not known to have ended; a queue of SLURM has no such limit (the owner, 2026-11-27: «такова суть очереди»).
        A sending that never reached the server (no job.json in its folder, and the sending process gone or UNSENT_S
        passed) is written to the journal as ended («not sent») and takes no place.
     6. Every sending is a line of the journal (JOURNAL in the folder of the calculations: the time, the server, the
@@ -33,7 +37,7 @@
 §3 INTERFACE
     profile(store, name=None) -> ServerProfile (ValueError: none, or what it lacks); connect(profile) -> Connection;
     look(profile, connection, vpn_app=None, vpn_wait=None) -> Resources; switch_vpn_on(profile, app=None, wait=None)
-    -> bool; ceiling(resources) -> (cores, physical, free);
+    -> bool; ceiling(resources) -> (cores, physical, free); queue_ceiling(resources) -> the same of a queue;
     choose(resources, cores=None, memory_mb=None) -> cluster.Plan; time_directive(profile, hours=None) -> [str];
     state(store, name=None, root=None, opener=None) -> dict; journal(root) -> [dict]; active(root, now=None, server=None) -> [folders]; close_unsent(root, now=None) -> [folders];
     send(kind, made, calc, store, name=None, cores=None, memory_mb=None, hours=None, root=None, opener=None,
@@ -166,10 +170,48 @@ def just_sent(root, title, now=None):
     return cores
 
 
-def choose(resources, cores=None, memory_mb=None, reserved=0):
-    """The plan of one calculation within the limits of §2.3; ValueError names the limit crossed."""
+def queue_ceiling(resources):
+    """(the most cores one calculation may ask of a server with SLURM, the physical cores of the node, the free ones):
+    BUSY_SHARE of the node, whatever is busy now — what is not free is waited for in the queue."""
     from modules.sextant import cluster
 
+    plan = cluster.plan(resources)
+    return max(1, int(cluster.BUSY_SHARE * plan.physical)), plan.physical, plan.physical_free
+
+
+def _queued(resources, cores, memory_mb):
+    """choose() for a server with SLURM: the cores are those asked for; more than are free — the job waits."""
+    from modules.sextant import cluster
+
+    most, physical, free = queue_ceiling(resources)
+    cores = min(DEFAULT_CORES, most) if cores is None else int(cores)
+    if cores < 1:
+        raise ValueError('cores: at least 1')
+    if cores > most:
+        raise ValueError(f'cores: {cores} asked, at most {most} for one calculation ({int(cluster.BUSY_SHARE * 100)} % of '
+                         f'the {physical} cores of the node): a larger job would never start')
+    maxcore = DEFAULT_MAXCORE if memory_mb is None else int(memory_mb)
+    if maxcore < 100:
+        raise ValueError('memory_mb: at least 100 MB per process')
+    chosen = cluster.plan(resources, wanted=cores, maxcore=maxcore)
+    node = cluster._node(resources)
+    total = (node.memory_mb if node is not None and node.memory_mb else None) or resources.memory_mb
+    request = int(chosen.processes * chosen.maxcore * 1.25)
+    if total and request > cluster.BUSY_SHARE * total:
+        fits = int(cluster.BUSY_SHARE * total / 1.25 / chosen.processes) // 100 * 100
+        raise ValueError(f'memory_mb: {maxcore} MB × {chosen.processes} processes asks {request} MB, more than '
+                         f'{int(cluster.BUSY_SHARE * 100)} % of the {total} MB of the node; at most {fits} MB per process '
+                         'with these cores')
+    return chosen
+
+
+def choose(resources, cores=None, memory_mb=None, reserved=0):
+    """The plan of one calculation within the limits of §2.3; ValueError names the limit crossed. A server with SLURM:
+    the plan may ask more cores than are free now (Plan.queued) — sbatch takes the job, and it waits."""
+    from modules.sextant import cluster
+
+    if resources.slurm:
+        return _queued(resources, cores, memory_mb)
     most, physical, free = ceiling(resources, reserved)
     if most < 1:
         raise ValueError(f'no cores to take on the server now ({free} of {physical} are free, and at most '
@@ -366,7 +408,10 @@ def state(store, name=None, root=None, opener=None):
 
     close_unsent(root)
     chosen, connection, resources = _open(store, name, opener, search=True)
-    most, physical, free = ceiling(resources, 0 if resources.slurm else just_sent(root, chosen.title()))
+    if resources.slurm:  # the queue: one calculation may ask up to queue_ceiling, free now or not
+        most, physical, free = queue_ceiling(resources)
+    else:
+        most, physical, free = ceiling(resources, just_sent(root, chosen.title()))
     memory = cluster.free_memory(resources)
     found = {}
     for kind in remote_job.REMOTE_KINDS:
@@ -374,7 +419,9 @@ def state(store, name=None, root=None, opener=None):
         found[kind] = cluster.find_on_server(resources, kind, setup, chosen.setup_of(kind))
     return {
         'server': chosen.title(), 'address': chosen.address(), 'profiles': [p.title() for p in remote.load_all(store)],
-        'slurm': resources.slurm, 'start': 'sbatch' if resources.slurm else 'nohup (no SLURM): only on free cores',
+        'slurm': resources.slurm,
+        'start': ('sbatch: a calculation asking more cores than are free waits in the queue' if resources.slurm
+                  else 'nohup (no SLURM): only on free cores'),
         'programs': found, 'found_outside_path': {name: path for name, path in resources.found},
         'load': resources.load,
         'other_programs': {kind: cluster.find_on_server(resources, kind) for kind in cluster.PROGRAM_FILES
@@ -390,7 +437,7 @@ def state(store, name=None, root=None, opener=None):
         # the calculation sent to .101)
         'calculations_open': active(root, server=chosen.title()),
         'calculations_open_on_other_servers': [f for f in active(root) if f not in active(root, server=chosen.title())],
-        'calculations_at_once': ACTIVE,
+        'calculations_at_once': None if resources.slurm else ACTIVE,  # a queue has no such limit
         'summary': cluster.summary(resources, cluster.plan(resources), chosen.title()),
     }
 
@@ -402,11 +449,13 @@ def send(kind, made, calc, store, name=None, cores=None, memory_mb=None, hours=N
     if kind not in remote_job.REMOTE_KINDS:
         raise ValueError(f'a server runs {", ".join(remote_job.REMOTE_KINDS)}, not {kind}')
     close_unsent(root)
-    open_now = active(root)
-    if len(open_now) >= ACTIVE:
-        raise ValueError(f'{len(open_now)} calculations sent from here are not known to have ended (at most {ACTIVE} at '
-                         'once): look at them (status or resume) or wait — ' + '; '.join(open_now))
     chosen, connection, resources = _open(store, name, opener)
+    if not resources.slurm:  # no queue there: the calculations of this server start at once and share its cores
+        open_now = active(root, server=chosen.title())
+        if len(open_now) >= ACTIVE:
+            raise ValueError(f'{len(open_now)} calculations sent from here to {chosen.title()} are not known to have ended '
+                             f'(at most {ACTIVE} at once on a server without SLURM): look at them (status or resume) or '
+                             'wait — ' + '; '.join(open_now))
     limit = time_directive(chosen, hours)
     setup = cluster.server_setup(chosen, resources, kind, limit)  # the same check as the window: the program found there
     reserved = 0 if resources.slurm else just_sent(root, chosen.title())  # SLURM counts its jobs itself

@@ -1204,8 +1204,9 @@ Table: Tools of the Azimuth MCP server
 **Limits of server calculations.** The model can send an ORCA or MOPAC calculation to a SLURM server of a Sextant profile, but only:
 
 - with an SSH key login (never with a password);
-- onto free cores and memory, so that together with the new calculation at most 80 % of the server's cores are busy;
-- with a time limit for every job and at most three jobs at once;
+- on a server with SLURM the job goes into the queue (0.242.0): as many cores as asked for, but at most 80 % of the cores of the node for one job; when fewer are free, the job waits; the number of jobs in the queue is not limited;
+- on a server without SLURM there is no queue: only onto free cores and memory, so that together with the new calculation at most 80 % of the server's cores are busy, and at most three jobs at once;
+- with a time limit for every job;
 - it may stop only its own jobs; nothing is deleted on the server, and no command of the model is run there.
 
 All actions are written into a journal.

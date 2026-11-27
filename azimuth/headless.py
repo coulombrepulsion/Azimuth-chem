@@ -389,7 +389,7 @@ class Jobs:
         threading.Thread(target=note_end, name='azimuth-server-end', daemon=True).start()
         out = {'job': ident, 'server': title, 'folder': str(job.spec.folder), 'output': str(job.spec.output)}
         if plan is not None:
-            out.update(cores=plan.processes, memory_mb_per_process=plan.maxcore)
+            out.update(cores=plan.processes, memory_mb_per_process=plan.maxcore, waits_in_queue=bool(plan.queued))
         return out
 
     def _server_status(self, ident, entry, lines):

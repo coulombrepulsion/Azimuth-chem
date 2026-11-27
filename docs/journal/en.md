@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.242.0 — 27 November 2026
+
+- ### 0.242.0 — The queue of a server
+
+A calculation sent to a server with SLURM without the window of the program is no longer refused when the cores are busy: it goes into the queue and waits. On servers without SLURM nothing has changed.
+
 ## 0.241.0 — 27 November 2026
 
 - ### 0.241.0 — Quantum ESPRESSO runs on Windows

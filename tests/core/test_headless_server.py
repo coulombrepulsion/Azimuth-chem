@@ -58,25 +58,30 @@ def wait(jobs, ident, timeout=30):
     return jobs.status(ident)
 
 
-def test_the_cores_and_the_memory_stay_within_what_is_free():
-    # a node of 48 cores: with the new calculation at most 80 % of it is busy (38 cores), those busy now counted —
-    # 8 busy leave 30, 28 busy leave 10, 43 busy leave nothing though 5 are free
-    assert headless_server.ceiling(node(40)) == (30, 48, 40)
-    assert headless_server.ceiling(node(20)) == (10, 48, 20)
-    assert headless_server.ceiling(node(5)) == (0, 48, 5)
-    assert headless_server.choose(node(40)).processes == headless_server.DEFAULT_CORES == 8
-    assert headless_server.choose(node(15)).processes == 5 and headless_server.choose(node(40), cores=24).processes == 24
+def test_a_server_with_slurm_is_a_queue():
+    # the owner, 2026-11-27: «Пусть сам пользователь задает количество ядер — если оно больше свободных — встает в
+    # очередь». A node of 48 cores: one calculation may ask up to 80 % of it (38), free now or not
+    assert headless_server.queue_ceiling(node(40)) == (38, 48, 40)
+    assert headless_server.queue_ceiling(node(0)) == (38, 48, 0)
+    plan = headless_server.choose(node(40))
+    assert plan.processes == headless_server.DEFAULT_CORES == 8 and not plan.queued
+    for idle in (15, 5, 0):  # the cores asked for are not cut to what is free: the job waits
+        plan = headless_server.choose(node(idle), cores=24)
+        assert plan.processes == 24 and plan.queued
+    assert headless_server.choose(node(5)).processes == 8 and headless_server.choose(node(5)).queued
+    assert not headless_server.choose(node(40), cores=38).queued
+    with pytest.raises(ValueError, match='39 asked, at most 38 for one calculation'):
+        headless_server.choose(node(40), cores=39)  # a job larger than the ceiling would never start
+    with pytest.raises(ValueError, match='at least 1'):
+        headless_server.choose(node(40), cores=0)
     plan = headless_server.choose(node(40), cores=4, memory_mb=3000)
     assert (plan.processes, plan.maxcore, plan.mem_request) == (4, 3000, 15000)
-    with pytest.raises(ValueError, match='31 asked, at most 30'):
-        headless_server.choose(node(40), cores=31)  # refused with the ceiling, not cut silently
-    for idle in (0, 5):
-        with pytest.raises(ValueError, match='no cores to take'):
-            headless_server.choose(node(idle))
-    # the request (processes × memory × 1.25) is at most half of the free memory: 8 × 12000 × 1.25 = 120 GB of 200 free
-    with pytest.raises(ValueError, match='at most 10000 MB per process'):
-        headless_server.choose(node(40), cores=8, memory_mb=12000)
-    assert headless_server.choose(node(40), cores=8, memory_mb=10000).mem_request == 100_000
+    # the request (processes × memory × 1.25) is at most 80 % of the memory of the node: 8 × 21000 × 1.25 = 210 GB of 256
+    with pytest.raises(ValueError, match='at most 20400 MB per process'):
+        headless_server.choose(node(40), cores=8, memory_mb=21000)
+    assert headless_server.choose(node(0), cores=8, memory_mb=20000).mem_request == 200_000
+    # the ceiling of a calculation started at once (a server without SLURM) counts what is busy: ceiling()
+    assert headless_server.ceiling(node(40)) == (30, 48, 40) and headless_server.ceiling(node(5)) == (0, 48, 5)
 
 
 def test_a_time_limit_is_always_written():
@@ -176,13 +181,7 @@ def test_what_a_server_is_not_asked(server, tmp_path):
     broken = Store({remote.PROFILES_KEY: json.dumps([ServerProfile('s', '', 22, '').to_dict()])})
     with pytest.raises(ValueError, match='is not complete'):
         headless_server.profile(broken)
-    # three calculations of the journal not known to have ended — a fourth is not sent
     root = tmp_path / 'calc'
-    for k in range(headless_server.ACTIVE):
-        headless_server._note(root, event='sent', folder=str(root / f'job{k}'))
-    with pytest.raises(ValueError, match='at most 3 at\\s+once'):
-        jobs.start_server('orca', {'smiles': 'O'}, None, store(), root=root, opener=opener(tmp_path))
-    assert not (server / 'ssh.log').exists()  # refused before the server was asked anything
     # only a calculation of the journal is taken up again
     with pytest.raises(ValueError, match='is not a calculation sent to a server from here'):
         jobs.resume_server(tmp_path / 'somewhere', store(), root=root, opener=opener(tmp_path))
@@ -217,9 +216,10 @@ def test_the_state_of_the_server(server, tmp_path):
                                   opener=opener(tmp_path))
     assert found['server'] == 'serv3' and found['slurm'] and found['programs']['orca'] and found['programs']['mopac']
     cores = found['cores']
-    assert 1 <= cores['most_for_one_calculation'] <= max(1, int(0.8 * cores['physical'])) and cores['default'] <= 8
+    assert cores['most_for_one_calculation'] == max(1, int(0.8 * cores['physical'])) and cores['default'] <= 8  # a queue
+    assert 'waits in the queue' in found['start']
     assert found['time_limit'] == '1-00:00:00' and found['partition'] == 'long' and found['calculations_open'] == []
-    assert found['calculations_at_once'] == 3
+    assert found['calculations_at_once'] is None
 
 
 def bare(load, cores=20):
@@ -253,6 +253,19 @@ def test_a_calculation_on_a_server_without_slurm_goes_by_nohup(tmp_path, monkeyp
     assert done['slurm_job'].isdigit() and (there / 'az-nohup.out').is_file(), receipt
     # the next one, sent while the journal still counts the first as just sent, has its cores taken off
     assert headless_server.just_sent(tmp_path / 'calc', 'serv3') == 0  # the first has ended
+    # three calculations of the journal sent to this server and not known to have ended — a fourth is not sent: there
+    # is no queue there. Those sent to another server do not count
+    root = tmp_path / 'calc'
+    for k in range(headless_server.ACTIVE):
+        (root / f'job{k}').mkdir(parents=True)
+        (root / f'job{k}' / 'job.json').write_text('{}', encoding='utf-8')
+        headless_server._note(root, event='sent', folder=str(root / f'job{k}'), server='serv3' if k else 'other')
+    assert len(headless_server.active(root, server='serv3')) == headless_server.ACTIVE - 1
+    (root / 'job9').mkdir()
+    (root / 'job9' / 'job.json').write_text('{}', encoding='utf-8')
+    headless_server._note(root, event='sent', folder=str(root / 'job9'), server='serv3')
+    with pytest.raises(ValueError, match='at most 3 at once on a server without SLURM'):
+        jobs.start_server('orca', {'smiles': 'O'}, None, store(), root=root, opener=opener(tmp_path))
 
 
 def test_stop_on_a_server_without_slurm_ends_its_own_process(tmp_path, monkeypatch):
