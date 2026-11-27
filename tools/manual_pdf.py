@@ -446,6 +446,7 @@ ul > li::marker { color: var(--accent); }
 .cover .sections div { flex: 1; border-top: 2px solid var(--accent); padding-top: 2.5mm; font-size: 8.5pt;
                        color: var(--soft); text-align: left; hyphens: manual; }
 .cover .sections b { display: block; color: var(--ink); font-size: 10pt; font-weight: 600; margin-bottom: 1mm; }
+.cover .quill { position: absolute; right: 4mm; bottom: 5mm; width: 74mm; transform: scaleX(-1); }  /* she looks to the left */
 .cover .foot { position: absolute; left: 0; right: 0; bottom: 0; font-size: 8pt; color: var(--soft);
                border-top: 1px solid var(--rule); padding-top: 3mm; text-align: left; }
 
@@ -504,6 +505,9 @@ aside.tip { border-left-color: #2f9e60; background: var(--tip); }
 """
 
 
+QUILL = ROOT / 'assets' / 'quill' / 'quill-notes.webp'  # Quill writing on a pile of books, on the cover (0.248.14)
+
+
 def to_html(markdown, lang, version, pages=None, edition_date=''):
     """The whole book as one HTML page and its headings. pages: {heading id: page number} for the contents (else
     «000» — the room of three digits, so that the numbers of the second print take the same room)."""
@@ -530,6 +534,7 @@ def to_html(markdown, lang, version, pages=None, edition_date=''):
         + f'<div class="book">{title}</div><div class="ver">{words["version"]} {version}'
         + (f' · {edition_date}' if edition_date else '') + '</div>'
         + '<div class="sections">' + ''.join(f'<div><b>{a}</b>{b}</div>' for a, b in sections) + '</div>'
+        + (f'<img class="quill" src="{QUILL.as_uri()}" alt="">' if QUILL.exists() else '')
         + '<div class="foot">azimuth-chem.com</div></div>')
     edition = '<div class="edition">' + EDITION.get(lang, EDITION['ru']).format(title=title, version=version) + '</div>'
     style = STYLE % {'header': f'{words["header"]} · {title}', 'version': f'{words["version"]} {version}'}

@@ -374,7 +374,8 @@ def test_changelog_window_from_about(hub, app, monkeypatch):
     # no line about CHANGELOG.md and no «Общее» headings; Quill with her notes and the title above the tabs;
     # the text justified
     assert 'Подробный технический журнал' not in program and '\nОбщее\n' not in '\n' + program + '\n'
-    assert log.title.text().startswith('Что нового') and not log.picture.pixmap().isNull()
+    assert log.title.text() == 'Что нового — заметки Квил' and not log.picture.pixmap().isNull()
+    assert not log.quill.pixmap().isNull() and not log.pen.pixmap().isNull()  # Quill and her pen (0.248.14)
     from PySide6.QtCore import Qt as _Qt
 
     block = log.tabs.widget(0).document().begin()

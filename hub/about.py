@@ -469,6 +469,37 @@ class ManualDialog(QDialog):
         layout.addWidget(close, 0, Qt.AlignmentFlag.AlignRight)
 
 
+QUILL_NOTES = ROOT / 'assets' / 'quill' / 'quill-journal.webp'  # Quill with the pile of her notes (QUAIL_ART.md № 17)
+QUILL_SIZE = 140  # px: the height of Quill in the head of «Что нового» (larger by the owner's wish)
+# a brown quill pen writing: the vane, the shaft, the nib on the line and a stroke of ink after it
+WRITING_QUILL_SVG = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">'
+                     '<path d="M21 2.2c-5.2.4-9.8 4-11.9 9.6l-1.3 3.9 3.9-1.3c5.6-2.1 9.2-6.7 9.3-12.2z" '
+                     'fill="#c08a52" stroke="#7a4a1f" stroke-width="0.8" stroke-linejoin="round"/>'
+                     '<path d="M13.6 8.6l-2.2.4M15.8 6.6l-2.4.3M12.2 11.2l-1.6.6" stroke="#8a5a2b" '
+                     'stroke-width="0.6" stroke-linecap="round"/>'
+                     '<path d="M20.4 2.8L7 16.2" stroke="#5e3816" stroke-width="1" stroke-linecap="round"/>'
+                     '<path d="M8.2 15L4.6 19.6" stroke="#3b2a1a" stroke-width="1.3" stroke-linecap="round"/>'
+                     '<path d="M1.8 21.6c1-.9 1.8-.9 2.5-.1s1.5.8 2.3 0 1.6-.8 2.4 0 1.5.7 2.2.1" fill="none" '
+                     'stroke="#8a5a2b" stroke-width="0.9" stroke-linecap="round"/></svg>')
+
+
+def quill_notes_picture(ratio=1.0):
+    """Quill of the head of the journal, mirrored (she looks to the left, at the text), QUILL_SIZE logical pixels high
+    (a null QPixmap if the file is missing)."""
+    from PySide6.QtGui import QPixmap
+
+    from PySide6.QtGui import QTransform
+
+    picture = QPixmap(str(QUILL_NOTES))
+    if picture.isNull():
+        return picture
+    picture = picture.transformed(QTransform().scale(-1, 1))  # turned to the left, to the text (the owner)
+    ratio = max(1.0, float(ratio))
+    picture = picture.scaledToHeight(round(QUILL_SIZE * ratio), Qt.TransformationMode.SmoothTransformation)
+    picture.setDevicePixelRatio(ratio)
+    return picture
+
+
 class ChangelogDialog(QDialog):
     """Quail's journal (docs/journal) with one tab per section: the program as a whole, the Atlas
     (with its technical changelog, without the editor's attribution lines), Compass, Sextant and Spectrum."""
@@ -480,6 +511,8 @@ class ChangelogDialog(QDialog):
         self.resize(760, 720)
         layout = QVBoxLayout(self)
         self.tabs = QTabWidget()
+        # the tabs begin where the round corner of the page ends, as the tabs elsewhere (0.248.14)
+        self.tabs.setStyleSheet('QTabWidget::tab-bar {left: 10px;}')
         parts = split_journal(read_localized(JOURNAL, language))  # Quail's journal, not CHANGELOG.md
         # Quill with her notes and the title of the journal above the tabs (the title left the first tab)
         title, parts['program'] = journal_title(parts['program'])
@@ -516,7 +549,18 @@ class ChangelogDialog(QDialog):
         self.title.setWordWrap(True)
         family = sidebar_family()
         self.title.setStyleSheet(f"font-size: 22px; font-weight: 600;{f' font-family: {chr(39)}{family}{chr(39)};' if family else ''}")
-        column.addWidget(self.title)
+        title_row = QHBoxLayout()
+        title_row.setSpacing(8)
+        self.title.setWordWrap(False)  # one line, the pen right after it
+        title_row.addWidget(self.title, 0, Qt.AlignmentFlag.AlignVCenter)
+        # a brown quill that writes, by the title (0.248.14, the owner: «Добавь рядом с Заметки Квил перо коричневое,
+        # которое типа пишет»)
+        self.pen = QLabel()
+        self.pen.setObjectName('journalPen')
+        self.pen.setPixmap(svg_pixmap(WRITING_QUILL_SVG, '#8a5a2b', 34, max(1.0, self.devicePixelRatioF())))
+        title_row.addWidget(self.pen, 0, Qt.AlignmentFlag.AlignVCenter)
+        title_row.addStretch(1)
+        column.addLayout(title_row)
         subtitle = QLabel(words.get('journal_sub', ''))
         subtitle.setWordWrap(True)
         subtitle.setStyleSheet(f'font-size: 13px; color: {"#9aa3b2" if dark else "#5b6474"};')
@@ -539,6 +583,14 @@ class ChangelogDialog(QDialog):
         column.addSpacing(4)
         column.addLayout(chips)
         head.addLayout(column, 1)
+        # Quill with the pile of her notes in the right corner (0.248.14, the owner: «можно справа в угол что нового
+        # вернуть картинку Квил»): the journal is still written by her
+        self.quill = QLabel()
+        self.quill.setObjectName('journalQuill')
+        notes = quill_notes_picture(self.devicePixelRatioF())
+        if not notes.isNull():
+            self.quill.setPixmap(notes)
+        head.addWidget(self.quill, 0, Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         layout.addWidget(card)
         self.pages = {}
         for key in SECTION_KEYS:

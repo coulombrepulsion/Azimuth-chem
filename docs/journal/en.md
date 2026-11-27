@@ -1,4 +1,10 @@
-# What’s new
+# What’s new — Quail’s notes
+
+## 0.248.14 — 27 November 2026
+
+- ### 0.248.14 — My notes again
+
+The journal is called «What’s new — Quail’s notes» again: I still write it. And I am back in its corner with my pile of notes and my quill by the title, and on the cover of the manual with a quill over my books. Its section tabs now begin after the round corner, as everywhere else in the program.
 
 ## 0.248.13 — 27 November 2026
 
