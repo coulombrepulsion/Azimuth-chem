@@ -6544,5 +6544,7 @@
   "Монослой: ось c должна быть перпендикулярна слоям.": "Monolayer: the c axis must be perpendicular to the layers.",
   "Монослой: в ячейке нет отдельных слоёв — между атомами вдоль оси c нет промежутка от {:g} Å.": "Monolayer: the cell has no separate layers — there is no gap of {:g} Å or more between the atoms along the c axis.",
   "Монослой: {} атомов в ячейке, вакуум {:g} Å вдоль c.": "Monolayer: {} atoms in the cell, {:g} Å of vacuum along c.",
-  "Убрать с модели все измерения (ни один атом не выделен)": "Take every measurement off the model (no atom is selected)"
+  "Убрать с модели все измерения (ни один атом не выделен)": "Take every measurement off the model (no atom is selected)",
+ "Откройте кристалл из файла CIF": "Open a crystal from a CIF file",
+ "или возьмите пример": "or take an example"
 }

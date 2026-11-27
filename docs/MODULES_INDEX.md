@@ -59,12 +59,13 @@
 - `azimuth/project_widgets.py` — The pieces of the project list and its tabs (azimuth/project_navigation.py builds them into the window): the row of the project tabs and their «+», the table of the molecules with its columns, the sliding of the panel and its log.
 - `azimuth/projects.py` — Portable research projects: molecules, immutable calculation attempts and current usable results.
 - `azimuth/qt_language.py` — Qt's own texts in the language of the program.
-- `azimuth/quill.py` — Quill in the windows of the program.
+- `azimuth/quill.py` — Quill in the windows of the program — since 0.247.0 the pictures of states in thin lines (azimuth/state_icons.py).
 - `azimuth/recovery.py` — Atomic, process-owned recovery copies of molecular projects.
 - `azimuth/recovery_ui.py` — Periodic molecular drafts and explicit recovery into new tabs, without changing original files.
 - `azimuth/settings.py` — The settings of Azimuth (named Azimuth): one place that opens them.
 - `azimuth/settings_dialog.py` — «Файл → Настройки…»: one window for the preferences of the whole program.
 - `azimuth/site.py` — The site of Azimuth: the Atlas lives there, the program opens it in the browser.
+- `azimuth/state_icons.py` — Small pictures of states in thin lines: the windows of the program show them where Quill stood until 0.247.0.
 - `azimuth/tasks.py` — Background tasks of the program: long work off the window's thread.
 - `azimuth/text_editor.py` — The text editor of the program. §1 PURPOSE     One editor for the input files of Sextant and the text files of «Файлы на сервере»: what a plain text editor such     as AkelPad gives — the line numbers, the line of the cursor, the pairs o…
 - `azimuth/text_highlight.py` — The colours of the editor of input files: the language of a text guessed (guess_language), the highlighter of its keywords, numbers and comments (Highlighter), the column of line numbers (_Numbers).
@@ -274,7 +275,6 @@
 - `modules/compass/view/nci_plot.py` — The plot RDG (or IRI) — sign(λ₂)ρ of an NCI analysis from Multiwfn.
 - `modules/compass/view/occlusion.py` — Which atoms are drawn in front of an atom — for its selection ring (the rubber band takes every atom inside it, seen or not).
 - `modules/compass/view/opengl_setup.py` — Compass: the whole program composes its windows with OpenGL when VTK is to draw straight into the window.
-- `modules/compass/view/quill_hint.py` — Quill and her speech bubble in the empty field of «Компас · Молекула».
 - `modules/compass/view/raster.py` — Per-pixel depth renderer of balls and sticks for the Compass model.
 - `modules/compass/view/result_overlay.py` — What Compass draws over the model from a calculation result: atom values, Mayer bond orders, the dipole and the forces, in the frame of the structure on screen.
 - `modules/compass/view/schemes.py` — Display schemes of the Compass model: ready looks and the user's own.

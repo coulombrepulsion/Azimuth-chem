@@ -1726,47 +1726,23 @@ def test_crystal_tab_and_the_empty_field(window, app):
     window.crystal_tool.set_compass_mode('molecule')
     assert window.view_tabs.tabText(0) == 'Молекула'
     assert EMPTY_TEXT.startswith('Постройте свою молекулу') and not hasattr(window.viewer, 'empty_text')
-    # Quill with her bubble in the corner of the empty molecule field (not in crystals); the pencil turns on
-    # «Изменение структуры», the folder opens a file; after one of them she is gone for this run
+    # 0.247.0: no Quill with her bubble in the empty field — the field itself says how to begin, a crystal its own way
+    from modules.compass.view.viewer import CRYSTAL_PARTS, EMPTY_PARTS
+
     window.resize(1400, 900)
     window.show()
     window.navigate(0)
     app.processEvents()
     window.new_document()
     app.processEvents()
-    hint = window.quill_hint
-    assert not window.molecule.atoms and not hint.isHidden() and window.viewer.hint_shown
-    field = window.viewer.geometry()
-    assert field.contains(hint.geometry())  # in the field, its lower right corner
-    assert hint.geometry().right() > field.center().x() and hint.geometry().bottom() > field.center().y()
-    window.viewer.grab()
-    # the bubble has the blue side away from Quill (she is on the right): its left edge, mid-height
-    from azimuth import quill as quill_pictures
-
-    picture = hint.bubble.grab().toImage()
-    colour = picture.pixelColor(round(2 * picture.devicePixelRatio()), picture.height() // 2)
-    blue = quill_pictures.edge_color(hint.bubble.fill)
-    assert abs(colour.red() - blue.red()) < 30 and abs(colour.blue() - blue.blue()) < 30
+    assert window.quill_hint is None and window.crystal_hint is None and not getattr(window.viewer, 'hint_shown', False)
+    assert window.viewer.empty_parts == EMPTY_PARTS
+    window.viewer.grab()  # the pale words with their glyphs
     window.crystal_tool.set_compass_mode('crystal')
-    assert hint.isHidden()
+    assert window.viewer.empty_parts == CRYSTAL_PARTS and [g for _, g in CRYSTAL_PARTS] == ['folder', 'crystal']
+    window.viewer.grab()
     window.crystal_tool.set_compass_mode('molecule')
-    assert not hint.isHidden()
-    opened = []
-    window.opening_tool.open_any = lambda: opened.append(1)  # a cancelled dialog: nothing opened
-    try:
-        hint.open_button.click()
-    finally:
-        del window.opening_tool.open_any
-    assert opened == [1] and not hint.isHidden() and not hint.dismissed  # she stays while nothing is there
-    hint.edit_button.click()
-    assert window.edit_toggle.isChecked() and not hint.isHidden()
-    window.edit_toggle.click()
-    window.load_molecule(read_xyz(next(iter(EXAMPLES.values()))))  # something opened or built
-    assert hint.isHidden() and hint.dismissed and not window.viewer.hint_shown
-    window.new_document()
-    assert hint.isHidden()  # gone until the next start
-    window.viewer.grab()  # the pale hint with its glyphs paints instead
-    hint.dismissed = False
+    assert window.viewer.empty_parts == EMPTY_PARTS
     assert not window.open_action.icon().isNull()  # «Открыть…» with the folder
     assert window.drawer.initial.isCheckable() and window.drawer.initial.property('quail_icon') == 'initial-geometry'
 

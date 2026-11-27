@@ -22,6 +22,9 @@ COLORS = AZIMUTH
 # the empty field of «Компас · Молекула» says how to begin (was «Выберите «Атом» или «Молекулу»…»);
 # only this, with the glyphs of the pencil and the folder (draw_empty)
 EMPTY_TEXT = 'Постройте свою молекулу или откройте готовую'
+# what the empty field says, with the glyphs of azimuth/icons.py (0.247.0: in place of the hint of Quill)
+EMPTY_PARTS = (('Постройте свою молекулу', 'edit'), ('или откройте готовую', 'folder'))
+CRYSTAL_PARTS = (('Откройте кристалл из файла CIF', 'folder'), ('или возьмите пример', 'crystal'))
 
 
 def remap_labels(old, new, labels):

@@ -325,13 +325,13 @@ Table: Sections of the «Settings» window
 
 ### Errors and the report for the author
 
-When something breaks, the program does not keep silent: the error is written into the log, and a window with Quail says «Something went wrong» (the program goes on working) and offers «Save the report…». If the program closed after a crash, it offers to save the report at the next start.
+When something breaks, the program does not keep silent: the error is written into the log, and a window says «Something went wrong» (the program goes on working) and offers «Save the report…». If the program closed after a crash, it offers to save the report at the next start.
 
 The report is one `.zip` archive: the logs of errors, crashes and starts, the versions of Azimuth, Python, Qt, NumPy, VTK, information on the system and the settings without passwords. The **«Send to the author…»** button (in the error window, in the question after a crash and in «Settings → Errors») saves the report on the desktop and opens in the mail program a letter to contact@azimuth-chem.com with the version, the system and the last error. You only need to drag the report file into the letter and add what you were doing. The same – «File → Error report…».
 
-### Quail
+### Pictures of states
 
-Quail is the mascot of the program. She greets the end of a calculation in its window, stands in the questions before quitting and before replacing a project and in the input file check. While a Compass tab is empty, Quail stands in a corner of the field with a hint: the pencil in the bubble starts building, the folder opens a file. In Spectrum without a result she studies an empty sheet with a magnifier. In the Atlas, Quail leads the demonstrations of the topics.
+Since 0.247.0 the windows of the program show small pictures in thin lines instead of Quail: a running, finished, stopped and failed calculation, the questions before quitting, deleting and replacing, errors, no connection to the server, a program not found, the input file check, empty fields and tabs. A gold mark on a picture is a state, a red-orange one an error. An empty Compass field itself tells how to begin: build a molecule or open a file, and in the Crystal – open a CIF or an example. Quail stays in the Atlas on the site: she leads the demonstrations of the topics.
 
 ## Atlas
 
@@ -650,7 +650,7 @@ Theory – in the Atlas: [«Atomic charges: comparing the schemes»](https://www
 2. The crystal is built at once: one cell, whole molecules, with disorder – one part. The atoms of the asymmetric unit are multiplied by the symmetry operations of the file (repeats on special positions are merged). The space group and Z are in the line under the model, the density is in the status line.
 3. The crystal button above the model or «File → Rebuild the crystal (cells, surface)…» opens the «Crystal» panel to the right of the model.
 
-While the field is empty, Quail stands in its lower left corner: the folder in her bubble opens a CIF, the small crystal opens an example.
+While the field is empty, it tells you to open a crystal from a CIF file («File → Open CIF…») or take an example («Open example…»).
 
 **Crystals from COD.** «File → Find a crystal in COD…» searches the Crystallography Open Database – an open database of about half a million structures. The search conditions: words (the name of a substance or mineral, authors, the title of a paper), a formula (C7H6O2, TiO2 – the program puts the elements in Hill order), elements separated by spaces and «only these elements»; the second line has the cell parameters with a tolerance (±1 % of the length and ±1° by default). «As the open one» fills in the cell of the crystal from Compass – this is how the same structure is found in other works, and close phases. The result is up to 500 records: the COD number, formula, name, group, cell and year. «Open in Compass» (or a double click) downloads the CIF into the folder «Documents/Azimuth/COD» and opens it. The internet is needed; COD receives only the search conditions.
 

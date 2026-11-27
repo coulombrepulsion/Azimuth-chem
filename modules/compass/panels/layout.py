@@ -617,28 +617,9 @@ class StructurePage:
         self.drawer.conformerAdoptRequested.connect(self.trajectory_tool.adopt_conformer)
         self.drawer.modeFrame.connect(self.trajectory_tool.show_mode_frame)
         self.density_tool.build_density_drawer(self.drawer)
-        # Quill with her bubble in the lower right corner of the empty field; the pencil and the folder of the
-        # bubble are buttons; after one of them she is gone until the next start of the program
-        from modules.compass.view.quill_hint import QuillHint
-
-        def edit():
-            if not self.edit_toggle.isChecked():
-                self.edit_toggle.click()
-
-        def open_file():
-            opener = getattr(self.opening_tool, 'open_any', None)
-            if opener is not None:
-                opener()
-
-        self.quill_hint = QuillHint(model, edit, open_file)
-
-        def open_example():
-            opener = getattr(self.opening_tool, 'open_example', None)
-            if opener is not None:
-                opener()
-
-        # the crystals have their own Quill, in the lower left corner — a CIF file or an example
-        self.crystal_hint = QuillHint(model, lambda: self.crystal_tool.open_cif(), open_example, 'crystal')
+        # 0.247.0: no Quill with her bubble in the empty field (the owner: «убрать совсем») — the field itself says how
+        # to begin, in a molecule and in a crystal (Workspace.update_side_quill, viewer.empty_parts)
+        self.quill_hint = self.crystal_hint = None
         for watched in (self.viewer, self.drawer, self.drawer.table, self.drawer.modes_table):
             watched.installEventFilter(self)
         self.label_mode = QComboBox()

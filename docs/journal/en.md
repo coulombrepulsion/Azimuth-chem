@@ -1,4 +1,10 @@
-# What’s new — Quail’s notes
+# What’s new
+
+## 0.247.0 — 27 November 2026
+
+- ### 0.247.0 — Pictures instead of Quail
+
+The windows of the program now show small pictures in thin lines instead of Quail – in the window of a calculation, in questions, in error messages and on empty tabs. An empty Compass field itself tells how to begin. Quail stays in the Atlas on the site.
 
 ## 0.246.0 — 27 November 2026
 

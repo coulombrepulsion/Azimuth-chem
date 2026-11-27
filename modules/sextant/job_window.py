@@ -543,40 +543,9 @@ class JobWindow(QWidget):
         self.spectrum_button.setText(tr(spectrum))
 
     def show_animation(self, name='calc-running', size=PICTURE):
-        """Quill counting while the calculation runs — the animated assets/quill/quill-<name>.webp played by a QMovie at
-        the pixel ratio of the screen (sharp on Retina), paused while the window is hidden; False when the file is
-        missing or cannot be played (then no picture, as before)."""
-        from PySide6.QtCore import QSize
-        from PySide6.QtGui import QMovie
-
-        from azimuth import quill
-
-        self._stop_movie()
-        file = quill.path(name)
-        if not file.is_file():
-            return False
-        movie = QMovie(str(file), parent=self)
-        if not movie.isValid():
-            movie.deleteLater()
-            return False
-        ratio = self.devicePixelRatioF() or 1.0
-        movie.setScaledSize(QSize(round(size * ratio), round(size * ratio)))
-        movie.setCacheMode(QMovie.CacheMode.CacheNone)  # 960 frames: decoded as they are shown
-
-        def frame(_index):
-            pixmap = movie.currentPixmap()
-            pixmap.setDevicePixelRatio(ratio)
-            self.picture.setPixmap(quill.turned(name, pixmap))  # Quill counting turned to the left
-
-        movie.frameChanged.connect(frame)
-        self._movie = movie
-        self.picture_name = name
-        self.picture.setFixedSize(size, size)
-        self.picture.show()
-        movie.start()
-        if not self.isVisible():
-            movie.setPaused(True)
-        return True
+        """The picture of a running calculation while it runs (0.247.0: the picture of the state in thin lines, not the
+        animation of Quill); False when there is none."""
+        return self.show_picture(name, size)
 
     def _stop_movie(self):
         movie = getattr(self, '_movie', None)

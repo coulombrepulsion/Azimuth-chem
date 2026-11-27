@@ -261,7 +261,7 @@ PROGRAM = {
         'atlas_tab': 'Атлас',
         'atlas_tech': 'Технические изменения Атласа',
         'latest': 'Последняя запись',
-        'journal_sub': 'Что нового в программе и в каждом её разделе — моими словами.',
+        'journal_sub': 'Что нового в программе и в каждом её разделе.',
     },
     'en': {
         'intro': 'Azimuth is a teaching program for quantum chemistry: theory in the Atlas on azimuth-chem.com, the '
@@ -283,7 +283,7 @@ PROGRAM = {
         'atlas_tab': 'Atlas',
         'atlas_tech': 'Technical changes of the Atlas',
         'latest': 'Latest entry',
-        'journal_sub': 'What is new in the program and in each of its sections — in my own words.',
+        'journal_sub': 'What is new in the program and in each of its sections.',
     },
     'zh': {
         'intro': '“方位”是一个量子化学教学程序：在 azimuth-chem.com 网站上的图谱中学习理论，在罗盘中构建分子，在六分仪中准备计算，'
@@ -305,7 +305,7 @@ PROGRAM = {
         'atlas_tab': '图谱',
         'atlas_tech': '图谱的技术更改',
         'latest': '最新记录',
-        'journal_sub': '程序及其各个部分的新变化——用我自己的话说。',
+        'journal_sub': '程序及其各个部分的新变化。'
     },
 }
 
@@ -419,7 +419,7 @@ class ChangelogDialog(QDialog):
         head.setSpacing(16)
         self.picture = QLabel()
         # quill-journal (with the pile of papers, docs/art/QUAIL_ART.md № 17) once it is drawn; until then the notes
-        picture = quill.pixmap('journal' if quill.path('journal').is_file() else 'notes', 112)
+        picture = quill.pixmap('journal', 72)  # the open book of the journal (azimuth/state_icons.py)
         if not picture.isNull():
             self.picture.setPixmap(picture)
         head.addWidget(self.picture, 0, Qt.AlignmentFlag.AlignVCenter)

@@ -1,5 +1,10 @@
-"""Quill in the windows of the program.
+"""Quill in the windows of the program — since 0.247.0 the pictures of states in thin lines (azimuth/state_icons.py).
 
+§0 STATE
+    0.247.0 (2026-11-27, the owner: «квил в самой программе не нужна. Пусть она остается в Атласе как помощник, а в
+    программе ее убрать и заменить на более минималистичные картинки/иконки»): the names and the functions stay, the
+    pictures are those of state_icons; the dialogs show a picture of ICON_SIDE px at the top of a narrow column on the
+    left; nothing is mirrored; the empty places show a smaller picture. The files of assets/quill/ stay for the site.
 §1 PURPOSE
     The pictures of Quill chosen by the user (assets/quill/, brief: docs/art/QUAIL_ART.md) in the places of the
     program: the window of the calculation when it is over, the dialogs «Сохранить изменения перед выходом?»,
@@ -40,7 +45,7 @@
 import types
 
 from PySide6.QtCore import QEvent, QObject, Qt
-from PySide6.QtGui import QGuiApplication, QPixmap
+from PySide6.QtGui import QGuiApplication
 from PySide6.QtWidgets import QFrame, QMessageBox
 
 from .paths import ROOT
@@ -62,7 +67,7 @@ def path(name):
 # these pictures are shown
 # turned to the left — mirrored when drawn (pixmap(), the frames of the animation in the window of the calculation),
 # the files stay as they were approved (assets/quill/APPROVED.md)
-TURNED_LEFT = frozenset({'empty-result', 'calc-running'})
+TURNED_LEFT = frozenset()  # 0.247.0: the pictures of states are drawn as they are
 
 
 def turned(name, image):
@@ -78,18 +83,13 @@ def turned(name, image):
 
 
 def pixmap(name, size, ratio=None):
-    source = path(name)
-    image = QPixmap(str(source)) if source.is_file() else QPixmap()
-    if image.isNull():
-        return image
+    """The picture of the state `name` (azimuth/state_icons.py), size × size logical pixels; null for an unknown name."""
+    from . import state_icons
+
     if ratio is None:
         app = QGuiApplication.instance()
         ratio = app.devicePixelRatio() if app is not None else 1.0
-    ratio = max(1.0, float(ratio))
-    side = round(size * ratio)
-    scaled = image.scaled(side, side, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
-    scaled.setDevicePixelRatio(ratio)
-    return turned(name, scaled)
+    return turned(name, state_icons.pixmap(name, size, max(1.0, float(ratio))))
 
 
 # a dialog with Quill has a blue edge on the side away from her (Quill stands on the left, the edge is on
@@ -165,9 +165,10 @@ def mark_edge(box):
     return box._quill_edge.strip
 
 
-ICON = 44  # the picture given to the box of Qt (its icon label — hidden when Quill stands at the side, _Side)
-SIDE = 124  # the column of Quill at the left of a dialog at most, px; her height is the height of the text
-SIDE_MIN = 56  # and at least (a dialog of one line)
+ICON = 44  # the picture given to the box of Qt (its icon label — hidden when the picture stands at the side, _Side)
+ICON_SIDE = 48  # px: the picture of the state at the top of its column (0.247.0)
+SIDE = 64  # the column of the picture at the left of a dialog, px
+SIDE_MIN = 64
 TEXT_WIDTH = 360  # the text of a dialog with Quill: no narrower than this
 WIDTH = SIDE + TEXT_WIDTH  # the window of a dialog with Quill at least this wide
 _ICON_LABEL, _TEXT_LABEL, _INFO_LABEL = 'qt_msgboxex_icon_label', 'qt_msgbox_label', 'qt_msgbox_informativelabel'
@@ -200,9 +201,8 @@ class _Side(QFrame):
         return self.sizeHint()
 
     def art(self):
-        """Quill without her clear edges, read a little larger than she is drawn (sharp), in steps of 40 px (a few cut
-        pictures kept, not one a pixel of height)."""
-        return trimmed_pixmap(self.name, max(SIDE, (self.height() // 40 + 1) * 40))
+        """The picture of the state, ICON_SIDE px (0.247.0: no more drawn to the height of the text)."""
+        return pixmap(self.name, ICON_SIDE)
 
     def paintEvent(self, event):
         from PySide6.QtCore import QRectF
@@ -211,12 +211,10 @@ class _Side(QFrame):
         picture = self.art()
         if picture.isNull() or self.height() < 8:
             return
-        size = picture.deviceIndependentSize()
-        k = min(self.width() / size.width(), self.height() / size.height())
-        w, h = size.width() * k, size.height() * k
+        side = min(ICON_SIDE, self.width(), self.height())
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
-        painter.drawPixmap(QRectF((self.width() - w) / 2, (self.height() - h) / 2, w, h), picture,
+        painter.drawPixmap(QRectF((self.width() - side) / 2, 2, side, side), picture,
                            QRectF(0, 0, picture.width(), picture.height()))
         painter.end()
 
@@ -264,13 +262,7 @@ def relayout(box):
     side = getattr(box, '_quill_side', None)
     if side is None:
         side = box._quill_side = _Side(getattr(box, '_quill_name', 'save'), box)
-    # her column as wide as she is at the height of the text and the buttons beside her (no empty strips at her sides
-    # in a short dialog): that height read from the rows at TEXT_WIDTH, before the box takes its size
-    tall = sum(w.heightForWidth(TEXT_WIDTH) if w.hasHeightForWidth() and w.heightForWidth(TEXT_WIDTH) > 0
-               else w.sizeHint().height() for w in column) + max(0, grid.verticalSpacing()) * (len(column) - 1)
-    art = trimmed_pixmap(side.name, 200)
-    if not art.isNull() and art.height() > 0:
-        side.setFixedWidth(round(min(SIDE, max(SIDE_MIN, tall * art.width() / art.height()))))
+    side.setFixedWidth(SIDE)  # the picture of the state at the top of a narrow column (0.247.0)
     grid.addWidget(side, 0, 0, len(column), 1)
     grid.addItem(QSpacerItem(TEXT_WIDTH, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed), len(column), 2)
     grid.setColumnStretch(0, 0)
@@ -343,7 +335,7 @@ def warning(parent, title, text, name='error'):
 
 
 def trimmed(picture):
-    """The picture without its clear edges (as modules/compass/view/quill_hint.trimmed)."""
+    """The picture without its clear edges (unused by the pictures of states since 0.247.0)."""
     from PySide6.QtGui import QImage
 
     if picture.isNull():
@@ -367,19 +359,20 @@ _TRIMMED = {}
 
 
 def trimmed_pixmap(name, size):
-    """pixmap(name, size) without its clear edges, cut once per picture, size and screen ratio."""
+    """pixmap(name, size), kept once per picture, size and screen ratio (the pictures of states have their margins
+    drawn in: nothing is cut since 0.247.0)."""
     app = QGuiApplication.instance()
     key = (name, size, app.devicePixelRatio() if app is not None else 1.0)
     if key not in _TRIMMED:
-        _TRIMMED[key] = trimmed(pixmap(name, size))
+        _TRIMMED[key] = pixmap(name, size)
     return _TRIMMED[key]
 
 
 class EmptyNote(QFrame):
-    """An empty place of a page — Quill (130 px, clear edges cut off) over the grey line of text, both centred
-    (docs/art/QUAIL_ART_DIALOGS.md: 'no-points', 'no-orbitals'). Without the picture only the text is shown."""
+    """An empty place of a page — the picture of the state (72 px) over the grey line of text, both centred
+    ('no-points', 'no-orbitals'). Without the picture only the text is shown."""
 
-    def __init__(self, text, name, size=130, parent=None):
+    def __init__(self, text, name, size=72, parent=None):
         from PySide6.QtWidgets import QLabel, QVBoxLayout
 
         super().__init__(parent)

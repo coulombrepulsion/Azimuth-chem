@@ -250,14 +250,14 @@ class ViewerDrawing:
         font = QFont('Arial', 14)
         p.setFont(font)
         p.setPen(ink)
-        if getattr(self, 'hint_shown', False):  # Quill says it in her bubble (compass/quill_hint.py)
-            return  # in the crystals too
         if hasattr(self, 'empty_text'):
             p.drawText(QRectF(self.rect()), Qt.AlignmentFlag.AlignCenter, self.empty_text)
             return
         metrics = QFontMetricsF(font)
         size = metrics.height() * 1.05
-        parts = [(tr('Постройте свою молекулу'), 'edit'), (tr('или откройте готовую'), 'folder')]
+        from modules.compass.view.viewer import EMPTY_PARTS
+
+        parts = [(tr(text), glyph) for text, glyph in getattr(self, 'empty_parts', None) or EMPTY_PARTS]
 
         def width(text):
             return metrics.horizontalAdvance(text) + 6 + size

@@ -553,31 +553,24 @@ def test_building_switches_are_icon_buttons(window, app):
 
 
 def test_quill_pictures(window, app, monkeypatch):
-    # the pictures of Quill chosen by the user — sharp at the ratio of the screen; the dialogs with Quill
-    # answer through the replaced QMessageBox.question (no window in the tests); the window of the calculation
-    # shows Quill when it is over, Spectrum next to «результата ещё нет»
+    # 0.247.0: the pictures of states in thin lines (azimuth/state_icons.py) instead of Quill, under the same names —
+    # sharp at the ratio of the screen, nothing mirrored; the dialogs answer through the replaced QMessageBox.question
+    # (no window in the tests); the window of the calculation shows the picture of its state
     from PySide6.QtWidgets import QFrame, QMessageBox
 
-    from azimuth import quill
+    from azimuth import quill, state_icons
 
     for name in quill.NAMES:
-        assert quill.path(name).is_file(), name
         picture = quill.pixmap(name, 96, 2.0)
-        assert not picture.isNull() and max(picture.width(), picture.height()) == 192
+        assert not picture.isNull() and picture.width() == picture.height() == 192, name
         assert picture.devicePixelRatio() == 2.0
-    assert quill.pixmap('missing', 96).isNull()
-    # those two are shown mirrored
-    from PySide6.QtCore import Qt as _Qt
-    from PySide6.QtGui import QPixmap as _QPixmap, QTransform as _QTransform
-
-    for name in quill.NAMES:
-        raw = _QPixmap(str(quill.path(name))).scaled(192, 192, _Qt.AspectRatioMode.KeepAspectRatio,
-                                                     _Qt.TransformationMode.SmoothTransformation)
-        expected = raw.transformed(_QTransform().scale(-1, 1)) if name in quill.TURNED_LEFT else raw
-        assert quill.pixmap(name, 96, 2.0).toImage() == expected.toImage(), name
-    assert quill.TURNED_LEFT == {'empty-result', 'calc-running'}
-    # Quill in a column at the left over all the rows, as
-    # tall as the headline, the text, the check box and the buttons at her right and no taller; no blue edge
+        assert state_icons.svg(name), name
+    assert quill.pixmap('missing', 96).isNull() and quill.TURNED_LEFT == frozenset()
+    image = quill.pixmap('calc-failed', 48, 1.0).toImage()  # thin lines on a clear ground, the red of a failure
+    alphas = [image.pixelColor(x, y).alpha() for x in range(48) for y in range(48)]
+    assert 0 < sum(a > 0 for a in alphas) < 48 * 48 * 0.3
+    assert any(image.pixelColor(x, y).red() > 180 and image.pixelColor(x, y).alpha() > 200 for x in range(48) for y in range(48))
+    # the picture at the top of a narrow column at the left over all the rows; no blue edge
     from PySide6.QtWidgets import QCheckBox, QLabel, QWidget
 
     box = QMessageBox(window)
@@ -600,9 +593,10 @@ def test_quill_pictures(window, app, monkeypatch):
     rows = [text, info, box.checkBox(), buttons]
     assert [grid.getItemPosition(grid.indexOf(w))[:2] for w in rows] == [(0, 2), (1, 2), (2, 2), (3, 2)]
     assert grid.getItemPosition(grid.indexOf(side)) == (0, 0, 4, 1) and 'Магнитные атомы' in text.text()
-    assert side.sizeHint().height() == 0  # she asks for no height: the text and the buttons decide it
-    assert abs(side.geometry().top() - text.geometry().top()) <= 2 and abs(side.geometry().bottom() - buttons.geometry().bottom()) <= 2
-    assert quill.SIDE_MIN <= side.width() <= quill.SIDE and text.geometry().left() > side.geometry().right()
+    assert side.sizeHint().height() == 0  # it asks for no height: the text and the buttons decide it
+    assert side.width() == quill.SIDE and text.geometry().left() > side.geometry().right()
+    assert not side.art().isNull() and side.art().deviceIndependentSize().width() == quill.ICON_SIDE
+    side.grab()
     assert 'Ni' in info.text()
     box.close()
     plain = QMessageBox(window)
@@ -628,20 +622,9 @@ def test_quill_pictures(window, app, monkeypatch):
 
     job_window = window.job_window
     job_window.begin('H₂O')
-    # while it runs — the animation of Quill counting, played only while the window is seen
+    # while it runs — the picture of a running calculation (no animation since 0.247.0)
     assert job_window.picture_name == 'calc-running' and not job_window.picture.isHidden()
-    assert not job_window.movie_running()  # the window is hidden
-    job_window.show()
-    app.processEvents()
-    assert job_window.movie_running() and not job_window.picture.pixmap().isNull()
-    from PySide6.QtGui import QTransform
-
-    shown = job_window.picture.pixmap()  # the frame of the animation, turned to the left
-    frame = job_window._movie.currentPixmap()
-    frame.setDevicePixelRatio(shown.devicePixelRatio())
-    assert shown.toImage() == frame.transformed(QTransform().scale(-1, 1)).toImage()
-    job_window.hide()
-    assert not job_window.movie_running()
+    assert not job_window.picture.pixmap().isNull() and not job_window.movie_running()
     assert job_window.show_picture('calc-done') and job_window.picture_name == 'calc-done'
     assert not job_window.picture.isHidden()
     assert not job_window.show_picture('missing') and job_window.picture.isHidden()
@@ -674,7 +657,8 @@ def test_quill_dialogs_and_empty_places(window, app, monkeypatch):
     assert quill.warning(window, 'T', 'x', 'offline') == QMessageBox.StandardButton.Ok and seen == ['T']
     note = quill.EmptyNote('t', 'no-points')
     assert note.text() == 't' and not note.picture.pixmap().isNull() and not note.picture.isHidden()
-    assert quill.trimmed_pixmap('sextant-empty', 145).width() < quill.pixmap('sextant-empty', 145).width()
+    assert note.picture.pixmap().deviceIndependentSize().width() == 72
+    assert quill.trimmed_pixmap('sextant-empty', 145).width() == quill.pixmap('sextant-empty', 145).width()
     assert quill.EmptyNote('t', 'missing').picture.isHidden()
 
     class Offline(ValueError):
@@ -690,47 +674,21 @@ def test_quill_dialogs_and_empty_places(window, app, monkeypatch):
 
 
 def test_crystal_quill_hint(window, app):
-    # «Компас · Кристалл» has its own Quill (quill-empty-crystal.webp) in the lower LEFT corner of the empty
-    # field, the bubble to the right of her with the blue side on the right; the folder opens a CIF, the crystal an
-    # example; once a crystal is there she is gone for this run
+    # 0.247.0: no Quill in the empty field of «Компас · Кристалл» — the field says: a CIF file or an example
+    from pathlib import Path
+
+    from modules.compass.view.viewer import CRYSTAL_PARTS
+
     window.dirty = False
     window.resize(1400, 900)
     window.show()
     window.navigate(0)
     window.crystal_tool.set_compass_mode('crystal')
     app.processEvents()
-    hint = window.crystal_hint
-    assert not window.molecule.atoms and not hint.isHidden() and window.viewer.hint_shown
-    assert window.quill_hint.isHidden()
-    field = window.viewer.geometry()
-    assert field.contains(hint.geometry())
-    assert hint.geometry().left() < field.center().x() and hint.geometry().bottom() > field.center().y()
-    assert hint.quill.geometry().right() <= hint.bubble.geometry().left() + 1  # she is left of the bubble
-    from azimuth import quill as quill_pictures
-
-    picture = hint.bubble.grab().toImage()
-    colour = picture.pixelColor(picture.width() - 1 - round(2 * picture.devicePixelRatio()), picture.height() // 2)
-    blue = quill_pictures.edge_color(hint.bubble.fill)
-    assert abs(colour.red() - blue.red()) < 30 and abs(colour.blue() - blue.blue()) < 30
-    window.viewer.grab()  # the pale text is not painted under her
-    calls = []
-    window.crystal_tool.open_cif = lambda: calls.append('cif')
-    window.opening_tool.open_example = lambda: calls.append('example')
-    try:
-        hint.edit_button.click()
-        hint.open_button.click()
-    finally:
-        del window.crystal_tool.open_cif, window.opening_tool.open_example
-    assert calls == ['cif', 'example'] and not hint.isHidden()
+    assert window.crystal_hint is None and window.viewer.empty_parts == CRYSTAL_PARTS
+    assert not Path(__file__).resolve().parents[2].joinpath('modules', 'compass', 'view', 'quill_hint.py').exists()
+    window.viewer.grab()
     window.crystal_tool.set_compass_mode('molecule')
-    assert hint.isHidden()
-    window.crystal_tool.set_compass_mode('crystal')
-    assert not hint.isHidden()
-    window.load_molecule(read_xyz(next(iter(EXAMPLES.values()))))  # a crystal is there
-    assert hint.isHidden() and hint.dismissed
-    hint.dismissed = False
-    window.crystal_tool.set_compass_mode('molecule')
-
 
 def test_chemcraft_menu_actions(window):
     # the new actions of the Compass menus change the structure as one undoable step

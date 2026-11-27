@@ -662,9 +662,15 @@ class CompassWorkspace(
         return molecule
 
     def update_side_quill(self):
-        """Quill with her bubble in the lower right corner of the field — only while «Компас · Молекула» is
-        empty, the field is large enough and she has not been sent away in this run; the field then draws no hint."""
+        """What the empty field says: how to begin a molecule, or a crystal in «Компас · Кристалл» (0.247.0: the hint
+        of Quill with her bubble went; the name stays — the actions of Compass call it)."""
         crystal_mode = getattr(self, 'compass_mode', 'molecule') == 'crystal'
+        from modules.compass.view.viewer import CRYSTAL_PARTS, EMPTY_PARTS
+
+        parts = CRYSTAL_PARTS if crystal_mode else EMPTY_PARTS
+        if getattr(self.viewer, 'empty_parts', None) != parts:
+            self.viewer.empty_parts = parts
+            self.viewer.update()
         any_shown = False
         # the molecule's Quill (lower right) and the crystal's (lower left), each in its own subsection
         for hint, mine in ((getattr(self, 'quill_hint', None), not crystal_mode),
