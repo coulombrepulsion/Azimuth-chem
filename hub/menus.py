@@ -118,10 +118,7 @@ class HubMenus:
                 None,
                 own('О программе', self.show_about),
             )
-            # a search field on top, as in the Help menu of macOS
-            from hub import menu_search
-
-            menu_search.install(box, self)
+            self.header.set_search(self)  # the search: the magnifier at the right end of the row of the menus
             return box
 
         def picture_menu(gif='GIF: вращение молекулы'):

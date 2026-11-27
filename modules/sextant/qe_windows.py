@@ -7,8 +7,11 @@
     A student needs neither MSYS2 nor administrator rights: the packages are plain archives, and the programs run from
     any folder when their DLLs lie beside them.
 §2 ALGORITHM
-    1. The list of the repository (MIRROR + «ucrt64.db», a tar of «<name>-<version>/desc» compressed by zstd) is read:
-       parse_database -> {name: Package(name, version, filename, sha256, size, depends, provides)}.
+    1. The list of the repository («ucrt64.db», a tar of «<name>-<version>/desc» compressed by zstd) is read:
+       parse_database -> {name: Package(name, version, filename, sha256, size, depends, provides)}. The list and
+       every archive are asked of MIRRORS in turn (Mirrors.get): the first mirror that gives the file whole serves,
+       and is asked first for the next file. pinned() then puts the versions of PINNED in place of those offered:
+       Quantum ESPRESSO 7.5-6, since 7.6-1 of the repository does not read its own saved folder on Windows.
     2. closure(packages, PACKAGE): the package and everything it depends on, through «provides» (omp is libgomp,
        fc-libs is libgfortran) and without the version conditions («>=1.2»).
     3. Each archive is downloaded, its SHA-256 compared with that of the list, unpacked, and the files of
@@ -24,8 +27,10 @@
     6. The check: pw.exe run on an empty input prints «Program PWSCF v.…» (only on Windows: elsewhere the files are
        written and not run).
 §4 SPECIFICATION
-    MIRROR, REPOSITORY, PACKAGE, PROGRAMS (the names of qe_inputs → the .exe of the build), exe_name('pw.x') ->
-    'pw.exe'. parse_desc(text) -> Package; parse_database(tar bytes — not compressed) -> {name: Package};
+    MIRRORS (MIRROR — the first), REPOSITORY, PACKAGE, PINNED, PROGRAMS (the names of qe_inputs → the .exe of the
+    build), exe_name('pw.x') -> 'pw.exe'. pinned(packages, versions=None) -> {name: Package};
+    Mirrors(fetch, mirrors=None).get(name, read=None) -> bytes or what read returned (Unreachable — an OSError whose
+    text tells the user what to do — when no mirror served). parse_desc(text) -> Package; parse_database(tar bytes — not compressed) -> {name: Package};
     closure(packages, name) -> [Package] (ValueError names a dependency the list has not);
     wanted(member name) -> the file name to keep or None; unpack(tar bytes, target) -> [names written];
     STACK; widen_stack(bytes of an .exe, size=STACK) -> bytes (ValueError for a file that is not a 64-bit PE);
@@ -48,9 +53,20 @@ import tarfile
 from dataclasses import dataclass
 from pathlib import Path
 
-MIRROR = 'https://mirror.msys2.org/mingw/ucrt64/'
+# the same repository in several places: a file is taken from the first that gives it whole (the first is tried first;
+# from some networks the connection to it breaks — «SSL: UNEXPECTED_EOF» — while the others answer)
+MIRRORS = ('https://mirror.msys2.org/mingw/ucrt64/', 'https://repo.msys2.org/mingw/ucrt64/',
+           'https://mirror.yandex.ru/mirrors/msys2/mingw/ucrt64/', 'https://mirror.selfnet.de/msys2/mingw/ucrt64/',
+           'https://mirrors.tuna.tsinghua.edu.cn/msys2/mingw/ucrt64/', 'https://ftp.osuosl.org/pub/msys2/mingw/ucrt64/')
+MIRROR = MIRRORS[0]
 REPOSITORY = 'ucrt64.db'
 PACKAGE = 'mingw-w64-ucrt-x86_64-quantum-espresso'
+# The version taken whatever the list offers: {name: (version, file, SHA-256, bytes)}. Quantum ESPRESSO 7.6-1 of MSYS2
+# (Windows 11, 2026-11-27) does not read the folder it has just saved — bands.exe, dos.exe, projwfc.exe and ph.exe end
+# at «data-file-schema.xml» (a crash or «Error in arraytointeger»), so only pw.exe alone works. 7.5-6 over the libraries
+# of the same list passes the energy, the bands, the density of states and the phonons of silicon.
+PINNED = {PACKAGE: ('7.5-6', 'mingw-w64-ucrt-x86_64-quantum-espresso-7.5-6-any.pkg.tar.zst',
+                    '4d87fde6c41430e783bc1ccabf779ec69d9a5bf6bbd17665988561020261c92c', 61396103)}
 BIN = 'ucrt64/bin/'
 # the programs the tasks of Azimuth run (qe_inputs.STEPS) and their names in this build
 PROGRAMS = {'pw.x': 'pw.exe', 'ph.x': 'ph.exe', 'dos.x': 'dos.exe', 'projwfc.x': 'projwfc.exe', 'bands.x': 'bands.exe',
@@ -133,6 +149,63 @@ def closure(packages, name=PACKAGE):
         found.append(packages[real])
         queue += list(packages[real].depends)
     return found
+
+
+def pinned(packages, versions=None):
+    """The list with the versions of PINNED put in place of those offered (what a package needs stays that of the list)."""
+    from dataclasses import replace
+
+    versions = PINNED if versions is None else versions
+    packages = dict(packages)
+    for name, (version, filename, sha256, size) in versions.items():
+        if name in packages:
+            packages[name] = replace(packages[name], version=version, filename=filename, sha256=sha256, size=size)
+    return packages
+
+
+class Unreachable(OSError):
+    """No mirror gave a file: the text says what to do."""
+
+
+class Mirrors:
+    """A file of the repository from the first mirror that gives it whole; the mirror that answered is asked first
+    the next time. fetch(url) -> bytes (OSError — the connection)."""
+
+    def __init__(self, fetch, mirrors=None):
+        self.fetch = fetch
+        self.order = list(MIRRORS if mirrors is None else mirrors)
+
+    def get(self, name, read=None):
+        """read(bytes) -> what is returned (ValueError, tarfile.TarError: the file is damaged — the next mirror);
+        None: the bytes themselves. Unreachable when no mirror served."""
+        last, damaged = '', ''
+        for mirror in list(self.order):
+            try:
+                data = self.fetch(mirror + name)
+                found = data if read is None else read(data)
+            except (ValueError, tarfile.TarError) as exc:
+                damaged = f'{mirror}: {exc}'
+                continue
+            except OSError as exc:
+                last = f'{mirror}: {type(exc).__name__}: {exc}'
+                continue
+            self.order.remove(mirror)
+            self.order.insert(0, mirror)
+            return found
+        if damaged:
+            raise Unreachable(f'{name}: no mirror of MSYS2 gave the file whole ({damaged}); try again later')
+        raise Unreachable(f'{name}: no mirror of MSYS2 answered — the connection to the Internet breaks ({last}). Check '
+                          'the network; with a VPN or a proxy switched on try without it (or the other way round) and '
+                          'press the button again: what is already here is kept')
+
+
+def _whole(package):
+    """read of Mirrors.get for an archive: the bytes when their SHA-256 is that of the list."""
+    def read(data):
+        if hashlib.sha256(data).hexdigest() != package.sha256:
+            raise ValueError('the checksum differs from that of the list')
+        return data
+    return read
 
 
 def wanted(member, programs=None):
@@ -281,7 +354,7 @@ def install(root, fetch=None, zstd=None, say=print, run=None):
 
     from modules.sextant import install_tools
 
-    fetch = fetch or _fetch
+    mirrors = Mirrors(fetch or _fetch)
     root = Path(root)
     target = install_tools.qe_prefix(root) / 'bin'
     try:
@@ -290,19 +363,19 @@ def install(root, fetch=None, zstd=None, say=print, run=None):
             if zstd is None:
                 say('[tools] ERROR: no program to unpack zstd archives (the package zstd of conda-forge was not installed)')
                 return 1
-        say(f'[tools] Quantum ESPRESSO (Windows, MSYS2): the list of {MIRROR}')
-        packages = closure(parse_database(decompress(fetch(MIRROR + REPOSITORY), zstd)))
+        say('[tools] Quantum ESPRESSO (Windows, MSYS2): the list of the repository')
+        listed = mirrors.get(REPOSITORY, lambda data: parse_database(decompress(data, zstd)))
+        say(f'[tools] the mirror: {mirrors.order[0]}')
+        packages = closure(pinned(listed))
         total = sum(p.size for p in packages)
         say(f'[tools] {len(packages)} packages, {total / 1e6:.0f} MB to download')
         count = 0
         for k, package in enumerate(packages, 1):
             say(f'[tools] {k}/{len(packages)} {package.filename} ({package.size / 1e6:.1f} MB)')
-            data = fetch(MIRROR + package.filename)
-            if hashlib.sha256(data).hexdigest() != package.sha256:
-                say(f'[tools] ERROR: {package.filename}: the checksum differs from that of the list — the download is '
-                    'damaged; try again')
-                return 1
-            count += len(unpack(decompress(data, zstd), target))
+            count += len(unpack(decompress(mirrors.get(package.filename, _whole(package)), zstd), target))
+    except Unreachable as exc:
+        say(f'[tools] ERROR: Quantum ESPRESSO was not installed: {exc}')
+        return 1
     except (OSError, ValueError, tarfile.TarError) as exc:
         say(f'[tools] ERROR: Quantum ESPRESSO was not installed: {type(exc).__name__}: {exc}')
         return 1
@@ -369,7 +442,7 @@ def install_cp2k(root, fetch=None, zstd=None, say=print, run=None):
 
     from modules.sextant import install_tools
 
-    fetch = fetch or _fetch
+    mirrors = Mirrors(fetch or _fetch)
     root = Path(root)
     prefix = install_tools.cp2k_prefix(root)
     target = prefix / 'bin'
@@ -379,19 +452,20 @@ def install_cp2k(root, fetch=None, zstd=None, say=print, run=None):
             if zstd is None:
                 say('[tools] ERROR: no program to unpack zstd archives (the package zstd of conda-forge was not installed)')
                 return 1
-        say(f'[tools] CP2K (Windows, MSYS2): the list of {MIRROR}')
-        packages = closure(parse_database(decompress(fetch(MIRROR + REPOSITORY), zstd)), CP2K_PACKAGE)
+        say('[tools] CP2K (Windows, MSYS2): the list of the repository')
+        listed = mirrors.get(REPOSITORY, lambda data: parse_database(decompress(data, zstd)))
+        say(f'[tools] the mirror: {mirrors.order[0]}')
+        packages = closure(pinned(listed), CP2K_PACKAGE)
         total = sum(p.size for p in packages)
         say(f'[tools] {len(packages)} packages, {total / 1e6:.0f} MB to download')
         count = 0
         for k, package in enumerate(packages, 1):
             say(f'[tools] {k}/{len(packages)} {package.filename} ({package.size / 1e6:.1f} MB)')
-            data = fetch(MIRROR + package.filename)
-            if hashlib.sha256(data).hexdigest() != package.sha256:
-                say(f'[tools] ERROR: {package.filename}: the checksum differs from that of the list — the download is '
-                    'damaged; try again')
-                return 1
+            data = mirrors.get(package.filename, _whole(package))
             count += len(unpack(decompress(data, zstd), target, (CP2K_PROGRAM,), CP2K_DATA, cp2k_data(prefix)))
+    except Unreachable as exc:
+        say(f'[tools] ERROR: CP2K was not installed: {exc}')
+        return 1
     except (OSError, ValueError, tarfile.TarError) as exc:
         say(f'[tools] ERROR: CP2K was not installed: {type(exc).__name__}: {exc}')
         return 1

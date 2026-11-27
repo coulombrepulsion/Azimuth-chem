@@ -701,7 +701,7 @@ def test_section_menus_live_in_the_header(hub, app):
     assert {'Удалить из проекта…', 'Вернуть удалённые', 'Пакетный режим', 'Добавить молекулы…'} <= set(compass['Проект'])
     assert not {'Сохранить', 'Сохранить как…', 'Новый проект с расчётами…', 'Открыть проект…',
                 'Молекулы и расчёты проекта…'} & set(compass['Проект'])  # they are in «Файл» only
-    assert compass['Справка'] == ['Поиск по меню', 'Руководство', 'Что нового', 'Таблица Менделеева', 'Справочник',
+    assert compass['Справка'] == ['Руководство', 'Что нового', 'Таблица Менделеева', 'Справочник',
                                   'Единицы и константы', 'Растворители', 'Множители частот', 'Опытные данные',
                                   'Проверить обновления…', 'Проверить установку…', 'Папка журналов программы',
                                   'Отчёт об ошибке…', 'О программе']
@@ -1471,3 +1471,37 @@ def test_the_items_the_header_makes_itself_go_on_the_panels_too(hub, app):
         assert bar.find(key)[0] is again
     finally:
         bar.reset()
+
+
+def test_an_item_carried_in_over_the_field_can_still_be_dropped_on_a_panel(hub, app):
+    # Windows, 2026-11-27: «Заряд и мультиплетность» and «Поиск конформеров…» stand low in the menu «Расчёт» — when the
+    # menu closed, the item was over the field, where no button goes; the card ignored that DragEnter, Qt sent it no
+    # DragMove after it, and the sign «not here» stayed wherever the item was carried
+    from PySide6.QtCore import QEvent, QMimeData, QPoint, QPointF, Qt
+    from PySide6.QtGui import QDragEnterEvent, QDragMoveEvent
+
+    from modules.compass.actions import custom_bar as cb
+
+    hub.show_section('compass', animate=False)
+    app.processEvents()
+    bar = hub.studio.custom_bar
+    card = bar.card
+    data = QMimeData()
+    data.setData(cb.MIME, 'Расчёт/К параметрам расчёта'.encode('utf-8'))
+    middle = QPoint(card.width() // 2, card.height() // 2)
+    assert bar.slot(middle) is None  # the field itself: no place for a button
+    enter = QDragEnterEvent(middle, Qt.DropAction.MoveAction, data, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier)
+    enter.ignore()
+    assert bar.drags.eventFilter(card, enter) and enter.isAccepted()  # taken in, to be asked again at every move
+    there = QDragMoveEvent(middle, Qt.DropAction.MoveAction, data, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier)
+    assert bar.drags.eventFilter(card, there) and not there.isAccepted()  # over the field: «not here»
+    row = next(QPoint(x, y) for y in range(2, card.height(), 6) for x in range(2, card.width(), 12)
+               if bar.slot(QPoint(x, y)) is not None)  # a point at the row above the field (or at the column)
+    near = QDragMoveEvent(row, Qt.DropAction.MoveAction, data, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier)
+    near.ignore()
+    assert bar.drags.eventFilter(card, near) and near.isAccepted()  # at the row above the field: it can be dropped
+    foreign = QMimeData()
+    foreign.setText('not a button')
+    other = QDragEnterEvent(middle, Qt.DropAction.MoveAction, foreign, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier)
+    assert bar.drags.eventFilter(card, other) and not other.isAccepted()  # not ours: as before
+    bar.show_slot(None, at_once=True)

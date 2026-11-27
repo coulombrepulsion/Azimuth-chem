@@ -1,11 +1,12 @@
-"""«Справка → Поиск»: a search of the menus by a word, as in the Help menu of macOS, pointing to the item found.
+"""The magnifier of the header: a search of the menus by a word, as in the Help menu of macOS, pointing to the item found.
 
 §1 PURPOSE
-    A field at the top of «Справка» of every section: a word typed — the items of the menus of the section (with their
+    A magnifier at the right end of the row of the menus of every section (hub/header.py: SectionHeader.search_button;
+    in «Справка» until 0.244.0) opens a field: a word typed — the items of the menus of the section (with their
     submenus) and the buttons of the window whose name or tooltip has it are listed under the field, with their path
     («Кристалл ▸ Межмолекулярные взаимодействия ▸ Поверхность Хиршфельда…»). A result chosen is shown where it is, as
     the Help menu of macOS does: its menus open one after another and the item is highlighted (Enter runs it), or the
-    button is framed in blue for a moment with its tooltip. Ctrl+Shift+/ (⌘? on the Mac) opens «Справка» with the field.
+    button is framed in blue for a moment with its tooltip. Ctrl+Shift+/ (⌘? on the Mac) opens the field.
 §2 ALGORITHM
     entries(header, window): every action of the menus of the header (not separators, not the field itself), with the
     titles of the menus above it; every visible push button of the window that has a tooltip. find(entries, text):
@@ -163,7 +164,8 @@ def _restore(widget, sheet):
 
 
 def install(menu, hub):
-    """The field at the top of «Справка»: what is typed lists the results under it (as the Help menu of macOS)."""
+    """The field at the top of a menu — that of the magnifier of the header (SectionHeader.set_search): what is typed
+    lists the results under it (as the Help menu of macOS)."""
     edit = QLineEdit()
     edit.setPlaceholderText(tr('Поиск по меню и кнопкам'))
     edit.setClearButtonEnabled(True)
@@ -216,11 +218,10 @@ def install(menu, hub):
 
 
 def open_help(header):
-    """Ctrl+Shift+/ (⌘?): «Справка» of the section opened, the cursor in its field."""
-    button = next((b for b in getattr(header, 'menu_buttons', ()) if hasattr(b.menu(), 'search_field')), None)
-    if button is None:
+    """Ctrl+Shift+/ (⌘?): the menu of the magnifier of the header, the cursor in its field."""
+    button, menu = getattr(header, 'search_button', None), getattr(header, 'search_menu', None)
+    if button is None or menu is None or not button.isVisible():
         return None
-    menu = button.menu()
     menu.popup(button.mapToGlobal(button.rect().bottomLeft()))
     menu.search_field.setFocus()
     return menu

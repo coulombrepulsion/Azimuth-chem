@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.244.0 — 27 November 2026
+
+- ### 0.244.0 — The magnifier, the ruler and the system font
+
+Menu search has moved from «Help» to the magnifier at the right end of the menu row. With no atom selected the ruler removes all pinned measurements from the model – its icon shows a small cross at that moment. The windows are set in the font of the system, as before. A menu item dragged to the Compass panel can now be dropped even when the way began over the field of the model. On Windows Quantum ESPRESSO 7.5 is installed: with 7.6 the band structure, the density of states and phonons did not run. If Quantum ESPRESSO is already installed on Windows, install it once more.
+
 ## 0.243.0 — 27 November 2026
 
 - ### 0.243.0 — Crystals for a language model

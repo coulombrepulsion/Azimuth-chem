@@ -10,7 +10,7 @@ from azimuth.ui import menu_font_family
 
 
 STYLE = '''
-QWidget {font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', sans-serif; font-size: 13px; color: #1b2230;}
+QWidget {font-family: 'Segoe UI', 'Helvetica Neue', sans-serif; font-size: 13px; color: #1b2230;}
 QMainWindow, QWidget#workspace {background: #f5f6f8;}
 QFrame#sidebar {background: #e6ebf2;}
 QFrame#sidebar QLabel {color: #3f4d61; background: transparent;}

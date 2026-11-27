@@ -1062,6 +1062,20 @@ def test_model_overlays_pictures_and_stable_symmetry(window, app, tmp_path, monk
     assert window.pin_button.isChecked()  # the same angle
     window.pin_button.click()
     assert window.viewer.pinned == []
+    # with measurements on the model and no atom selected the ruler takes all of them away (the owner, 2026-11-27)
+    for chosen_atoms in ([1, 0, 2], [0, 1], [3, 4]):
+        window.viewer.set_selection(chosen_atoms)
+        window.pin_button.click()
+    assert len(window.viewer.pinned) == 3
+    window.viewer.set_selection([0])  # one atom: neither a measurement nor «nothing selected»
+    assert not window.pin_button.isEnabled() and len(window.viewer.pinned) == 3
+    window.viewer.set_selection([])
+    assert window.pin_button.isEnabled() and not window.pin_button.isChecked()
+    assert window.pin_button.toolTip() == 'Убрать с модели все измерения (ни один атом не выделен)'
+    assert window.pin_button.property('quail_icon') == 'ruler_clear'  # the ruler with a cross in its corner
+    window.pin_button.click()
+    assert window.viewer.pinned == [] and not window.pin_button.isEnabled() and not window.pin_button.isChecked()
+    assert window.pin_button.toolTip().startswith('Показать на модели') and window.pin_button.property('quail_icon') == 'ruler'
     window.lengths_action.trigger()
     chosen = iter(range(100))  # the save dialog answers with new files in tmp_path
     monkeypatch.setattr(

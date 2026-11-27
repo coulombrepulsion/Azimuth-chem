@@ -122,6 +122,7 @@ def _install(tmp_path, monkeypatch, files=FILES, broken=False, run=None):
 
     monkeypatch.setattr(qw, 'decompress', lambda data, zstd=None: data)
     monkeypatch.setattr(qw, 'needs_program', lambda: False)
+    monkeypatch.setattr(qw, 'PINNED', {})  # the made-up list is taken as it is
     fetched_pseudo = []
     monkeypatch.setattr(qe_pseudo, 'installed', lambda root, library=None: False)
     monkeypatch.setattr(qe_pseudo, 'download', lambda root: fetched_pseudo.append(root))
@@ -129,7 +130,8 @@ def _install(tmp_path, monkeypatch, files=FILES, broken=False, run=None):
 
     def fetch(url):
         asked.append(url)
-        assert url.startswith(qw.MIRROR)
+        if not url.startswith(qw.MIRROR):  # the other mirrors hold the same
+            raise OSError('no such host')
         name = url[len(qw.MIRROR):]
         if name != qw.REPOSITORY and name not in files:
             raise OSError(f'HTTP Error 404: {name}')  # what urllib raises is an OSError
@@ -145,7 +147,7 @@ def test_the_installation(tmp_path, monkeypatch):
                                          run=lambda program, folder: (started.append(program) or 'Program PWSCF v.7.6', ''))
     target = tmp_path / '.tools' / 'qe' / 'bin'
     assert code == 0 and sorted(p.name for p in target.iterdir()) == ['libgomp-1.dll', 'libopenblas.dll', 'ph.exe', 'pw.exe']
-    assert [a[len(qw.MIRROR):] for a in asked] == [qw.REPOSITORY, *list(FILES)[:3]]  # not the package nothing needs
+    assert asked == [qw.MIRROR + name for name in (qw.REPOSITORY, *list(FILES)[:3])]  # not the package nothing needs
     assert started == [target / 'pw.exe'] and pseudo == [tmp_path] and 'Program PWSCF v.7.6' in said[-2]
     assert install_tools.qe_program(tmp_path, windows=True) == target / 'pw.exe'
     assert install_tools.qe_program(tmp_path, 'ph.x', windows=True) == target / 'ph.exe'
@@ -154,7 +156,7 @@ def test_the_installation(tmp_path, monkeypatch):
 
 def test_what_stops_the_installation(tmp_path, monkeypatch):
     code, _, said, _ = _install(tmp_path / 'a', monkeypatch, broken=True)
-    assert code == 1 and 'checksum' in said[-1] and 'openblas' in said[-1]
+    assert code == 1 and 'checksum' in said[-1] and 'openblas' in said[-1] and 'whole' in said[-1]
     code, _, said, _ = _install(tmp_path / 'b', monkeypatch, run=lambda program, folder: ('', 'libgfortran-5.dll not found'))
     assert code == 1 and 'does not start' in said[-1] and 'libgfortran' in said[-1]
     lacking = {k: v for k, v in FILES.items() if 'gomp' not in k}
@@ -165,6 +167,72 @@ def test_what_stops_the_installation(tmp_path, monkeypatch):
     monkeypatch.setattr(qw, 'install_zstd', lambda root, say=print: None)
     said = []
     assert qw.install(tmp_path / 'd', fetch=lambda url: b'', say=said.append) == 1 and 'zstd' in said[-1]
+
+
+def test_a_file_comes_from_the_first_mirror_that_gives_it_whole():
+    # Windows, 2026-11-27: mirror.msys2.org broke the connection («SSL: UNEXPECTED_EOF») while other mirrors answered
+    asked = []
+
+    def fetch(url):
+        asked.append(url)
+        if url.startswith('https://a/'):
+            raise OSError('[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol')
+        return b'cut' if url.startswith('https://b/') else b'whole'
+
+    def read(data):
+        if data != b'whole':
+            raise ValueError('the checksum differs from that of the list')
+        return data.upper()
+
+    mirrors = qw.Mirrors(fetch, ['https://a/', 'https://b/', 'https://c/', 'https://d/'])
+    assert mirrors.get('x.tar', read) == b'WHOLE' and asked == ['https://a/x.tar', 'https://b/x.tar', 'https://c/x.tar']
+    assert mirrors.order == ['https://c/', 'https://a/', 'https://b/', 'https://d/']  # the one that served goes first
+    del asked[:]
+    assert mirrors.get('y.tar') == b'whole' and asked == ['https://c/y.tar']
+    # nothing answers: what to do is said, not the words of the SSL library alone
+    silent = qw.Mirrors(fetch, ['https://a/'])
+    with pytest.raises(qw.Unreachable) as error:
+        silent.get('x.tar')
+    assert 'VPN' in str(error.value) and 'UNEXPECTED_EOF' in str(error.value) and 'x.tar' in str(error.value)
+    with pytest.raises(qw.Unreachable) as error:  # every mirror gives a damaged file: another message
+        qw.Mirrors(fetch, ['https://b/']).get('x.tar', read)
+    assert 'whole' in str(error.value) and 'VPN' not in str(error.value)
+    assert len(qw.MIRRORS) >= 4 and qw.MIRROR == qw.MIRRORS[0] and all(m.endswith('/mingw/ucrt64/') for m in qw.MIRRORS)
+
+
+def test_the_version_of_quantum_espresso_is_the_checked_one(tmp_path, monkeypatch):
+    # Windows 11, 2026-11-27: 7.6-1 of MSYS2 computes the energy and cannot read what it saved (bands, DOS, phonons)
+    version, filename, sha256, size = qw.PINNED[qw.PACKAGE]
+    assert version == '7.5-6' and filename == f'{qw.PACKAGE}-7.5-6-any.pkg.tar.zst' and len(sha256) == 64 and size > 5e7
+    listed = qw.parse_database(database())
+    changed = qw.pinned(listed)
+    assert (changed[qw.PACKAGE].filename, changed[qw.PACKAGE].sha256, changed[qw.PACKAGE].size) == (filename, sha256, size)
+    assert changed[qw.PACKAGE].depends == listed[qw.PACKAGE].depends  # the libraries are those of the list
+    assert changed[PREFIX + 'openblas'] == listed[PREFIX + 'openblas'] and listed[qw.PACKAGE].version == '7.6-1'
+    # an installation asks for the pinned file, and from a second mirror when the first is silent
+    import hashlib
+
+    old = PREFIX + 'quantum-espresso-7.5-6-any.pkg.tar.zst'
+    files = {**{k: v for k, v in FILES.items() if 'espresso' not in k}, old: QE}
+    monkeypatch.setattr(qw, 'decompress', lambda data, zstd=None: data)
+    monkeypatch.setattr(qw, 'needs_program', lambda: False)
+    monkeypatch.setattr(qw, 'PINNED', {qw.PACKAGE: ('7.5-6', old, hashlib.sha256(QE).hexdigest(), len(QE))})
+    from modules.sextant import qe_pseudo
+
+    monkeypatch.setattr(qe_pseudo, 'installed', lambda root, library=None: True)
+    asked, said = [], []
+
+    def fetch(url):
+        asked.append(url)
+        if not url.startswith(qw.MIRRORS[1]):
+            raise OSError('EOF occurred in violation of protocol')
+        name = url[len(qw.MIRRORS[1]):]
+        return database() if name == qw.REPOSITORY else files[name]
+
+    assert qw.install(tmp_path, fetch=fetch, say=said.append, run=lambda *a: ('Program PWSCF v.7.5', '')) == 0, said
+    assert asked[:2] == [qw.MIRROR + qw.REPOSITORY, qw.MIRRORS[1] + qw.REPOSITORY]
+    assert asked[2:] == [qw.MIRRORS[1] + name for name in (old, *list(FILES)[1:3])]  # the mirror that answered, at once
+    assert any(qw.MIRRORS[1] in line for line in said) and (tmp_path / '.tools' / 'qe' / 'bin' / 'pw.exe').is_file()
 
 
 def test_the_run_on_windows():
@@ -210,7 +278,11 @@ def test_cp2k_of_the_same_repository(tmp_path, monkeypatch):
     said, started = [], []
 
     def fetch(url):
+        if not url.startswith(qw.MIRROR):
+            raise OSError('no such host')
         name = url[len(qw.MIRROR):]
+        if name != qw.REPOSITORY and name not in files:
+            raise OSError('HTTP Error 404')
         return listing if name == qw.REPOSITORY else files[name]
 
     code = qw.install_cp2k(tmp_path, fetch=fetch, say=said.append,

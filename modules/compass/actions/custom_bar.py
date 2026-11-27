@@ -179,8 +179,12 @@ class _Drags(QObject):
                     self.bar.drag(obj)
                     return True
             elif kind in (QEvent.Type.DragEnter, QEvent.Type.DragMove) and obj is self.bar.card:
-                slot = self.bar.slot(event.position().toPoint()) if event.mimeData().hasFormat(MIME) else None
-                if slot is not None:
+                ours = event.mimeData().hasFormat(MIME)
+                slot = self.bar.slot(event.position().toPoint()) if ours else None
+                # the entry is accepted wherever it is: a widget that ignores DragEnter gets no DragMove after it, and
+                # a button that entered the card over the field (a menu item low in its menu — Windows, 2026-11-27)
+                # was refused wherever it was carried then. Each move says for itself whether a slot is near
+                if slot is not None or (ours and kind == QEvent.Type.DragEnter):
                     event.acceptProposedAction()
                 else:
                     event.ignore()

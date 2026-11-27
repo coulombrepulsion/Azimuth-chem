@@ -21,13 +21,7 @@ from tests.fake_programs import fake_program, q
 @pytest.fixture(scope='module')
 def app():
     app = QApplication.instance() or QApplication([])
-    from azimuth import fonts
-
-    if fonts.install():  # the typeface of the program (azimuth/fonts.py) — the same sizes on every system
-        font = app.font()
-        font.setFamily(fonts.FAMILY)
-        app.setFont(font)
-    app.setStyleSheet(STYLE)
+    app.setStyleSheet(STYLE)  # the font of the system, as the program
     yield app
 
 

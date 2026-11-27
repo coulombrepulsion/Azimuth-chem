@@ -53,13 +53,8 @@ def use_fusion(app):
     application keeps a mark instead."""
     if app is None or app.property('azimuth_fusion'):
         return False
-    from azimuth import fonts
-
-    family = fonts.install()  # the typeface of the program, from its own folder (azimuth/fonts.py), before the first window
-    if family:  # what is drawn outside the style sheet (painters, pictures of the windows) — the same typeface
-        font = app.font()
-        font.setFamily(family)
-        app.setFont(font)
+    # the font of the system (Segoe UI on Windows, Helvetica Neue on macOS — the style sheet names them): the typeface
+    # carried by the program (azimuth/fonts.py) was drawn too sharp on Windows (the owner, 2026-11-27) and is not set
     app.setStyle(_quiet_wheel_style())
     app.setProperty('azimuth_fusion', True)
     return True

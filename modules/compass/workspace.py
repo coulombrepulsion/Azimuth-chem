@@ -275,8 +275,14 @@ class CompassWorkspace(
         return iconify(HoldButton(step, tick, self.begin_hold, self.end_hold), name, title)
 
     def toggle_pin(self):
-        """The ruler next to r/∠: pin the measurement of the selection on the model (or take it away)."""
+        """The ruler next to r/∠: pin the measurement of the selection on the model (or take it away). With no atom
+        selected and measurements on the model — all of them are taken away."""
         sel = tuple(self.viewer.selected)
+        if not sel and self.viewer.pinned:
+            self.viewer.pinned = []
+            self.update_pin_button()
+            self.viewer.update()
+            return
         if not 2 <= len(sel) <= 4:
             self.pin_button.setChecked(False)
             return
@@ -291,8 +297,17 @@ class CompassWorkspace(
     def update_pin_button(self):
         sel = tuple(self.viewer.selected)
         ok = 2 <= len(sel) <= 4
-        self.pin_button.setEnabled(ok)
+        clears = not sel and bool(self.viewer.pinned)  # nothing selected: the button takes all of them away
+        self.pin_button.setEnabled(ok or clears)
         self.pin_button.setChecked(ok and any(m == sel or m == sel[::-1] for m in self.viewer.pinned))
+        name = 'ruler_clear' if clears else 'ruler'  # a small cross in the corner says what a click will do
+        if self.pin_button.property('quail_icon') != name:
+            from azimuth.icons import icon
+
+            self.pin_button.setIcon(icon(name))
+            self.pin_button.setProperty('quail_icon', name)
+        self.pin_button.setToolTip(tr('Убрать с модели все измерения (ни один атом не выделен)') if clears else
+                                   tr('Показать на модели: расстояние (2 атома), угол (3) или двугранный угол (4)'))
 
     def toggle_hbonds(self):
         self.viewer.show_hbonds = self.hbonds_action.isChecked()

@@ -1,4 +1,11 @@
-"""The typeface of the program: Inter (SIL Open Font License 1.1), carried in assets/fonts.
+"""Inter (SIL Open Font License 1.1), carried in assets/fonts — not the typeface of the windows since 0.244.0.
+
+§0 STATE
+    The owner, 2026-11-27: on Windows Inter is drawn sharper than Segoe UI («раньше он был мягче что ли, этот какой-то
+    слишком резкий»), so the windows use the font of the system again (azimuth/app_style.py names Segoe UI and
+    Helvetica Neue; azimuth/app.py sets nothing). What Inter was brought for — the same widths on every system, §1 —
+    is open again: a row that does not fit on Windows is to be laid out anew, not given another font. The files and
+    install() stay for a return to it; nothing of the program calls install().
 
 §1 PURPOSE
     The windows were drawn with the font of the system — Helvetica Neue on macOS, Segoe UI on Windows — and the same

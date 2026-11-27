@@ -48,9 +48,13 @@ def test_russian_and_greek_letters_are_its_own():
         assert all(metrics.inFontUcs4(ord(c)) for c in text if not c.isspace()), text
 
 
-def test_the_style_sheet_names_it_first():
+def test_the_windows_keep_the_font_of_the_system():
+    # the owner, 2026-11-27: Inter looked too sharp on Windows («раньше он был мягче») — the windows are drawn with the
+    # font of the system again; the files stay in assets/fonts, loaded by nothing but install()
     family = re.search(r'QWidget \{font-family: ([^;]+);', STYLE).group(1)
-    assert family.split(',')[0].strip(" '") == fonts.FAMILY
+    names = [name.strip(" '") for name in family.split(',')]
+    assert names == ['Segoe UI', 'Helvetica Neue', 'sans-serif'] and fonts.FAMILY not in names
+    assert 'fonts.install' not in (ROOT / 'azimuth' / 'app.py').read_text(encoding='utf-8')
 
 
 def test_the_files_are_in_the_manifest():

@@ -28,7 +28,7 @@
 - `azimuth/elements.py` — The elements for «Таблица Менделеева» of «Справка».
 - `azimuth/file_dialogs.py` — The folder of the file windows: every «Открыть…» starts where the last file was opened.
 - `azimuth/files.py` — Writing a text file whole or not at all.
-- `azimuth/fonts.py` — The typeface of the program: Inter (SIL Open Font License 1.1), carried in assets/fonts.
+- `azimuth/fonts.py` — Inter (SIL Open Font License 1.1), carried in assets/fonts — not the typeface of the windows since 0.244.0.
 - `azimuth/handbook.py` — The handbook of «Справка → Справочник» (azimuth/handbook_window.py): units and constants, solvents, scaling factors of frequencies and where to find experimental data — what one looks up while preparing a calculation or reading it.
 - `azimuth/handbook_window.py` — «Справка → Справочник»: units and constants, solvents, scaling factors of frequencies and where to find measured data (azimuth/handbook.py — the data and their sources).
 - `azimuth/headless.py` — Azimuth without its window: a molecule, the settings of a calculation, its input file, the run on this computer, its state and its result — the same code Sextant and Spectrum use; and the checks of the program (tools/test.py) as jobs.
@@ -102,7 +102,7 @@
 - `hub/home.py` — Hub home page: the name and the motto, what the program is, «continue where you left off», four section cards (moved from window.py).
 - `hub/job_indicator.py` — The long work of the program in the left panel of the hub: the turning compass while it runs, a mark when it ends.
 - `hub/launch.py` — Azimuth entry points. CLI and shared-state contract: docs/MODULES.md.
-- `hub/menu_search.py` — «Справка → Поиск»: a search of the menus by a word, as in the Help menu of macOS, pointing to the item found.
+- `hub/menu_search.py` — The magnifier of the header: a search of the menus by a word, as in the Help menu of macOS, pointing to the item found.
 - `hub/menus.py` — HubMenus: the menus of the header of the hub — the menus of each section (Compass, Sextant, Spectrum) built from the actions of Studio, and the label of the theme button; «Проект» of Compass, «Сервер» of Sextant and «Справка» of every se…
 - `hub/menus_sections.py` — The menus of each section of the hub: Compass, Compass · Crystal, Sextant, Spectrum. Each function is the branch of HubMenus._section_menus for its section and gets the helpers made there (menu, own, help_menu…).
 - `hub/registry.py` — Section registry of the Azimuth hub (contract: docs/MODULES.md §4).

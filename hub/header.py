@@ -122,6 +122,16 @@ class SectionHeader(QFrame):
             row.addWidget(widget, 0, Qt.AlignmentFlag.AlignVCenter)
             row.addSpacing(space)
         row.addStretch(1)
+        # the search of the menus and the buttons (hub/menu_search.py): a magnifier at the right end of the row, as in
+        # the Atlas — out of «Справка» (the owner, 2026-11-27)
+        self.search_button = QToolButton(bar)
+        self.search_button.setObjectName('menuSearch')
+        self.search_button.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
+        self.search_button.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.search_button.setFixedSize(30, 26)
+        self.search_button.hide()  # shown with the menus of a section
+        self.search_menu = None
+        row.addWidget(self.search_button, 0, Qt.AlignmentFlag.AlignVCenter)
         self.colors = ('#1b2230', '#5b6474', '#2a62b8', '#d8dce3', '#ffffff')
         self.family = ''
         self.line = QFrame()  # the 1 px line under the header, full width as in the Atlas
@@ -232,3 +242,32 @@ class SectionHeader(QFrame):
             self.menu_buttons.append(button)
         self.menu_rule.setVisible(bool(menus))
         self.menu_bar.setVisible(bool(menus))
+        self._dress_search(style, sheet, muted)
+        self.search_button.setVisible(bool(menus) and self.search_menu is not None)
+
+    def set_search(self, hub):
+        """The menu of the magnifier with the field of the search (made once; hub — what the search looks through)."""
+        if self.search_menu is not None:
+            return self.search_menu
+        from azimuth.i18n import tr
+        from hub import menu_search
+
+        self.search_menu = QMenu(self.search_button)
+        menu_search.install(self.search_menu, hub)
+        self.search_button.setMenu(self.search_menu)
+        title = tr('Поиск по меню и кнопкам')
+        self.search_button.setToolTip(title)
+        self.search_button.setAccessibleName(title)
+        MenuToggle.watch(self.search_button, self.search_menu)
+        return self.search_menu
+
+    def _dress_search(self, style, sheet, color):
+        from azimuth.icons import icon
+
+        self.search_button.setStyleSheet(style)
+        self.search_button.setIcon(icon('search', color))
+        if self.search_menu is not None:
+            self.search_menu.setStyleSheet(sheet)
+            self.search_menu.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+            self.search_menu.setWindowFlags(self.search_menu.windowFlags() | Qt.WindowType.FramelessWindowHint)
+            smooth(self.search_menu)

@@ -20,6 +20,9 @@ GLYPHS = {
     'folder': '<path d="M3.5 7.5V18a1.5 1.5 0 001.5 1.5h14a1.5 1.5 0 001.5-1.5V9.5A1.5 1.5 0 0019 8h-7l-2-2.5H5A1.5 1.5 0 003.5 7v.5z"/>',
     'close': '<path d="M6 6l12 12M18 6L6 18"/>',
     'ruler': '<path d="M3.5 15.5L15.5 3.5l5 5-12 12z"/><path d="M7 12l1.8 1.8M9.8 9.2l1.2 1.2M12.4 6.6l1.8 1.8"/>',
+    # the ruler with a small cross in the corner: nothing is selected — the button takes every measurement off the model
+    'ruler_clear': '<path d="M3.5 15.5L15.5 3.5l5 5-12 12z"/><path d="M7 12l1.8 1.8M9.8 9.2l1.2 1.2M12.4 6.6l1.8 1.8"/>'
+                   '<path d="M16.8 16.8l4.4 4.4M21.2 16.8l-4.4 4.4"/>',
     'move-selection': '<rect x="3.5" y="3.5" width="11" height="11" rx="2" stroke-dasharray="2.2 2.2"/><circle cx="9" cy="9" r="2"/><path d="M17 13v8M13 17h8M15.5 14.5L17 13l1.5 1.5M15.5 19.5L17 21l1.5-1.5M14.5 15.5L13 17l1.5 1.5M19.5 15.5L21 17l-1.5 1.5"/>',
     'lock': '<rect x="5" y="11" width="14" height="9.5" rx="2"/><path d="M8 11V8a4 4 0 018 0v3M12 15v2"/>',
     'cleanup': '<path d="M4 20l9-9M11 9l4 4"/><path d="M15.5 3.5l.9 2 2 .9-2 .9-.9 2-.9-2-2-.9 2-.9zM19.5 11l.6 1.3 1.3.6-1.3.6-.6 1.3-.6-1.3-1.3-.6 1.3-.6z"/>',
