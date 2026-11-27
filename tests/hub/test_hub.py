@@ -578,7 +578,7 @@ def test_ornament_is_fainter_over_surfaces(hub, app):
     combos = [w for w in content.findChildren(QComboBox) if w.isVisible()]
     assert shown and all(region.contains(centre(w)) for w in shown + combos)
     header_point = ornament.mapFrom(content, hub.header.mapTo(content, QPoint(hub.header.width() // 2, 4)))
-    assert hub.header.isVisible() and not region.contains(header_point)  # the header keeps the scales
+    assert hub.header.isVisible() and region.contains(header_point)  # the header is glass too (0.248.6)
     icons = [b for b in content.findChildren(QPushButton) if b.property('iconic') and not b.isChecked()]
     assert icons and not any(ornament.is_surface(b) for b in icons)  # transparent icon buttons are not surfaces
 

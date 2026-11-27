@@ -78,7 +78,7 @@ class SidebarSearch(QObject):
         self.field.installEventFilter(self)
         self.motion = QVariantAnimation(self)
         self.motion.setDuration(SLIDE)
-        self.motion.setEasingCurve(QEasingCurve.Type.OutCubic)
+        self.motion.setEasingCurve(QEasingCurve.Type.InOutCubic)
         self.motion.valueChanged.connect(self._grow)
         self.motion.finished.connect(self._moved)
         self._opening = False
@@ -153,9 +153,12 @@ class SidebarSearch(QObject):
         if app is not None:
             app.removeEventFilter(self)
         if animate:
+            # into the part of the button that is seen (0.248.6: it went to the width of the whole column and then
+            # vanished — the folding looked torn); the field hidden at once, the frame slides alone
+            self.field.hide()
             self.motion.stop()
             self.motion.setStartValue(float(self.panel.width()))
-            self.motion.setEndValue(float(self.button.width()))
+            self.motion.setEndValue(float(self._place().width()))
             self.motion.start()
         else:
             self._moved()
@@ -168,6 +171,7 @@ class SidebarSearch(QObject):
     def _moved(self):
         if not self._opening:
             self.panel.hide()
+            self.field.show()
             self.field.blockSignals(True)
             self.field.clear()
             self.field.blockSignals(False)
@@ -203,7 +207,10 @@ class SidebarSearch(QObject):
             return
         place = self.panel.geometry()
         count = max(1, self.results.count())
-        height = min(count, menu_limit()) * ROW + 12
+        row = self.results.sizeHintForRow(0) if self.results.count() else 0
+        row = row if row > 0 else ROW
+        # as tall as its rows (0.248.6: the estimate of ROW px a row left an empty band under the results)
+        height = min(count, menu_limit()) * row + 2 * self.results.frameWidth() + 10
         width = max(WIDTH, min(560, self.results.sizeHintForColumn(0) + 32))
         top = place.top() - height - 6  # over the field: the square stands low in the window
         if top < 8:

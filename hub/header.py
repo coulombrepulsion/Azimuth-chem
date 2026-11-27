@@ -136,8 +136,10 @@ class SectionHeader(QFrame):
             if dark
             else ('#1b2230', '#5b6474', '#2a62b8', '#d8dce3', '#ffffff')
         )
+        # glass (0.248.6): the header lets the page through a little; the Ornament draws the background under it
+        glass = 'rgba(25, 31, 40, 0.55)' if dark else 'rgba(255, 255, 255, 0.55)'
         self.setStyleSheet(
-            f'QFrame#sectionHeader {{background: {back}; border: none;}}QWidget#sectionBar {{background: {back};}}'
+            f'QFrame#sectionHeader {{background: {glass}; border: none;}}QWidget#sectionBar {{background: transparent;}}'
         )
         self.rule.setStyleSheet(f'background: {line}; border: none;')
         self.menu_rule.setStyleSheet(f'background: {line}; border: none;')

@@ -1,5 +1,11 @@
 # What’s new
 
+## 0.248.6 — 27 November 2026
+
+- ### 0.248.6 — A glass header
+
+The header of a section with its menus is glass too now, and the pictures of the sections show through the panels more. The search folds away smoothly and leaves no empty space under its results.
+
 ## 0.248.5 — 27 November 2026
 
 - ### 0.248.5 — Icons in the search

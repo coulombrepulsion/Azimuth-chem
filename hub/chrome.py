@@ -47,14 +47,15 @@ class Ornament(QWidget):
     never compete with the text.
 
     The scales lie on the background: wherever they pass under something with a filled surface they keep only THROUGH of
-    their strength, as if seen through a not quite opaque layer. Full strength remains on the bare page and over the
-    section header. Surfaces (see is_surface): panels and blocks (cards, the optimization steps drawer, Quill's bubble,
+    their strength, as if seen through a not quite opaque layer. Full strength remains on the bare page; the
+    section header is glass as the panels since 0.248.6. Surfaces (see is_surface): panels and blocks (cards, the optimization steps drawer, Quill's bubble,
     notices), buttons with a background (not the transparent icon buttons unless checked), combo and spin boxes, line
     edits, text and table views, tab bars and tab panes, the status bar, and the custom-drawn fields (the molecule,
     plots, the element tile). Text labels and layout containers are not surfaces. The area is a union of rectangles
     clipped to what is on screen, rebuilt on every paint (cheap: no path arithmetic)."""
 
-    THROUGH = 0.45  # share of the scales seen through a surface (0.2 in 0.35–0.46; the pictures were hidden too much)
+    THROUGH = 0.65  # share of the scales seen through a surface (0.2 in 0.35–0.46, 0.45 until 0.248.6 — the owner: «левые
+    # нижние картинки разделов пусть лучше немного просвечивают сквозь панели»)
     MARGIN = 240  # px left of the page the background is drawn for: what continues under the side panel (PanelGlass)
     TICK = 40  # ms between the frames of the gyroscope
     INTRO = 2.6  # s: the picture of a section moves this long after the section opens (0.246.0)
@@ -189,7 +190,9 @@ class Ornament(QWidget):
         name, kind = QWidget.objectName(widget), type(widget).__name__  # see surface_region
         if name in cls.SURFACE_NAMES or kind in cls.DRAWN:
             return True
-        if kind in cls.BACKGROUNDS or name in ('nav', 'lang', 'sectionHeader', 'scrim'):
+        if name == 'sectionHeader':  # glass as the panels (0.248.6: «шапка с меню тоже… частично прозрачная, как из стекла»)
+            return True
+        if kind in cls.BACKGROUNDS or name in ('nav', 'lang', 'scrim'):
             return False
         if isinstance(widget, QAbstractButton):
             if QWidget.property(widget, 'iconic'):
