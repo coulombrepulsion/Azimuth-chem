@@ -1,5 +1,11 @@
 # What’s new
 
+## 0.248.8 — 27 November 2026
+
+- ### 0.248.8 — The line on the edge
+
+The blue line of the selected project tab now lies right on the edge of the panel under it.
+
 ## 0.248.7 — 27 November 2026
 
 - ### 0.248.7 — Glass tabs
