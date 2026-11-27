@@ -46,6 +46,25 @@ def test_the_search_of_the_help_finds_a_menu_item_and_shows_it(hub):
     assert search.results.isHidden()
     search.close(animate=False)
 
+def test_a_result_shows_the_icon_of_its_button(hub, app):
+    # 0.248.5 (the owner: «чтобы в поиске помимо текста если это кнопка какая-то, то была иконка рядом»)
+    from hub.sidebar_search import picture_of
+
+    hub.show_section('compass', animate=False)
+    hub.show()
+    app.processEvents()
+    search = hub.search
+    search.open(animate=False)
+    search.field.setText('приблизить')  # the button «Приблизить» with its magnifier
+    shown = [(search.found[k], search.results.item(k)) for k in range(len(search.found))]
+    with_icon = [(entry, item) for entry, item in shown if picture_of(entry) is not None]
+    assert with_icon and all(not item.icon().isNull() for _, item in with_icon)
+    assert all(item.icon().isNull() for entry, item in shown if picture_of(entry) is None)
+    # a button is named by its section, not «Кнопка»
+    assert any(item.text().startswith('Компас · Молекула ▸ Приблизить') for _, item in with_icon)
+    search.close(animate=False)
+
+
 def test_the_search_finds_the_buttons_of_the_window(hub):
     from hub import menu_search
 

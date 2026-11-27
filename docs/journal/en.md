@@ -1,5 +1,11 @@
 # What’s new
 
+## 0.248.5 — 27 November 2026
+
+- ### 0.248.5 — Icons in the search
+
+In the results of the menu search a button now shows its icon beside its name – easier to recognise it in the window.
+
 ## 0.248.4 — 27 November 2026
 
 - ### 0.248.4 — Compass captions

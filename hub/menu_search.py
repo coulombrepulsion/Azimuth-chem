@@ -80,6 +80,9 @@ def entries(header, window=None):
             continue
         _walk(menu, (title,), out, seen)
     if window is not None:
+        # a button is named by the section it is in (0.248.5, the owner: «вместо надписи Кнопка — пусть указывает раздел,
+        # где она есть»): «Компас · Молекула ▸ Приблизить»
+        where = section_name(header) or tr('Кнопка')
         for widget in window.findChildren(QPushButton):
             try:
                 if not widget.isVisibleTo(window) or not widget.toolTip():
@@ -88,8 +91,17 @@ def entries(header, window=None):
                 continue
             tip = widget.toolTip()
             title = widget.text().strip() or tip.split(' · ')[0].split('\n')[0]
-            out.append(Entry((tr('Кнопка'),), title, None, widget, tip, widget.isEnabled()))
+            out.append(Entry((where,), title, None, widget, tip, widget.isEnabled()))
     return out
+
+
+def section_name(header):
+    """The name of the section shown, as words are written: «Компас · Молекула» (the header shows it in capitals)."""
+    try:
+        name = header.full_title() if header is not None and hasattr(header, 'full_title') else ''
+    except RuntimeError:
+        return ''
+    return ' · '.join(part.strip().capitalize() for part in name.split('·') if part.strip())
 
 
 def find(found, text, limit=LIMIT):

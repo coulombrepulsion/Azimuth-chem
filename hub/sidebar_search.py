@@ -18,7 +18,8 @@ slides out of the square to the right, the results are listed over it.
     the list; Escape, a click elsewhere or the result chosen — the panel slides back into the square.
 §4 SPECIFICATION
     SidebarSearch(hub, parent): button (QPushButton), panel (QFrame), field (QLineEdit), results (QListWidget),
-    found ([menu_search.Entry]); open(animate=True), close(animate=True), is_open(), set_dark(dark), choose(row).
+    found ([menu_search.Entry]); open(animate=True), close(animate=True), is_open(), set_dark(dark), choose(row);
+    picture_of(entry) -> QIcon | None — the icon shown beside a result (0.248.5).
 §7 TESTS
     tests/hub/test_menu_search.py.
 """
@@ -70,6 +71,7 @@ class SidebarSearch(QObject):
         self.results.setObjectName('sideSearchResults')
         self.results.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.results.setUniformItemSizes(True)
+        self.results.setIconSize(QSize(18, 18))
         self.results.hide()
         self.results.itemClicked.connect(lambda item: self.choose(self.results.row(item)))
         self.field.textChanged.connect(self._fill)
@@ -185,6 +187,9 @@ class SidebarSearch(QObject):
             self.results.addItem(item)
         for entry in self.found:
             item = QListWidgetItem(entry.label())
+            picture = picture_of(entry)
+            if picture is not None:
+                item.setIcon(picture)  # a button or an item with an icon — the icon beside the words (0.248.5)
             if entry.tip:
                 item.setToolTip(entry.tip)
             self.results.addItem(item)
@@ -250,6 +255,20 @@ class SidebarSearch(QObject):
         """A click elsewhere: the field gave up the cursor and no result is being chosen."""
         if self.panel.isVisible() and self._opening and not self.field.hasFocus() and not self.results.underMouse():
             self.close()
+
+
+def picture_of(entry):
+    """The icon of what a result names: that of its button or of its item of a menu; None when it has none."""
+    for source in (entry.widget, entry.action):
+        if source is None:
+            continue
+        try:
+            picture = source.icon()
+        except (AttributeError, RuntimeError):  # deleted since the search, or without icons
+            continue
+        if picture is not None and not picture.isNull():
+            return picture
+    return None
 
 
 def menu_limit():
