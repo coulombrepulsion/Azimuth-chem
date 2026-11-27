@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.248.15 — 27 November 2026
+
+- ### 0.248.15 — Pictures for a report
+
+Any plot of a crystal, an IRC or scan profile can now be saved as a picture – PNG or SVG, always on white, even in the dark theme: the button «Save the picture…» in the window, or the right mouse button on the plot. The axes of the convergence series got their units, and the bands «Wave vector k» under them.
+
 ## 0.248.14 — 27 November 2026
 
 - ### 0.248.14 — My notes again

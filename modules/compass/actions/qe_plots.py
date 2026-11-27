@@ -12,20 +12,81 @@
     EosPlot(): volumes [Å³], energies [meV from E₀ of the fit], curve [(V, meV)], minimum V₀ — the series of volumes
     and its Birch–Murnaghan fit;
     DosPlot(): energies [eV − E0], dos [states/eV]; QePlotWindow(parent, title, plot, rows, header, name):
-    plot, save_button; save(path=None) -> path (CSV: header and rows).
+    plot, save_button, picture_button; save(path=None) -> path (CSV: header and rows); save_picture(path=None) -> path.
+    save_picture(plot, path, title='') — the plot as a picture for a report (PNG twice the size on the screen, or SVG),
+    always light: white ground and dark ink whatever the theme (0.248.15, «У каждого графика подписаны оси и единицы»
+    of the plans of the projects; the students put these plots into their reports). Every _Plot offers it in its
+    menu of the right button too (the tabs «Зоны» and «Плотность состояний» of Spectrum have no window of their own).
 §7 TESTS
     tests/gui/test_gui_files.py::test_crystal_quantum_espresso_bands (the real bands and DOS of silicon).
 """
 
 from PySide6.QtCore import QPointF, QRectF, Qt
 from PySide6.QtGui import QColor, QFont, QPainter, QPainterPath, QPen
-from PySide6.QtWidgets import QDialog, QFileDialog, QHBoxLayout, QLabel, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QDialog, QFileDialog, QHBoxLayout, QLabel, QMenu, QVBoxLayout, QWidget
+
+from pathlib import Path
 
 from azimuth.i18n import tr
 from azimuth.ui import action_button
 
 LINE = '#2a62b8'
 ZERO = '#c0504d'
+PICTURE_SCALE = 2  # a PNG of a plot: twice its size on the screen, sharp in a report
+
+
+def save_picture(plot, path, title=''):
+    """The plot into a PNG or SVG file on a white ground with dark ink (a report is printed on white), whatever the
+    theme of the program; -> path."""
+    from PySide6.QtCore import QSize
+    from PySide6.QtGui import QImage, QPalette
+
+    suffix = Path(path).suffix.lower()
+    if suffix not in ('.png', '.svg'):
+        raise ValueError(tr('Поддерживаются PNG и SVG.'))
+    old = QPalette(plot.palette())  # a copy: the palette of the widget is changed below
+    light = QPalette(old)
+    for role, color in ((QPalette.ColorRole.Window, '#ffffff'), (QPalette.ColorRole.Base, '#ffffff'),
+                        (QPalette.ColorRole.Text, '#1b2230'), (QPalette.ColorRole.WindowText, '#1b2230')):
+        light.setColor(role, QColor(color))
+    plot.setPalette(light)
+    try:
+        if suffix == '.svg':
+            from PySide6.QtSvg import QSvgGenerator
+
+            device = QSvgGenerator()
+            device.setFileName(str(path))
+            device.setSize(QSize(plot.width(), plot.height()))
+            device.setViewBox(plot.rect())
+            device.setTitle(title)
+            painter = QPainter(device)
+            if not painter.isActive():
+                raise OSError(tr('Не удалось создать SVG.'))
+            painter.fillRect(plot.rect(), QColor('#ffffff'))
+            plot.render(painter, QPointF(0, 0).toPoint())
+            painter.end()
+        else:
+            image = QImage(plot.width() * PICTURE_SCALE, plot.height() * PICTURE_SCALE, QImage.Format.Format_ARGB32)
+            image.fill(QColor('#ffffff'))
+            painter = QPainter(image)
+            painter.scale(PICTURE_SCALE, PICTURE_SCALE)
+            plot.render(painter, QPointF(0, 0).toPoint())
+            painter.end()
+            if not image.save(str(path)):
+                raise OSError(tr('Не удалось сохранить PNG.'))
+    finally:
+        plot.setPalette(old)
+    return path
+
+
+def ask_picture(parent, plot, name, title=''):
+    """Ask where to put the picture of the plot and save it; -> path or None."""
+    path, _ = QFileDialog.getSaveFileName(parent, tr('Сохранить рисунок'), name, 'PNG (*.png);;SVG (*.svg)')
+    if not path:
+        return None
+    if not Path(path).suffix:
+        path += '.png'
+    return save_picture(plot, path, title)
 
 
 class _Plot(QWidget):
@@ -37,6 +98,12 @@ class _Plot(QWidget):
 
     def frame(self):
         return self.LEFT, self.width() - self.RIGHT, self.TOP, self.height() - self.BOTTOM
+
+    def contextMenuEvent(self, event):
+        """«Сохранить рисунок…» — PNG or SVG for a report."""
+        menu = QMenu(self)
+        menu.addAction(tr('Сохранить рисунок…'), lambda: ask_picture(self, self, 'plot.png', self.window().windowTitle()))
+        menu.exec(event.globalPos())
 
     @staticmethod
     def steps(lo, hi):
@@ -58,11 +125,14 @@ class BandsPlot(_Plot):
     """Branches along the path of the zone: the electron bands (E − E₀, eV) or the phonon branches (axis set to
     «ν, см⁻¹», no line of the zero)."""
 
+    BOTTOM = 50  # the letters of the points of the path and the name of the axis under them
+
     def __init__(self):
         super().__init__()
         self.x, self.energies, self.ticks, self.breaks = [], [], [], []
         self.span = (-12.0, 8.0)
         self.axis = 'E − E₀, эВ'
+        self.x_axis = 'Волновой вектор k'  # the path in the Brillouin zone; «q» for the phonons
         self.zero_line = True
         self.marks = []  # the edges of the gap: [(x, E − E₀, 'v' | 'c')] — the top of the valence band, the bottom of
         # the conduction band (band_gap.gap)
@@ -109,6 +179,9 @@ class BandsPlot(_Plot):
             p.drawLine(QPointF(X(x), top), QPointF(X(x), bottom))
             p.setPen(QPen(ink, 1))
             p.drawText(QRectF(X(x) - 30, bottom + 6, 60, 16), Qt.AlignmentFlag.AlignCenter, label)
+        if self.x_axis:  # under the letters of the points of the path
+            p.setPen(QPen(ink, 1))
+            p.drawText(QRectF(left, bottom + 22, right - left, 14), Qt.AlignmentFlag.AlignCenter, tr(self.x_axis))
         p.setPen(QPen(QColor(ZERO), 1, Qt.PenStyle.DashLine))
         if self.zero_line and lo < 0 < hi:
             p.drawLine(QPointF(left, Y(0)), QPointF(right, Y(0)))
@@ -495,10 +568,18 @@ class QePlotWindow(QDialog):
         buttons = QHBoxLayout()
         self.save_button = action_button(tr('Сохранить данные…'), self.save, 'save')
         buttons.addWidget(self.save_button)
+        self.picture_button = action_button(tr('Сохранить рисунок…'), self.save_picture, 'image')
+        buttons.addWidget(self.picture_button)
         buttons.addStretch(1)
         buttons.addWidget(action_button(tr('Закрыть'), self.reject, 'close'))
         layout.addLayout(buttons)
         self.resize(760, 560)
+
+    def save_picture(self, path=None):
+        """The plot as a PNG or SVG picture, white, for a report."""
+        if path:
+            return save_picture(self.plot, path, self.windowTitle())
+        return ask_picture(self, self.plot, self.name.rsplit('.', 1)[0] + '.png', self.windowTitle())
 
     def save(self, path=None):
         if not path:

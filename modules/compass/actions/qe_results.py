@@ -169,9 +169,9 @@ def series_lines(self, found):
     return convergence.summary(table) + family_lines(kind, table)
 
 
-SERIES_TITLES = {'cut': ('Сходимость по энергии обрезания · ', 'ecutwfc', 'ecutwfc'),
+SERIES_TITLES = {'cut': ('Сходимость по энергии обрезания · ', 'ecutwfc, Ry', 'ecutwfc'),
                  'kpt': ('Сходимость по k-сетке · ', 'k-сетка', 'k grid'),
-                 'vac': ('Сходимость по вакууму · ', 'Вакуум', 'vacuum')}
+                 'vac': ('Сходимость по вакууму · ', 'Вакуум, Å', 'vacuum')}  # the units of the axes (0.248.15)
 
 
 def with_corner(label):
@@ -431,7 +431,7 @@ def show_phonons(self, found):
     values = [v for row in branches for v in row]
     top = max(values) if values else 1.0
     plot = qe_plots.BandsPlot()
-    plot.axis, plot.zero_line = 'ν, см⁻¹', False
+    plot.axis, plot.zero_line, plot.x_axis = 'ν, см⁻¹', False, 'Волновой вектор q'
     plot.span = (min(0.0, min(values, default=0.0)) - 0.03 * top, 1.08 * top)
     plot.x, plot.energies = path['x'], branches
     plot.ticks, plot.breaks = [tuple(t) for t in path['ticks']], path['breaks']
