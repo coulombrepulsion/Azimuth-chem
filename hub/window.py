@@ -500,7 +500,19 @@ class HubWindow(HubMenus, QMainWindow):
         self.studio.theme.setCurrentIndex(target)
         wipe.raise_()
         self._theme_wipe = wipe
-        wipe.start(lambda: setattr(self, '_theme_wipe', None))
+        # the background of the page a picture while the ink moves (0.248.10: each frame painted it anew — 12–15 ms —
+        # and the change of theme stuttered); drawn anew when the wipe is over
+        from azimuth.ui import freeze_ornaments
+
+        if hasattr(self, 'ornament'):
+            self.ornament.thaw_ornament()
+        freeze_ornaments(self)
+
+        def done():
+            self._theme_wipe = None
+            freeze_ornaments(self, False)
+
+        wipe.start(done)
         return wipe
 
     def _theme_changed(self, *args):

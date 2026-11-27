@@ -343,8 +343,11 @@ class Ornament(QWidget):
                 surfaces, opaque = self._regions
             else:
                 surfaces, opaque = self._regions = (self.surface_region(), self.opaque_region())
-            self.paint_depth(painter, surfaces)
-            self.paint_layers(painter, surfaces, opaque)
+            # what stands still is one picture, drawn again only when the window, the theme or the section changed
+            # (0.248.10: a whole painting took 12–15 ms — the change of theme, whose ink uncovers the window frame by
+            # frame, stuttered); the gyroscope is drawn over it
+            painter.drawPixmap(0, 0, self.still_picture(surfaces, opaque))
+            self.paint_gyro(painter, surfaces, opaque)
         except Exception as exc:  # noqa: BLE001 — 0.91.52: the background ornament never stops the painting
             if not getattr(self, '_paint_error', False):  # written once; no window «Что-то пошло не так» in a paint
                 self._paint_error = True
@@ -365,26 +368,67 @@ class Ornament(QWidget):
         backdrop.shadows(painter, self.panels, self.dark)
         painter.restore()
 
-    def paint_layers(self, painter, surfaces, opaque=None):
+    def paint_layers(self, painter, surfaces, opaque=None, gyro=True):
         """The scales at full strength on the background; under the surfaces — at THROUGH and as through glass
-        (blurred and moved); none under `opaque`. The gyroscope too, from a small copy of its picture made each frame."""
+        (blurred and moved); none under `opaque`. The gyroscope too (gyro), from a small copy of its picture made each
+        frame."""
         if opaque is not None and not opaque.isEmpty():
             painter.setClipRegion(QRegion(self.rect()).subtracted(opaque))
             surfaces = surfaces.subtracted(opaque)
         if surfaces.isEmpty():
-            self._scales(painter)
+            self._art(painter)
+            if gyro:
+                self._azimuth(painter)
             return
         painter.save()
         base = QRegion(self.rect()) if opaque is None else QRegion(self.rect()).subtracted(opaque)
         painter.setClipRegion(base.subtracted(surfaces))
-        self._scales(painter)
+        self._art(painter)
+        if gyro:
+            self._azimuth(painter)
         painter.restore()
         painter.save()
         painter.setClipRegion(surfaces if opaque is None else surfaces.intersected(base))
         painter.setOpacity(self.THROUGH)
         self.paint_glass(painter)
-        self._azimuth(painter, glass=True)
+        if gyro:
+            self._azimuth(painter, glass=True)
         painter.restore()
+
+    def paint_gyro(self, painter, surfaces, opaque=None):
+        """The gyroscope alone: whole on the bare page, as through glass under the surfaces, none under `opaque`."""
+        base = QRegion(self.rect()) if opaque is None or opaque.isEmpty() else QRegion(self.rect()).subtracted(opaque)
+        surfaces = surfaces.intersected(base)
+        painter.save()
+        painter.setClipRegion(base.subtracted(surfaces))
+        self._azimuth(painter)
+        painter.restore()
+        if not surfaces.isEmpty():
+            painter.save()
+            painter.setClipRegion(surfaces)
+            painter.setOpacity(self.THROUGH)
+            self._azimuth(painter, glass=True)
+            painter.restore()
+
+    def still_picture(self, surfaces, opaque):
+        """The light, the shadows and the background without the gyroscope, kept as one picture (0.248.10)."""
+        ratio = self.devicePixelRatioF() or 1.0
+        key = (self.width(), self.height(), ratio, self.ink.rgba(), self.dark, self.section, self.intro,
+               tuple(r.getRect() for r in surfaces), tuple(r.getRect() for r in opaque))
+        cached = getattr(self, '_still', (None, None))
+        if cached[0] != key:
+            picture = QPixmap(max(1, round(self.width() * ratio)), max(1, round(self.height() * ratio)))
+            picture.setDevicePixelRatio(ratio)
+            picture.fill(Qt.GlobalColor.transparent)
+            painter = QPainter(picture)
+            painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+            try:
+                self.paint_depth(painter, surfaces)
+                self.paint_layers(painter, surfaces, opaque, gyro=False)
+            finally:
+                painter.end()
+            cached = self._still = (key, picture)
+        return cached[1]
 
     def glass(self):
         """The picture of the background seen under the panels (kept until the size, the section or the ink changes)."""

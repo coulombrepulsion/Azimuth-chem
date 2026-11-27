@@ -1,5 +1,11 @@
 # What’s new
 
+## 0.248.10 — 27 November 2026
+
+- ### 0.248.10 — A smooth change of theme
+
+The change of theme is smooth again: the background of the window is no longer painted anew on every frame.
+
 ## 0.248.9 — 27 November 2026
 
 - ### 0.248.9 — Orange accents
