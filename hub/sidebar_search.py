@@ -9,7 +9,8 @@ slides out of the square to the right, the results are listed over it.
     What hub/menu_search.py finds (the items of the menus of the section shown and the buttons of the window), asked
     from the side panel in every section.
 §2 ALGORITHM
-    The square (button, SIDE px) lies in the column of the panel. open(): the panel (a frame over the page, a child of
+    The square (button, SIDE px, without a frame as the other buttons of the panel since 0.248.1) lies in the column of
+    the panel. open(): the panel (a frame over the page, a child of
     the window) takes the place of the square and grows to the right to WIDTH px in SLIDE ms; the field in it gets the
     cursor. A word typed lists the results (menu_search.find, LIMIT) in a list over the field — the square stands at
     the bottom of the window. Enter or a click — the result shown where it is (menu_search.reveal); Up and Down move in
@@ -21,7 +22,7 @@ slides out of the square to the right, the results are listed over it.
     tests/hub/test_menu_search.py.
 """
 
-from PySide6.QtCore import QEasingCurve, QEvent, QObject, QPoint, QRect, Qt, QTimer, QVariantAnimation
+from PySide6.QtCore import QEasingCurve, QEvent, QObject, QPoint, QRect, QSize, Qt, QTimer, QVariantAnimation
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLineEdit, QListWidget, QListWidgetItem, QToolButton
 
 from azimuth.i18n import tr
@@ -42,6 +43,7 @@ class SidebarSearch(QObject):
         self.button = QToolButton(parent)
         self.button.setObjectName('sideSearch')
         self.button.setFixedSize(SIDE, SIDE)
+        self.button.setIconSize(QSize(22, 22))  # as the icons of the buttons of the panel
         self.button.setCursor(Qt.CursorShape.PointingHandCursor)
         self.button.setToolTip(tr(TITLE))
         self.button.setAccessibleName(tr(TITLE))
@@ -84,11 +86,13 @@ class SidebarSearch(QObject):
         self.dark = bool(dark)
         ink = '#c9d3e2' if dark else '#3f4d61'
         line = 'rgba(255, 255, 255, 0.16)' if dark else 'rgba(27, 34, 48, 0.16)'
-        hover = 'rgba(255, 255, 255, 0.10)' if dark else 'rgba(27, 34, 48, 0.06)'
+        hover = 'rgba(255, 255, 255, 0.12)' if dark else 'rgba(42, 98, 184, 0.08)'  # as QPushButton#nav
         back = '#1a2130' if dark else '#ffffff'
         text = '#e8ecf3' if dark else '#1b2230'
         accent = '#6ea2f0' if dark else '#2a62b8'
-        square = (f'QToolButton {{border: 1px solid {line}; border-radius: 10px; background: transparent;}}'
+        # as the other buttons of the panel: no frame, a light ground under the mouse (0.248.1, the owner: «Убери вокруг
+        # лупы рамку, пусть будет как другие кнопки на панели»)
+        square = (f'QToolButton {{border: none; border-radius: 8px; background: transparent;}}'
                   f'QToolButton:hover {{background: {hover};}}')
         self.button.setStyleSheet(square)
         self.glass.setStyleSheet('QToolButton {border: none; background: transparent;}')

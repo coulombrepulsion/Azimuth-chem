@@ -64,7 +64,7 @@ def test_the_magnifier_stands_in_the_side_panel_over_the_languages(hub, app):
     search = hub.search
     button = search.button
     assert button.isVisible() and button.toolTip() == 'Поиск по меню и кнопкам' and button.size().width() == SIDE
-    assert 'border-radius' in button.styleSheet() and not button.icon().isNull()
+    assert 'border: none' in button.styleSheet() and not button.icon().isNull()  # no frame (0.248.1)
     languages = hub.language_row
     assert button.mapTo(hub, button.rect().bottomLeft()).y() < languages.mapTo(hub, languages.rect().topLeft()).y()
     assert button.window() is hub and hub.sidebar.isAncestorOf(button)

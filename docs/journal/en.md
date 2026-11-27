@@ -1,5 +1,11 @@
 # What’s new
 
+## 0.248.1 — 27 November 2026
+
+- ### 0.248.1 — A needle with depth
+
+The needle of the gyroscope on the home page has depth now – a ridge and faces that catch the light differently. The search magnifier on the left panel has no frame any more, like the other buttons.
+
 ## 0.248.0 — 27 November 2026
 
 - ### 0.248.0 — Search on the left panel and a new motto
