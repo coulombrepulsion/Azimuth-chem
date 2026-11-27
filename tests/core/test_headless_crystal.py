@@ -20,12 +20,17 @@ SALT = (ROOT / 'examples' / '10-crystals' / 'NaCl_rock_salt.cif').read_text(enco
 
 
 @pytest.fixture
-def library(monkeypatch):
-    """The pseudopotentials as if installed: a table of two elements (file, ecutwfc, ecutrho)."""
+def library(monkeypatch, tmp_path):
+    """The pseudopotentials as if installed: a table of two elements (file, ecutwfc, ecutrho) and their files (Windows
+    copies them beside the job)."""
+    folder = tmp_path / 'pseudo'
+    folder.mkdir()
+    for name in ('Si.upf', 'Na.upf', 'Cl.upf'):
+        (folder / name).write_text('<UPF/>', encoding='utf-8')
     monkeypatch.setattr(qe_pseudo, 'installed', lambda *a, **k: True)
     monkeypatch.setattr(qe_pseudo, 'table', lambda *a, **k: {'Si': ('Si.upf', 30.0, 240.0), 'Na': ('Na.upf', 66.0, 528.0),
                                                            'Cl': ('Cl.upf', 45.0, 360.0)})
-    monkeypatch.setattr(qe_pseudo, 'folder', lambda *a, **k: Path('/pseudo'))
+    monkeypatch.setattr(qe_pseudo, 'folder', lambda *a, **k: folder)
     monkeypatch.setattr(qe_inputs, 'valence', lambda *a, **k: 4.0)
 
 

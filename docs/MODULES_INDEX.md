@@ -34,6 +34,7 @@
 - `azimuth/headless.py` — Azimuth without its window: a molecule, the settings of a calculation, its input file, the run on this computer, its state and its result — the same code Sextant and Spectrum use; and the checks of the program (tools/test.py) as jobs.
 - `azimuth/headless_crystal.py` — Azimuth without its window: a calculation of a crystal in Quantum ESPRESSO or CP2K on this computer.
 - `azimuth/headless_server.py` — Azimuth without its window: a calculation sent to the SLURM server of a profile of Sextant, watched and read here.
+- `azimuth/headless_structure.py` — Structures without the window: a molecule or a crystal built and edited by commands — for a language model through tools/azimuth_mcp.py (the owner, 2026-11-27: «можно ли как-то сделать, чтоб можно было через языковую модель делать структ…
 - `azimuth/i18n.py` — Languages of Compass, Sextant and Spectrum.
 - `azimuth/icons.py` — Original, scalable toolbar glyphs. No external icon assets or fonts.
 - `azimuth/isotope_table.py` — The stable isotopes of the elements: mass number, exact mass (u), natural abundance.

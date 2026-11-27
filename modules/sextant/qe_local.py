@@ -26,7 +26,7 @@
 
 import os
 import re
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 POSIX_SCRIPT, WINDOWS_SCRIPT = 'run.sh', 'run.bat'
 
@@ -49,7 +49,8 @@ def posix_command(steps, program, processes, prefix=None, environ=None):
         return [*parallel, str(program), '-in', steps[0][0]], '', changes
     lines = ['#!/bin/sh', 'set -e']
     for name, tool, _ in steps:
-        exe = Path(program).with_name(tool) if tool != 'pw.x' else Path(program)
+        # a script of sh: the path as POSIX writes it, whatever system builds it (the tests on Windows)
+        exe = PurePosixPath(program).with_name(tool) if tool != 'pw.x' else PurePosixPath(program)
         line = ' '.join(shlex.quote(w) for w in [*(parallel if tool in qe_inputs.PARALLEL else []), str(exe), '-in', name])
         if tool in qe_inputs.OPTIONAL:
             line += f' > {qe_inputs.OPTIONAL[tool]} 2>&1 || true'

@@ -6552,5 +6552,6 @@
  "Волновой вектор q": "Wave vector q",
  "Вакуум, Å": "Vacuum, Å",
  "ecutwfc, Ry": "ecutwfc, Ry",
- "Сохранить рисунок…": "Save the picture…"
+ "Сохранить рисунок…": "Save the picture…",
+ "Нет файла псевдопотенциала {} в {}. Установите библиотеку псевдопотенциалов заново.": "No pseudopotential file {} in {}. Install the pseudopotential library again."
 }

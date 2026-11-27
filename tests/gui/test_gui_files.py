@@ -3292,6 +3292,11 @@ sys.stdout.write('     Program PWSCF' + runs[index])
     monkeypatch.setattr(qe_pseudo, 'installed', lambda *a, **k: True)
     monkeypatch.setattr(qe_pseudo, 'table', lambda *a, **k: {'Mg': ('Mg.upf', 30.0, 240.0), 'O': ('O.upf', 50.0, 400.0),
                                                            'C': ('C.upf', 45.0, 360.0)})
+    pseudo = tmp_path / 'pseudo-library'  # Windows copies the files beside the job (qe_run.copy_pseudo)
+    pseudo.mkdir()
+    for name in ('Mg.upf', 'O.upf', 'C.upf'):
+        (pseudo / name).write_text('<UPF/>', encoding='utf-8')
+    monkeypatch.setattr(qe_pseudo, 'folder', lambda *a, **k: pseudo)
     monkeypatch.setattr(qe_inputs, 'valence', lambda *a, **k: 4.0)
     monkeypatch.setattr(window.run_tool, 'jobs_root', lambda: tmp_path / 'jobs')
 

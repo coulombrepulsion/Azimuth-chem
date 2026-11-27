@@ -12,7 +12,8 @@ calculations, reads their results and runs the checks of the program, by the com
     2. A tool answers JSON as text; a ValueError of the command is a tool result with isError (the model reads why),
        any other exception too, with its type — the server goes on.
     3. Only what TOOLS declares can be done: programs of Sextant on this computer (a crystal — Quantum ESPRESSO and
-       CP2K, azimuth/headless_crystal.py), tools/test.py with safe options,
+       CP2K, azimuth/headless_crystal.py), structures built and edited by the code of Compass and written to a file
+       (azimuth/headless_structure.py: a new file every time, never over one), tools/test.py with safe options,
        and — the owner, 2026-11-22 — one calculation of ORCA or MOPAC sent to the SLURM server of a profile of
        Sextant (azimuth/headless_server.py: the login by the key only, never a password; the cores and the memory
        of a queue of SLURM — those asked for, of a server without it — within what is free; a time limit; a journal; stop is
@@ -127,6 +128,42 @@ TOOLS = [
                                                      'server process was restarted (its folder is in azimuth_server → '
                                                      'calculations_open): nothing is sent again; returns a job id.',
      'inputSchema': {'type': 'object', 'properties': {'folder': {'type': 'string'}}, 'required': ['folder']}},
+    {'name': 'azimuth_structure_molecule', 'description': 'Build a molecule and edit it, as Compass does by hand; '
+                                                          'write it to a file Compass opens. Atoms are numbered from 1 '
+                                                          '(the answer lists them with the bonds — use the numbers in the '
+                                                          'next call, on {"path": the file}). Operations in turn: '
+                                                          '{"op": "element", "atom": n, "symbol": "N"}; {"op": '
+                                                          '"substitute", "atom": n (a terminal H), "fragment": "methyl"}; '
+                                                          '{"op": "delete", "atoms": [n]}; {"op": "add_hydrogens"}; '
+                                                          '{"op": "set", "atoms": [a, b(, c(, d))], "value": Å or '
+                                                          'degrees}; {"op": "optimize"} (UFF); {"op": "conformers", '
+                                                          '"count": 5}. Fragments and the library — '
+                                                          'azimuth_structure_catalogue.',
+     'inputSchema': {'type': 'object', 'properties': {
+         'molecule': {'type': 'object', 'description': 'One of {"smiles"}, {"name"} (PubChem), {"library"} (a '
+                                                       'molecule of Compass, e.g. "water", "Бензол"), {"xyz"}, '
+                                                       '{"path"}; optional "title".'},
+         'operations': {'type': 'array', 'items': {'type': 'object'}},
+         'out': {'type': 'string', 'description': 'The file to write (.xyz or .mol); default ~/Documents/Azimuth/'
+                                                  'Структуры.'}}, 'required': ['molecule']}},
+    {'name': 'azimuth_structure_crystal', 'description': 'Make a crystal and change it; write a CIF Compass opens (and '
+                                                         'azimuth_crystal_run takes). Operations in turn: {"op": '
+                                                         '"primitive"}; {"op": "supercell", "n": [2, 2, 2]}; {"op": '
+                                                         '"surface", "hkl": [1, 1, 1], "layers": 3, "vacuum": 15}; '
+                                                         '{"op": "monolayer", "vacuum": 15}; {"op": "vacuum", "value": '
+                                                         '20}; {"op": "substitute", "sites": [n], "symbol": "Fe"}; '
+                                                         '{"op": "vacancy", "sites": [n]} — the sites are the atoms of '
+                                                         'one cell numbered from 1, as the answer lists them.',
+     'inputSchema': {'type': 'object', 'properties': {
+         'crystal': {'type': 'object', 'description': 'One of {"cif"}, {"path"} (.cif), {"cod": number} '
+                                                      '(Crystallography Open Database); optional "title".'},
+         'operations': {'type': 'array', 'items': {'type': 'object'}},
+         'out': {'type': 'string', 'description': 'The .cif to write; default ~/Documents/Azimuth/Структуры.'}},
+         'required': ['crystal']}},
+    {'name': 'azimuth_structure_catalogue', 'description': 'The fragments for "substitute", the molecules of the '
+                                                           'library and the operations of azimuth_structure_molecule '
+                                                           'and azimuth_structure_crystal.',
+     'inputSchema': {'type': 'object', 'properties': {}}},
     {'name': 'azimuth_tests', 'description': 'Run the checks of the program: tools/test.py affected (the tests of '
                                              'what changed — after a small change) | quick | area <name> | full | '
                                              'isolated | list (full takes about 20 minutes, before a push). Returns a job id; follow '
@@ -204,6 +241,14 @@ class Server:
                                           args.get('server'), args.get('cores'), args.get('memory_mb'), args.get('hours'))
         if name == 'azimuth_server_resume':
             return self.jobs.resume_server(args['folder'], settings_store())
+        if name in ('azimuth_structure_molecule', 'azimuth_structure_crystal', 'azimuth_structure_catalogue'):
+            from azimuth import headless_structure
+
+            if name == 'azimuth_structure_catalogue':
+                return headless_structure.catalogue()
+            if name == 'azimuth_structure_molecule':
+                return headless_structure.build_molecule(args['molecule'], args.get('operations') or (), args.get('out'))
+            return headless_structure.build_crystal(args['crystal'], args.get('operations') or (), args.get('out'))
         if name == 'azimuth_tests':
             return self.jobs.start_tests(args['profile'], args.get('area'), args.get('options') or ())
         raise ValueError(f'unknown tool {name!r}')

@@ -252,6 +252,9 @@ def job(prepared, jobs_root=None, tools_root=None, now=None):
         pseudo.mkdir(exist_ok=True)
         source = qe_pseudo.folder(tools_root, prepared.library)
         for file in qe_local.pseudo_files(steps):
+            if not (source / file).is_file():
+                raise ValueError(f'no pseudopotential {file} in {source}: in Azimuth — the panel of Quantum ESPRESSO, '
+                                 '«Установить псевдопотенциалы»')
             shutil.copy2(source / file, pseudo / file)
     command, scripts, changes = qe_local.command(steps, program, prepared.processes, install_tools.qe_prefix(tools_root))
     for name, body in scripts.items():

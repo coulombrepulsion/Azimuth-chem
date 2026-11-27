@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.0 — 27 November 2026
+
+- ### 0.249.0 — Structures from a language model
+
+A language model can now build a molecule or a crystal itself: from a SMILES, a name, the library of Compass or a CIF, and then change an atom, add a substituent, set a bond length or a torsion, optimize in UFF, make a supercell, a surface, a substitution or a vacancy. The result is a file Compass opens and the list of the atoms with their numbers for the next step. And if a calculation of a crystal on Windows misses a pseudopotential file, I name that file instead of showing an obscure system error.
+
 ## 0.248.15 — 27 November 2026
 
 - ### 0.248.15 — Pictures for a report

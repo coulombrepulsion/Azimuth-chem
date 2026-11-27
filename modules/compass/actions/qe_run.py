@@ -237,6 +237,9 @@ def copy_pseudo(self, steps):
     source = qe_pseudo.folder(self.root(), self.library())
     species = steps[0][2].split('ATOMIC_SPECIES')[1].split('CELL_PARAMETERS')[0].strip().splitlines()
     for file in {line.split()[2] for line in species}:  # «Si 28.0850 Si.upf» (qe_local.pseudo_files — without the panel)
+        if not (source / file).is_file():  # a library half downloaded: say which file, not «[WinError 3]»
+            raise ValueError(tr('Нет файла псевдопотенциала {} в {}. Установите библиотеку псевдопотенциалов заново.')
+                             .format(file, source))
         shutil.copy2(source / file, pseudo / file)
     return pseudo
 
