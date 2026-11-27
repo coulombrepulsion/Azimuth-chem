@@ -942,6 +942,7 @@ TEXT_ICONS = {
     'Расширенный XYZ (ASE, OVITO)…': 'extxyz',
     'Блок ячеек в CIF (P 1)…': 'block-cif',
     'Сохранить рисунок': 'image',
+    'Сохранить рисунок…': 'image',
     'GIF: вращение кристалла': 'gif-rotate-crystal',
     'Посчитать PDOS по волновой функции': 'pdos-calc',
     'Зона Бриллюэна…': 'brillouin',

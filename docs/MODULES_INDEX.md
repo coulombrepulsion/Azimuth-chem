@@ -41,6 +41,7 @@
 - `azimuth/link_channel.py` — The way of an azimuth:// link to the running program; the addresses themselves — azimuth/links.py.
 - `azimuth/links.py` — Links azimuth://: a page of the site asks the installed program to open a molecule in Compass.
 - `azimuth/paths.py` — Shared resource root, independent of the current working directory.
+- `azimuth/picture_export.py` — The picture of a plot or a drawing for a report: one way in every window of the program.
 - `azimuth/polish.py` — The finishing touches of every window of the program.
 - `azimuth/project_actions.py` — Project workflow for Studio: portable folders, explicit membership and single/batch attempt recording.
 - `azimuth/project_crystals.py` — The crystal projects in the project tabs — a part of ProjectNavigation (azimuth/project_navigation.py), a mixin of Studio.

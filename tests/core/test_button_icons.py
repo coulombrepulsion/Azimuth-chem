@@ -24,7 +24,7 @@ def test_every_button_has_a_drawn_glyph():
 
 def test_the_icon_follows_the_language():
     for lang in i18n.LANGUAGES:
-        assert button_icons.icon_name(i18n.tr('Сохранить картинку…', lang), lang) == 'image'
+        assert button_icons.icon_name(i18n.tr('Сохранить рисунок…', lang), lang) == 'image'
         assert button_icons.icon_name(i18n.tr('Построить карту', lang), lang) == 'map'
         assert button_icons.icon_name(i18n.tr('Закрыть', lang), lang) == 'close'
     assert button_icons.icon_name('Сохранить отчёт как…') == 'save'  # by the first word

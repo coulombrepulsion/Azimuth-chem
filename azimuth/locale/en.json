@@ -6554,5 +6554,9 @@
  "ecutwfc, Ry": "ecutwfc, Ry",
  "Сохранить рисунок…": "Save the picture…",
  "Нет файла псевдопотенциала {} в {}. Установите библиотеку псевдопотенциалов заново.": "No pseudopotential file {} in {}. Install the pseudopotential library again.",
- "В выводе Quantum ESPRESSO нет ячейки и атомов — кристалл не построить.": "The output of Quantum ESPRESSO has no cell and atoms — the crystal cannot be built."
+ "В выводе Quantum ESPRESSO нет ячейки и атомов — кристалл не построить.": "The output of Quantum ESPRESSO has no cell and atoms — the crystal cannot be built.",
+ "Сохранить карту как рисунок…": "Save the map as a picture…",
+ "Сохранить профиль как рисунок…": "Save the profile as a picture…",
+ "Сохранить рисунок 3D-окна": "Save the picture of the 3D window",
+ "Экспорт диаграммы реакции": "Export the reaction diagram"
 }

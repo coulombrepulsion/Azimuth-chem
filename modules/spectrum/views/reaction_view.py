@@ -697,9 +697,18 @@ class ReactionWindow(QWidget):
         return image
 
     def save_picture(self, path):
+        """PNG, SVG — on white whatever the theme (azimuth.picture_export.on_white, 0.249.2), or the table (CSV)."""
+        from azimuth import picture_export
+
         path = Path(path)
         if self.result is None:
             raise ValueError(tr('Нечего сохранять: диаграмма пуста.'))
+        if path.suffix.lower() in ('.png', '.svg'):
+            with picture_export.on_white(self.view):
+                return self._save_picture(path)
+        return self._save_picture(path)
+
+    def _save_picture(self, path):
         suffix = path.suffix.lower()
         if suffix == '.png':
             if not self.picture().save(str(path)):
@@ -772,7 +781,7 @@ class ReactionWindow(QWidget):
                 quill.warning(self, tr('Не удалось выполнить действие'), str(exc))
 
     def choose_export(self):
-        path, _ = QFileDialog.getSaveFileName(self, tr('Сохранить картинку или таблицу'), str(Path.home() / 'reaction.png'),
+        path, _ = QFileDialog.getSaveFileName(self, tr('Экспорт диаграммы реакции'), str(Path.home() / 'reaction.png'),
                                               tr('PNG (*.png);;SVG (*.svg);;CSV (*.csv)'))
         if path:
             try:

@@ -500,7 +500,7 @@ class FieldPanel(QWidget):
         self.map_button.clicked.connect(self.build_map)
         row.addWidget(self.map_button)
         row.addStretch(1)
-        self.map_save = iconify(QPushButton(), 'save', tr('Сохранить карту как картинку…'))
+        self.map_save = iconify(QPushButton(), 'image', tr('Сохранить карту как рисунок…'))
         self.map_save.clicked.connect(lambda: self.save_picture(view=self.map_view))
         row.addWidget(self.map_save)
         plane_row = row
@@ -521,7 +521,7 @@ class FieldPanel(QWidget):
         self.line_button.clicked.connect(self.build_line)
         row.addWidget(self.line_button)
         row.addStretch(1)
-        self.line_save = iconify(QPushButton(), 'save', tr('Сохранить профиль как картинку…'))
+        self.line_save = iconify(QPushButton(), 'image', tr('Сохранить профиль как рисунок…'))
         self.line_save.clicked.connect(lambda: self.save_picture(view=self.line_view))
         row.addWidget(self.line_save)
         self.views = SideBySide()
@@ -751,7 +751,10 @@ class FieldPanel(QWidget):
         view = view or self.views.currentWidget()
         if not path:
             name = 'profile.png' if view is self.line_view else 'map.png'
-            path, _ = QFileDialog.getSaveFileName(self, tr('Сохранить картинку…'), name, tr('PNG (*.png)'))
+            path, _ = QFileDialog.getSaveFileName(self, tr('Сохранить рисунок'), name, tr('PNG (*.png)'))
         if path:
-            view.picture().save(str(path), 'PNG')  # without the pad of the arrows and the scale
+            from azimuth import picture_export
+
+            with picture_export.on_white(view):  # the ground white whatever the theme (0.249.2)
+                view.picture().save(str(path), 'PNG')  # without the pad of the arrows and the scale
         return path or None

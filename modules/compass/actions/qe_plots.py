@@ -25,68 +25,24 @@ from PySide6.QtCore import QPointF, QRectF, Qt
 from PySide6.QtGui import QColor, QFont, QPainter, QPainterPath, QPen
 from PySide6.QtWidgets import QDialog, QFileDialog, QHBoxLayout, QLabel, QMenu, QVBoxLayout, QWidget
 
-from pathlib import Path
-
 from azimuth.i18n import tr
 from azimuth.ui import action_button
 
 LINE = '#2a62b8'
 ZERO = '#c0504d'
-PICTURE_SCALE = 2  # a PNG of a plot: twice its size on the screen, sharp in a report
-
-
 def save_picture(plot, path, title=''):
-    """The plot into a PNG or SVG file on a white ground with dark ink (a report is printed on white), whatever the
-    theme of the program; -> path."""
-    from PySide6.QtCore import QSize
-    from PySide6.QtGui import QImage, QPalette
+    """The plot as a picture for a report — azimuth.picture_export.save (white, PNG or SVG)."""
+    from azimuth import picture_export
 
-    suffix = Path(path).suffix.lower()
-    if suffix not in ('.png', '.svg'):
-        raise ValueError(tr('Поддерживаются PNG и SVG.'))
-    old = QPalette(plot.palette())  # a copy: the palette of the widget is changed below
-    light = QPalette(old)
-    for role, color in ((QPalette.ColorRole.Window, '#ffffff'), (QPalette.ColorRole.Base, '#ffffff'),
-                        (QPalette.ColorRole.Text, '#1b2230'), (QPalette.ColorRole.WindowText, '#1b2230')):
-        light.setColor(role, QColor(color))
-    plot.setPalette(light)
-    try:
-        if suffix == '.svg':
-            from PySide6.QtSvg import QSvgGenerator
-
-            device = QSvgGenerator()
-            device.setFileName(str(path))
-            device.setSize(QSize(plot.width(), plot.height()))
-            device.setViewBox(plot.rect())
-            device.setTitle(title)
-            painter = QPainter(device)
-            if not painter.isActive():
-                raise OSError(tr('Не удалось создать SVG.'))
-            painter.fillRect(plot.rect(), QColor('#ffffff'))
-            plot.render(painter, QPointF(0, 0).toPoint())
-            painter.end()
-        else:
-            image = QImage(plot.width() * PICTURE_SCALE, plot.height() * PICTURE_SCALE, QImage.Format.Format_ARGB32)
-            image.fill(QColor('#ffffff'))
-            painter = QPainter(image)
-            painter.scale(PICTURE_SCALE, PICTURE_SCALE)
-            plot.render(painter, QPointF(0, 0).toPoint())
-            painter.end()
-            if not image.save(str(path)):
-                raise OSError(tr('Не удалось сохранить PNG.'))
-    finally:
-        plot.setPalette(old)
-    return path
+    return picture_export.save(plot, path, title)
 
 
 def ask_picture(parent, plot, name, title=''):
     """Ask where to put the picture of the plot and save it; -> path or None."""
-    path, _ = QFileDialog.getSaveFileName(parent, tr('Сохранить рисунок'), name, 'PNG (*.png);;SVG (*.svg)')
-    if not path:
-        return None
-    if not Path(path).suffix:
-        path += '.png'
-    return save_picture(plot, path, title)
+    from azimuth import picture_export
+
+    path = picture_export.ask(parent, name)
+    return save_picture(plot, path, title) if path else None
 
 
 class _Plot(QWidget):

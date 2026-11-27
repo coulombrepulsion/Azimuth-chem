@@ -12,10 +12,9 @@ too."""
 
 from math import isfinite
 import numpy as np
-from PySide6.QtCore import Qt, Signal, QPointF, QSize
+from PySide6.QtCore import Qt, Signal, QPointF
 from PySide6.QtGui import QPainter, QPainterPath, QPen, QColor
 from PySide6.QtWidgets import QWidget
-from PySide6.QtSvg import QSvgGenerator
 from azimuth.i18n import tr
 from modules.spectrum.analysis.ir_spectrum import broaden, lines
 
@@ -326,21 +325,11 @@ class IRSpectrum(QWidget):
             rows = ([float(a), float(b)] for a, b in zip(*self.curve())) if self.smooth else (
                 [m.frequency, m.intensity] for _, m in self._lines(self.modes))
             field_tables.write_csv(path, header, list(rows))
-        elif suffix == '.png':
-            if not self.grab().save(str(path)):
-                raise OSError(tr('Не удалось сохранить PNG.'))
-        elif suffix == '.svg':
-            self.grab()  # Settle pending widget layout before sizing the vector document.
-            device = QSvgGenerator()
-            device.setFileName(str(path))
-            device.setSize(QSize(self.width(), self.height()))
-            device.setViewBox(self.rect())
-            device.setTitle('Azimuth · IR spectrum' if self.kind == 'ir' else 'Azimuth · VCD spectrum' if self.signed
-                            else 'Azimuth · Raman spectrum')
-            painter = QPainter(device)
-            if not painter.isActive():
-                raise OSError(tr('Не удалось создать SVG.'))
-            self.render(painter, QPointF(0, 0).toPoint())
-            painter.end()
+        elif suffix in ('.png', '.svg'):  # on white, whatever the theme (azimuth.picture_export, 0.249.2)
+            from azimuth import picture_export
+
+            self.grab()  # Settle pending widget layout before sizing the picture.
+            picture_export.save(self, path, 'Azimuth · IR spectrum' if self.kind == 'ir' else 'Azimuth · VCD spectrum'
+                                if self.signed else 'Azimuth · Raman spectrum')
         else:
             raise ValueError(tr('Поддерживаются PNG, SVG и CSV.'))

@@ -225,7 +225,7 @@ class DescriptorWindow(QDialog):
         self.plot.setVisible(fits)
         buttons = QHBoxLayout()
         self.save_button = button(tr('Сохранить в «Анализ»'), self.save)
-        self.picture_button = button(tr('Сохранить картинку…'), lambda: self.save_picture())
+        self.picture_button = button(tr('Сохранить рисунок…'), lambda: self.save_picture())
         buttons.addWidget(self.save_button)
         buttons.addWidget(self.picture_button)
         buttons.addStretch(1)
@@ -312,15 +312,16 @@ class DescriptorWindow(QDialog):
         return written
 
     def save_picture(self, path=None):
-        from PySide6.QtWidgets import QFileDialog
-
         if path is None:
             from modules.spectrum.wavefunction import field_tables
 
             start = str(field_tables.analysis_folder(self.queue.folder) / 'descriptors_fit.png')
-            path, _ = QFileDialog.getSaveFileName(self, tr('Сохранить картинку'), start, 'PNG (*.png)')
+            from azimuth import picture_export
+
+            path = picture_export.ask(self, start)
             if not path:
                 return None
-        picture = self.plot.grab()
-        picture.save(str(path), 'PNG')
+        from azimuth import picture_export
+
+        picture_export.save(self.plot, path, 'Azimuth · descriptors')  # PNG or SVG, white (0.249.2)
         return Path(path)

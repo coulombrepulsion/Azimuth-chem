@@ -5,9 +5,6 @@ Split off modules/spectrum/views/spectra_view.py (0.222.30).
 """
 
 from pathlib import Path
-from PySide6.QtCore import QPointF, QSize
-from PySide6.QtGui import QPainter
-from PySide6.QtSvg import QSvgGenerator
 from PySide6.QtWidgets import QFileDialog
 from azimuth.i18n import tr
 
@@ -43,20 +40,10 @@ def _export_widget(widget, path, title, rows, header):
         from modules.spectrum.wavefunction import field_tables
 
         field_tables.write_csv(path, header, rows)  # the style of «Таблицы CSV» (was «,», «.», no BOM)
-    elif suffix == '.png':
-        if not widget.grab().save(str(path)):
-            raise OSError(tr('Не удалось сохранить PNG.'))
-    elif suffix == '.svg':
-        widget.grab()
-        device = QSvgGenerator()
-        device.setFileName(str(path))
-        device.setSize(QSize(widget.width(), widget.height()))
-        device.setViewBox(widget.rect())
-        device.setTitle(title)
-        painter = QPainter(device)
-        if not painter.isActive():
-            raise OSError(tr('Не удалось создать SVG.'))
-        widget.render(painter, QPointF(0, 0).toPoint())
-        painter.end()
+    elif suffix in ('.png', '.svg'):  # on white, whatever the theme — as every picture of the program (0.249.2)
+        from azimuth import picture_export
+
+        widget.grab()  # the layout settled before the size is taken
+        picture_export.save(widget, path, title)
     else:
         raise ValueError(tr('Поддерживаются PNG, SVG и CSV.'))

@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.2 — 27 November 2026
+
+- ### 0.249.2 — Pictures alike
+
+Every window now saves its picture the same way: the button «Save the picture…», PNG or SVG, and always on white, even in the dark theme – just right for a report. The buttons «Export…» of Spectrum save their pictures on white too.
+
 ## 0.249.1 — 27 November 2026
 
 - ### 0.249.1 — I open pw.out

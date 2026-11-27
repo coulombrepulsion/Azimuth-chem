@@ -19,8 +19,8 @@ from types import SimpleNamespace
 
 import numpy as np
 from PySide6.QtCore import QPointF, QRectF, Qt
-from PySide6.QtGui import QColor, QFont, QImage, QPainter, QPen
-from PySide6.QtWidgets import (QComboBox, QDialog, QFileDialog, QHBoxLayout, QHeaderView, QLabel,
+from PySide6.QtGui import QColor, QFont, QPainter, QPen
+from PySide6.QtWidgets import (QComboBox, QDialog, QHBoxLayout, QHeaderView, QLabel,
                                QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget)
 
 from azimuth.i18n import tr
@@ -194,7 +194,7 @@ class HirshfeldWindow(QDialog):
         self.model_button = action_button(tr('Показать на модели'), self.show_on_model, 'eye')
         self.model_button.hide()  # «Построить» puts it there (kept for the tests and the old calls)
         bottom.addWidget(self.model_button)
-        self.save_button = action_button(tr('Сохранить «отпечаток»…'), lambda: self.save_plot(), 'save')
+        self.save_button = action_button(tr('Сохранить рисунок…'), lambda: self.save_plot(), 'image')
         self.save_button.setEnabled(False)
         bottom.addWidget(self.save_button)
         bottom.addStretch(1)
@@ -371,15 +371,14 @@ class HirshfeldWindow(QDialog):
         if self.result is None:
             return None
         if path is None:
-            path, _ = QFileDialog.getSaveFileName(self, tr('Сохранить «отпечаток»'), 'fingerprint.png', 'PNG (*.png)')
+            from azimuth import picture_export
+
+            path = picture_export.ask(self, 'fingerprint.png')
             if not path:
                 return None
-        image = QImage(self.plot.size() * 2, QImage.Format.Format_ARGB32)
-        image.setDevicePixelRatio(2)
-        image.fill(Qt.GlobalColor.white)
-        self.plot.render(image)
-        image.save(path)
-        return path
+        from azimuth import picture_export
+
+        return picture_export.save(self.plot, path, 'Azimuth · Hirshfeld fingerprint')  # PNG or SVG, white (0.249.2)
 
 
 def show(studio):

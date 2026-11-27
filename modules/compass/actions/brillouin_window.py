@@ -15,7 +15,7 @@ from math import cos, sin
 
 from PySide6.QtCore import QPointF, Qt
 from PySide6.QtGui import QColor, QFont, QPainter, QPen
-from PySide6.QtWidgets import (QDialog, QFileDialog, QHBoxLayout, QHeaderView, QLabel, QPushButton, QTableWidget,
+from PySide6.QtWidgets import (QDialog, QHBoxLayout, QHeaderView, QLabel, QPushButton, QTableWidget,
                                QTableWidgetItem, QVBoxLayout, QWidget)
 
 from azimuth.i18n import tr
@@ -186,17 +186,19 @@ class BrillouinWindow(QDialog):
         row.addStretch(1)
         side.addLayout(row)
         bottom = QHBoxLayout()
-        bottom.addWidget(action_button(tr('Сохранить картинку…'), self.save_picture, 'save'))
+        bottom.addWidget(action_button(tr('Сохранить рисунок…'), self.save_picture, 'image'))
         bottom.addStretch(1)
         bottom.addWidget(action_button(tr('Закрыть'), self.accept, 'close'))
         side.addLayout(bottom)
         self.resize(900, 520)
 
     def save_picture(self, path=None):
+        from azimuth import picture_export
+
         if not path:
-            path, _ = QFileDialog.getSaveFileName(self, tr('Сохранить картинку'), 'brillouin.png', 'PNG (*.png)')
+            path = picture_export.ask(self, 'brillouin.png')
         if path:
-            self.view.grab().save(path)
+            picture_export.save(self.view, path, self.windowTitle())  # PNG or SVG, white (0.249.2)
         return path
 
 

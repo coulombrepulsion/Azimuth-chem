@@ -117,7 +117,7 @@ class CubeDialog(QDialog):
         iconify(self.center, 'center', tr('Центровать 3D-вид'))
         bar.addWidget(self.center)
         self.capture = QPushButton()
-        iconify(self.capture, 'camera', tr('Сохранить изображение 3D-окна'))
+        iconify(self.capture, 'camera', tr('Сохранить рисунок 3D-окна'))
         bar.addWidget(self.capture)
         layout.addLayout(bar)
         settings = QHBoxLayout()
