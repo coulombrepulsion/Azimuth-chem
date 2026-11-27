@@ -273,6 +273,14 @@ def test_home_page_blocks_open_sections(hub, app):
     assert isinstance(compass, CompassCard) and compass.title.text() == 'Компас'
     assert hub.home.cards['crystal'] is compass.parts['crystal'] and compass.parts['compass'].title.text() == 'Молекула'
     assert compass.parts['crystal'].title.text() == 'Кристалл'
+    # Compass the whole width on top, the other three in one row of cards of one height (0.248.2)
+    row = [hub.home.cards[i] for i in ('atlas', 'sextant', 'spectrum')]
+    hub.resize(1300, 860)
+    hub.show()
+    QApplication.processEvents()
+    assert len({card.height() for card in row}) == 1 and len({card.y() for card in row}) == 1
+    assert compass.y() < row[0].y() and compass.width() > 2 * row[0].width()
+    assert compass.x() == row[0].x() and compass.geometry().right() == row[-1].geometry().right()
     for item in SECTIONS:
         card = hub.home.cards[item['id']]
         assert card.title.text()

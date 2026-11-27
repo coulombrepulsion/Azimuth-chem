@@ -1,5 +1,11 @@
 # What’s new
 
+## 0.248.2 — 27 November 2026
+
+- ### 0.248.2 — Even cards
+
+On the home page Compass stands the whole width on top, and the Atlas, Sextant and Spectrum in an even row under it, cards of one height.
+
 ## 0.248.1 — 27 November 2026
 
 - ### 0.248.1 — A needle with depth

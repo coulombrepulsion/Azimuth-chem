@@ -465,17 +465,24 @@ class HomePage(QScrollArea):
         grid.setSpacing(14)
         self.cards = {}
         # one card of Compass for its two parts (0.248.0); the other sections — their icon and name only
+        # 0.248.2 (the owner chose: Compass the whole width on top, the other three in one row under it — cards of one
+        # height): Compass alone in the first row over every column, the rest one to a column in the second
         shown = [ident for ident in sections if not (ident == 'crystal' and 'compass' in sections)]
-        for i, ident in enumerate(shown):
+        rest = [ident for ident in shown if ident != 'compass']
+        columns = max(1, len(rest))
+        for ident in shown:
             card = CompassCard(on_open) if ident == 'compass' and 'crystal' in sections else SectionCard(ident, on_open)
             card.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)  # the text never widens a
             # column
-            grid.addWidget(card, i // 2, i % 2)
+            if ident == 'compass':
+                grid.addWidget(card, 0, 0, 1, columns)
+            else:
+                grid.addWidget(card, 1, rest.index(ident))
             self.cards[ident] = card
             if isinstance(card, CompassCard):
                 self.cards['crystal'] = card.parts['crystal']
-        grid.setColumnStretch(0, 1)  # two columns of one width (the left one was narrower)
-        grid.setColumnStretch(1, 1)
+        for column in range(columns):  # columns of one width
+            grid.setColumnStretch(column, 1)
         lay.addLayout(grid)
         self.note = QLabel()
         self.note.setWordWrap(True)
