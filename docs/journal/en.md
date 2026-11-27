@@ -1,5 +1,11 @@
 # What’s new
 
+## 0.248.11 — 27 November 2026
+
+- ### 0.248.11 — Frames in «What’s new»
+
+In «What’s new» each update now sits in a frame of its own under the heading of its version. In «About» the link to the site opens with a click.
+
 ## 0.248.10 — 27 November 2026
 
 - ### 0.248.10 — A smooth change of theme

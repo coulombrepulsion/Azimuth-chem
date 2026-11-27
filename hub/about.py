@@ -161,6 +161,90 @@ def journal_page(markdown):
     return re.sub(r'\n{3,}', '\n\n', '\n'.join(shown))
 
 
+def frame_parts(markdown):
+    """[(framed, text)] of journal_page(): a version of a minor («### 0.248.3 …» and its text, up to the next «###» or
+    «##») is framed; the headings of the minors and the rest are not (0.248.11)."""
+    parts, block, framed = [], [], False
+
+    def flush():
+        text = '\n'.join(block).strip('\n')
+        if text.strip():
+            parts.append((framed, text))
+
+    for line in markdown.splitlines():
+        if line.startswith('### ') or line.startswith('## ') or line.startswith('# '):
+            flush()
+            block, framed = [line], line.startswith('### ')
+            continue
+        block.append(line)
+    flush()
+    return parts
+
+
+def fill_journal(page, markdown, line='#d8dce3'):
+    """The journal into the browser: the headings of the minors as they are, each version in a frame with a thin line
+    round it (the owner, 2026-11-27: «в что нового каждая версия, например 0.248, а под ней подверсии в рамке
+    отделены»)."""
+    from PySide6.QtGui import QColor, QTextCursor, QTextFrameFormat
+
+    page.clear()
+    document = page.document()
+    frames = []
+    for framed, text in frame_parts(markdown):
+        cursor = QTextCursor(document)
+        cursor.movePosition(QTextCursor.MoveOperation.End)
+        if not framed:
+            cursor.insertMarkdown(text + '\n')
+            continue
+        shape = QTextFrameFormat()
+        shape.setBorder(0)  # the line round it is drawn by JournalBrowser, with round corners
+        shape.setPadding(9)
+        shape.setLeftMargin(6)
+        shape.setRightMargin(6)
+        shape.setTopMargin(0)
+        shape.setBottomMargin(0)  # the empty line Qt keeps after a frame is the gap between two
+        frame = cursor.insertFrame(shape)
+        inner = frame.firstCursorPosition()
+        inner.insertMarkdown(text)
+        frames.append(frame)
+    page.journal_frames, page.frame_line = frames, QColor(line)
+    page.viewport().update()
+
+
+def journal_browser():
+    """A QTextBrowser that draws a line with round corners round each frame of fill_journal (a frame of Qt's text has
+    square corners only; the owner: «рамки скругленные, как и почти все в программе»)."""
+    from PySide6.QtCore import QRectF
+    from PySide6.QtGui import QPainter, QPen
+
+    class JournalBrowser(QTextBrowser):
+        journal_frames = ()
+        frame_line = None
+        RADIUS = 9
+
+        def paintEvent(self, event):
+            super().paintEvent(event)
+            if not self.journal_frames or self.frame_line is None:
+                return
+            painter = QPainter(self.viewport())
+            painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+            painter.translate(-self.horizontalScrollBar().value(), -self.verticalScrollBar().value())
+            painter.setPen(QPen(self.frame_line, 1))
+            layout = self.document().documentLayout()
+            for frame in self.journal_frames:
+                try:
+                    box = QRectF(layout.frameBoundingRect(frame))
+                    shape = frame.frameFormat()
+                    box = box.adjusted(shape.leftMargin() + 0.5, shape.topMargin() + 0.5,
+                                       -shape.rightMargin() - 0.5, -shape.bottomMargin() - 0.5)
+                except RuntimeError:  # the document was filled again
+                    continue
+                painter.drawRoundedRect(box, self.RADIUS, self.RADIUS)
+            painter.end()
+
+    return JournalBrowser()
+
+
 MONTHS = {
     'ru': ('января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября',
            'декабря'),
@@ -456,12 +540,12 @@ class ChangelogDialog(QDialog):
         layout.addWidget(card)
         self.pages = {}
         for key in SECTION_KEYS:
-            page = QTextBrowser()
+            page = journal_browser()
             page.setOpenExternalLinks(True)
             body = parts[key]
             if key != 'program' and versions.get(key):
                 body = f"*{words['version']} {versions[key]}*\n\n" + body
-            page.setMarkdown(journal_page(body))
+            fill_journal(page, journal_page(body), '#2b333f' if dark else '#d8dce3')
             if key == 'atlas':
                 technical = ROOT / 'modules' / 'atlas' / 'atlas_v2' / 'CHANGELOG.md'
                 if technical.is_file():
@@ -536,6 +620,7 @@ class AboutDialog(QDialog):
         self.body.setOpenExternalLinks(True)
         self.body.setHtml(self.html())
         justify(self.body)
+        self.body.setViewportMargins(0, 0, 14, 0)  # the text off the scroll bar (0.248.11)
         layout.addWidget(self.body, 1)
         self.changelog_link = QPushButton(words['changelog'])
         self.changelog_link.setFlat(True)
@@ -582,9 +667,11 @@ class AboutDialog(QDialog):
 
     def html(self):
         words = PROGRAM[self.language]
-        items = ''.join(f'<li><b>{name}</b> — {desc}</li>' for name, desc in words['sections'])
+        site = '<a href="https://www.azimuth-chem.com/">azimuth-chem.com</a>'  # a link (0.248.11)
+        items = ''.join(f'<li><b>{name}</b> — {desc}</li>' for name, desc in words['sections']).replace(
+            'azimuth-chem.com', site)
         return (
-            f"<p>{words['intro']}</p><h4>{words['sections_title']}</h4><ul>{items}</ul>"
+            f"<p>{words['intro'].replace('azimuth-chem.com', site)}</p><h4>{words['sections_title']}</h4><ul>{items}</ul>"
             f"<p>* {words['note']}</p><p>{words['author']} <a href=\"mailto:{EMAIL}\">{EMAIL}</a></p>"
         )
 

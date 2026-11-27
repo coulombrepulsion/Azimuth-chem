@@ -132,7 +132,7 @@ QTabBar::tab:hover:!selected {background: #e1e8ee; color: #1b2230;}
 QTabBar::tab:selected {background: #2a62b8; color: white;}
 QTabBar#documents {background: transparent;}
 /* 0.248.7 (the owner: «пусть каждая вкладка проекта имеет вид тонкого стекла, практически полностью прозрачного»): each tab a thin pane of glass — almost clear, a light edge above, a darker one below */
-QTabBar#documents::tab {height: 26px; min-width: 104px; padding: 0 8px 0 14px; margin: 0; background: rgba(255, 255, 255, 0.22); color: #5b6474; border: 1px solid rgba(255, 255, 255, 0.75); border-bottom-color: rgba(27, 34, 48, 0.12); border-right-color: rgba(27, 34, 48, 0.08); border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom-left-radius: 0; border-bottom-right-radius: 0; font-size: 12px; font-weight: 500;}
+QTabBar#documents::tab {height: 26px; min-width: 112px; padding: 0 16px 0 14px; margin: 0; background: rgba(255, 255, 255, 0.22); color: #5b6474; border: 1px solid rgba(255, 255, 255, 0.75); border-bottom-color: rgba(27, 34, 48, 0.12); border-right-color: rgba(27, 34, 48, 0.08); border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom-left-radius: 0; border-bottom-right-radius: 0; font-size: 12px; font-weight: 500;}
 QTabBar#documents::tab:selected {color: #1b2230; background: rgba(255, 255, 255, 0.42); border-bottom: 2px solid #2a62b8;}
 QTabBar#documents::tab:hover:!selected {color: #1b2230; background: rgba(255, 255, 255, 0.34);}
 QTabBar#documents::close-button {image: url(TABCLOSE); subcontrol-position: right; width: 12px; height: 12px; margin-left: 4px; border-radius: 3px;}

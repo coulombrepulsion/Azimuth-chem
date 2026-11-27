@@ -427,6 +427,7 @@ def test_about_window_without_the_atlas(hub, app):
     assert 'Секстант' in line and 'Спектр' in line and 'загружается' not in line
     assert dialog.motto.text() == 'ПРОЛОЖИТЕ КУРС К РЕЗУЛЬТАТУ'  # as on the home page
     assert '* Расчётные программы' in dialog.body.toPlainText() and 'azimuth-chem.com' in dialog.body.toPlainText()
+    assert 'href="https://www.azimuth-chem.com/"' in dialog.body.toHtml()  # the site a link (0.248.11)
     assert not hasattr(dialog, 'copy_button') and dialog.bug_button.isEnabled()
     dialog.close()
 
