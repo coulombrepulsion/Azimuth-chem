@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.6 — 27 November 2026
+
+- ### 0.249.6 — The structures panel without strips
+
+When the structures panel comes out or goes back, no light strips stay between the columns any more: the glass under the cards moves with them.
+
 ## 0.249.5 — 27 November 2026
 
 - ### 0.249.5 — The buttons of a calculation in their places

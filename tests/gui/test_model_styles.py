@@ -545,3 +545,41 @@ def test_the_crystal_has_a_panel_of_its_own(window):
         bar.reset()
         window.crystal_tool.set_compass_mode('molecule')
     assert bar.groups() == molecule
+
+
+def test_a_frozen_ornament_puts_the_glass_where_the_panels_are_now(app):
+    """0.249.6: a picture of the whole ornament taken at the start of a slide kept the glass of a panel where it had
+    stood — light strips in the gaps between the columns. The frames of a slide put the glass by the panels as they
+    are, the same as the ornament drawn anew."""
+    from PySide6.QtWidgets import QFrame, QWidget
+
+    from azimuth.ui import freeze_ornaments
+    from hub.chrome import Ornament
+
+    page = QWidget()
+    page.resize(600, 400)
+    ornament = Ornament(page)
+    ornament.setGeometry(page.rect())
+    ornament.set_section('sextant')
+    card = QFrame(page)
+    card.setObjectName('card')
+    card.setGeometry(40, 60, 200, 260)
+    card.setStyleSheet('background: transparent;')
+    page.show()
+    try:
+        freeze_ornaments(page)
+        assert ornament._frozen is not None
+        card.move(330, 60)  # the panel slid away: its old place is the bare page now
+        frame = ornament.grab().toImage()
+        freeze_ornaments(page, False)
+        live = ornament.grab().toImage()
+        assert frame.size() == live.size()
+        worst = 0
+        for x in range(40, 240, 7):
+            for y in range(60, 320, 7):
+                a, b = frame.pixelColor(x, y), live.pixelColor(x, y)
+                worst = max(worst, abs(a.red() - b.red()), abs(a.green() - b.green()), abs(a.blue() - b.blue()),
+                            abs(a.alpha() - b.alpha()))
+        assert worst <= 3
+    finally:
+        page.close()

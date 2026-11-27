@@ -325,27 +325,47 @@ class Ornament(QWidget):
         return region
 
     def freeze_ornament(self):
-        """While a panel slides, the scales are a
-        picture taken at its start; thaw_ornament draws them anew when it has stopped."""
+        """While a panel slides, the scales are two pictures taken at its start — the bare page and the page as seen
+        through glass; each frame puts them by the surfaces where they are at that moment (0.249.6: one picture of the
+        whole ornament kept the glass of the panels where they had stood — light rounded strips in the gaps between the
+        columns while the panel of structures came out or went back, the owner: «возможно из-за теней»).
+        thaw_ornament draws them anew when it has stopped."""
         if getattr(self, '_frozen', None) is not None or not self.isVisible() or self.width() <= 0:
             return
         from PySide6.QtGui import QPixmap
 
         ratio = self.devicePixelRatioF() or 1.0
-        picture = QPixmap(max(1, round(self.width() * ratio)), max(1, round(self.height() * ratio)))
-        picture.setDevicePixelRatio(ratio)
-        picture.fill(Qt.GlobalColor.transparent)
-        painter = QPainter(picture)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+
+        def blank():
+            picture = QPixmap(max(1, round(self.width() * ratio)), max(1, round(self.height() * ratio)))
+            picture.setDevicePixelRatio(ratio)
+            picture.fill(Qt.GlobalColor.transparent)
+            return picture
+
+        bare, glass = blank(), blank()
         try:
-            surfaces, opaque = self.surface_region(), self.opaque_region()
-            self.paint_depth(painter, surfaces)
-            self.paint_layers(painter, surfaces, opaque)
+            from hub import backdrop
+
+            painter = QPainter(bare)
+            painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+            try:
+                backdrop.shade(painter, QRectF(self.rect()), self.dark)
+                backdrop.edge_shadow(painter, self.height(), self.dark)
+                self._art(painter)
+                self._azimuth(painter)
+            finally:
+                painter.end()
+            painter = QPainter(glass)
+            painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+            try:
+                painter.setOpacity(self.THROUGH)
+                self.paint_glass(painter)
+                self._azimuth(painter, glass=True)
+            finally:
+                painter.end()
         except Exception:  # noqa: BLE001 — drawn as usual then
-            painter.end()
             return
-        painter.end()
-        self._frozen = (self.size(), picture)
+        self._frozen = (self.size(), bare, glass)
 
     def thaw_ornament(self):
         if getattr(self, '_frozen', None) is not None:
@@ -356,12 +376,37 @@ class Ornament(QWidget):
             # panels take it when their layout is done (0.249.5: strips of glass stayed where the panel had been)
             QTimer.singleShot(0, self._relaid)
 
+    def paint_frozen(self, painter, frozen):
+        """A frame of a slide: the bare page and the shadows round the surfaces where they are now, the glass under
+        them (freeze_ornament)."""
+        from hub import backdrop
+
+        surfaces, opaque = self.surface_region(), self.opaque_region()
+        outside = QRegion(self.rect()).subtracted(surfaces)
+        painter.save()
+        painter.setClipRegion(outside)
+        backdrop.shadows(painter, self.panels, self.dark)
+        painter.setClipRegion(outside.subtracted(opaque))
+        painter.drawPixmap(0, 0, frozen[1])
+        painter.restore()
+        under = surfaces.subtracted(opaque)
+        if not under.isEmpty():
+            painter.save()
+            painter.setClipRegion(under)
+            painter.drawPixmap(0, 0, frozen[2])
+            painter.restore()
+
     def paintEvent(self, event):
         frozen = getattr(self, '_frozen', None)
         if frozen is not None and frozen[0] == self.size():
             painter = QPainter(self)
-            painter.drawPixmap(0, 0, frozen[1])
-            painter.end()
+            painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+            try:
+                self.paint_frozen(painter, frozen)
+            except Exception:  # noqa: BLE001 — the background never stops the painting
+                pass
+            finally:
+                painter.end()
             return
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
