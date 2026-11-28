@@ -5,12 +5,16 @@ fragment or molecule that opens their menu again (ChoicePill).
 Split off modules/compass/panels/layout.py (0.222.30).
 """
 
-from PySide6.QtCore import QEvent, QObject, QSize, Qt
+from PySide6.QtCore import QEvent, QObject, Qt
 from PySide6.QtWidgets import QAbstractItemView, QLabel
 
 
 class _MatchHeight(QObject):
-    """The button ☰ as tall as the tabs «Молекула | Координаты» next to it (square), whatever the style sheet."""
+    """The button ☰ as tall as the tabs «Молекула | Координаты» next to it (square), whatever the style sheet; its
+    glyph of one size in every language — it followed the height of the tabs, and the Chinese font made them 3 px
+    taller and the glyph larger (the owner, 2026-11-28: «иконка панели … в разных языках разного размера»)."""
+
+    ICON = 19  # px: the glyph by the tabs of 29 px in Russian and English
 
     def __init__(self, source, target):
         super().__init__(source)
@@ -22,7 +26,6 @@ class _MatchHeight(QObject):
             side = max(20, watched.height() - 2)
             if self.target.height() != side:
                 self.target.setFixedSize(side, side)
-                self.target.setIconSize(QSize(side - 8, side - 8))
         return False
 
 

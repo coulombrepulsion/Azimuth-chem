@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.11 — 28 November 2026
+
+- ### 0.249.11 — The ☰ icon of one size
+
+The ☰ icon by the «Molecule | Coordinates» tabs is no longer larger in Chinese: it is the same size in every language.
+
 ## 0.249.10 — 28 November 2026
 
 - ### 0.249.10 — Compass buttons in every language

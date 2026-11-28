@@ -62,7 +62,7 @@ class StructurePage:
         # it stood above the tabs and made the row taller when it appeared; as tall as «Молекула |
         # Координаты» (follows their height, _MatchHeight), so the row keeps its height
         self.trajectory_button.setFixedSize(24, 24)
-        self.trajectory_button.setIconSize(QSize(18, 18))
+        self.trajectory_button.setIconSize(QSize(_MatchHeight.ICON, _MatchHeight.ICON))
         # one row — the steps button, «Молекула | Координаты», a thin rule, the tabs of the documents.
         # The tab bar of structure_tabs is hidden; view_tabs shows its tabs (sync_view_tabs) in that row.
         self.structure_tabs.tabBar().hide()

@@ -1664,6 +1664,7 @@ def test_the_buttons_of_the_menus_stay_on_the_panels_in_every_language(hub, app)
             button = bar.buttons.get(key)
             assert button is not None, lang
             assert button.property('quail_icon') == glyph and button.text() == '' and button.size() == size
+            assert st.trajectory_button.iconSize().width() == 19  # ☰ by «Молекула | Координаты»: one size
         # back in Russian, every item reads as at first («Правка», not «Править»)
         texts = {id(a): a.text() for _k, a, _sub in bar.items()}
         assert all(texts[i] == first[i][1] for i in first if i in texts)
