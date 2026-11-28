@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (QDialog, QFileDialog, QHBoxLayout, QHeaderView, Q
                                QVBoxLayout, QWidget)
 
 from azimuth.i18n import tr
-from azimuth.ui import action_button
+from azimuth.ui import action_button, help_button
 from modules.compass.chemistry import packing_similarity as ps
 
 
@@ -40,15 +40,14 @@ class PackingWindow(QDialog):
         self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         layout.addWidget(self.table, 1)
-        note = QLabel(tr('Кластер — молекула и её 14 ближайших соседей по центроидам. Кластеры совмещаются по центральной '
-                         'молекуле; соседняя молекула совпала, если ближайшая во втором кристалле сдвинута не больше '
-                         'чем на 20 % её расстояния от центра и повёрнута не больше чем на 20° (допуски COMPACK, '
-                         'Chisholm, Motherwell, 2005). Затем совпавшие молекулы совмещаются вместе: RMSD их атомов '
-                         '(без H). 15 из 15 и десятые доли Å — одна упаковка; меньше — другая форма.'))
-        note.setWordWrap(True)
-        note.setObjectName('subtitle')
-        layout.addWidget(note)
+        # the explanation behind «?» (help_button), not on the page
+        note = tr('Кластер — молекула и её 14 ближайших соседей по центроидам. Кластеры совмещаются по центральной '
+                  'молекуле; соседняя молекула совпала, если ближайшая во втором кристалле сдвинута не больше '
+                  'чем на 20 % её расстояния от центра и повёрнута не больше чем на 20° (допуски COMPACK, '
+                  'Chisholm, Motherwell, 2005). Затем совпавшие молекулы совмещаются вместе: RMSD их атомов '
+                  '(без H). 15 из 15 и десятые доли Å — одна упаковка; меньше — другая форма.')
         bottom = QHBoxLayout()
+        bottom.addWidget(help_button(note))
         bottom.addStretch(1)
         bottom.addWidget(action_button(tr('Закрыть'), self.accept, 'close'))
         layout.addLayout(bottom)

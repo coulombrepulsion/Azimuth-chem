@@ -17,7 +17,7 @@ from PySide6.QtWidgets import (QComboBox, QDialog, QDoubleSpinBox, QHBoxLayout, 
                                QTableWidgetItem, QVBoxLayout, QWidget)
 
 from azimuth.i18n import tr
-from azimuth.ui import action_button
+from azimuth.ui import action_button, help_button
 from modules.compass.chemistry import crystal_voids
 
 STEPS = ((0.3, 'грубая (быстро)'), (0.2, 'средняя'), (0.12, 'точная (медленнее)'))
@@ -57,14 +57,13 @@ class VoidsWindow(QDialog):
         self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         layout.addWidget(self.table, 1)
-        note = QLabel(tr('Пустота — место, куда помещается пробная сфера, не задевая ван-дер-ваальсовых сфер атомов '
-                         '(радиусы Бонди); на модели — объединение всех таких сфер («контактная поверхность»). '
-                         'Канал проходит через всю ячейку и продолжается в соседней; полость замкнута. Атомы водорода '
-                         'рентгеноструктурных файлов могут отсутствовать — тогда пустоты больше настоящих.'))
-        note.setWordWrap(True)
-        note.setObjectName('subtitle')
-        layout.addWidget(note)
+        # the explanation behind «?» (help_button), not on the page
+        note = tr('Пустота — место, куда помещается пробная сфера, не задевая ван-дер-ваальсовых сфер атомов '
+                  '(радиусы Бонди); на модели — объединение всех таких сфер («контактная поверхность»). '
+                  'Канал проходит через всю ячейку и продолжается в соседней; полость замкнута. Атомы водорода '
+                  'рентгеноструктурных файлов могут отсутствовать — тогда пустоты больше настоящих.')
         bottom = QHBoxLayout()
+        bottom.addWidget(help_button(note))
         self.model_button = action_button(tr('Показать на модели'), self.show_on_model, 'eye')
         bottom.addWidget(self.model_button)
         bottom.addStretch(1)

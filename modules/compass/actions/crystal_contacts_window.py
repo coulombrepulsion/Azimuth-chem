@@ -20,7 +20,7 @@ from PySide6.QtWidgets import (
 from modules.compass.chemistry import crystal as cr
 from modules.compass.chemistry import crystal_contacts as cc
 from azimuth.i18n import tr
-from azimuth.ui import action_button
+from azimuth.ui import action_button, help_button
 
 
 class ContactsWindow(QDialog):
@@ -322,11 +322,11 @@ class HydrogenBondTable(QDialog):
                 self.table.setItem(k, col, QTableWidgetItem(value))
         self.table.resizeColumnsToContents()
         layout.addWidget(self.table)
-        note = QLabel(tr('Донор D — в независимой части файла (x, y, z); код — операция, которая ставит акцептор A '
-                         'из его положения в файле туда, где он принимает связь. «?» — атом не получен операциями файла.'))
-        note.setWordWrap(True)
-        layout.addWidget(note)
+        # the explanation behind «?» (help_button), not on the page
+        note = tr('Донор D — в независимой части файла (x, y, z); код — операция, которая ставит акцептор A '
+                  'из его положения в файле туда, где он принимает связь. «?» — атом не получен операциями файла.')
         buttons = QHBoxLayout()
+        buttons.addWidget(help_button(note))
         copy = action_button(tr('Копировать'), self.copy, 'copy')
         copy.setToolTip(tr('Таблица с табуляциями — вставляется таблицей в текстовый редактор и в электронную таблицу'))
         buttons.addWidget(copy)

@@ -14,7 +14,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QAbstractItemView, QDialog, QHBoxLayout, QHeaderView, QTableWidget, QTableWidgetItem, QVBoxLayout
 
 from azimuth.i18n import tr
-from azimuth.ui import button, label
+from azimuth.ui import button, help_button, label
 from modules.sextant import history
 
 
@@ -24,10 +24,9 @@ class HistoryDialog(QDialog):
         self.owner = owner
         self.setWindowTitle(tr('История расчётов'))
         layout = QVBoxLayout(self)
-        note = label(tr('Расчёты, запущенные из Секстанта (последние 60). Расчёт на сервере идёт и без программы — '
-                        '«Проверить на сервере» снова следит за ним и скачивает результат.'), 'subtitle')
-        note.setWordWrap(True)
-        layout.addWidget(note)
+        # the explanation behind «?» (help_button), not on the page
+        note = tr('Расчёты, запущенные из Секстанта (последние 60). Расчёт на сервере идёт и без программы — '
+                  '«Проверить на сервере» снова следит за ним и скачивает результат.')
         self.table = QTableWidget(0, 4)
         self.table.setHorizontalHeaderLabels([tr('Когда'), tr('Где'), tr('Что'), tr('Состояние')])
         self.table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.Stretch)
@@ -43,6 +42,7 @@ class HistoryDialog(QDialog):
         self.empty.hide()
         layout.addWidget(self.empty, 1)
         row = QHBoxLayout()
+        row.addWidget(help_button(note))
         self.open_button = button(tr('Открыть результат'), lambda: self._do('open_history_result'), True)
         self.resume_button = button(tr('Проверить на сервере'), lambda: self._do('resume_history'))
         self.folder_button = button(tr('Папка'), lambda: self._do('open_history_folder'))

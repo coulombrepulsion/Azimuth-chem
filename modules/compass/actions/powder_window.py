@@ -22,7 +22,7 @@ from PySide6.QtWidgets import (QCheckBox, QComboBox, QDialog, QDoubleSpinBox, QF
                                QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget)
 
 from azimuth.i18n import tr
-from azimuth.ui import action_button
+from azimuth.ui import action_button, help_button
 from modules.compass.chemistry import powder
 
 CURVE = '#2a62b8'
@@ -106,12 +106,10 @@ class PowderWindow(QDialog):
         self.match = None
         self.setWindowTitle(tr('Порошковая дифрактограмма · ') + (crystal.title or 'CIF'))
         layout = QVBoxLayout(self)
-        note = QLabel(tr('Рассчитана по атомам ячейки: атомные факторы рассеяния нейтральных атомов, тепловые '
-                         'параметры файла, фактор Лоренца — поляризации; без поглощения, текстура — по желанию '
-                         '(March–Dollase). Высота — в % от самой сильной линии.'))
-        note.setWordWrap(True)
-        note.setObjectName('subtitle')
-        layout.addWidget(note)
+        # the explanation behind «?» (help_button), not on the page
+        note = tr('Рассчитана по атомам ячейки: атомные факторы рассеяния нейтральных атомов, тепловые '
+                  'параметры файла, фактор Лоренца — поляризации; без поглощения, текстура — по желанию '
+                  '(March–Dollase). Высота — в % от самой сильной линии.')
         row = QHBoxLayout()
         self.source = QComboBox()
         for name, value in powder.WAVELENGTHS.items():
@@ -127,6 +125,7 @@ class PowderWindow(QDialog):
         row.addWidget(QLabel(tr('Ширина линии, °')))
         row.addWidget(self.fwhm)
         row.addStretch(1)
+        row.addWidget(help_button(note))
         layout.addLayout(row)
         # the Kα₂ line, the widths of Caglioti, the Lorentzian share, the step, the texture
         shape = QHBoxLayout()

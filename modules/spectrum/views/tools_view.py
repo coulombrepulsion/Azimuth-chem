@@ -25,7 +25,7 @@ from PySide6.QtWidgets import (QComboBox, QDialog, QDoubleSpinBox, QFileDialog, 
                                QLineEdit, QPlainTextEdit, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget)
 
 from azimuth.i18n import tr
-from azimuth.ui import button, label
+from azimuth.ui import button, help_button, label
 
 UNITS = (('hartree', 'хартри'), ('kcal', 'ккал/моль'), ('kj', 'кДж/моль'), ('ev', 'эВ'))
 
@@ -99,16 +99,16 @@ class IsotopeDialog(QDialog):
         super().__init__(owner)
         self.setWindowTitle(tr('Изотопный пик молекулярного иона'))
         lay = QVBoxLayout(self)
-        note = label(tr('Распределение изотопов в молекулярном ионе: M — все атомы в самых лёгких изотопах, M+1, M+2… '
-                        'Высота — в % от самого высокого пика. Формула без скобок, например C6H5Cl.'), 'subtitle')
-        note.setWordWrap(True)
-        lay.addWidget(note)
+        # the explanation behind «?» (help_button), not on the page
+        note = tr('Распределение изотопов в молекулярном ионе: M — все атомы в самых лёгких изотопах, M+1, M+2… '
+                  'Высота — в % от самого высокого пика. Формула без скобок, например C6H5Cl.')
         row = QHBoxLayout()
         self.formula = QLineEdit(formula)
         self.formula.returnPressed.connect(lambda: self.show_pattern())
         row.addWidget(QLabel(tr('Формула')))
         row.addWidget(self.formula, 1)
         row.addWidget(button(tr('Посчитать'), lambda: self.show_pattern(), True))
+        row.addWidget(help_button(note))
         lay.addLayout(row)
         self.masses = label('', 'subtitle')
         lay.addWidget(self.masses)
@@ -457,16 +457,16 @@ class HinderedRotorDialog(QDialog):
         self.setWindowTitle(tr('Заторможенный ротатор'))
         self.points, self.moment, self.potential, self.rows = None, None, None, []
         lay = QVBoxLayout(self)
-        hint = label(tr('Торсионное колебание с низким барьером — плохой гармонический осциллятор. Откройте скан '
-                        'двугранного угла с релаксацией: по его потенциалу считаются уровни вращения волчка и поправка '
-                        'ΔG к свободной энергии, посчитанной с гармонической частотой этой моды.'), 'subtitle')
-        hint.setWordWrap(True)
-        lay.addWidget(hint)
+        # the explanation behind «?» (help_button), not on the page
+        hint = tr('Торсионное колебание с низким барьером — плохой гармонический осциллятор. Откройте скан '
+                  'двугранного угла с релаксацией: по его потенциалу считаются уровни вращения волчка и поправка '
+                  'ΔG к свободной энергии, посчитанной с гармонической частотой этой моды.')
         form = QFormLayout()
         row = QHBoxLayout()
         row.addWidget(button(tr('Выбрать файл…'), lambda: self.choose()))
         self.name = QLabel('—')
         row.addWidget(self.name, 1)
+        row.addWidget(help_button(hint))
         form.addRow(tr('Скан'), row)
         self.cover = QComboBox()
         for key, title in self.COVERS:

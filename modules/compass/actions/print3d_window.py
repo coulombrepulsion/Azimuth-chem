@@ -14,7 +14,7 @@
 from PySide6.QtWidgets import QCheckBox, QDialog, QDoubleSpinBox, QFileDialog, QFormLayout, QHBoxLayout, QLabel, QVBoxLayout
 
 from azimuth.i18n import tr
-from azimuth.ui import action_button
+from azimuth.ui import action_button, help_button
 from modules.compass.chemistry import print3d
 
 
@@ -24,12 +24,10 @@ class Print3DWindow(QDialog):
         self.studio = studio
         self.setWindowTitle(tr('Модель для 3D-печати'))
         layout = QVBoxLayout(self)
-        note = QLabel(tr('Шарики и палочки модели на экране — молекула, блок ячеек или оболочка — для 3D-принтера. '
-                         'STL — одним цветом (подходит любому принтеру), VRML — в цветах элементов. Размеры в '
-                         'миллиметрах; связи не тоньше заданной толщины, иначе ломаются при печати.'))
-        note.setWordWrap(True)
-        note.setObjectName('subtitle')
-        layout.addWidget(note)
+        # the explanation behind «?» (help_button), not on the page
+        note = tr('Шарики и палочки модели на экране — молекула, блок ячеек или оболочка — для 3D-принтера. '
+                  'STL — одним цветом (подходит любому принтеру), VRML — в цветах элементов. Размеры в '
+                  'миллиметрах; связи не тоньше заданной толщины, иначе ломаются при печати.')
         form = QFormLayout()
         self.scale = QDoubleSpinBox()
         self.scale.setRange(2.0, 50.0)
@@ -56,6 +54,7 @@ class Print3DWindow(QDialog):
         self.size = QLabel()
         layout.addWidget(self.size)
         buttons = QHBoxLayout()
+        buttons.addWidget(help_button(note))
         buttons.addWidget(action_button(tr('Сохранить STL…'), lambda: self.save('stl'), 'save'))
         buttons.addWidget(action_button(tr('Сохранить VRML…'), lambda: self.save('vrml'), 'save'))
         buttons.addStretch(1)

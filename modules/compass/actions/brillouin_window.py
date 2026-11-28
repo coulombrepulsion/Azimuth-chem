@@ -19,7 +19,7 @@ from PySide6.QtWidgets import (QDialog, QHBoxLayout, QHeaderView, QLabel, QPushB
                                QTableWidgetItem, QVBoxLayout, QWidget)
 
 from azimuth.i18n import tr
-from azimuth.ui import action_button
+from azimuth.ui import action_button, help_button
 from modules.compass.chemistry import brillouin
 
 KINDS = {'cP': 'простая кубическая решётка', 'cF': 'гранецентрированная кубическая решётка',
@@ -170,11 +170,10 @@ class BrillouinWindow(QDialog):
         header.setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
         header.setStretchLastSection(True)
         side.addWidget(self.table, 1)
-        note = QLabel(tr('Первая зона Бриллюэна — ячейка Вигнера — Зейтца обратной решётки примитивной ячейки: точки, '
-                         'ближайшие к Γ. Буквы и путь — как под зонами в Спектре (Setyawan, Curtarolo, 2010); доли — '
-                         'в векторах обратной решётки ячейки файла. Поверните зону мышью; задние рёбра — штрихом.'))
-        note.setWordWrap(True)
-        side.addWidget(note)
+        # the explanation behind «?» (help_button), not on the page
+        note = tr('Первая зона Бриллюэна — ячейка Вигнера — Зейтца обратной решётки примитивной ячейки: точки, '
+                  'ближайшие к Γ. Буквы и путь — как под зонами в Спектре (Setyawan, Curtarolo, 2010); доли — '
+                  'в векторах обратной решётки ячейки файла. Поверните зону мышью; задние рёбра — штрихом.')
         row = QHBoxLayout()
         row.addWidget(QLabel(tr('Смотреть вдоль:')))
         self.axes = []
@@ -184,6 +183,7 @@ class BrillouinWindow(QDialog):
             self.axes.append(button)
             row.addWidget(button)
         row.addStretch(1)
+        row.addWidget(help_button(note))
         side.addLayout(row)
         bottom = QHBoxLayout()
         bottom.addWidget(action_button(tr('Сохранить рисунок…'), self.save_picture, 'image'))

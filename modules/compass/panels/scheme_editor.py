@@ -30,7 +30,7 @@ from PySide6.QtWidgets import (QCheckBox, QComboBox, QDialog, QDoubleSpinBox, QF
 
 from azimuth.core import SYMBOLS
 from azimuth.i18n import tr
-from azimuth.ui import button, label
+from azimuth.ui import button, help_button
 from modules.compass.view import schemes
 
 MODES = (('ball-stick', 'Шары и стержни'), ('sticks', 'Стержни'), ('spacefill', 'Объёмная модель'))
@@ -67,11 +67,9 @@ class SchemeEditor(QDialog):
         self.colors = dict(self.start['colors'])
         s = self.start
         outer = QVBoxLayout(self)
-        note = label(tr('Каждое изменение сразу видно на модели. Получившийся вид можно сохранить как схему — она '
-                        'появится в «Схеме отображения», — отправить файлом или выбрать для запуска программы.'),
-                     'subtitle')
-        note.setWordWrap(True)
-        outer.addWidget(note)
+        # the explanation behind «?» (help_button), not on the page
+        note = tr('Каждое изменение сразу видно на модели. Получившийся вид можно сохранить как схему — она '
+                  'появится в «Схеме отображения», — отправить файлом или выбрать для запуска программы.')
         row = QHBoxLayout()
         left, right = QVBoxLayout(), QVBoxLayout()
         row.addLayout(left, 1)
@@ -159,6 +157,7 @@ class SchemeEditor(QDialog):
         right.addStretch(1)
 
         bottom = QHBoxLayout()
+        bottom.addWidget(help_button(note))
         bottom.addWidget(button(tr('Вернуть как было'), self.revert))
         bottom.addStretch(1)
         bottom.addWidget(button(tr('Закрыть'), self.accept))  # what closes is white

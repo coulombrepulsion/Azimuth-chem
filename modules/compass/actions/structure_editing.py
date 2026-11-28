@@ -5,7 +5,7 @@ self.w), kept here to make structure_actions.py shorter.
 Split off modules/compass/actions/structure_actions.py (0.222.29).
 """
 
-from PySide6.QtWidgets import QDialog, QLabel
+from PySide6.QtWidgets import QDialog
 from azimuth.i18n import tr
 
 
@@ -173,12 +173,17 @@ def isotope_dialog(self, mass=None):
         now = current.get(chosen[0])
         if now:
             kind.setCurrentIndex(max(0, kind.findData(now)))
-        form.addRow(tr('Атомов {}: {}').format(symbol, len(chosen)), kind)
-        note = QLabel(tr('Масса — только для ORCA: она пишется после координат атома («M = …»); частоты, '
-                         'термохимия и ИК-спектр считаются с ней. Геометрия и энергия от изотопа не меняются.'))
-        note.setWordWrap(True)
-        note.setObjectName('subtitle')
-        form.addRow(note)
+        # what the mass does — behind «?» by the list, not under it
+        from PySide6.QtWidgets import QHBoxLayout
+
+        from azimuth.ui import help_button
+
+        chooser = QHBoxLayout()
+        chooser.addWidget(kind, 1)
+        chooser.addWidget(help_button(tr('Масса — только для ORCA: она пишется после координат атома («M = …»); '
+                                         'частоты, термохимия и ИК-спектр считаются с ней. Геометрия и энергия от '
+                                         'изотопа не меняются.')))
+        form.addRow(tr('Атомов {}: {}').format(symbol, len(chosen)), chooser)
         buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
         buttons.accepted.connect(box.accept)
         buttons.rejected.connect(box.reject)

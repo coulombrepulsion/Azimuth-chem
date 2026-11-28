@@ -16,7 +16,7 @@ from PySide6.QtWidgets import (QDialog, QHBoxLayout, QHeaderView, QLabel, QPushB
                                QTableWidgetItem, QVBoxLayout, QWidget)
 
 from azimuth.i18n import tr
-from azimuth.ui import action_button
+from azimuth.ui import action_button, help_button
 from modules.compass.actions.brillouin_window import _rotation
 from modules.compass.chemistry import crystal_morphology as cm
 
@@ -148,13 +148,12 @@ class MorphologyWindow(QDialog):
         header.setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
         header.setStretchLastSection(True)
         side.addWidget(self.table, 1)
-        note = QLabel(tr('Закон Браве — Фриделя — Доннея — Харкера: грани кристалла — плоскости с наибольшим '
-                         'межплоскостным расстоянием d, они растут медленнее всех; грань стоит на расстоянии 1/d от '
-                         'центра. Погасания группы (центрировка, винтовые оси, плоскости скольжения) делят d: грань '
-                         '{100} гранецентрированной решётки растёт как (200). Форма — по одной геометрии решётки, без '
-                         'энергий связей и растворителя.'))
-        note.setWordWrap(True)
-        side.addWidget(note)
+        # the explanation behind «?» (help_button), not on the page
+        note = tr('Закон Браве — Фриделя — Доннея — Харкера: грани кристалла — плоскости с наибольшим '
+                  'межплоскостным расстоянием d, они растут медленнее всех; грань стоит на расстоянии 1/d от '
+                  'центра. Погасания группы (центрировка, винтовые оси, плоскости скольжения) делят d: грань '
+                  '{100} гранецентрированной решётки растёт как (200). Форма — по одной геометрии решётки, без '
+                  'энергий связей и растворителя.')
         row = QHBoxLayout()
         row.addWidget(QLabel(tr('Смотреть вдоль:')))
         self.axes = []
@@ -164,6 +163,7 @@ class MorphologyWindow(QDialog):
             self.axes.append(button)
             row.addWidget(button)
         row.addStretch(1)
+        row.addWidget(help_button(note))
         side.addLayout(row)
         bottom = QHBoxLayout()
         bottom.addWidget(action_button(tr('Сохранить рисунок…'), self.save_picture, 'image'))

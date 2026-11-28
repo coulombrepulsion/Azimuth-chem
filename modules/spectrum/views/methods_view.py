@@ -17,7 +17,7 @@ from pathlib import Path
 from PySide6.QtWidgets import QApplication, QDialog, QFileDialog, QHBoxLayout, QPlainTextEdit, QVBoxLayout
 
 from azimuth.i18n import tr
-from azimuth.ui import button, label
+from azimuth.ui import button, help_button, label
 from modules.spectrum.analysis import methods_text
 
 
@@ -27,17 +27,17 @@ class MethodsDialog(QDialog):
         self.setWindowTitle(tr('Методика расчёта'))
         self.folder, self.details = None, None
         lay = QVBoxLayout(self)
-        hint = label(tr('Абзац для раздела «Методика расчёта» отчёта — собран из файлов расчёта. В нём только то, что '
-                        'записано в файлах: проверьте его и допишите своё (зачем выбран метод, как проверена сходимость). '
-                        'Текст можно править прямо здесь.'), 'subtitle')
-        hint.setWordWrap(True)
-        lay.addWidget(hint)
+        # the explanation behind «?» (help_button), not on the page
+        hint = tr('Абзац для раздела «Методика расчёта» отчёта — собран из файлов расчёта. В нём только то, что '
+                  'записано в файлах: проверьте его и допишите своё (зачем выбран метод, как проверена сходимость). '
+                  'Текст можно править прямо здесь.')
         self.text = QPlainTextEdit()
         lay.addWidget(self.text, 1)
         self.files = label('', 'subtitle')
         self.files.setWordWrap(True)
         lay.addWidget(self.files)
         bottom = QHBoxLayout()
+        bottom.addWidget(help_button(hint))
         bottom.addWidget(button(tr('Выбрать папку расчёта…'), lambda: self.choose_folder()))
         self.copy_button = button(tr('Копировать текст'), lambda: self.copy())
         bottom.addWidget(self.copy_button)

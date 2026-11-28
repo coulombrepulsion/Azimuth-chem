@@ -177,20 +177,17 @@ class HirshfeldWindow(QDialog):
         right.addWidget(self.table, 1)
         middle.addLayout(right, 2)
         layout.addLayout(middle, 1)
-        note = QLabel(tr('Поверхность — где сферические атомы молекулы дают половину плотности кристалла '
-                         '(промолекула, атомы H на нейтронных расстояниях). d_i и d_e — расстояния от точки поверхности '
-                         'до ближайшего ядра внутри и снаружи; d_norm < 0 (красное) — контакт короче суммы '
-                         'ван-дер-ваальсовых радиусов. «Отпечаток» — доля площади при каждой паре (d_i, d_e). Индекс формы: '
-                         'синее — выпуклость, красное — впадина, куда входит атом соседа; красные и синие треугольники '
-                         '(«бабочки») — признак π–π-стопки. Кривизна: низкая — плоские участки (грани стопки).'))
-        note.setWordWrap(True)
-        note.setObjectName('subtitle')
-        note.hide()  # the explanation is behind the «?» button
-        layout.addWidget(note)
+        # the explanation behind «?» (help_button), not on the page
+        note = tr('Поверхность — где сферические атомы молекулы дают половину плотности кристалла '
+                  '(промолекула, атомы H на нейтронных расстояниях). d_i и d_e — расстояния от точки поверхности '
+                  'до ближайшего ядра внутри и снаружи; d_norm < 0 (красное) — контакт короче суммы '
+                  'ван-дер-ваальсовых радиусов. «Отпечаток» — доля площади при каждой паре (d_i, d_e). Индекс формы: '
+                  'синее — выпуклость, красное — впадина, куда входит атом соседа; красные и синие треугольники '
+                  '(«бабочки») — признак π–π-стопки. Кривизна: низкая — плоские участки (грани стопки).')
         bottom = QHBoxLayout()
         from azimuth.ui import help_button
 
-        self.help_slot.addWidget(help_button(note.text()))
+        self.help_slot.addWidget(help_button(note))
         self.model_button = action_button(tr('Показать на модели'), self.show_on_model, 'eye')
         self.model_button.hide()  # «Построить» puts it there (kept for the tests and the old calls)
         bottom.addWidget(self.model_button)

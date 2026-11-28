@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.14 — 28 November 2026
+
+- ### 0.249.14 — Explanations behind «?»
+
+The long explanations in the windows of Crystal, Spectrum and Sextant now open with a «?» button, and the room is given to the tables and pictures.
+
 ## 0.249.13 — 28 November 2026
 
 - ### 0.249.13 — The language asks for no saving

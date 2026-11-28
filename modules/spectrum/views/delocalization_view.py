@@ -23,7 +23,7 @@ from PySide6.QtWidgets import (
 )
 
 from azimuth.i18n import tr
-from azimuth.ui import card
+from azimuth.ui import card, help_button
 from modules.spectrum.analysis import delocalization
 
 FLOOR = 0.05  # DI below this (pairs far apart) is not listed
@@ -59,12 +59,10 @@ class DelocalizationPanel(QWidget):
         column.setSpacing(12)
         ring_card, rings = card(tr('Ароматичность циклов'))
         rings.setContentsMargins(14, 12, 14, 14)
-        self.ring_note = QLabel(tr('HOMA — по длинам связей (1 у бензола, 0 у структуры Кекуле); FLU (0 у бензола), PDI '
-                                   'и MCI (чем больше, тем ароматичнее) — по индексам делокализации, Multiwfn, только '
-                                   'закрытая оболочка.'))
-        self.ring_note.setObjectName('subtitle')
-        self.ring_note.setWordWrap(True)
-        rings.addWidget(self.ring_note)
+        # the explanation behind «?» (help_button), not on the page
+        ring_note = tr('HOMA — по длинам связей (1 у бензола, 0 у структуры Кекуле); FLU (0 у бензола), PDI '
+                       'и MCI (чем больше, тем ароматичнее) — по индексам делокализации, Multiwfn, только '
+                       'закрытая оболочка.')
         self.ring_table = _table(('Цикл', 'HOMA', 'FLU', 'PDI', 'MCI', 'MCI норм.'))
         rings.addWidget(self.ring_table, 1)
         row = QHBoxLayout()
@@ -72,16 +70,15 @@ class DelocalizationPanel(QWidget):
         self.rings_button.clicked.connect(self.compute_rings)
         row.addWidget(self.rings_button)
         row.addStretch(1)
+        row.addWidget(help_button(ring_note))
         rings.addLayout(row)
         column.addWidget(ring_card, 2)
         di_card, di = card(tr('Индексы делокализации'))
         di.setContentsMargins(14, 12, 14, 14)
-        self.di_note = QLabel(tr('Сколько электронных пар делят два атома (нечёткие атомы Беке): около 1 у одинарной связи, '
-                                 '1,4–1,5 у ароматической, около 2 у двойной, сотые — у водородной; у металла — ковалентная '
-                                 'связь или ионная. Локализация — сколько электронов остаётся на атоме.'))
-        self.di_note.setObjectName('subtitle')
-        self.di_note.setWordWrap(True)
-        di.addWidget(self.di_note)
+        # the explanation behind «?» (help_button), not on the page
+        di_note = tr('Сколько электронных пар делят два атома (нечёткие атомы Беке): около 1 у одинарной связи, '
+                     '1,4–1,5 у ароматической, около 2 у двойной, сотые — у водородной; у металла — ковалентная '
+                     'связь или ионная. Локализация — сколько электронов остаётся на атоме.')
         tables = QHBoxLayout()
         tables.setSpacing(12)
         self.pair_table = _table(('Пара атомов', 'DI'))
@@ -95,6 +92,7 @@ class DelocalizationPanel(QWidget):
         self.di_button.clicked.connect(self.compute_di)
         row.addWidget(self.di_button)
         row.addStretch(1)
+        row.addWidget(help_button(di_note))
         di.addLayout(row)
         column.addWidget(di_card, 3)
         self.status = QLabel()

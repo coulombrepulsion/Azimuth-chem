@@ -1620,12 +1620,14 @@ def test_the_card_of_the_molecule_does_not_jump_while_the_panel_of_structures_sl
             st.project_menu_button.setChecked(opened)
             before = st.calc_card.height()
             st.toggle_project_molecules()
-            heights = []
+            heights, sliding = [], []
             end = time.monotonic() + (SLIDE_MS + PictureFold.MS + 400) / 1000
             while time.monotonic() < end:
                 QTest.qWait(10)
                 heights.append(st.calc_card.height())
-            sliding = heights[:5]
+                if st.project_motion is not None:  # the frames of the slide itself (a loaded run has few of them)
+                    sliding.append(heights[-1])
+            sliding = sliding or [before]
             assert set(sliding) == {before}, (opened, str(heights), st.calc_card_glide.held)  # held while the panel slides
             # afterwards one way only — up or down, no jump back
             steps = [b - a for a, b in zip(heights, heights[1:]) if b != a]

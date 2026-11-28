@@ -12,7 +12,7 @@ from math import asin, degrees
 from PySide6.QtWidgets import QDialog, QHBoxLayout, QLabel, QSpinBox, QVBoxLayout, QWidget
 
 from azimuth.i18n import tr
-from azimuth.ui import action_button
+from azimuth.ui import action_button, help_button
 from modules.compass.chemistry import lattice_planes, powder
 
 
@@ -42,13 +42,12 @@ class PlanesWindow(QDialog):
             self.lines = powder.pattern(crystal, powder.CU, 2.0, 170.0)
         except ValueError:
             self.lines = ()
-        note = QLabel(tr('Плоскости h x + k y + l z = m (x, y, z — доли ячейки, m — целые) делят ячейку на |h|, |k|, |l| '
-                         'частей вдоль a, b, c; расстояние между соседними — d отражения hkl в законе Брэгга '
-                         'λ = 2d sin θ. Двойной щелчок по линии дифрактограммы показывает её плоскости здесь же.'))
-        note.setWordWrap(True)
-        note.setObjectName('subtitle')
-        layout.addWidget(note)
+        # the explanation behind «?» (help_button), not on the page
+        note = tr('Плоскости h x + k y + l z = m (x, y, z — доли ячейки, m — целые) делят ячейку на |h|, |k|, |l| '
+                  'частей вдоль a, b, c; расстояние между соседними — d отражения hkl в законе Брэгга '
+                  'λ = 2d sin θ. Двойной щелчок по линии дифрактограммы показывает её плоскости здесь же.')
         bottom = QHBoxLayout()
+        bottom.addWidget(help_button(note))
         bottom.addWidget(action_button(tr('Показать на модели'), self.show_planes, 'eye'))
         bottom.addWidget(action_button(tr('Убрать плоскости'), self.clear, 'remove'))
         bottom.addStretch(1)

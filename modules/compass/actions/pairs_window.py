@@ -25,7 +25,7 @@ from PySide6.QtWidgets import (QDialog, QDoubleSpinBox, QHBoxLayout, QHeaderView
                                QTableWidgetItem, QVBoxLayout, QWidget)
 
 from azimuth.i18n import tr
-from azimuth.ui import action_button
+from azimuth.ui import action_button, help_button
 from modules.compass.chemistry import crystal_pairs, crystal_shell
 
 
@@ -42,13 +42,11 @@ class PairsWindow(QDialog):
         self.relay.done.connect(self.answer)
         self.setWindowTitle(tr('Энергии пар · ') + (title or crystal.title or 'CIF'))
         layout = QVBoxLayout(self)
-        note = QLabel(tr('Энергия взаимодействия молекулы с каждым соседом E = E(пара) − E(A) − E(B) в GFN2-xTB при '
-                         'геометрии кристалла; энергия решётки ≈ ½ Σ E по соседям в пределах радиуса. '
-                         'Точность — порядка 10–20 %. Составляющие — слагаемые GFN2 (электростатика, '
-                         'дисперсия, отталкивание, остальное — поляризация и обмен), каждое как разность пары и молекул.'))
-        note.setWordWrap(True)
-        note.setObjectName('subtitle')
-        layout.addWidget(note)
+        # the explanation behind «?» (help_button), not on the page
+        note = tr('Энергия взаимодействия молекулы с каждым соседом E = E(пара) − E(A) − E(B) в GFN2-xTB при '
+                  'геометрии кристалла; энергия решётки ≈ ½ Σ E по соседям в пределах радиуса. '
+                  'Точность — порядка 10–20 %. Составляющие — слагаемые GFN2 (электростатика, '
+                  'дисперсия, отталкивание, остальное — поляризация и обмен), каждое как разность пары и молекул.')
         row = QHBoxLayout()
         self.radius = QDoubleSpinBox()
         self.radius.setRange(2.0, 8.0)
@@ -64,6 +62,7 @@ class PairsWindow(QDialog):
         row.addStretch(1)
         self.go = action_button(tr('Посчитать в xtb'), self.compute, 'play')
         row.addWidget(self.go)
+        row.addWidget(help_button(note))
         layout.addLayout(row)
         # the charges of the components (a salt: the ions) — guessed from the formulas, editable
         try:

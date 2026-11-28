@@ -24,7 +24,7 @@ from PySide6.QtWidgets import (QCheckBox, QComboBox, QDialog, QHBoxLayout, QHead
                                QTableWidgetItem, QVBoxLayout, QWidget)
 
 from azimuth.i18n import tr
-from azimuth.ui import action_button
+from azimuth.ui import action_button, help_button
 from modules.compass.chemistry import cod
 
 
@@ -39,11 +39,9 @@ class CodWindow(QDialog):
         self.relay.done.connect(self.answer)
         self.setWindowTitle(tr('Кристаллы из COD'))
         layout = QVBoxLayout(self)
-        note = QLabel(tr('Crystallography Open Database — открытая база кристаллических структур (около полумиллиона '
-                         'CIF): органика, неорганика, минералы. Нужен интернет; отправляются только условия поиска.'))
-        note.setWordWrap(True)
-        note.setObjectName('subtitle')
-        layout.addWidget(note)
+        # the explanation behind «?» (help_button), not on the page
+        note = tr('Crystallography Open Database — открытая база кристаллических структур (около полумиллиона '
+                  'CIF): органика, неорганика, минералы. Нужен интернет; отправляются только условия поиска.')
         row = QHBoxLayout()
         self.words = QLineEdit()
         self.words.setPlaceholderText(tr('слова: benzoic acid, quartz, автор…'))
@@ -60,6 +58,7 @@ class CodWindow(QDialog):
         row.addWidget(self.exact)
         self.find_button = action_button(tr('Найти'), self.find, 'search')
         row.addWidget(self.find_button)
+        row.addWidget(help_button(note))
         layout.addLayout(row)
         # the search by the cell (the form «search by cell» of COD)
         cells = QHBoxLayout()

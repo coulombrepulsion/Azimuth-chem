@@ -14,7 +14,7 @@ from PySide6.QtWidgets import (QDialog, QHBoxLayout, QHeaderView, QLabel, QTable
                                QWidget)
 
 from azimuth.i18n import tr
-from azimuth.ui import action_button
+from azimuth.ui import action_button, help_button
 from modules.compass.chemistry import crystal_setting as cs
 
 
@@ -61,15 +61,14 @@ class SettingWindow(QDialog):
             self.table.selectRow(0)
         self.table.doubleClicked.connect(lambda index: self.apply(index.row()))
         layout.addWidget(self.table, 1)
-        note = QLabel(tr('Один кристалл описывают разные ячейки: оси можно переименовать, а у моноклинной группы есть '
-                         'три выбора ячейки (P 21/c, P 21/n, P 21/a — одна группа № 14). Приведённая ячейка (Бюргер, '
-                         'Нигли) — три кратчайших вектора примитивной решётки, углы все острые или все не острые: у '
-                         'двух файлов одного кристалла она одна. Атомы остаются на своих местах — меняются только '
-                         'оси и дробные координаты; тепловые эллипсоиды файла в новых осях не показываются.'))
-        note.setWordWrap(True)
-        note.setObjectName('subtitle')
-        layout.addWidget(note)
+        # the explanation behind «?» (help_button), not on the page
+        note = tr('Один кристалл описывают разные ячейки: оси можно переименовать, а у моноклинной группы есть '
+                  'три выбора ячейки (P 21/c, P 21/n, P 21/a — одна группа № 14). Приведённая ячейка (Бюргер, '
+                  'Нигли) — три кратчайших вектора примитивной решётки, углы все острые или все не острые: у '
+                  'двух файлов одного кристалла она одна. Атомы остаются на своих местах — меняются только '
+                  'оси и дробные координаты; тепловые эллипсоиды файла в новых осях не показываются.')
         bottom = QHBoxLayout()
+        bottom.addWidget(help_button(note))
         bottom.addWidget(action_button(tr('Открыть в выбранной установке'), lambda: self.apply(), 'cell'))
         bottom.addStretch(1)
         bottom.addWidget(action_button(tr('Закрыть'), self.accept, 'close'))
