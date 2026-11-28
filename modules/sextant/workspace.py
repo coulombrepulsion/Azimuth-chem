@@ -1,33 +1,32 @@
-"""SextantWorkspace: module-owned pages and operations. Contract: docs/MODULES.md.
+"""SextantWorkspace: the page of a molecular calculation in Sextant and the state of its calculations. Contract:
+docs/MODULES.md.
 
-The calculation is also run from here (modules/sextant/runner.py): «Программа» — ORCA,
-Gaussian, Psi4 (their input files: inputs.py) or xtb (GFN2-xTB); «Растворитель» and «Дисперсия»
-the «Запуск расчёта» card finds the program (or «Указать…»), runs it in a new folder of
-«Документы/Azimuth/Расчёты», shows the time, the optimization cycles, the last energy and the end of the
-output once a second, stops it on request, and opens the result as «Файл → Открыть пример…» does
-(an optimization — the steps drawer of Compass, other results — Spectrum).
-The methods and basis sets the chosen program knows (azimuth.core.METHOD_TABLE, BASIS_TABLE),
-grouped by family; solvent, dispersion and memory in «Дополнительные настройки…» (job_window.OptionsDialog);
-a started calculation in its own window (job_window.JobWindow); the run button is grey while it runs.
-The input file can be edited in its panel (ORCA, Gaussian, Psi4); «Запустить расчёт» checks the edited text
-(input_check.check) and asks when it finds a mistake or when the settings changed after the edit; the edited text
-is what is run. The card «Запуск расчёта»: the mark of the program, its name and a tick when it is found (the path
-in the tooltip), the time of the calculation next to the button, «Вывод программы» (job_window.OutputWindow) and
-«Папка расчёта»; the field of one's own keywords is gone (the file itself is edited instead).
-«Где считать» — two switches with icons, «Этот компьютер» and «Сервер»; for the server its profile
-(remote.py, server_dialog.py) is shown instead of the program found here.
-«Запустить расчёт» with the server: the server is opened (server_access: the password when asked, the VPN),
-asked what it has now (free physical cores, memory, disk, where ORCA is), the user chooses the number of processes
-(the free cores proposed, at most the cores of the server), and the calculation goes there as a remote_job.RemoteJob —
-the same window, stages and result as for this computer. Closing the program does not stop it on the server.
-The calculation is a card in the place of the input file (job_window docked into job_slot, the card of the
-input hidden meanwhile; «Входной файл» on it brings the file back, «Окно расчёта» the calculation), not a window; in the
-other sections the hourglass of the hub opens it as a window that can be hidden, and coming back to Sextant puts it in
-its place again (job_follow). Less text on the page: no note on the calculation programs, no memory line in the
-card of the molecule; the explanation of the input file is behind «?» next to its title (a popup, input_help_button).
-«Название» — the name of the calculation (Calculation.title): the first line of the input instead of «Created
-with Azimuth» and the name of its files (core.file_base, Russian letters transliterated); empty — formula_method_basis
-[_solvent], shown as the placeholder. «Предел циклов» of an optimization: 100 by default (0 — as in the program).
+§1 PURPOSE
+    The page sets up one calculation of the molecule of the tab: «Программа» (ORCA, Gaussian, Psi4, xtb, MOPAC,
+    GAMESS (US), NWChem — workspace_texts.PROGRAMS), «Задача» (inputs.PROGRAM_TASKS; chains of two steps), the method
+    and the basis set the program knows (azimuth.core.METHOD_TABLE, BASIS_TABLE, grouped by family), the charge and the
+    multiplicity, «Название» (Calculation.title: the first line of the input and the name of its files, core.file_base;
+    empty — formula_method_basis[_solvent]). The rarer settings — processes and memory, solvent, dispersion, SCF, the
+    limit of the cycles of an optimization (100 by default, 0 — as in the program), properties — are in «Дополнительные
+    настройки…» (job_window.OptionsDialog), summed up under the button. The advice of Sextant (advice.py) proposes the
+    method, the basis set and the dispersion for the task and the molecule.
+§2 ALGORITHM
+    The page is built by calculation_page.py (the card of the input file, the card «Запуск расчёта», «Где считать»:
+    «Этот компьютер» / «Сервер»); the texts and the defaults are in workspace_texts.py, small widgets in
+    workspace_widgets.py, the scan in workspace_scan.py, the molecule of the calculation (charge and multiplicity of its
+    structure, basis sets of its elements) in workspace_molecule.py. The work is done by parts of the window with a PORT
+    of their own (azimuth/window_port.py), made when first used: run_tool (run_actions — the start, the watching, the
+    end and the result, here or on a server), input_tool (input_actions — the input file shown, edited and checked),
+    batch_tool (batch_actions — queues, Fukui, CDA), server_watch_tool, program_tool, install_tool, history_tool,
+    doctor_tool, crystal_mode_tool (crystal_mode.py — the page of a crystal tab). calculation() is the Calculation of
+    the fields; apply_calculation(calc) puts one back into them (a repeat, the doctor, a project).
+    One calculation per place (this computer, the server — azimuth/runtime/places.PLACES): job, job_window, batch … are
+    descriptors over the RunSlot of the place (_PerPlace); at_place(place) makes another place the current one for a
+    block. The calculation is shown as a card in the place of the input file (job_window docked into job_slot; «Входной
+    файл» on it brings the file back); in the other sections the hourglass of the hub opens it as a window, and coming
+    back to Sextant puts it in its place again (job_follow).
+§3 APPLICATIONS azimuth/app.py (Studio — the page «Секстант» of the hub).
+§7 TESTS tests/gui/test_gui_sextant.py; tests/sextant/.
 """
 
 from pathlib import Path
@@ -100,18 +99,18 @@ class SextantWorkspace:
     run_tool = property(lambda self: part(self, 'run_tool', 'modules.sextant.run_actions', 'RunTool'))
     input_tool = property(lambda self: part(self, 'input_tool', 'modules.sextant.input_actions', 'InputTool'))
     batch_tool = property(lambda self: part(self, 'batch_tool', 'modules.sextant.batch_actions', 'BatchTool'))
-    # the watching of the server (its mark, «Проверить подключение», «Файлы на сервере») — taken out of RunTool
+    # the watching of the server (its mark, «Проверить подключение», «Файлы на сервере»)
     server_watch_tool = property(lambda self: part(self, 'server_watch_tool', 'modules.sextant.server_watch_actions',
                                                    'ServerWatchTool'))
-    # the program shown and chosen (its mark, «Указать…», «Установить…» when it is missing) — out of RunTool
+    # the program shown and chosen (its mark, «Указать…», «Установить…» when it is missing)
     program_tool = property(lambda self: part(self, 'program_tool', 'modules.sextant.program_actions', 'ProgramTool'))
-    # «Установить программы для расчёта» (Open MPI, xtb, CREST, MOPAC) — out of RunTool
+    # «Установить программы для расчёта» (Open MPI, xtb, CREST, MOPAC, Quantum ESPRESSO, CP2K …)
     install_tool = property(lambda self: part(self, 'install_tool', 'modules.sextant.install_actions', 'InstallTool'))
-    # «История расчётов» (the rows, the window, «Открыть результат», «Папка», «Очистить список») — out of RunTool
+    # «История расчётов» (the rows, the window, «Открыть результат», «Папка», «Очистить список»)
     history_tool = property(lambda self: part(self, 'history_tool', 'modules.sextant.history_actions', 'HistoryTool'))
     # the doctor of a calculation — the repeat with the remedy for what went wrong
     doctor_tool = property(lambda self: part(self, 'doctor_tool', 'modules.sextant.doctor_actions', 'DoctorTool'))
-    # 0.133.0; the page of the calculation of a crystal tab (Quantum ESPRESSO) — crystal_mode.py
+    # the page of the calculation of a crystal tab (Quantum ESPRESSO, CP2K) — crystal_mode.py
     crystal_mode_tool = property(lambda self: part(self, 'crystal_mode_tool', 'modules.sextant.crystal_mode',
                                                    'CrystalModeTool'))
     # one calculation per place (see _PerPlace)
@@ -823,7 +822,7 @@ class SextantWorkspace:
             self.preview.set_language(kind)  # the colours of the input of the program
         self.fill_tasks(kind)  # only what the program can do
         self.update_solvent_model()
-        if hasattr(self, 'main_form'):  # what the program does not take is not shown (was grey)
+        if hasattr(self, 'main_form'):  # what the program does not take is not shown
             self.show_row(self.method_picker, kind != 'xtb')
             self.show_row(self.basis_picker, kind not in ('xtb', 'mopac'))
             self.show_row(self.dispersion, kind not in ('xtb', 'mopac'))

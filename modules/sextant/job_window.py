@@ -33,7 +33,8 @@
     over — show_picture(name) -> bool, picture_name; while it runs the animation — begin() starts
     show_animation('calc-running') -> bool, paused while the window is hidden and after finish(); movie_running()),
     output_button, stop_button, folder_button, compass_button, spectrum_button, close_button, stages (QLabel),
-    stage_keys, begin(title, details), add_stage(key, text, when), show_results(compass, spectrum), finish(),
+    stage_keys, begin(title, details), add_stage(key, text, when) (the stages kept as written and drawn in the
+    language shown — _stage_lines, a tick of mark_image), show_batch(queue), show_results(compass, spectrum), finish(),
     show_window(), park(), dock(host), undock(), docked (bool), input_button (owner.show_input_card), picture_size,
     on_parked (callable(bool) or None), parked, followed (True while it was minimized with the main window).
     OutputWindow(owner): watch(paths) — the first of the paths that exists is shown; view (QPlainTextEdit), follow
@@ -43,7 +44,8 @@
 §6 NOTES
     Minimizing the window does not slow the calculation: it is a separate process.
 §7 TESTS
-    tests/test_gui.py::test_sextant_job_window_and_options, test_sextant_output_window_follows_the_file.
+    tests/gui/test_gui_sextant.py (the window of the calculation, its options, «Вывод программы» following the file);
+    tests/gui/test_windows_look.py (the drawn ticks of the stages).
 §8' ROBUSTNESS
     The filter only reads the state of the main window; a window that was never shown is not shown by it.
 """
@@ -299,11 +301,8 @@ class JobWindow(QWidget):
         # in Sextant the panel stands in the place of the input file — this brings the file back
         self.input_button = icon_button(tr('Входной файл'), lambda: owner.show_input_card(), 'back')
         self.input_button.hide()
-        # 0.249.5 (the owner: «Как-то странно выглядят кнопки снизу. Может их перенести в область справа от запустить
-        # расчет?» — «Но кнопки открыть в спектре или в Компасе снизу, но чтоб в той же панели были, и кнопка
-        # вернуться к входному файлу тоже»): the control of the calculation is a group of its own — in Sextant it
-        # stands in the row of «Запустить расчёт» (dock), in the window of its own at the bottom; the results and «Входной
-        # файл» at the bottom inside the card (the row was under the card, outside it)
+        # the control of the calculation is a group of its own — in Sextant it stands in the row of «Запустить расчёт»
+        # (dock), in the window of its own at the bottom; the results and «Входной файл» at the bottom inside the card
         self.controls = QWidget()
         self.controls.setObjectName('jobControls')
         controls = QHBoxLayout(self.controls)
@@ -611,8 +610,8 @@ class JobWindow(QWidget):
         self.spectrum_button.setText(tr(spectrum))
 
     def show_animation(self, name='calc-running', size=PICTURE):
-        """The picture of a running calculation while it runs (0.247.0: the picture of the state in thin lines, not the
-        animation of Quill); False when there is none."""
+        """The picture of a running calculation while it runs (the picture of the state in thin lines); False when there
+        is none."""
         return self.show_picture(name, size)
 
     def _stop_movie(self):

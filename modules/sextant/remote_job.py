@@ -65,9 +65,9 @@ HEADER
     (_settle). submit() uses the same path. A lost connection while sending or downloading the results is tried again
     (_again: 10, 20, 30 s …); a job whose output, copied while it ran, ended normally is finished even when some files
     stayed on the server (said). Submit() — sent and queued without the watching (the rest of a queue at the exit,
-    «--dependency=afterany»). Only ORCA for now (the laboratory computes with ORCA); Gaussian, Psi4 and xtb on a server
-    are stage 4 of docs/features/REMOTE_CALCULATIONS.md. Coming back to a job after the program was closed (job.json):
-    RemoteJob.resume, 0.89.18 (history.py). The output of ORCA is ASCII; bytes are
+    «--dependency=afterany»). A server runs ORCA and MOPAC (REMOTE_KINDS) and, for crystals, Quantum ESPRESSO and CP2K
+    (prepare_qe); Gaussian, Psi4 and xtb on a server are stage 4 of docs/features/REMOTE_CALCULATIONS.md. Coming back to
+    a job after the program was closed (job.json): RemoteJob.resume (history.py). The output of ORCA is ASCII; bytes are
     appended as they come, so a character split between two fetches is still whole in the file.
 
 §7 TEST CASES tests/sextant/test_remote_job.py: fake ssh, scp, sbatch, squeue, scancel and orca on this computer —
@@ -93,7 +93,7 @@ from azimuth.runtime import runs
 
 STATES = ('new', 'sending', 'queued', 'running', 'offline', 'finished', 'failed', 'stopped', 'uncertain')
 JOB_JSON = 'job.json'
-RETRY = (10.0, 20.0, 30.0)  # then every 30 s while the connection is lost (was 30, 60, 120, 300 s)
+RETRY = (10.0, 20.0, 30.0)  # then every 30 s while the connection is lost
 # T10 (PROJECT_RUNTIME_GUIDE.md §13: «job исчез из squeue, вывод задерживается — нет ложного успеха, сверка
 # ждёт достаточных доказательств»): a job gone from squeue whose output has no mark of the end is taken as ended only
 # after GONE_CHECKS observations in a row with the output not growing (a slow file system, squeue between answers);
@@ -758,9 +758,8 @@ class RemoteJob:
         return ' '.join(line.strip() for line in text.splitlines() if line.strip())[:500]
 
 
-# moved out of this module (0.249.23: remote_prepare.py, remote_batch.py), still named from here — the callers and the
-# tests use remote_job.send_batch, remote_job.prepare_remote …; looked up when first asked, so that either module may
-# be imported first
+# the names of remote_prepare.py and remote_batch.py, also named from here (remote_job.send_batch,
+# remote_job.prepare_remote …); looked up when first asked, so that either module may be imported first
 _MOVED = {'prepare_remote': 'remote_prepare', 'prepare_qe': 'remote_prepare', 'mopac_threads': 'remote_prepare',
           'send_batch': 'remote_batch', 'SubmissionUncertain': 'remote_batch', 'BatchItemJob': 'remote_batch',
           'group_command': 'remote_batch', 'parse_group': 'remote_batch', '_GROUPS': 'remote_batch',

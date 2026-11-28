@@ -314,7 +314,7 @@
 - `modules/sextant/__main__.py` — Launch the sextant workspace from the Azimuth root.
 - `modules/sextant/advice.py` — Sextant: what the molecule suggests — charge and multiplicity, the computer's cores and memory, a method.
 - `modules/sextant/batch.py` — A queue of calculations for a set of structures: the conformers or the structures of the drawer of Compass with the same settings of Sextant, one after another on this computer.
-- `modules/sextant/batch_actions.py` — Sextant: a queue of calculations for the set of the drawer of Compass. The pure part: batch.py.
+- `modules/sextant/batch_actions.py` — Sextant: a queue of calculations for the set of the drawer of Compass (conformers, the structures of a project), and the series built on queues — Fukui functions, CDA. The pure part: batch.py; a queue on a server: batch_server.py.
 - `modules/sextant/batch_browser.py` — Saved calculation packages: reopen the whole queue after a restart, including completed queues.
 - `modules/sextant/batch_conformers.py` — The best conformer of every structure of a queue before its calculation — the methods of the program, chosen in «Настройки → Расчёты».
 - `modules/sextant/batch_dialog.py` — BatchDialog: the window «Очередь расчётов» — which structures go into a queue, and «Комплексы с ионом».
@@ -362,7 +362,7 @@
 - `modules/sextant/remote_batch.py` — Sextant: a queue of calculations sent to a SLURM server at once and run one after another by one SLURM job.
 - `modules/sextant/remote_job.py` — Sextant: a calculation on a SLURM server, watched like one on this computer.
 - `modules/sextant/remote_prepare.py` — Sextant: the folder of a calculation for a SLURM server, before it is sent (modules/sextant/remote_job.py sends and watches it).
-- `modules/sextant/run_actions.py` — RunTool (window.run_tool, a part of the window; was the mixin RunActions of SextantWorkspace, split from it on 2026-11-08): running a calculation of Sextant — where it runs (this computer or a server), the program found or chosen, the fo…
+- `modules/sextant/run_actions.py` — RunTool (window.run_tool, a part of the window with a PORT): running a calculation of Sextant — where it runs (this computer or a server), the program found or chosen, the folder of the calculations, the start, the progress, the end and …
 - `modules/sextant/runner.py` — Run ORCA, Gaussian, Psi4 or xtb from Sextant: find the program, prepare a job folder, start, watch, stop.
 - `modules/sextant/server_access.py` — Sextant: opening a server for a calculation — the password, the VPN and what the server has now.
 - `modules/sextant/server_browser.py` — Sextant: «Файлы на сервере» — a two-pane file manager, this computer and the server, as Total Commander.
@@ -376,7 +376,7 @@
 - `modules/sextant/ssh.py` — Sextant: commands and files on a calculation server through the system ssh and scp.
 - `modules/sextant/unfinished.py` — Sextant at the start: a queue of calculations and a calculation on a server left unfinished when the program was closed are offered again.
 - `modules/sextant/vpn.py` — Sextant: OpenVPN Connect (or, on Windows, OpenVPN GUI) switched on by the program for a server that needs a VPN.
-- `modules/sextant/workspace.py` — SextantWorkspace: module-owned pages and operations. Contract: docs/MODULES.md.
+- `modules/sextant/workspace.py` — SextantWorkspace: the page of a molecular calculation in Sextant and the state of its calculations. Contract: docs/MODULES.md.
 - `modules/sextant/workspace_molecule.py` — The molecule of a calculation in Sextant: the charge and multiplicity following its structure, a basis set of an element, the fragments of CDA and of the interaction energy, the structure and constraints that go to the program. Methods o…
 - `modules/sextant/workspace_scan.py` — The scan of Sextant: the coordinates of the constraints of Compass offered, the second coordinate, the end of a scan chosen. Methods of SextantWorkspace (self is the window), kept here to make workspace.py shorter.
 - `modules/sextant/workspace_texts.py` — The texts and names of the page of Sextant: the programs, the notes of their input files, the defaults.

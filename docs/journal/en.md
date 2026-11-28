@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.24 — 28 November 2026
+
+- ### 0.249.24 — The descriptions of the code of Sextant
+
+The descriptions of the modules of Sextant tell how the program is built now; the history of the changes is in the changelog.
+
 ## 0.249.23 — 28 November 2026
 
 - ### 0.249.23 — Tidier server code

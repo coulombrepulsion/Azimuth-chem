@@ -1,42 +1,38 @@
-"""Sextant: a queue of calculations for the set of the drawer of Compass. The pure part: batch.py.
+"""Sextant: a queue of calculations for the set of the drawer of Compass (conformers, the structures of a project), and
+the series built on queues — Fukui functions, CDA. The pure part: batch.py; a queue on a server: batch_server.py.
 
-HEADER When the tab has conformers (after a search) or a set of structures (several files, an SDF), the card of the
-    input file has «Очередь расчётов для набора…»: the dialog lists them with ΔE, the lowest within 3 kcal/mol are
-    checked (batch.default_count), «Сколько» checks the first N, a check box adds or takes away one; «Выбрать для
-    очереди» (see below). The dialog only chooses («Выбрать для очереди»): the card of the calculation then shows the
-    queue chosen — a blue band «Очередь: N из M · <source>» with «Изменить выбор…» and ✕ (back to one calculation), the
-    icon of the queue pressed, the button «Запустить очередь (N)»; the settings can still be changed, the button starts
-    the queue. The choice is forgotten when the rows of the drawer change (another search, another tab). The settings of
-    Sextant are the same for all; the charge and the multiplicity — those of the tab for conformers, guessed from its
-    bonds for every structure of a set (advice.guess_state); an input file edited by hand is not used (its change would
-    not reach the others — said). On this computer the calculations go one after another; on the server the server is
-    opened and the processes asked once, then every job is sent when the one before it is over. The window of the
-    calculation shows the queue (✓ done, ✗ failed, ▶ running, · waiting), «Пропустить» stops the current one and goes
-    on, «Остановить» stops the queue. A failure does not stop the queue. At the end: the table «batch_energies.csv» in
-    «Анализ» of the folder of the queue (E, G with frequencies, ΔE or ΔG, the Boltzmann shares, ΔE of the search), and
-    the results — the final geometries — on the page «Конформеры» of the drawer of Compass, sorted again by the new
-    energies. A queue left by closing the program is in batch.json of its folder; «Продолжить очередь» takes it up (the
-    preference 'open_batch'). A server queue goes on without the program: at the exit «Отправить и выйти» sends every
-    calculation not sent yet, each waiting in SLURM for the one before (send_rest_before_exit, remote_job.submit with
-    afterany; state 'sent'); at the next start the queue is taken up (unfinished.py) and its jobs are watched one by one
-    (_resume_batch_item), nothing is sent again; the processes chosen at the start are kept (extra['plan']) and not
-    asked again; «Остановить» takes the sent ones off the queue of the server (scancel, _cancel_sent); the reason of a
-    failure is kept (BatchItem.note) and shown in the list of the window. A server queue is sent at once — every
-    calculation prepared and uploaded, one SLURM job (batch.sh) runs them one after another and leaves markers in their
-    folders; Sextant watches them one by one (_send_queue_at_once, remote_job.send_batch, BatchItemJob); the exit has
-    nothing to send. A queue searching conformers first is still sent one by one.
+§1 PURPOSE
+    When the tab has conformers (after a search) or a set of structures, the card of the input file has «Очередь
+    расчётов для набора…»: BatchDialog lists them with ΔE, the lowest within 3 kcal/mol checked (batch.default_count),
+    «Сколько» checks the first N. The dialog only chooses: the card of the calculation then shows the queue chosen (a band
+    «Очередь: N из M · <source>» with «Изменить выбор…» and ✕, the button «Запустить очередь (N)»), the settings can
+    still be changed, the button starts it; the choice is forgotten when the rows of the drawer change.
+§2 ALGORITHM
+    The settings of Sextant are the same for every item; the charge and the multiplicity are those of the tab for
+    conformers, guessed from the bonds of each structure of a set (advice.guess_state); an input file edited by hand is
+    not used (said). On this computer the items run one after another; a failure does not stop the queue; «Пропустить»
+    stops the current one, «Остановить» the queue. The window of the calculation lists them (✓ done, ✗ failed, ▶
+    running, · waiting, ⇡ sent) with the reason of a failure (BatchItem.note). At the end: batch_energies.csv in
+    «Анализ» of the folder of the queue (E, G with frequencies, ΔE or ΔG, the Boltzmann shares, ΔE of the search) and the
+    final geometries on the page «Конформеры» of the drawer, sorted by the new energies. A queue left by closing the
+    program is in batch.json of its folder; «Продолжить очередь» takes it up.
+    On a server (batch_server.py): the server is opened and the processes asked once (kept in extra['plan']); the queue
+    is sent at once — every calculation uploaded, one SLURM job (batch.sh) runs them one after another and leaves
+    markers in their folders, Sextant watches them one by one (remote_batch.send_batch, BatchItemJob); a queue that
+    searches conformers first is sent item by item, and at the exit «Отправить и выйти» sends what is left, each waiting
+    for the one before (remote_job.submit with afterany). At the next start the queue is taken up (unfinished.py),
+    nothing is sent again; «Остановить» takes the sent ones off the queue of the server (scancel).
 §3 APPLICATIONS modules/sextant/workspace.py (the button, finish_job), modules/sextant/job_window.py (show_batch).
 §4 SPECIFICATION BatchDialog(parent, title, rows [(name, ΔE | None)]); .count (QSpinBox), .listing; chosen() -> [index].
-    BatchTool (window.batch_tool, a part of the window; was the mixin BatchActions): batch_source() -> (source, [(name,
-    Molecule, ΔE, charge, multiplicity)]); open_batch_dialog() -> plan | None; set_batch_plan(indices),
-    clear_batch_plan(), show_batch_plan() -> bool, run_batch_plan() (run_calculation while a queue is chosen);
-    start_batch(indices, place=None) -> Batch | None; start_fukui(place=None) -> Batch | None (the task «Функции
-    Фукуи»); fukui_complete(queue) -> bool; start_cda(place=None) -> Batch | None, cda_complete(queue) -> bool (the task
-    «CDA»); start_next_batch_item() -> job | None; batch_job_finished(job) -> code; skip_batch_item(); batch_complete()
-    -> [Path]; resume_batch(folder=None); start_next_batch_item first takes up the watching of an item left running on
-    the server (_resume_batch_item); batch_qtaim_ready(queue) -> bool; batch_qtaim(folder=None, choose=False) -> [Path]
-    (modules/spectrum/wavefunction/batch_qtaim.py); update_batch_buttons().
-§7 TESTS tests/sextant/test_batch.py (pure); tests/test_gui.py::test_queue_of_conformers.
+    BatchTool (window.batch_tool, a part of the window with a PORT): batch_source() -> (source, [(name, Molecule, ΔE,
+    charge, multiplicity)]); open_batch_dialog() -> plan | None; set_batch_plan(indices), clear_batch_plan(),
+    show_batch_plan() -> bool, run_batch_plan(); start_batch(indices, place=None) -> Batch | None; start_fukui(place=None)
+    -> Batch | None (the task «Функции Фукуи»); fukui_complete(queue) -> bool; start_cda(place=None) -> Batch | None,
+    cda_complete(queue) -> bool (the task «CDA»); start_next_batch_item() -> job | None (first takes up the watching of
+    an item left running on the server); batch_job_finished(job) -> code; skip_batch_item(); batch_complete() ->
+    [Path]; resume_batch(folder=None); batch_qtaim_ready(queue) -> bool; batch_qtaim(folder=None, choose=False) ->
+    [Path] (modules/spectrum/wavefunction/batch_qtaim.py); update_batch_buttons().
+§7 TESTS tests/sextant/test_batch.py (pure); tests/gui/test_gui_sextant.py (the queue of conformers).
 """
 
 from dataclasses import replace
@@ -133,7 +129,7 @@ class BatchTool:
     # -- what can be queued ------------------------------------------------------------------------------------------
     def batch_source(self):
         """(source, rows): the conformers of the drawer (the charge and the multiplicity of the tab) or the molecules of
-        the project (the set of «Структуры» of the drawer is gone — a set is a project)."""
+        the project (a set of structures is a project)."""
         drawer = getattr(self.w, 'drawer', None)
         # the conformers kept in the project (loaded on the page from it) are already molecules of the project
         conformer_page = (drawer is not None and drawer.page() == 'conformers' and len(drawer.conformers) > 1

@@ -1,5 +1,4 @@
-"""RunTool (window.run_tool, a part of the window; was the mixin RunActions of SextantWorkspace, split from it
-on 2026-11-08): running a calculation of Sextant — where it runs (this computer or a server), the program
+"""RunTool (window.run_tool, a part of the window with a PORT): running a calculation of Sextant — where it runs (this computer or a server), the program
 found or chosen, the folder of the calculations, the start, the progress, the end and the result, the history of the
 calculations, the installation of the tools. The calculation per place (job, batch, job_window …) stays on
 SextantWorkspace (descriptors over its RunSlot)."""
@@ -309,9 +308,8 @@ class RunTool:
 
     def watch_resource_fields(self):
         """A change of the processes or the memory that is not the advice (apply_machine, apply_server_resources) is the
-        user's — the advice of the server no longer replaces it. 0.108.47 compared the fields with their values at the
-        switch to the server, and a window started with the server chosen had no such values (its fields were replaced
-        at the first answer of the server)."""
+        user's — the advice of the server does not replace it. The fields are watched from the start (not compared with
+        their values at the switch to the server: a window started with the server chosen has no such values)."""
         if getattr(self, '_resource_watch', False) or not (self.w.has('cores') and self.w.has('memory')):
             return
         self._resource_watch = True
