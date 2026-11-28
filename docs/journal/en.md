@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.23 — 28 November 2026
+
+- ### 0.249.23 — Tidier server code
+
+The code that sends calculations to a server is split into three parts, easier to read and check. Everything works as before.
+
 ## 0.249.22 — 28 November 2026
 
 - ### 0.249.22 — A language model reads the series of a crystal

@@ -359,7 +359,9 @@
 - `modules/sextant/qe_pseudo.py` — The pseudopotentials of Quantum ESPRESSO: the library SSSP downloaded once into the folder of the program.
 - `modules/sextant/qe_windows.py` — Quantum ESPRESSO for Windows: the native build of the MSYS2 project, put into .tools/qe without MSYS2 itself.
 - `modules/sextant/remote.py` — Sextant: the server profile for calculations on a cluster (the environment lines of the job).
+- `modules/sextant/remote_batch.py` — Sextant: a queue of calculations sent to a SLURM server at once and run one after another by one SLURM job.
 - `modules/sextant/remote_job.py` — Sextant: a calculation on a SLURM server, watched like one on this computer.
+- `modules/sextant/remote_prepare.py` — Sextant: the folder of a calculation for a SLURM server, before it is sent (modules/sextant/remote_job.py sends and watches it).
 - `modules/sextant/run_actions.py` — RunTool (window.run_tool, a part of the window; was the mixin RunActions of SextantWorkspace, split from it on 2026-11-08): running a calculation of Sextant — where it runs (this computer or a server), the program found or chosen, the fo…
 - `modules/sextant/runner.py` — Run ORCA, Gaussian, Psi4 or xtb from Sextant: find the program, prepare a job folder, start, watch, stop.
 - `modules/sextant/server_access.py` — Sextant: opening a server for a calculation — the password, the VPN and what the server has now.
