@@ -572,6 +572,7 @@ TEXT_ICONS = {
     'Заменить': 'swap',  # the find bar of the editor (azimuth/text_editor.py)
     # «Правка» of Sextant — the editor of the input
     'Найти…': 'search',
+    'Найти в CCCBDB': 'search',  # the measured values of a molecule (Spectrum, «Опыт»)
     'Заменить…': 'swap',
     'Перейти к строке…': 'forward',
     'Закомментировать / раскомментировать': 'edit',

@@ -431,6 +431,7 @@
 ## modules/spectrum/analysis
 
 - `modules/spectrum/analysis/boltzmann.py` — Energies of several results and the Boltzmann shares — Simple utilities of Chemcraft's Tools.
+- `modules/spectrum/analysis/cccbdb.py` — The measured values of any molecule NIST CCCBDB knows — found on the network, for «Опыт» of Spectrum when the molecule is not one of the 30 of the course (analysis/measured.py has those without the network).
 - `modules/spectrum/analysis/charge_transfer.py` — Multiwfn: the charge transfer of an excited state between fragments (IFCT) and its transition matrix.
 - `modules/spectrum/analysis/comparison.py` — Rigid geometry alignment (Kabsch); contract: docs/features/GEOMETRY_COMPARISON.md.
 - `modules/spectrum/analysis/contacts.py` — Weak (noncovalent) interactions named after a QTAIM search: hydrogen, halogen, chalcogen, pnictogen, tetrel bonds and van der Waals contacts.
@@ -477,7 +478,7 @@
 - `modules/spectrum/views/field_view.py` — Spectrum: «Карты и профили» — a function of the wavefunction in the plane of three atoms (a colour map with contours) and along the line through two atoms (a profile), computed by Multiwfn.
 - `modules/spectrum/views/fukui_view.py` — The window «Функции Фукуи» (the calculation: modules/spectrum/analysis/fukui.py).
 - `modules/spectrum/views/ir_plot.py` — The plot of an IR or Raman spectrum (a Qt widget; moved here from modules/spectrum/analysis/ir_spectrum.py, which keeps the broadening). Contract: docs/features/IR_SPECTRUM.md.
-- `modules/spectrum/views/measured_view.py` — «Опыт» of Spectrum: the result of a molecule of the course next to its measured values (analysis/measured.py).
+- `modules/spectrum/views/measured_view.py` — «Опыт» of Spectrum: the result of a molecule next to its measured values (analysis/measured.py, analysis/cccbdb.py).
 - `modules/spectrum/views/methods_view.py` — «Методика расчёта…»: the paragraph of the computational details of a calculation and the archive of its inputs.
 - `modules/spectrum/views/nist_window.py` — «Найти в NIST…» of the button «Эксперимент и конформеры»: a measured IR or UV-Vis spectrum from the NIST Chemistry WebBook laid over the computed one (modules/spectrum/readers/nist.py).
 - `modules/spectrum/views/nmr_compare_view.py` — «Сравнить с экспериментом…» of the NMR tab: the computed shifts of one nucleus beside the measured ones.

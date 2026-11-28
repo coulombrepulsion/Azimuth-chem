@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.27 — 28 November 2026
+
+- ### 0.249.27 — Experiment for any molecule
+
+The tab «Experiment» is there for any small molecule now: one not of the course is looked for on the network with «Find in CCCBDB» — its frequencies, bond lengths, dipole moment, ionization energy and enthalpy of formation; what is found is remembered.
+
 ## 0.249.26 — 28 November 2026
 
 - ### 0.249.26 — The manual on experiment

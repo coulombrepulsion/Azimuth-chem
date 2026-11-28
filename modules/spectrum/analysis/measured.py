@@ -69,15 +69,20 @@ def _environments(symbols, links):
     return Counter((s, tuple(sorted(n))) for s, n in zip(symbols, neighbours))
 
 
-@lru_cache(maxsize=1)
-def _signatures():
+def smiles_signature(smiles):
+    """The signature of the graph of a SMILES (explicit hydrogens); None when it is not read."""
     from modules.compass.chemistry.names import smiles_graph
 
-    found = []
-    for entry in molecules():
-        symbols, links, _orders = smiles_graph(entry['smiles'])
-        found.append((frozenset(_environments(symbols, [(i, j) for i, j in links]).items()), entry))
-    return tuple(found)
+    try:
+        symbols, links, _orders = smiles_graph(smiles)
+    except (ValueError, KeyError, IndexError):
+        return None
+    return frozenset(_environments(symbols, [(i, j) for i, j in links]).items())
+
+
+@lru_cache(maxsize=1)
+def _signatures():
+    return tuple((smiles_signature(entry['smiles']), entry) for entry in molecules())
 
 
 def signature(molecule):
@@ -87,12 +92,20 @@ def signature(molecule):
     return frozenset(_environments(symbols, [(i, j) for i, j, *_ in connections(molecule)]).items())
 
 
+LARGEST = 40  # atoms: a larger structure is not looked for (neither here nor in CCCBDB)
+
+
 def identify(molecule):
     """The entry of the molecule, or None (another molecule, or no structure)."""
-    if molecule is None or not getattr(molecule, 'atoms', None) or len(molecule.atoms) > 40:
+    if not searchable(molecule):
         return None
     mine = signature(molecule)
     return next((entry for key, entry in _signatures() if key == mine), None)
+
+
+def searchable(molecule):
+    """A structure small enough to be looked for among the molecules of experiment."""
+    return molecule is not None and bool(getattr(molecule, 'atoms', None)) and len(molecule.atoms) <= LARGEST
 
 
 def degeneracy(label):
@@ -100,9 +113,10 @@ def degeneracy(label):
     return 3 if first in 'TF' else 2 if first in 'EΠ' else 1
 
 
-def modes(entry):
-    """The measured fundamentals, each as often as its degeneracy, ascending."""
-    return sorted(((label, float(value)) for label, value in entry['fundamentals']
+def modes(entry, key='fundamentals'):
+    """The measured fundamentals (key 'harmonic' — the harmonic frequencies of the entry, where CCCBDB has them),
+    each as often as its degeneracy, ascending."""
+    return sorted(((label, float(value)) for label, value in entry.get(key) or ()
                    for _ in range(degeneracy(label))), key=lambda p: p[1])
 
 
@@ -116,9 +130,9 @@ class Vibrations:
     mean_abs_scaled: float | None = None  # cm⁻¹, c·ω − ν
 
 
-def vibrations(entry, computed):
+def vibrations(entry, computed, key='fundamentals'):
     """computed — the frequencies of the result (cm⁻¹; the imaginary ones negative)."""
-    measured = modes(entry)
+    measured = modes(entry, key)
     if not measured:
         return Vibrations(reason=tr('В CCCBDB для этой молекулы нет опытных частот.'))
     # the translations and rotations some programs print as 0.00 are not vibrations
@@ -175,6 +189,7 @@ class Comparison:
     entry: dict
     vibrations: Vibrations | None
     bonds: tuple = ()
+    harmonic: Vibrations | None = None  # against the harmonic frequencies of experiment (CCCBDB has some)
     dipole: tuple | None = None  # (computed | None, measured) D
     notes: tuple = field(default_factory=tuple)
 
@@ -184,11 +199,14 @@ def compare(entry, output):
     geometry = getattr(output, 'geometry', None) or getattr(output, 'vibration_geometry', None)
     frequencies = [w for _, w in getattr(output, 'frequencies', ()) or ()]
     vib = vibrations(entry, frequencies) if frequencies else None
+    harmonic = vibrations(entry, frequencies, 'harmonic') if frequencies and entry.get('harmonic') else None
+    if harmonic is not None and not harmonic.pairs:
+        harmonic = None  # not all the harmonic frequencies are on the page
     props = getattr(output, 'properties', None)
     computed_dipole = getattr(props, 'dipole_debye', None) if props is not None else None
     measured = entry.get('dipole_debye')
     notes = []
     if entry.get('note'):
         notes.append(entry['note'])
-    return Comparison(entry, vib, tuple(bonds(entry, geometry)) if geometry is not None else (),
+    return Comparison(entry, vib, tuple(bonds(entry, geometry)) if geometry is not None else (), harmonic,
                       None if measured is None else (computed_dipole, measured), tuple(notes))

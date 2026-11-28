@@ -6596,5 +6596,17 @@
   "конформер I (Cs); частот в CCCBDB нет": "conformer I (Cs); CCCBDB has no frequencies",
   "s-транс (C2h)": "s-trans (C2h)",
   "кресло (D3d)": "chair (D3d)",
-  "частот в CCCBDB нет": "CCCBDB has no frequencies"
+  "частот в CCCBDB нет": "CCCBDB has no frequencies",
+  "не проверен сертификат сайта": "the certificate of the site was not verified",
+  "сайт не ответил вовремя": "the site did not answer in time",
+  "сайт ответил ошибкой": "the site answered with an error",
+  "Поиск в CCCBDB не удался: {}. Проверьте интернет и попробуйте ещё раз.": "The search in CCCBDB failed: {}. Check the internet and try again.",
+  "Найти в CCCBDB": "Find in CCCBDB",
+  "Опытные данные молекулы из NIST CCCBDB: номер CAS — по SMILES из PubChem, затем страница молекулы. Нужен интернет; отправляется только SMILES.": "The measured data of the molecule from NIST CCCBDB: the CAS number from PubChem by the SMILES, then the page of the molecule. Needs the internet; only the SMILES is sent.",
+  "Этой молекулы нет среди 30 молекул курса. «Найти в CCCBDB» поищет её опытные данные в сети (около двух тысяч молекул).": "This molecule is not one of the 30 molecules of the course. «Find in CCCBDB» looks for its measured data on the network (about two thousand molecules).",
+  "Ищу в PubChem и CCCBDB…": "Searching PubChem and CCCBDB…",
+  "{} — опыт из CCCBDB": "{} — experiment from CCCBDB",
+  "В CCCBDB опытных данных этой молекулы нет (или PubChem не знает её номер CAS).": "CCCBDB has no measured data of this molecule (or PubChem does not know its CAS number).",
+  "С гармоническими частотами опыта средняя разница {:.0f} см⁻¹ — это ошибка самого метода, без ангармоничности.": "Against the harmonic frequencies of experiment the mean difference is {:.0f} cm⁻¹ — the error of the method itself, without the anharmonicity.",
+  "Найдено в сети и сохранено на этом компьютере.": "Found on the network and kept on this computer."
 }

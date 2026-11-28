@@ -1311,6 +1311,19 @@ def test_a_molecule_of_the_course_next_to_experiment(window, app):
     names = [panel.properties.item(r, 0).text() for r in range(panel.properties.rowCount())]
     assert names[0].startswith('Длина H–O') and any('Дипольный' in n for n in names)
     assert panel.properties.item(0, 2).text() == '0.958' and 'cccbdb.nist.gov/exp2x.asp?casno=7732185' in panel.source.text()
-    other = data / 'psi4' / 'dvb_ir_rhf_psi4-1.7.out'  # divinylbenzene: not a molecule of the course
+    import time
+
+    # divinylbenzene: not a molecule of the course — the tab offers the search in CCCBDB (a fake one here)
+    panel.cached_function = lambda molecule: None
+    found = []
+    panel.search_function = lambda molecule: found.append(molecule.formula) or None
+    other = data / 'psi4' / 'dvb_ir_rhf_psi4-1.7.out'
     window.display_output(other.read_text(encoding='utf-8'), other.name, False, str(other))
-    assert not tabs.isTabVisible(window.measured_tab)
+    assert tabs.isTabVisible(window.measured_tab) and not panel.search_button.isHidden() and panel.cards.isHidden()
+    assert panel.search()
+    deadline = time.monotonic() + 5
+    while panel.busy and time.monotonic() < deadline:
+        app.processEvents()
+        time.sleep(0.01)
+    app.processEvents()
+    assert found and 'нет' in panel.state.text() and panel.search_button.isEnabled()
