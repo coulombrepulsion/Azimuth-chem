@@ -58,7 +58,13 @@ def _load():
         pairs = [(src, dst) for src, dst in table.items() if '{}' in src and src.count('{}') == dst.count('{}')]
         # the most specific pattern first
         _PATTERNS[code] = sorted((_Pattern(src, dst) for src, dst in pairs), key=lambda p: -len(p.template))
-        _REVERSE[code] = {dst: src for src, dst in table.items()}
+        # a translation of two sources («离域» — «Делокализация» and «делок.», «坐标» — «Координаты» and «координаты»): the
+        # first of the table is read back, not the last (a list of Spectrum read «делок.», a tab «координаты»; the owner,
+        # 2026-11-28); the one tr() made in this run comes first of all (_MADE)
+        reverse = {}
+        for src, dst in table.items():
+            reverse.setdefault(dst, src)
+        _REVERSE[code] = reverse
         _REVERSE[code + '#p'] = sorted((_Pattern(dst, src) for src, dst in pairs), key=lambda p: -len(p.template))
 
 
@@ -70,6 +76,9 @@ def set_language(code):
     LANG = code
 
 
+_MADE = {}  # {language: {a translation tr() gave in this run: {its sources}}} — read back first (to_source)
+
+
 def tr(text, lang=None):
     """The text in the current (or given) language; unknown texts are returned unchanged."""
     lang = lang or LANG
@@ -78,7 +87,9 @@ def tr(text, lang=None):
     _load()
     table = _TABLES.get(lang, {})
     if text in table:
-        return table[text]
+        made = table[text]
+        _MADE.setdefault(lang, {}).setdefault(made, set()).add(text)
+        return made
     for pattern in _PATTERNS.get(lang, ()):
         m = pattern.match(text)
         if m:
@@ -99,6 +110,10 @@ def to_source(text):
     if not isinstance(text, str) or not text:
         return text
     _load()
+    for code in LANGUAGES[1:]:  # the source of the very text this run made, when it made it of one source only
+        made = _MADE.get(code, {}).get(text)
+        if made is not None and len(made) == 1:
+            return next(iter(made))
     for code in LANGUAGES[1:]:
         if text in _REVERSE[code]:
             return _REVERSE[code][text]

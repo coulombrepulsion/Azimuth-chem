@@ -1708,3 +1708,31 @@ def test_a_change_of_the_language_changes_nothing_to_save(hub, app):
                 assert not st.dirty and not st.any_dirty(), (section, lang)
     finally:
         hub.set_language('ru')
+
+
+def test_the_stages_and_the_lists_follow_the_language(hub, app):
+    # 0.249.18, the owner: «предыдущие пункты при переключении языка не переводятся» (the stages of «Ход расчёта»),
+    # «Почему делок.?» (a list of Spectrum in Russian after Chinese). A translation of two sources is read back as
+    # the one tr() made (i18n._MADE), else as the first of the table
+    from azimuth import i18n
+    from modules.sextant import runner
+
+    assert i18n.to_source(i18n.tr('Делокализация', 'zh')) == 'Делокализация'
+    assert i18n.to_source(i18n.tr('Координаты', 'zh')) == 'Координаты'
+    window = hub.studio.job_window
+    window.begin('test')
+    try:
+        window.add_stage('scf', i18n.tr('Самосогласованное поле сошлось'), runner.duration(27))
+        hub.set_language('en')
+        app.processEvents()
+        assert 'converged' in window.stages.text().lower() and '27 s' in window.stages.text()
+        hub.set_language('zh')
+        app.processEvents()
+        shown = window.stages.text()
+        assert 'converged' not in shown.lower() and '27 ' + i18n.tr('с', 'zh') in shown
+        hub.set_language('ru')
+        app.processEvents()
+        assert 'Самосогласованное поле сошлось' in window.stages.text() and '27 с' in window.stages.text()
+    finally:
+        hub.set_language('ru')
+        window.finish()

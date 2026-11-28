@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.18 — 28 November 2026
+
+- ### 0.249.18 — The language changes everywhere
+
+After a change of the language the lines of the calculation progress are translated too, and the lists and tabs no longer show odd short Russian words.
+
 ## 0.249.17 — 28 November 2026
 
 - ### 0.249.17 — No hangs, no stray windows

@@ -239,7 +239,7 @@ class JobWindow(QWidget):
         body.addWidget(self.picture, 0, Qt.AlignmentFlag.AlignBottom)
         layout.addLayout(body, 1)
         self.stage_keys = []
-        self._stage_lines = []
+        self._stage_items = []  # (text, when) of the stages passed — drawn by _stage_lines
         self.compact = False  # a queue runs — one line each, the list below keeps its place
         self._wrap_policy = {item: item.sizePolicy() for item in (self.heading, self.details, self.status)}
         row = QHBoxLayout()
@@ -336,6 +336,28 @@ class JobWindow(QWidget):
         self._show_stages()
         return True
 
+    @property
+    def _stage_lines(self):
+        """The lines of the stages passed, in the language shown now (each text and its time read back to the source
+        and translated again — i18n.to_source knows what tr() made)."""
+        from azimuth.i18n import retranslate_text, to_source, tr
+
+        lines = []
+        for text, when in self._stage_items:
+            text = retranslate_text(text)
+            # «27 秒», «2 мин 05 с» (runner.duration): the numbers kept, the units translated anew
+            when = ' '.join(word if word[:1].isdigit() else tr(to_source(word)) for word in when.split())
+            tail = f' <span style="color: #8a94a3;">· {when}</span>' if when else ''
+            lines.append(f'<span style="color: #3a9a5b;">✓</span>&nbsp; {text}{tail}')
+        return lines
+
+    def changeEvent(self, event):
+        super().changeEvent(event)
+        from PySide6.QtCore import QEvent
+
+        if event.type() == QEvent.Type.LanguageChange and getattr(self, '_stage_items', None):
+            self._show_stages()  # the stages of before in the new language
+
     def _show_stages(self):
         if self.compact:
             self.stages.setText(self._stage_lines[-1] if self._stage_lines else '')
@@ -353,7 +375,7 @@ class JobWindow(QWidget):
         self.details.setVisible(bool(details))
         self.status.setText('')
         self.stage_keys = []
-        self._stage_lines = []
+        self._stage_items = []  # (text, when) of the stages passed — drawn by _stage_lines
         self.stages.clear()
         self.stages.hide()
         self.stages_title.hide()
@@ -397,8 +419,10 @@ class JobWindow(QWidget):
         if key in self.stage_keys:
             return False
         self.stage_keys.append(key)
-        tail = f' <span style="color: #8a94a3;">· {when}</span>' if when else ''
-        self._stage_lines.append(f'<span style="color: #3a9a5b;">✓</span>&nbsp; {text}{tail}')
+        # kept as given and drawn in the language of the moment (stage_lines): the lines of before stayed in the
+        # language they were written in (the owner, 2026-11-28: «предыдущие пункты при переключении языка не
+        # переводятся»)
+        self._stage_items.append((text, when))
         self._show_stages()
         self.stages.show()
         self.stages_title.setVisible(not self.compact)

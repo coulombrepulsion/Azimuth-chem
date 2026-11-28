@@ -369,6 +369,8 @@ class Studio(ProjectActions, CompassWorkspace, SextantWorkspace, SpectrumWorkspa
                 drawer.show_step(drawer.current)
             self.trajectory_tool.show_trajectory_step(getattr(drawer, 'current', -1))
         self.sync_view_tabs()  # «Молекула | Координаты» shown in the row of the tabs
+        for window in (self.job_windows() if hasattr(self, 'job_windows') else ()):  # «Ход расчёта» in the new language
+            window._show_stages()
 
     def navigate(self, index):
         if index == 2 and self.crystal_project_shown():
