@@ -121,6 +121,12 @@ class DensityDrawer:
 
     # -- content -------------------------------------------------------------------------------------------------
     def clear(self):
+        # what is on the model, kept for the panel made again of the same orbitals while it is still there
+        # (set_content): «Кристалл → Молекула» made the panel anew, and the line of the function built lost its light
+        # (the owner, 2026-11-28: «сбрасывается выделение, какая функция построена»)
+        if getattr(self, 'shown', None) is not None and getattr(self, 'orbital_set', None) is not None:
+            chosen = self.current_choice() if getattr(self, 'surfaces_list', None) is not None else None
+            self._kept_light = (self.orbital_set, self.shown, self.shown_source, chosen)
         for box, host in self._boxes:
             host.removeWidget(box)
             box.deleteLater()
@@ -319,6 +325,15 @@ class DensityDrawer:
                 panel.contacts_to_model()
         if owner is not None and getattr(owner.viewer, 'aim', None) is not None and panel.topology is not None:
             panel.sync_model_button(True)
+        kept = getattr(self, '_kept_light', None)
+        if kept is not None and kept[0] is orbital_set and owner is not None \
+                and getattr(owner, 'surface_source', None) is kept[2]:
+            self.shown, self.shown_source = kept[1], kept[2]
+            if kept[3] is not None and self.surfaces_list is not None:  # the line chosen in the list, by its key
+                item = next((i for i in self.surface_items() if self.current_choice(i) == kept[3]), None)
+                if item is not None:
+                    item.parent().setExpanded(True)
+                    self.surfaces_list.setCurrentItem(item)
         self.refresh_lights()
         return panel
 
@@ -643,7 +658,9 @@ class DensityDrawerTool:
         if stash is None:
             stash = self._stashed = {}
         stash.pop(id(owner), None)
-        stash[id(owner)] = (owner, self.w.density_key, drawer.orbital_set, panel.source, state, kind)
+        # what is on the model (a surface chosen in the list is not found again by its title as an orbital is)
+        shown = (drawer.shown, drawer.shown_source, drawer.current_choice() if drawer.surfaces_list is not None else None)
+        stash[id(owner)] = (owner, self.w.density_key, drawer.orbital_set, panel.source, state, kind, shown)
         while len(stash) > self.STASHED:
             stash.pop(next(iter(stash)))
         return True
@@ -654,7 +671,7 @@ class DensityDrawerTool:
         entry = stash.get(id(owner))
         if entry is None or entry[0] is not owner:
             return False
-        _, key, orbital_set, source, state, kind = stash.pop(id(owner))
+        _, key, orbital_set, source, state, kind, shown = stash.pop(id(owner))
         if key[0] == 'path' and key != ('path', str(path)):
             return False  # another result in the tab: its own orbitals, read when asked
         drawer = self.w.density_drawer
@@ -664,6 +681,17 @@ class DensityDrawerTool:
         self.density_owner = owner
         if panel is not None and kind:
             panel.follow_kind(kind)
+        # the surface on the model stays lit and chosen: the line of the function built was white again after
+        # «Кристалл → Молекула» (the owner, 2026-11-28: «сбрасывается выделение, какая функция построена»)
+        lit, lit_source, chosen = shown
+        if lit is not None and lit_source is getattr(owner, 'surface_source', None):
+            drawer.shown, drawer.shown_source = lit, lit_source
+        if chosen is not None:  # the line chosen in the list, by its key
+            item = next((i for i in drawer.surface_items() if drawer.current_choice(i) == chosen), None)
+            if item is not None:
+                item.parent().setExpanded(True)
+                drawer.surfaces_list.setCurrentItem(item)
+        drawer.refresh_lights()
         return True
 
     def ensure_density_content(self):

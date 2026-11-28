@@ -32,6 +32,8 @@ QGroupBox > QPushButton {font-weight: 500;}
 QTreeWidget#surfacesTree {background: #fbfcfd; border: 1px solid #d8dce3; border-radius: 10px; padding: 6px 4px;}
 QTreeWidget#surfacesTree::item {padding: 3px 2px; border: 1px solid transparent; border-radius: 6px;}
 QTreeWidget#surfacesTree::item:hover {border-color: #9db8e0; background: rgba(42, 98, 184, 12);}  /* 2026-11-18: the row under the mouse */
+QTreeWidget#surfacesTree::item:selected {border-color: #9db8e0; background: #e4ecf8; color: #1b2230;}  /* 2026-11-28: the line chosen in our colours — Windows drew it white on its own blue, and the blue of its branch */
+QTreeWidget#surfacesTree::branch:selected {background: transparent;}
 QFrame#densityDrawer {background: white; border: 1px solid #d8dce3; border-radius: 12px;}
 QFrame#trajectoryDrawer {background: white; border: none; border-right: 1px solid #d8dce3; border-radius: 0px;}
 QFrame#projectPane {background: white; border: 1px solid #d8dce3; border-radius: 12px;}
@@ -209,7 +211,8 @@ DARK_STYLE += ('\nQFrame#statusPill {background: rgba(46, 54, 68, 240); border: 
                '\nQFrame#statusPill QLabel {color: #e7eaf0;}'
                '\nQFrame#statusPill QLabel#statusMessage {border-top-color: rgba(231, 234, 240, 60);}'
                # as the toast
-               '\nQTreeWidget#surfacesTree::item:hover {border-color: #4f6f9f; background: rgba(110, 162, 240, 22);}')
+               '\nQTreeWidget#surfacesTree::item:hover {border-color: #4f6f9f; background: rgba(110, 162, 240, 22);}'
+               '\nQTreeWidget#surfacesTree::item:selected {border-color: #4f6f9f; background: #26364f; color: #e7eaf0;}')
 # the filled buttons, the tab chosen and the checked boxes in the blue of the languages and of the light theme (#2a62b8)
 # — the replacement above made them the light #6ea2f0 under white text
 DARK_STYLE += ('\nQPushButton:checked, QPushButton[on="true"] {background: rgba(110, 162, 240, 46); color: #cfe0fa; border-color: #6ea2f0;}'

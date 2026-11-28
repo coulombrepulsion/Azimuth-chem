@@ -205,7 +205,13 @@ class DocumentActions:
     def viewer_camera(self):
         """The view of the model — its turn (yaw, pitch, roll, basis), zoom and shift (pan)."""
         viewer = self.viewer
-        return {**{k: getattr(viewer, k, None) for k in self.CAMERA}, 'pan': (viewer.pan.x(), viewer.pan.y())}
+        # the shift kept without the half of the drawer open now (viewer.set_inset adds it): kept with it, it was put
+        # back with it and the drawer opening added it again — the model went right by half of the drawer at every
+        # «Кристалл → Молекула» (the owner, 2026-11-28: «продолжает сдвигать каждый раз молекулу вправо»)
+        inset = float(getattr(viewer, 'inset', 0.0) or 0.0)
+        rest = getattr(viewer, '_inset_rest', None)  # a slide of the drawer under way: where the model will be
+        settled = viewer.pan.x() + (rest() if rest is not None else 0.0)
+        return {**{k: getattr(viewer, k, None) for k in self.CAMERA}, 'pan_free': (settled - inset / 2, viewer.pan.y())}
 
     def set_viewer_camera(self, camera):
         """The view kept by a tab; a tab without one (new) — the view of a model just opened."""
@@ -218,7 +224,15 @@ class DocumentActions:
         for key in self.CAMERA:
             if key in camera:
                 setattr(viewer, key, camera[key])
-        x, y = camera.get('pan', (viewer.pan.x(), viewer.pan.y()))
+        motion = getattr(viewer, '_inset_motion', None)
+        if motion is not None:  # a slide of the drawer under way would add what it has left over the shift put back
+            motion.stop()
+            viewer._inset_motion = viewer._inset_rest = None
+        if 'pan_free' in camera:  # the half of the drawer open now added back
+            x, y = camera['pan_free']
+            x += float(getattr(viewer, 'inset', 0.0) or 0.0) / 2
+        else:  # a camera kept by a version before 0.249.19
+            x, y = camera.get('pan', (viewer.pan.x(), viewer.pan.y()))
         viewer.pan = QPointF(x, y)
         viewer.locked_camera = None
         viewer.update()

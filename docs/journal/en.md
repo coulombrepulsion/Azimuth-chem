@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.19 — 28 November 2026
+
+- ### 0.249.19 — The molecule stays in place
+
+Switching Crystal ↔ Molecule with the result panel open no longer moves the molecule, and the density function built stays lit. The chosen line of the list of surfaces looks on Windows as in the rest of the program.
+
 ## 0.249.18 — 28 November 2026
 
 - ### 0.249.18 — The language changes everywhere

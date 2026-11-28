@@ -57,3 +57,41 @@ def test_the_panel_of_the_density_shows_no_window_of_its_own(hub, app):
     finally:
         QApplication.instance().removeEventFilter(watch)
     assert watch.seen == []
+
+
+def test_crystal_and_back_keep_the_model_in_place_and_the_surface_lit(hub, app):
+    # 0.249.19, the owner: going «Кристалл → Молекула» with the panel of the result open, the molecule «продолжает
+    # сдвигать каждый раз вправо», and «сбрасывается выделение, какая функция построена». The shift of a tab is kept
+    # without the half of the drawer (it was added again at every opening); the surface on the model stays lit
+    hub.resize(1300, 800)
+    hub.show()
+    hub.show_section('compass', animate=False)
+    wait(app, 0.3)
+    studio = hub.studio
+    text = (ROOT / 'tests' / 'data' / 'orbitals' / 'molden5.7_water_mp2.molden').read_text(encoding='utf-8')
+    dialog = studio.open_orbitals_text(text, 'water.molden')
+    homo, _ = dialog.orbital_set.frontier()
+    dialog.select(homo)
+    dialog.show_orbital()
+    wait(app, 0.8)
+    drawer = studio.density_drawer
+    assert studio.viewer.inset > 0
+    # a surface of the list as if built and on the model
+    item = drawer.surface_items()[1]
+    key = drawer.current_choice(item)
+    drawer.surfaces_list.setCurrentItem(item)
+    source = {'kind': 'choice', 'title': item.text(0), 'orbitals': drawer.orbital_set}
+    studio.surface_source = source
+    drawer.shown, drawer.shown_source = ('choice', key), source
+    drawer.refresh_lights()
+    assert item.font(0).bold()
+    before = studio.viewer.pan.x()
+    for _ in range(3):
+        studio.crystal_tool.set_compass_mode('crystal')
+        wait(app, 0.5)
+        studio.crystal_tool.set_compass_mode('molecule')
+        wait(app, 0.8)
+        assert abs(studio.viewer.pan.x() - before) < 1.0, (before, studio.viewer.pan.x())
+    if studio.surface_source is source:  # still on the model: still lit and chosen
+        lit = next(i for i in drawer.surface_items() if drawer.current_choice(i) == key)
+        assert drawer.shown == ('choice', key) and lit.font(0).bold() and drawer.current_choice() == key
