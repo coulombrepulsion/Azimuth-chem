@@ -102,6 +102,22 @@ def test_density_panel_in_compass(window, app):
         assert drawer.step.currentIndex() == 0 and drawer.grids[1].currentIndex() == 0  # one grid on every page
         # the orbital is on the model: its row lit, the button blue; a second press takes it away, the button white
         assert drawer.orbitals_table.item(homo, 0).font().bold() and drawer.orbital_button.property('on')
+        # the light set again touches only the rows it changes: every cell was set at each call, and the table of the
+        # orbitals of caffeine stood the window for 10–15 s on Windows (2026-11-28)
+        from PySide6.QtWidgets import QTableWidgetItem
+
+        touched = []
+        original = QTableWidgetItem.setFont
+        QTableWidgetItem.setFont = lambda item, font: (touched.append(item.row()), original(item, font))
+        try:
+            drawer.refresh_lights()
+            assert touched == []  # nothing changed — nothing set
+            drawer.orbitals_table.lit_rows = {homo - 1}  # as if the row before had been lit
+            drawer.refresh_lights()
+            assert set(touched) == {homo - 1, homo}
+        finally:
+            QTableWidgetItem.setFont = original
+        assert drawer.orbitals_table.item(homo, 0).font().bold() and not drawer.orbitals_table.item(homo - 1, 0).font().bold()
         drawer.orbital_button.click()
         assert window.surface_source is None and drawer.shown is None and not drawer.orbital_button.property('on')
         assert not drawer.orbitals_table.item(homo, 0).font().bold()

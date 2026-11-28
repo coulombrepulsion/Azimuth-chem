@@ -331,7 +331,8 @@ class DensityTools:
             iconify(self.model_button, 'compass', tr('Перейти в Компас · критические точки на модели'))
         self.model_button.setCheckable(True)
         self.model_button.setEnabled(False)
-        self.model_button.setVisible(self.show_aim is not None)
+        if self.show_aim is None:  # setVisible(True) of a button with no parent yet showed it as a window for a moment
+            self.model_button.hide()  # (a small empty window flickered on Windows as the panel of the density opened)
         self.model_button.clicked.connect(lambda: self.toggle_points())
         self.points_shown_on_model = False
         self.sync_model_button(False)

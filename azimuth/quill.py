@@ -381,7 +381,7 @@ class EmptyNote(QFrame):
         column = QVBoxLayout(self)
         column.setContentsMargins(0, 8, 0, 8)
         column.setSpacing(8)
-        self.picture = QLabel()
+        self.picture = QLabel(self)  # a parent at once: shown before it, a QLabel is a window of its own for a moment
         self.picture.setProperty('quill', True)  # she hides the hub's faint scales
         self.picture.setAlignment(Qt.AlignmentFlag.AlignCenter)
         art = trimmed_pixmap(name, size)

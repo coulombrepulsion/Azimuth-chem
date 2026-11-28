@@ -108,6 +108,7 @@ def _fill_table(self, lmo=None):
     labels = frontier_labels(orbital_set) if lmo is None else {}
     table.clearContents()
     table.setRowCount(len(orbitals))
+    table.lit_rows = set()  # the rows made anew are not lit (density_drawer.refresh_lights)
     for k, o in enumerate(orbitals):
         spin = '' if not orbital_set.unrestricted else (' α' if o.spin == 'alpha' else ' β')
         key = (o.spin if orbital_set.unrestricted else 'alpha', o.number)

@@ -384,14 +384,37 @@ class DensityDrawer:
         glow.setAlpha(70)
         orbital_row = shown[1] if shown and shown[0] == 'orbital' and self._same_set() else None
         lit = {orbital_row} | set(self.overlay_rows()) if orbital_row is not None else set()  # and those over it
-        for r in range(self.orbitals_table.rowCount()):
-            for c in range(self.orbitals_table.columnCount()):
-                item = self.orbitals_table.item(r, c)
-                if item is not None:
-                    item.setBackground(QBrush(glow) if r in lit else QBrush())
-                    font = item.font()
-                    font.setBold(r in lit)
-                    item.setFont(font)
+        # only the rows whose light changed, the table not laid out at each cell: every cell of every row was set
+        # anew, and with the columns as wide as their contents each change measured the whole table again — the window
+        # stood for 10–15 s at the orbitals of caffeine (≈250 rows) on Windows (the owner, 2026-11-28: «зависло при
+        # открытии панели результатов»)
+        table = self.orbitals_table
+        was = getattr(table, 'lit_rows', None)
+        rows = range(table.rowCount()) if was is None or getattr(table, 'lit_glow', None) != glow.rgba() \
+            else sorted(set(was) ^ lit)
+        if rows:
+            from PySide6.QtWidgets import QHeaderView
+
+            header = table.horizontalHeader()
+            modes = [header.sectionResizeMode(c) for c in range(table.columnCount())]
+            header.setSectionResizeMode(QHeaderView.ResizeMode.Interactive)  # measured once, after
+            table.setUpdatesEnabled(False)
+            blocked = table.blockSignals(True)
+            try:
+                for r in rows:
+                    for c in range(table.columnCount()):
+                        item = table.item(r, c)
+                        if item is not None:
+                            item.setBackground(QBrush(glow) if r in lit else QBrush())
+                            font = item.font()
+                            font.setBold(r in lit)
+                            item.setFont(font)
+            finally:
+                table.blockSignals(blocked)
+                for c, mode in enumerate(modes):
+                    header.setSectionResizeMode(c, mode)
+                table.setUpdatesEnabled(True)
+        table.lit_rows, table.lit_glow = set(lit), glow.rgba()
         light(self.orbital_button, orbital_row is not None and orbital_row == self.current_orbital())
         light(self.spin_button, shown == ('spin',))
         choice = shown[1] if shown and shown[0] == 'choice' else None

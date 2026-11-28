@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.17 — 28 November 2026
+
+- ### 0.249.17 — No hangs, no stray windows
+
+The result panel with the orbitals no longer freezes the window for ten seconds or so, and no small empty window flickers as it opens.
+
 ## 0.249.16 — 28 November 2026
 
 - ### 0.249.16 — The model shows what it builds
