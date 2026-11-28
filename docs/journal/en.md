@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.26 — 28 November 2026
+
+- ### 0.249.26 — The manual on experiment
+
+The manual describes the tab «Experiment» and the comparison of crystals with experiment and the literature.
+
 ## 0.249.25 — 28 November 2026
 
 - ### 0.249.25 — The calculation next to experiment

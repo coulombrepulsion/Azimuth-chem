@@ -819,6 +819,8 @@ Table: Programs for periodic calculations
 
 **After the calculation.** «Calculation → Calculation results…» – the table of crystal calculations in the project (program, task, time, energy, pressure, outcome) and the details of the chosen one: the cell energy, the band gap or the Fermi level, the number of steps, the cell of the last step; the buttons «Calculation folder», «Optimization steps», «Charges…», «AIM bonds…», «To Spectrum». The optimized cell opens in a crystal tab with the «Open the optimized cell» button. CM5 and Hirshfeld charges and AIM bonds (Multiwfn, CP2K calculations) are shown on the crystal model and in the tabs of Spectrum.
 
+For simple solids (Si, Ge, C, SiC, GaAs, NaCl, LiF, MgO, metals – 30 substances; 0.249.25) the summary compares the result with experiment and with PBE of the literature: the lattice constant of the optimized cell («here 5.469 Å – +1.0 % from experiment, +0.1 % from PBE of the literature»), a₀ and B₀ of the equation of state, the gap of the band structure. The measured lattice constant is given without the zero-point vibrations – as a calculation with fixed nuclei gives it (Csonka et al., PRB 79, 155107 (2009)); the gaps – Tran, Blaha, PRL 102, 226401 (2009). The difference from experiment is the error of the method, the difference from PBE of the literature – that of the calculation itself (pseudopotentials, cutoffs, k grid).
+
 **CRYSTAL.** «Calculation → CRYSTAL input file…» writes a CRYSTAL input file (`.d12`): the task (energy, optimization, elastic constants, frequencies at Γ), the functional (PBE0, B3LYP, HSE06, PBE, PBEsol, Hartree–Fock), a basis set from the CRYSTAL library (pob-TZVP, pob-DZVP and others), the pressure and the k grid. Next to it – «Save .d3 for TOPOND…» (a search for all critical points of the density). The program does not run CRYSTAL itself. A CRYSTAL output (`.out`) opens as a crystal with optimization steps, energy and elastic constants; a TOPOND output (`.outp`) – as a table of the critical points of the density.
 
 ### Saving and export
@@ -1040,7 +1042,7 @@ The file name, the program, the termination and the energy are in the status lin
 
 The tabs are gathered under three common ones:
 
-- **Result** – energies and frequencies, convergence, thermochemistry;
+- **Result** – energies and frequencies, convergence, thermochemistry, experiment;
 - **Spectra** – vibrations and IR, UV-Vis, NMR;
 - **Wavefunction** – maps and profiles, density of states, delocalization, electron density topology, NCI.
 
@@ -1053,6 +1055,7 @@ The tabs of the chosen group are a second row above the page; a group opens on t
 - **Energies and frequencies** – the program and its version, the final energy and the method, whether the termination was normal, whether the optimization converged, warnings.
 - **Convergence** (for an optimization) – the energy of each step and the convergence criteria with their thresholds on a logarithmic scale: one sees which criterion holds the optimization back.
 - **Thermochemistry** (for a frequency calculation) – the zero-point vibrations, the corrections to E, H and G and the total H and G at the chosen temperature and pressure; the entropy by contributions; the symmetry number σ from the point group. Grimme's «quasi-RRHO» softens the contribution of modes below 100 cm⁻¹. Imaginary frequencies are not counted, and this is said. For MOPAC instead of the total energy – ΔHf(T) = ΔHf(298 K) + H(T) − H(298 K), as MOPAC itself computes it.
+- **Experiment** (0.249.25; for the 30 molecules of the course – water, ammonia, benzene, acetone and the others of the set) – the computed frequencies paired with the measured fundamentals of NIST CCCBDB (in order, a degenerate one as many times as its degeneracy), the differences, the factor for this molecule and the CCCBDB factor of the level; the bond lengths and the dipole moment next to experiment; the measured ionization energy and ΔfH°(298 K) of the gas; the link to the page of the molecule in CCCBDB. The molecule is told by its bonds; the tab is shown only for it.
 
 Theory – in the Atlas: [«Thermochemistry from frequencies»](https://www.azimuth-chem.com/atlas/?lang=en#thermo).
 
