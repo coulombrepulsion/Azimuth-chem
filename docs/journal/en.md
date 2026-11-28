@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.8 — 28 November 2026
+
+- ### 0.249.8 — More room for the input file
+
+The note on editing the input file moved into the «?» by its title, and the file itself got that room. When the list of structures comes out, the model in the molecule card folds away smoothly instead of vanishing at once.
+
 ## 0.249.7 — 27 November 2026
 
 - ### 0.249.7 — The list of structures without extra projects

@@ -1586,6 +1586,18 @@ def test_the_card_of_the_molecule_keeps_its_lines_whole_beside_the_panel_of_stru
         hub.resize(1600, 900)
         QTest.qWait(1000)
         assert st.calc_card.width() >= 480 and st.calc_picture.isVisible()
+        # 0.249.8: the picture folds away in its time, not at once (the owner: «молекула в секстанте слишком резко
+        # пропадает»); what the file is — in «?» by its title, not under it
+        fold = st.calc_picture_fold
+        fold.set(False)
+        QTest.qWait(fold.MS // 2)
+        assert 0 < st.calc_picture.width() < fold.FULL
+        QTest.qWait(fold.MS + 150)
+        assert not st.calc_picture.isVisible()
+        fold.set(True)
+        QTest.qWait(fold.MS + 150)
+        assert st.calc_picture.isVisible() and st.calc_picture.width() == fold.FULL
+        assert 'Файл можно править прямо здесь' in st.input_help_button.toolTip()
     finally:
         st.project_menu_button.setChecked(False)
         st.slide_project_pane(False, animate=False)

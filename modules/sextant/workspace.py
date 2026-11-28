@@ -872,7 +872,9 @@ class SextantWorkspace:
         self.preview_title.setText(tr(TITLES[kind]))
         self.preview_notice.setText(tr(NOTICES[kind]))
         if hasattr(self, 'input_help_button'):
-            self.input_help_button.setToolTip(tr(NOTICES[kind]))
+            from modules.sextant.workspace_texts import input_help
+
+            self.input_help_button.setToolTip(input_help(NOTICES[kind]))
         self.preview.setReadOnly(kind == 'xtb')  # xtb: a command line and its files, not one input file
 
     def update_dispersion(self):

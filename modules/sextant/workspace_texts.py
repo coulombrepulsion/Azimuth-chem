@@ -47,6 +47,17 @@ NWCHEM_NOTICE = (
 )
 NOTICES = {'orca': ORCA_NOTICE, 'gaussian': GAUSSIAN_NOTICE, 'psi4': PSI4_NOTICE, 'xtb': XTB_NOTICE, 'mopac': MOPAC_NOTICE,
            'gamess': GAMESS_NOTICE, 'nwchem': NWCHEM_NOTICE}
+EDIT_NOTE = ('Файл можно править прямо здесь — перед запуском он проверяется. Расчёт запускается в своей папке внутри '
+             'папки расчётов (какая это папка, показывает кнопка с папкой); результат откроется в Компасе или в Спектре.')
+
+
+def input_help(notice):
+    """The text of «?» by the input file: the meaning of its lines, then what the file is and where it runs."""
+    from azimuth.i18n import tr
+
+    return tr(notice) + '\n\n' + tr(EDIT_NOTE)
+
+
 DEFAULT_MOPAC_METHOD = 'PM7'
 DEFAULT_METHOD, DEFAULT_BASIS = 'B3LYP', 'def2-SVP'
 # the sign of a comment line in the input of each program (Ctrl+/ of the editor of the input)

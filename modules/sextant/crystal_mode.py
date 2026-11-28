@@ -316,19 +316,23 @@ class CrystalModeTool:
         preview_layout.removeWidget(head)
         head.setWordWrap(False)
         top = QHBoxLayout()
+        top.setSpacing(8)
         top.addWidget(head)
+        # no name of the folder (it is «Расчёты» only on macOS and Linux and can be chosen; in English and
+        # Chinese the Russian name stood in the text) — the button with the folder shows it. In «?» by the title, not
+        # under the file: the file gets the room (the owner, 2026-11-28)
+        from azimuth.ui import help_button
+
+        self.input_help_button = help_button(tr('Файл можно править прямо здесь. Расчёт запускается в своей папке — в '
+                                                'папке проекта или в папке расчётов (какая это папка, показывает кнопка '
+                                                'с папкой); зоны и плотность состояний — кнопкой после расчёта.'),
+                                             tr('Как устроен входной файл'))
+        top.addWidget(self.input_help_button, 0, Qt.AlignmentFlag.AlignVCenter)
         top.addStretch(1)
         top.addWidget(panel.reset_button)
         preview_layout.insertLayout(0, top)
         preview_layout.addWidget(getattr(panel, 'preview_pane', panel.preview), 1)  # with its find bar
         preview_layout.addWidget(panel.edited_note)
-        # no name of the folder (it is «Расчёты» only on macOS and Linux and can be chosen; in English and
-        # Chinese the Russian name stood in the text) — the button with the folder shows it
-        note = label(tr('Файл можно править прямо здесь. Расчёт запускается в своей папке — в папке проекта или в папке '
-                        'расчётов (какая это папка, показывает кнопка с папкой); зоны и плотность состояний — кнопкой '
-                        'после расчёта.'), 'subtitle')
-        note.setWordWrap(True)
-        preview_layout.addWidget(note)
         right.addWidget(preview_card, 1)
         self.preview_card = preview_card
         # the calculation in the place of the input file while it runs (and after it, until «Входной файл»)
