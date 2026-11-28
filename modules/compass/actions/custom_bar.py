@@ -15,7 +15,7 @@ import sys
 from PySide6.QtCore import QEvent, QObject, Qt
 from PySide6.QtWidgets import QApplication, QFrame, QHBoxLayout, QMenu, QPushButton, QVBoxLayout, QWidget
 
-from azimuth.i18n import to_source, tr
+from azimuth.i18n import source_of, tr
 from modules.compass.actions import custom_bar_carry as _carry
 from modules.compass.actions.custom_bar_carry import MIME, RAIL, TOP, close_menus
 
@@ -38,20 +38,28 @@ def clean(text):
 
 def walk(menu, path=()):
     """(key, action, submenu or None) of every item of menu and of its submenus; the key is the Russian path."""
+    for key, _shown, action, sub in walk_shown(menu, path):
+        yield key, action, sub
+
+
+def walk_shown(menu, path=(), shown=()):
+    """(key, the path as shown, action, submenu or None): the key of the Russian sources kept on the actions
+    (i18n.source_of) — read back from the translation, «Правка» came back as «Править» in English, «Файл» as «Файлы»
+    and «Расчёт» as «Расчёты» in Chinese, and the buttons of those items were gone (2026-11-28)."""
     from PySide6.QtWidgets import QWidgetAction
 
     for action in menu.actions():
         # not the field of «Справка → Поиск» nor its results (hub/menu_search.py) — no button of them
         if action.isSeparator() or isinstance(action, QWidgetAction) or action.property('menuSearchResult'):
             continue
-        title = to_source(clean(action.text()))
+        title = clean(source_of(action, action.text()))
         if not title:
             continue
-        here = path + (title,)
+        here, seen = path + (title,), shown + (clean(action.text()),)
         sub = action.menu()
-        yield '/'.join(here), action, sub
+        yield '/'.join(here), '/'.join(seen), action, sub
         if sub is not None:
-            yield from walk(sub, here)
+            yield from walk_shown(sub, here, seen)
 
 
 def _json(preferences, name, empty):
@@ -320,23 +328,30 @@ class CustomBar:
     def items(self):
         """(key, action, submenu or None) of every item of the menus of the window, then of those of the header of the
         hub that the window has not."""
+        for key, _shown, a, sub in self.items_shown():
+            yield key, a, sub
+
+    def items_shown(self):
+        """(key, the path as shown, action, submenu or None) — see items."""
         bar = self.w.menuBar() if hasattr(self.w, 'menuBar') else None
         seen = set()
         if bar is not None:
             for action in bar.actions():
                 if action.menu() is not None:
-                    for key, a, sub in walk(action.menu()):
+                    head, shown = clean(source_of(action, action.text())), clean(action.text())
+                    for key, path, a, sub in walk_shown(action.menu()):
                         seen.add(id(a))
-                        yield f'{to_source(clean(action.text()))}/{key}', a, sub
+                        yield f'{head}/{key}', f'{shown}/{path}', a, sub
         for title, menu in self.header_menus:
             try:
-                found = [(f'{to_source(clean(title))}/{key}', a, sub) for key, a, sub in walk(menu)]
+                head = clean(source_of(menu.menuAction(), title))
+                found = [(f'{head}/{key}', f'{clean(title)}/{path}', a, sub) for key, path, a, sub in walk_shown(menu)]
             except RuntimeError:  # a menu of the header already deleted
                 continue
-            for key, a, sub in found:
+            for key, path, a, sub in found:
                 if id(a) not in seen:
                     seen.add(id(a))
-                    yield key, a, sub
+                    yield key, path, a, sub
 
     def set_header_menus(self, menus):
         """The menus of the header of the hub (made anew for each section): watched, and the buttons laid again — those
@@ -347,7 +362,14 @@ class CustomBar:
         self.rebuild()
 
     def find(self, key):
-        return next(((a, sub) for k, a, sub in self.items() if k == key), (None, None))
+        """The action of the key; when no key is the same (a key kept by a version that read the sources back from
+        the translation), the item whose path as shown is that of the key translated."""
+        found = list(self.items_shown())
+        hit = next(((a, sub) for k, _shown, a, sub in found if k == key), None)
+        if hit is None:
+            shown = '/'.join(tr(part) for part in key.split('/'))
+            hit = next(((a, sub) for _k, path, a, sub in found if path == shown), None)
+        return hit or (None, None)
 
     def key_of(self, action):
         return next((k for k, a, sub in self.items() if a is action), None)
@@ -473,7 +495,12 @@ class CustomBar:
         text = clean(action.text())
         tip = text + (' ▸' if sub is not None else '')
         button = kind()
-        name = icon_name(text) or (action.property('azimuthTextIcon') or None)
+        # the glyph of the Russian source, the same in every language: of the text shown, «Сохранить…», «Добавить…»
+        # and the like had their glyph by the first word in Russian only — in English and Chinese a button showed its
+        # first letters or the icon of the menu, of another size (the owner, 2026-11-28: «иконка … в разных языках
+        # разного размера»)
+        name = (icon_name(key.rsplit('/', 1)[-1], 'ru') or icon_name(text)
+                or (action.property('azimuthTextIcon') or None))
         if name in GLYPHS:
             iconify(button, name, tip)
         elif not action.icon().isNull():
@@ -590,7 +617,8 @@ class CustomBar:
             return key, place
         from azimuth.button_icons import icon_name
 
-        name = icon_name(clean(action.text())) or action.property('azimuthTextIcon')
+        name = (icon_name(key.rsplit('/', 1)[-1], 'ru') or icon_name(clean(action.text()))
+                or action.property('azimuthTextIcon'))
         if not name:
             return None
         groups = self.groups()

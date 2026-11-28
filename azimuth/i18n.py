@@ -150,6 +150,35 @@ def _retranslated(widget, key, text):
     return new
 
 
+def mark(obj, source):
+    """The Russian source of the text of obj (a QAction, a QMenu…) kept on it — for a text made in the language
+    shown (the menus of the header of the hub), whose translation may be that of more than one source («文件» is
+    «Файл» and «Файлы», «Edit» — «Правка» and «Править»)."""
+    try:
+        obj.setProperty('trSource', source)
+    except (AttributeError, RuntimeError):
+        pass
+    return obj
+
+
+def source_of(obj, text):
+    """The Russian source of text shown by obj: the one kept on it (mark, or by retranslate the last time), else read
+    back from the translation (to_source). The keys of the buttons of the panels of Compass are made of these
+    (modules/compass/actions/custom_bar.py): read back, «Правка/…» came back as «Править/…» in English and «Файл/…» as
+    «Файлы/…» in Chinese, and the buttons of those items were not found (the owner, 2026-11-28: «в китайском пропадает
+    на панели справа у меня иконка оптимизация + частоты (xtb)»)."""
+    try:
+        source = obj.property('trSource')
+        kept = obj.property('trText')
+    except (AttributeError, RuntimeError):
+        source = kept = None
+    if isinstance(source, str) and source and tr(source) == text:
+        return source
+    if isinstance(kept, (list, tuple)) and len(kept) == 2 and kept[1] == text:
+        return ' · '.join(kept[0])
+    return to_source(text)
+
+
 def combo_key(combo):
     """The data key of the current item (the Russian text it was created with)."""
     i = combo.currentIndex()
@@ -252,19 +281,21 @@ def retranslate(root):
                 w.setPlaceholderText(retranslate_text(ph))
         if isinstance(w, QMenu):
             t = w.title()
-            if t:
-                w.setTitle(retranslate_text(t))
+            if t:  # its source kept on its action, as of the other actions below
+                w.setTitle(_retranslated(w.menuAction(), 'trText', t))
         if isinstance(w, QMainWindow) or w.isWindow():
             t = w.windowTitle()
             if t:
                 w.setWindowTitle(retranslate_text(t))
     for a in root.findChildren(QAction):
+        # from the source kept on the action, not read back from the translation (ambiguous: «Правка» and «Править»
+        # are both «Edit», and Russian → English → Russian gave «Править»)
         t = a.text()
         if t:
-            a.setText(retranslate_text(t))
+            a.setText(_retranslated(a, 'trText', t))
         tip = a.toolTip()
         if tip:
-            a.setToolTip(retranslate_text(tip))
+            a.setToolTip(_retranslated(a, 'trTip', tip))
         st = a.statusTip()
         if st:
             a.setStatusTip(retranslate_text(st))

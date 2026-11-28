@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.10 — 28 November 2026
+
+- ### 0.249.10 — Compass buttons in every language
+
+Buttons placed on the Compass panels from the menus no longer vanish in English and Chinese, and their icons are the same in every language. Switching the language back and forth no longer renames menus («Правка» no longer becomes «Править»).
+
 ## 0.249.9 — 28 November 2026
 
 - ### 0.249.9 — Cards without jumps

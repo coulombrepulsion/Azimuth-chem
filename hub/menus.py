@@ -5,7 +5,7 @@ from the actions of Studio, and the label of the theme button; «Проект» 
 from PySide6.QtGui import QAction, QActionGroup
 from PySide6.QtWidgets import QMenu
 
-from azimuth.i18n import to_source, tr
+from azimuth.i18n import mark, source_of, tr
 from azimuth.ui import smooth
 from hub.branding import glyph_icon
 from hub.texts import TEXT
@@ -25,13 +25,13 @@ class HubMenus:
     def studio_action(self, source):
         """The Studio menu action created with the Russian text source."""
         for each in self._studio_actions():
-            if to_source(each.text()) == source:
+            if source_of(each, each.text()) == source:  # kept on it: a translation may be of two sources
                 return each
         raise KeyError(source)
 
     def _studio_menu(self, source):
         for menu in self.studio.menuBar().findChildren(QMenu):
-            if to_source(menu.title()) == source:
+            if source_of(menu.menuAction(), menu.title()) == source:
                 return menu
         raise KeyError(source)
 
@@ -44,6 +44,7 @@ class HubMenus:
 
         def menu(title, *parts):
             box = smooth(QMenu(tr(title), self))
+            mark(box.menuAction(), title)  # the source of its title (custom_bar keys; i18n.source_of)
             box.setToolTipsVisible(True)
             for part in parts:
                 if part is None:
@@ -58,7 +59,7 @@ class HubMenus:
             return box
 
         def own(title, callback, checkable=False):
-            item = QAction(tr(title), self._header_menus[-1] if self._header_menus else self)
+            item = mark(QAction(tr(title), self._header_menus[-1] if self._header_menus else self), title)
             # «triggered» passes the checked state (False): only a checkable item gets it, others are called with no
             # arguments (otherwise verify_installation would read it as show=False)
             if checkable:

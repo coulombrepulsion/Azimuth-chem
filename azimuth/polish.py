@@ -321,7 +321,10 @@ class Polisher(QObject):
         button.setProperty('azimuthIconChecked', True)
         from azimuth.button_icons import icon_name
 
-        name = icon_name(button.text())
+        from azimuth.i18n import source_of
+
+        # the glyph of the Russian source: by the first word («Сохранить…») it was found in Russian only
+        name = icon_name(source_of(button, button.text()), 'ru') or icon_name(button.text())
         if name is None:
             return
         from PySide6.QtCore import QSize
@@ -336,13 +339,14 @@ class Polisher(QObject):
     def give_menu_icons(menu):
         """The items of a menu get the glyphs of their texts (menus are filled just before they show)."""
         from azimuth.button_icons import icon_name
+        from azimuth.i18n import source_of
         from azimuth.icons import icon
 
         for action in menu.actions():
             if (action.isSeparator() or action.isCheckable() or action.menu() is not None
                     or not action.icon().isNull() or action.property('azimuthNoIcon')):
                 continue
-            name = icon_name(action.text())
+            name = icon_name(source_of(action, action.text()), 'ru') or icon_name(action.text())
             if name is not None:
                 action.setIcon(icon(name))
                 action.setProperty('azimuthTextIcon', name)

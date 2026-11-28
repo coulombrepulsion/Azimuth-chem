@@ -1634,3 +1634,39 @@ def test_the_card_of_the_molecule_does_not_jump_while_the_panel_of_structures_sl
     finally:
         st.project_menu_button.setChecked(False)
         st.slide_project_pane(False, animate=False)
+
+
+def test_the_buttons_of_the_menus_stay_on_the_panels_in_every_language(hub, app):
+    # 0.249.10, the owner: «иконка панели … в разных языках разного размера», «в китайском пропадает на панели справа
+    # у меня иконка оптимизация + частоты (xtb)». The keys of the buttons were the Russian paths read back from the
+    # translation — «Файл» came back as «Файлы» in Chinese, «Правка» as «Править» in English, «Расчёт» as «Расчёты»:
+    # those buttons were not found. Their glyphs were of the text shown — «Сохранить…» had one in Russian only
+    from modules.compass.actions.custom_bar import RAIL
+
+    hub.show_section('compass', animate=False)
+    st = hub.studio
+    bar = st.custom_bar
+    key = 'Расчёт/Быстрый расчёт xtb/Оптимизация + частоты (xtb)'
+    try:
+        hub.set_language('ru')
+        first = {id(a): (k, a.text()) for k, a, _sub in bar.items()}
+        assert key in {k for k, _t in first.values()}
+        bar.add(key, RAIL)
+        glyph = bar.buttons[key].property('quail_icon')
+        assert glyph and bar.buttons[key].text() == ''
+        size = bar.buttons[key].size()
+        for lang in ('en', 'zh', 'en', 'ru'):
+            hub.set_language(lang)
+            bar.rebuild()
+            keys = {id(a): k for k, a, _sub in bar.items()}
+            wrong = {first[i][0]: keys[i] for i in first if i in keys and keys[i] != first[i][0]}
+            assert not wrong, (lang, list(wrong.items())[:5])
+            button = bar.buttons.get(key)
+            assert button is not None, lang
+            assert button.property('quail_icon') == glyph and button.text() == '' and button.size() == size
+        # back in Russian, every item reads as at first («Правка», not «Править»)
+        texts = {id(a): a.text() for _k, a, _sub in bar.items()}
+        assert all(texts[i] == first[i][1] for i in first if i in texts)
+    finally:
+        hub.set_language('ru')
+        bar.remove(key)
