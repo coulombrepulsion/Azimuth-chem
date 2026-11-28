@@ -244,6 +244,7 @@
 - `modules/compass/chemistry/lattice_planes.py` — The lattice planes (hkl) drawn in a block of cells — the planes of a reflection of the powder pattern seen in the crystal, as Mercury shows «hkl planes».
 - `modules/compass/chemistry/layer.py` — A layer with vacuum (graphene, a slab): its vacuum axis, the series of vacuum, the Dirac cone of graphene.
 - `modules/compass/chemistry/library.py` — Ready molecules and fragments of the Compass menus.
+- `modules/compass/chemistry/measured_solids.py` — The measured lattice constants, bulk moduli and band gaps of simple solids, and their PBE values of the literature — next to a calculation of a crystal (the panel of Quantum ESPRESSO and CP2K, the result without the window).
 - `modules/compass/chemistry/molecular_size.py` — The size of a molecule: the van der Waals volume, the surface areas, the effective diameter.
 - `modules/compass/chemistry/names.py` — Names of common molecules for the Compass status line.
 - `modules/compass/chemistry/overlay.py` — Overlay of two structures with the atoms in any order: matching, alignment, deviations.
@@ -447,6 +448,7 @@
 - `modules/spectrum/analysis/hindered_rotor.py` — A hindered internal rotation from a relaxed scan of a dihedral angle: levels, partition function, the correction of G.
 - `modules/spectrum/analysis/ir_spectrum.py` — Gaussian IR broadening (the lines and the broadened curve). Contract: docs/features/IR_SPECTRUM.md.
 - `modules/spectrum/analysis/isotopes.py` — The isotope pattern of a molecular ion: M, M+1, M+2… with their exact masses.
+- `modules/spectrum/analysis/measured.py` — The measured values of the molecules of the course next to a result: frequencies, bonds, dipole moment, ionization energy, enthalpy of formation.
 - `modules/spectrum/analysis/methods_text.py` — «Методика расчёта»: the paragraph of the computational details of a result, and the archive of its input files.
 - `modules/spectrum/analysis/nci_domains.py` — Weak interactions told apart by NCI: the regions of low RDG split into domains, each named and measured.
 - `modules/spectrum/analysis/nmr_compare.py` — Computed chemical shifts against the measured ones: the errors, the linear correction, the assignment.
@@ -475,6 +477,7 @@
 - `modules/spectrum/views/field_view.py` — Spectrum: «Карты и профили» — a function of the wavefunction in the plane of three atoms (a colour map with contours) and along the line through two atoms (a profile), computed by Multiwfn.
 - `modules/spectrum/views/fukui_view.py` — The window «Функции Фукуи» (the calculation: modules/spectrum/analysis/fukui.py).
 - `modules/spectrum/views/ir_plot.py` — The plot of an IR or Raman spectrum (a Qt widget; moved here from modules/spectrum/analysis/ir_spectrum.py, which keeps the broadening). Contract: docs/features/IR_SPECTRUM.md.
+- `modules/spectrum/views/measured_view.py` — «Опыт» of Spectrum: the result of a molecule of the course next to its measured values (analysis/measured.py).
 - `modules/spectrum/views/methods_view.py` — «Методика расчёта…»: the paragraph of the computational details of a calculation and the archive of its inputs.
 - `modules/spectrum/views/nist_window.py` — «Найти в NIST…» of the button «Эксперимент и конформеры»: a measured IR or UV-Vis spectrum from the NIST Chemistry WebBook laid over the computed one (modules/spectrum/readers/nist.py).
 - `modules/spectrum/views/nmr_compare_view.py` — «Сравнить с экспериментом…» of the NMR tab: the computed shifts of one nucleus beside the measured ones.

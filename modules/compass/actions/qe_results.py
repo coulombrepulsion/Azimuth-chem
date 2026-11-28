@@ -266,6 +266,11 @@ def eos_lines(self, found):
         scale = (fit.v0 / computed.cell.volume()) ** (1.0 / 3.0)
         lines.append(tr('Равновесная ячейка файла: a = {}, b = {}, c = {} Å (среднеквадратичное отклонение подгонки {} мэВ)')
                      .format(f'{cell.a * scale:.4f}', f'{cell.b * scale:.4f}', f'{cell.c * scale:.4f}', f'{1000 * fit.rms:.2f}'))
+        measured = measured_entry(self)
+        if measured is not None:
+            from modules.compass.chemistry import measured_solids
+
+            lines += [measured_solids.lattice_line(measured, cell.a * scale), measured_solids.bulk_line(measured, fit.b0)]
     except (AttributeError, ValueError, ZeroDivisionError):
         pass
     return lines
@@ -479,7 +484,11 @@ def show_plot(self):
         text = (self.folder / 'pw.out').read_text(encoding='utf-8', errors='replace')
         self.gap = band_gap.gap(found.energies, band_gap.occupied_bands(text), plot.x, plot.ticks)
         plot.marks = band_gap.marks(self.gap, plot.x, e0)
-        window.note.setText(band_gap.text(self.gap))
+        from modules.compass.chemistry import measured_solids
+
+        found_gap = None if self.gap is None or self.gap.kind == 'metal' else self.gap.gap
+        window.note.setText(' '.join(x for x in (band_gap.text(self.gap),
+                                                 measured_solids.gap_line(measured_entry(self), found_gap)) if x))
         cone = self.cone_data(found, path, text)
         if cone is not None:  # graphene: the cone at K in a window of its own, the model on both plots
             from modules.compass.chemistry import layer
@@ -615,6 +624,11 @@ def summary_text(self, r):
         if file_cell is not None:  # the primitive cell (Si: 3.87 Å) differs from the CIF cell (5.47 Å)
             lines.append(tr('В ячейке файла (как в CIF): a = {}, b = {}, c = {} Å').format(
                 *(f'{x:.4f}' for x in file_cell)))
+            measured = measured_entry(self)  # Si, MgO, NaCl …: experiment and PBE of the literature
+            if measured is not None:
+                from modules.compass.chemistry import measured_solids
+
+                lines.append(measured_solids.lattice_line(measured, file_cell[0]))
     if self.program != 'cp2k':
         lines += magnetic_lines(r)
     if self.program != 'cp2k' and getattr(self, 'folder', None) is not None:
@@ -624,6 +638,16 @@ def summary_text(self, r):
         if found is not None:
             lines += phonon_lines(found)
     return '<br>'.join(lines)
+
+
+def measured_entry(self):
+    """The solid of modules/compass/chemistry/measured_solids.py the crystal of the panel is, or None."""
+    from modules.compass.chemistry import measured_solids
+
+    try:
+        return measured_solids.identify(getattr(self, 'crystal', None))
+    except (ValueError, AttributeError, KeyError, TypeError):
+        return None
 
 
 def file_cell_of(self, cell):

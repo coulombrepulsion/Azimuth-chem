@@ -466,6 +466,12 @@ def poll(self):
             self.output_path().read_text(encoding='utf-8', errors='replace')), path['x'], [tuple(t) for t in path['ticks']])
         if detail is not None:
             text += '<br>' + band_gap.text(detail)
+            from modules.compass.actions.qe_results import measured_entry
+            from modules.compass.chemistry import measured_solids
+
+            line = measured_solids.gap_line(measured_entry(self), None if detail.kind == 'metal' else detail.gap)
+            if line:
+                text += '<br>' + line
         cone = self.cone_data(found, path, self.output_path().read_text(encoding='utf-8', errors='replace'))
         if cone is not None:
             from modules.compass.chemistry import layer

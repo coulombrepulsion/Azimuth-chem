@@ -435,6 +435,11 @@ def results_page(self):
     self.convergence_tab = self.result_tabs.addTab(self.convergence_panel, tr('Сходимость'))
     self.result_tabs.setTabVisible(self.thermo_tab, False)
     self.result_tabs.setTabVisible(self.convergence_tab, False)
+    from modules.spectrum.views.measured_view import MeasuredPanel  # a molecule of the course next to experiment
+
+    self.measured_panel = MeasuredPanel()
+    self.measured_tab = self.result_tabs.addTab(self.measured_panel, tr('Опыт'))
+    self.result_tabs.setTabVisible(self.measured_tab, False)
     from modules.spectrum.views.field_view import FieldPanel  # maps in a plane and profiles along a line
 
     self.field_panel = FieldPanel(lambda: self.property_tool.multiwfn_source() if hasattr(self, 'property_tool') else None,
@@ -482,7 +487,7 @@ def results_page(self):
     self.nci_tab = self.result_tabs.addTab(self.nci_panel, tr('NCI'))
     self.result_tabs.setTabVisible(self.nci_tab, False)
     # the tabs under three common ones (a group with one tab shown is that tab)
-    for title, tabs in ((tr('Результат'), (0, self.convergence_tab, self.thermo_tab)),
+    for title, tabs in ((tr('Результат'), (0, self.convergence_tab, self.thermo_tab, self.measured_tab)),
                         (tr('Спектры'), (self.vibrations_tab, self.uv_tab, self.nmr_tab)),
                         (tr('Волновая функция'), (self.field_tab, self.dos_tab, self.deloc_tab, self.topology_tab,
                                                   self.nci_tab))):

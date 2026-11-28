@@ -343,6 +343,8 @@ class SpectrumWorkspace:
         from modules.spectrum.analysis.convergence import history
 
         self.result_tabs.setTabVisible(self.thermo_tab, self.thermo_panel.load(output, text))
+        if hasattr(self, 'measured_panel'):  # one of the 30 molecules of the course: its measured values beside
+            self.result_tabs.setTabVisible(self.measured_tab, self.measured_panel.load(output, level))
         self.result_tabs.setTabVisible(self.convergence_tab, self.convergence_panel.load(history(output, text, path)))
 
     def show_empty_quill(self, empty):

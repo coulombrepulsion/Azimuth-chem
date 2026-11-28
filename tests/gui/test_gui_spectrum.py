@@ -1295,3 +1295,22 @@ def test_methods_dialog(window, app, tmp_path):
         assert bundle.read('METHODS.txt').decode('utf-8').strip().endswith('Своя фраза.')
     other = MethodsDialog(window, tmp_path)  # a folder without a calculation
     assert other.details is None and 'не нашлось расчёта' in other.files.text()
+
+
+def test_a_molecule_of_the_course_next_to_experiment(window, app):
+    # «Опыт» (modules/spectrum/views/measured_view.py): water of B3LYP/def2-SVP — its three frequencies against the
+    # fundamentals of CCCBDB, the factor of CCCBDB for B3LYP (def2-SVP has none: cc-pVDZ), the O–H bond and the
+    # dipole; a molecule not in the file has no such tab
+    data = Path(__file__).parents[1] / 'data'
+    water = data / 'orca601' / 'h2o_optfreq.out'
+    window.display_output(water.read_text(encoding='utf-8'), water.name, False, str(water))
+    tabs, panel = window.result_tabs, window.measured_panel
+    assert tabs.isTabVisible(window.measured_tab) and 'H2O' in panel.title.text()
+    assert panel.modes.rowCount() == 3 and panel.modes.item(0, 2).text() == '1595' and panel.modes.item(0, 1).text() == '1638'
+    assert 'B3LYP/def2-SVP' in panel.modes_note.text() and '0.970' in panel.modes_note.text()
+    names = [panel.properties.item(r, 0).text() for r in range(panel.properties.rowCount())]
+    assert names[0].startswith('Длина H–O') and any('Дипольный' in n for n in names)
+    assert panel.properties.item(0, 2).text() == '0.958' and 'cccbdb.nist.gov/exp2x.asp?casno=7732185' in panel.source.text()
+    other = data / 'psi4' / 'dvb_ir_rhf_psi4-1.7.out'  # divinylbenzene: not a molecule of the course
+    window.display_output(other.read_text(encoding='utf-8'), other.name, False, str(other))
+    assert not tabs.isTabVisible(window.measured_tab)

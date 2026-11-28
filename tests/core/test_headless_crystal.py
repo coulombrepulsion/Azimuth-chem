@@ -187,14 +187,16 @@ def test_the_files_of_the_panel_beside_the_inputs(tmp_path, library, monkeypatch
     # tells the gap along the path, the elastic constants and a₀ (they were missing without the window)
     bands = hc.prepare('qe', {'cif': SILICON}, {'task': qe_inputs.BANDS_TASK})
     names = [name for name, _ in bands.extras]
-    assert names == ['path.json']
+    assert names == ['path.json', 'measured.json']  # and the solid of measured_solids.py it is (Si)
     import json
 
     path = json.loads(bands.extras[0][1])
     assert path['x'] and any(label == 'Γ' for _, label in path['ticks'])
-    assert [n for n, _ in hc.prepare('qe', {'cif': SILICON}, {'task': qe_inputs.EOS_TASK}).extras] == ['eos.json']
-    assert [n for n, _ in hc.prepare('qe', {'cif': SALT}, {'task': qe_inputs.ELASTIC_TASK}).extras] == ['elastic.json']
-    assert hc.prepare('qe', {'cif': SILICON}).extras == () and hc.prepare('cp2k', {'cif': SILICON}).extras == ()
+    assert [n for n, _ in hc.prepare('qe', {'cif': SILICON}, {'task': qe_inputs.EOS_TASK}).extras] == ['eos.json',
+                                                                                                    'measured.json']
+    assert [n for n, _ in hc.prepare('qe', {'cif': SALT}, {'task': qe_inputs.ELASTIC_TASK}).extras] == ['elastic.json',
+                                                                                                      'measured.json']
+    assert [n for n, _ in hc.prepare('qe', {'cif': SILICON}).extras] == ['measured.json']
     tools = tmp_path / 'tools'
     program = install_tools.qe_prefix(tools) / 'bin' / 'pw.x'
     program.parent.mkdir(parents=True)
@@ -252,3 +254,20 @@ def test_the_series_read_from_their_folders(tmp_path, library):
     assert elastic['bulk_gpa'] == pytest.approx(153.5, abs=0.1) and elastic['stable']
     # a file of its own, not pw.out of a job: no series looked for beside it
     assert 'band_gap' not in hc.result(DATA / 'qe' / 'si_bands_pw76.out')
+
+
+def test_experiment_beside_the_result(tmp_path, library):
+    # a solid of measured_solids.py: measured.json written with the inputs, the result compares a₀ and the gap with it
+    prepared = hc.prepare('qe', {'cif': SILICON}, {'task': qe_inputs.EOS_TASK})
+    extras = dict(prepared.extras)
+    assert 'measured.json' in extras and 'eos.json' in extras
+    cscl = (ROOT / 'examples' / '10-crystals' / 'CsCl.cif').read_text(encoding='utf-8')
+    assert hc.prepare('cp2k', {'cif': cscl}).extras == ()  # not a solid of the table: nothing
+    found = hc.result(_folder(tmp_path, 'si_eos_pw76.out', [('eos1.in', '')], list(extras.items())))['experiment']
+    assert found['solid'] == 'Si' and found['a_exp_A'] == 5.416 and found['b0_exp_gpa'] == 99.2
+    # a₀ = 5.469 Å of PBE: +1.0 % from experiment, +0.05 % from PBE of the literature (5.466)
+    assert found['a0_minus_exp_percent'] == pytest.approx(0.98, abs=0.06)
+    assert abs(found['a0_minus_pbe_literature_percent']) < 0.1
+    bands = hc.prepare('qe', {'cif': SILICON}, {'task': qe_inputs.BANDS_TASK})
+    gap = hc.result(_folder(tmp_path, 'si_bands_pw76.out', extras=list(bands.extras)))['experiment']
+    assert gap['gap_minus_exp_ev'] == pytest.approx(0.574 - 1.17, abs=1e-3)

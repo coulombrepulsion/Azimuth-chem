@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.25 — 28 November 2026
+
+- ### 0.249.25 — The calculation next to experiment
+
+Compute one of the 30 molecules of the course, and its result in Spectrum gets the tab «Experiment»: the frequencies, the bond lengths and the dipole moment next to the values measured (NIST CCCBDB) — how far the harmonic frequencies are above the observed ones. For Si, MgO, NaCl and other simple solids the summary of the calculation compares the lattice constant, the bulk modulus and the gap with experiment and with PBE of the literature: the error of the method apart from that of the calculation.
+
 ## 0.249.24 — 28 November 2026
 
 - ### 0.249.24 — The descriptions of the code of Sextant

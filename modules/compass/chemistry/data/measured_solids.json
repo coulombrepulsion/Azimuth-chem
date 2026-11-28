@@ -1,0 +1,408 @@
+{
+ "source": "Lattice constants (measured, corrected for the zero-point anharmonic expansion) and bulk moduli (measured, thermally corrected) and their PBE values: G. I. Csonka, J. P. Perdew, A. Ruzsinszky et al., Phys. Rev. B 79, 155107 (2009), arXiv:0903.4037, Tables II and V. Band gaps measured: F. Tran, P. Blaha, Phys. Rev. Lett. 102, 226401 (2009), Table I (NiO: 4.0–4.3 eV there, 4.3 taken).",
+ "solids": [
+  {
+   "formula": "Li",
+   "composition": {
+    "Li": 1
+   },
+   "structure": "ОЦК (A2)",
+   "space_group": 229,
+   "a_exp": 3.449,
+   "a_pbe": 3.429,
+   "b_exp": 13.3,
+   "b_pbe": 13.8,
+   "gap_exp": null
+  },
+  {
+   "formula": "Na",
+   "composition": {
+    "Na": 1
+   },
+   "structure": "ОЦК (A2)",
+   "space_group": 229,
+   "a_exp": 4.21,
+   "a_pbe": 4.203,
+   "b_exp": 7.5,
+   "b_pbe": 7.86,
+   "gap_exp": null
+  },
+  {
+   "formula": "K",
+   "composition": {
+    "K": 1
+   },
+   "structure": "ОЦК (A2)",
+   "space_group": 229,
+   "a_exp": 5.212,
+   "a_pbe": 5.284,
+   "b_exp": 3.7,
+   "b_pbe": 3.44,
+   "gap_exp": null
+  },
+  {
+   "formula": "Rb",
+   "composition": {
+    "Rb": 1
+   },
+   "structure": "ОЦК (A2)",
+   "space_group": 229,
+   "a_exp": 5.576,
+   "a_pbe": 5.667,
+   "b_exp": 2.9,
+   "b_pbe": 2.76,
+   "gap_exp": null
+  },
+  {
+   "formula": "Cs",
+   "composition": {
+    "Cs": 1
+   },
+   "structure": "ОЦК (A2)",
+   "space_group": 229,
+   "a_exp": 6.039,
+   "a_pbe": 6.207,
+   "b_exp": 2.1,
+   "b_pbe": 1.72,
+   "gap_exp": null
+  },
+  {
+   "formula": "Ca",
+   "composition": {
+    "Ca": 1
+   },
+   "structure": "ГЦК (A1)",
+   "space_group": 225,
+   "a_exp": 5.553,
+   "a_pbe": 5.521,
+   "b_exp": 18.4,
+   "b_pbe": 17.0,
+   "gap_exp": null
+  },
+  {
+   "formula": "Sr",
+   "composition": {
+    "Sr": 1
+   },
+   "structure": "ГЦК (A1)",
+   "space_group": 225,
+   "a_exp": 6.045,
+   "a_pbe": 6.004,
+   "b_exp": 12.4,
+   "b_pbe": 12.1,
+   "gap_exp": null
+  },
+  {
+   "formula": "Ba",
+   "composition": {
+    "Ba": 1
+   },
+   "structure": "ОЦК (A2)",
+   "space_group": 229,
+   "a_exp": 4.995,
+   "a_pbe": 5.022,
+   "b_exp": 9.3,
+   "b_pbe": 7.91,
+   "gap_exp": null
+  },
+  {
+   "formula": "Al",
+   "composition": {
+    "Al": 1
+   },
+   "structure": "ГЦК (A1)",
+   "space_group": 225,
+   "a_exp": 4.02,
+   "a_pbe": 4.037,
+   "b_exp": 79.4,
+   "b_pbe": 78.0,
+   "gap_exp": null
+  },
+  {
+   "formula": "Pb",
+   "composition": {
+    "Pb": 1
+   },
+   "structure": "ГЦК (A1)",
+   "space_group": 225,
+   "a_exp": 4.902,
+   "a_pbe": 5.035,
+   "b_exp": 46.8,
+   "b_pbe": 37.1,
+   "gap_exp": null
+  },
+  {
+   "formula": "Cu",
+   "composition": {
+    "Cu": 1
+   },
+   "structure": "ГЦК (A1)",
+   "space_group": 225,
+   "a_exp": 3.595,
+   "a_pbe": 3.628,
+   "b_exp": 142,
+   "b_pbe": 142,
+   "gap_exp": null
+  },
+  {
+   "formula": "Rh",
+   "composition": {
+    "Rh": 1
+   },
+   "structure": "ГЦК (A1)",
+   "space_group": 225,
+   "a_exp": 3.793,
+   "a_pbe": 3.829,
+   "b_exp": 269,
+   "b_pbe": 260,
+   "gap_exp": null
+  },
+  {
+   "formula": "Pd",
+   "composition": {
+    "Pd": 1
+   },
+   "structure": "ГЦК (A1)",
+   "space_group": 225,
+   "a_exp": 3.875,
+   "a_pbe": 3.942,
+   "b_exp": 195,
+   "b_pbe": 169,
+   "gap_exp": null
+  },
+  {
+   "formula": "Ag",
+   "composition": {
+    "Ag": 1
+   },
+   "structure": "ГЦК (A1)",
+   "space_group": 225,
+   "a_exp": 4.056,
+   "a_pbe": 4.147,
+   "b_exp": 109,
+   "b_pbe": 91,
+   "gap_exp": null
+  },
+  {
+   "formula": "C",
+   "composition": {
+    "C": 1
+   },
+   "structure": "алмаз (A4)",
+   "space_group": 227,
+   "a_exp": 3.543,
+   "a_pbe": 3.569,
+   "b_exp": 443,
+   "b_pbe": 434,
+   "gap_exp": 5.48
+  },
+  {
+   "formula": "Si",
+   "composition": {
+    "Si": 1
+   },
+   "structure": "алмаз (A4)",
+   "space_group": 227,
+   "a_exp": 5.416,
+   "a_pbe": 5.466,
+   "b_exp": 99.2,
+   "b_pbe": 89.2,
+   "gap_exp": 1.17
+  },
+  {
+   "formula": "SiC",
+   "composition": {
+    "Si": 1,
+    "C": 1
+   },
+   "structure": "сфалерит (B3)",
+   "space_group": 216,
+   "a_exp": 4.342,
+   "a_pbe": 4.377,
+   "b_exp": 225,
+   "b_pbe": 210,
+   "gap_exp": 2.4
+  },
+  {
+   "formula": "Ge",
+   "composition": {
+    "Ge": 1
+   },
+   "structure": "алмаз (A4)",
+   "space_group": 227,
+   "a_exp": 5.64,
+   "a_pbe": 5.759,
+   "b_exp": 75.8,
+   "b_pbe": 59.7,
+   "gap_exp": 0.74
+  },
+  {
+   "formula": "GaAs",
+   "composition": {
+    "Ga": 1,
+    "As": 1
+   },
+   "structure": "сфалерит (B3)",
+   "space_group": 216,
+   "a_exp": 5.638,
+   "a_pbe": 5.746,
+   "b_exp": 75.6,
+   "b_pbe": 61.3,
+   "gap_exp": 1.52
+  },
+  {
+   "formula": "NaCl",
+   "composition": {
+    "Na": 1,
+    "Cl": 1
+   },
+   "structure": "каменная соль (B1)",
+   "space_group": 225,
+   "a_exp": 5.565,
+   "a_pbe": 5.7,
+   "b_exp": 26.6,
+   "b_pbe": 23.6,
+   "gap_exp": null
+  },
+  {
+   "formula": "NaF",
+   "composition": {
+    "Na": 1,
+    "F": 1
+   },
+   "structure": "каменная соль (B1)",
+   "space_group": 225,
+   "a_exp": 4.579,
+   "a_pbe": 4.705,
+   "b_exp": 51.4,
+   "b_pbe": 44.4,
+   "gap_exp": null
+  },
+  {
+   "formula": "LiCl",
+   "composition": {
+    "Li": 1,
+    "Cl": 1
+   },
+   "structure": "каменная соль (B1)",
+   "space_group": 225,
+   "a_exp": 5.056,
+   "a_pbe": 5.142,
+   "b_exp": 35.4,
+   "b_pbe": 32.1,
+   "gap_exp": null
+  },
+  {
+   "formula": "LiF",
+   "composition": {
+    "Li": 1,
+    "F": 1
+   },
+   "structure": "каменная соль (B1)",
+   "space_group": 225,
+   "a_exp": 3.964,
+   "a_pbe": 4.062,
+   "b_exp": 69.8,
+   "b_pbe": 67.1,
+   "gap_exp": 14.2
+  },
+  {
+   "formula": "MgO",
+   "composition": {
+    "Mg": 1,
+    "O": 1
+   },
+   "structure": "каменная соль (B1)",
+   "space_group": 225,
+   "a_exp": 4.184,
+   "a_pbe": 4.255,
+   "b_exp": 165,
+   "b_pbe": 149,
+   "gap_exp": 7.83
+  },
+  {
+   "formula": "BN",
+   "composition": {
+    "B": 1,
+    "N": 1
+   },
+   "structure": "сфалерит (B3)",
+   "space_group": 216,
+   "a_exp": null,
+   "a_pbe": null,
+   "b_exp": null,
+   "b_pbe": null,
+   "gap_exp": 6.25
+  },
+  {
+   "formula": "GaN",
+   "composition": {
+    "Ga": 1,
+    "N": 1
+   },
+   "structure": "сфалерит (B3)",
+   "space_group": 216,
+   "a_exp": null,
+   "a_pbe": null,
+   "b_exp": null,
+   "b_pbe": null,
+   "gap_exp": 3.2
+  },
+  {
+   "formula": "AlP",
+   "composition": {
+    "Al": 1,
+    "P": 1
+   },
+   "structure": "сфалерит (B3)",
+   "space_group": 216,
+   "a_exp": null,
+   "a_pbe": null,
+   "b_exp": null,
+   "b_pbe": null,
+   "gap_exp": 2.45
+  },
+  {
+   "formula": "ZnS",
+   "composition": {
+    "Zn": 1,
+    "S": 1
+   },
+   "structure": "сфалерит (B3)",
+   "space_group": 216,
+   "a_exp": null,
+   "a_pbe": null,
+   "b_exp": null,
+   "b_pbe": null,
+   "gap_exp": 3.91
+  },
+  {
+   "formula": "CdS",
+   "composition": {
+    "Cd": 1,
+    "S": 1
+   },
+   "structure": "сфалерит (B3)",
+   "space_group": 216,
+   "a_exp": null,
+   "a_pbe": null,
+   "b_exp": null,
+   "b_pbe": null,
+   "gap_exp": 2.42
+  },
+  {
+   "formula": "NiO",
+   "composition": {
+    "Ni": 1,
+    "O": 1
+   },
+   "structure": "каменная соль (B1)",
+   "space_group": 225,
+   "a_exp": null,
+   "a_pbe": null,
+   "b_exp": null,
+   "b_pbe": null,
+   "gap_exp": 4.3
+  }
+ ]
+}

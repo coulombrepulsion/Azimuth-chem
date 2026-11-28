@@ -231,7 +231,8 @@ def prepare(program, spec, settings=None, root=None):
             changes['cutoff'] = cp2k_inputs.cutoff_for({a[0] for a in cr.unit_cell(computed)})
         made = replace(defaults, **changes)
         steps = ((cp2k_inputs.INPUT, 'cp2k', cp2k_inputs.cp2k_input(computed, task, made)),)
-        return Prepared(program, task, steps, computed, processes, title, None, len(cr.unit_cell(computed)))
+        return Prepared(program, task, steps, computed, processes, title, None, len(cr.unit_cell(computed)),
+                        _measured(base))
     made = replace(defaults, **changes)
     root = Path(root) if root else install_tools.default_root()
     library = qe_pseudo.LIBRARIES[qe_inputs.library_of(made.functional or '')]
@@ -244,7 +245,18 @@ def prepare(program, spec, settings=None, root=None):
     steps = qe_inputs.steps(computed, task, qe_pseudo.table(root, library), str(qe_pseudo.folder(root, library)), 'azimuth',
                             spacing, basis, base, made)
     return Prepared(program, task, tuple(steps), computed, processes, title, library, len(cr.unit_cell(computed)),
-                    _extras(task, base, basis, computed))
+                    _extras(task, base, basis, computed) + _measured(base))
+
+
+def _measured(base):
+    """measured.json — the solid of measured_solids.py the crystal is (experiment and PBE of the literature for the
+    result, §2.6), or nothing."""
+    import json
+
+    from modules.compass.chemistry import measured_solids
+
+    entry = measured_solids.identify(base)
+    return (('measured.json', json.dumps(entry, ensure_ascii=False)),) if entry is not None else ()
 
 
 def _extras(task, base, basis, computed):
@@ -396,6 +408,7 @@ def result(path):
                'energy_ev': None if r.energy_hartree is None else r.energy_hartree * HARTREE_EV}
         if r.cell is not None:
             out['cell'] = _cell(r.cell)
+        out.update(_against_experiment(folder, out))
         return out
     from modules.spectrum.readers import qe
 
@@ -429,7 +442,34 @@ def result(path):
                         'pressure_kbar': one.pressures[-1] if one.pressures else None} for one in every]
     if path.name == 'pw.out':  # the files of the job beside it: the series it was (§2.6)
         out.update(_series(folder))
+    out.update(_against_experiment(folder, out))
     return out
+
+
+def _against_experiment(folder, out):
+    """{'experiment': …} when the job wrote measured.json: the values of experiment and PBE of the literature, and
+    the differences of what this result computed (a₀ and B₀ of a series of volumes, the gap along the path)."""
+    import json
+
+    try:
+        entry = json.loads((Path(folder) / 'measured.json').read_text(encoding='utf-8'))
+    except (OSError, ValueError):
+        return {}
+    from modules.compass.chemistry import measured_solids
+
+    found = {'solid': entry['formula'], 'structure': entry['structure'], 'a_exp_A': entry['a_exp'],
+             'a_pbe_literature_A': entry['a_pbe'], 'b0_exp_gpa': entry['b_exp'], 'b0_pbe_literature_gpa': entry['b_pbe'],
+             'gap_exp_ev': entry['gap_exp'], 'source': measured_solids.SOURCE,
+             'note': 'a_exp is corrected for the zero-point anharmonic expansion (the lattice of static nuclei)'}
+    eos = out.get('equation_of_state') or {}
+    a0 = (eos.get('cell_of_the_file_at_v0') or {}).get('a')
+    if a0 and entry.get('a_exp'):
+        found['a0_minus_exp_percent'] = round(100 * (a0 - entry['a_exp']) / entry['a_exp'], 2)
+        found['a0_minus_pbe_literature_percent'] = round(100 * (a0 - entry['a_pbe']) / entry['a_pbe'], 2)
+    gap = (out.get('band_gap') or {}).get('gap_ev')
+    if gap is not None and entry.get('gap_exp'):
+        found['gap_minus_exp_ev'] = round(gap - entry['gap_exp'], 3)
+    return {'experiment': found}
 
 
 def _gap(found, path):
