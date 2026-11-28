@@ -152,7 +152,8 @@ def test_fragment_menus_keep_the_first_five_and_group_the_rest():
 def angle(m, a, c, b):
     u = [m.atoms[a].position[k] - m.atoms[c].position[k] for k in range(3)]
     v = [m.atoms[b].position[k] - m.atoms[c].position[k] for k in range(3)]
-    return degrees(acos(sum(x * y for x, y in zip(u, v)) / sqrt(sum(x * x for x in u) * sum(y * y for y in v))))
+    cosine = sum(x * y for x, y in zip(u, v)) / sqrt(sum(x * x for x in u) * sum(y * y for y in v))
+    return degrees(acos(max(-1.0, min(1.0, cosine))))  # an exactly linear O=C=O (0.249.28) rounds to −1 − ε
 
 
 def centre_angles(m, symbol):

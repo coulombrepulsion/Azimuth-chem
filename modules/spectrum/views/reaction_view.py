@@ -632,6 +632,9 @@ class ReactionWindow(QWidget):
                             reaction.scientific(eckart) if eckart >= 100 else f'{eckart:.2f}')))
         if r.reaction is not None:
             lines.append(tr(f'{sym} реакции («{r.labels[0]}» → «{r.labels[-1]}»): {r.reaction:+.1f} {unit}'))
+        measured_line = self.measured_line(r)
+        if measured_line:
+            lines.append(measured_line)
         if s['quantity'] in ('H', 'G'):
             lines.append(tr(f'T = {s["temperature"]:.2f} K, P = {s["pressure_atm"]:g} атм') + (tr(', 1 моль/л') if s['molar'] else ''))
         if r.quantity == 'G' and r.barriers:
@@ -642,6 +645,24 @@ class ReactionWindow(QWidget):
         self.notes.setText('\n'.join('⚠ ' + w for w in r.warnings))
         self.view.set_result(r)
         return r
+
+    def measured_line(self, result):
+        """ΔrH°(298 K) of experiment when every species of the first and the last stage has a measured ΔfH° (the
+        molecules of the course, those found before in CCCBDB, H₂, N₂, O₂ …) — next to ΔH of the calculation."""
+        from modules.spectrum.analysis import cccbdb, measured
+
+        if len(self.stages) < 2:
+            return ''
+        found = measured.reaction_enthalpy(self.stages[0], self.stages[-1], cccbdb.cached)
+        if found.value is None:
+            return ''
+        per_kj = {'kcal': 1 / 4.184, 'kj': 1.0, 'ev': 1 / 96.485332}[result.unit]
+        text = tr('ΔH° реакции из опыта (298 К, газ, по ΔfH° CCCBDB): {} {}').format(
+            f'{found.value * per_kj:+.1f}', tr(UNIT_NAMES[result.unit]))
+        if result.quantity == 'H' and result.reaction is not None:
+            text += tr('; расчёт отличается на {} {}').format(f'{result.reaction - found.value * per_kj:+.1f}',
+                                                             tr(UNIT_NAMES[result.unit]))
+        return text
 
     def table(self):
         if self.result is None:

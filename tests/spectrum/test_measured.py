@@ -90,3 +90,52 @@ def test_what_cannot_be_paired_is_said():
     # two measured values of one pair of elements: each computed bond goes to the nearer one
     formic = next(m for m in measured.molecules() if m['key'] == 'formic_acid')
     assert [v for a, b, v in formic['bonds'] if {a, b} == {'C', 'O'}] == [1.202, 1.343]
+
+
+def test_the_enthalpy_of_a_reaction_from_experiment():
+    # CH₄ + 2 O₂ → CO₂ + 2 H₂O (gas): ΔrH° = −393.51 + 2·(−241.81) − (−74.60) − 2·0 = −802.53 kJ/mol (the ΔfH° of the
+    # file); a species without a ΔfH° — no value, named
+    from modules.compass.chemistry.formats_smiles import from_smiles
+    from modules.spectrum.analysis.reaction import Species, Stage
+
+    def species(smiles, label):
+        return Species(label, 0.0, geometry=from_smiles(smiles, quick=True))
+
+    oxygen = species('O=O', 'O₂')
+    start = Stage('реагенты', (species('C', 'CH₄'), oxygen, oxygen))
+    end = Stage('продукты', (species('O=C=O', 'CO₂'), species('O', 'H₂O'), species('O', 'H₂O')))
+    found = measured.reaction_enthalpy(start, end)
+    assert found.value == pytest.approx(-802.53) and not found.missing and len(found.known) == 6
+    assert measured.enthalpy_of_formation(oxygen.geometry)[0] == 0.0
+    other = Stage('x', (species('CCCCCCCCO', 'октанол'),))
+    assert measured.reaction_enthalpy(start, other).value is None
+    assert measured.reaction_enthalpy(start, other).missing == ('октанол',)
+
+
+def test_the_computed_bonds_of_each_kind_together():
+    # dimethyl ether: two C–H in the plane COC (measured 1.085 Å) and four out of it (1.099 Å); B3LYP makes all of them
+    # about 0.01 Å longer — the nearest measured value took every one to the longer kind (the check of the 30
+    # molecules, 2026-11-28); the runs of least spread keep the two kinds
+    computed = [1.0981, 1.0983, 1.1069, 1.1070, 1.1072, 1.1073]
+    assert measured._groups(computed, 2) == [computed[:2], computed[2:]]
+    assert measured._groups(computed, 1) == [computed] and measured._groups([1.1], 2) == [[1.1]]
+    assert measured._groups([1.20, 1.34], 2) == [[1.20], [1.34]]  # C=O and C–O of formic acid
+
+
+def test_a_linear_molecule_from_smiles_is_exactly_linear():
+    # O=C=O, H–C≡N, H–C≡C–H off the line by 0.001 Å: ORCA removed six modes, a bending one was lost (3 frequencies of
+    # CO₂ instead of 4 — the check of the 30 molecules, 2026-11-28)
+    import numpy as np
+
+    from modules.compass.chemistry.formats_smiles import from_smiles, linearized
+
+    for smiles in ('O=C=O', 'C#N', 'C#C', 'CC#C'):
+        x = np.array([a.position for a in from_smiles(smiles, quick=True).atoms])
+        if smiles == 'CC#C':  # propyne: not linear (the methyl hydrogens) — left alone
+            continue
+        centre = x.mean(axis=0)
+        axis = np.linalg.svd(x - centre)[2][0]
+        off = np.linalg.norm((x - centre) - np.outer((x - centre) @ axis, axis), axis=1)
+        assert off.max() < 1e-9, smiles
+    water = from_smiles('O', quick=True)
+    assert linearized(water) is water

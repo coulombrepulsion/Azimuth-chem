@@ -205,6 +205,38 @@ def _brief(output):
     return {k: v for k, v in output.items() if v not in (None, [], {}, '')}
 
 
+def _experiment(output):
+    """What «Опыт» of Spectrum shows (modules/spectrum/analysis/measured.py), without the network: the molecule of the
+    course or one found before in CCCBDB (cccbdb.cached); None for another molecule."""
+    from modules.spectrum.analysis import cccbdb, measured
+
+    geometry = output.geometry or getattr(output, 'vibration_geometry', None)
+    try:
+        entry = measured.identify(geometry) or (cccbdb.cached(geometry) if measured.searchable(geometry) else None)
+    except Exception:  # noqa: BLE001 — no comparison rather than a failed result
+        entry = None
+    if entry is None:
+        return None
+    found = measured.compare(entry, output)
+    out = {'molecule': measured.name(entry, 'en'), 'formula': entry.get('formula'), 'source': measured.SOURCE,
+           'page': measured.url(entry), 'measured': {
+               'dipole_debye': entry.get('dipole_debye'), 'ionization_energy_ev': entry.get('ie_ev'),
+               'hf298_kj_mol': entry.get('hf298_kj'), 'hf_source': entry.get('hf_source')},
+           'bonds': [{'pair': r.pair, 'measured_A': r.measured, 'computed_A': None if r.computed is None else
+                      round(r.computed, 4), 'count': r.count} for r in found.bonds]}
+    if found.dipole is not None and found.dipole[0] is not None:
+        out['dipole_computed_debye'] = round(found.dipole[0], 3)
+    vib = found.vibrations
+    if vib is not None:
+        out['frequencies'] = ({'pairs_in_order': [[round(w, 1), nu, label] for w, nu, label in vib.pairs],
+                               'mean_abs_cm1': round(vib.mean_abs, 1), 'factor': round(vib.factor, 4),
+                               'mean_abs_scaled_cm1': round(vib.mean_abs_scaled, 1)}
+                              if vib.pairs else {'reason': vib.reason})
+    if found.harmonic is not None:
+        out['harmonic_mean_abs_cm1'] = round(found.harmonic.mean_abs, 1)
+    return out
+
+
 def result(path, kind=None, settings=None, code=None):
     """What a finished (or running) calculation gave: path — its output or its folder; code — the exit code of the
     program when it is known (the doctor reads a killed run by it)."""
@@ -268,6 +300,9 @@ def result(path, kind=None, settings=None, code=None):
                 'G': found.total(found.gibbs) if energy is not None else None}
         except (ValueError, ZeroDivisionError) as exc:
             summary['thermochemistry_hartree'] = {'error': str(exc)}
+    experiment = _experiment(output)  # a molecule of the course, or one found before in CCCBDB: next to experiment
+    if experiment is not None:
+        summary['experiment'] = experiment
     if getattr(output, 'shieldings', None):  # NMR: the isotropic shielding of each nucleus, ppm (not a shift)
         summary['nmr_shielding_ppm'] = [{'atom': x.atom, 'element': x.element, 'isotropic': x.isotropic,
                                          'anisotropy': x.anisotropy} for x in output.shieldings]

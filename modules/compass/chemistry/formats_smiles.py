@@ -122,7 +122,7 @@ def from_smiles(text, quick=False):
         result = clean(start, steps=QUICK_STEPS, tolerance=ROUGH, method='lbfgs')[0]
         if _hydrogen_inside(result):  # a hydrogen placed while a ring was open (the N–H of indole): again by the ring
             result = clean(_replace_hydrogens(result), steps=QUICK_STEPS, tolerance=ROUGH, method='lbfgs')[0]
-        return result
+        return linearized(result)
     best, best_e = None, None
     import random
 
@@ -154,7 +154,35 @@ def from_smiles(text, quick=False):
     best, _, best_e = clean(best, steps=4000, method='lbfgs')
     if stereo and _double_bonds_as_written(best, stereo) is not best:  # a start turned a double bond over
         best = clean(_double_bonds_as_written(best, stereo), steps=4000, method='lbfgs')[0]
-    return best
+    return linearized(best)
+
+
+LINE = 0.02  # Å: a molecule whose atoms all lie this near one line is made exactly linear
+
+
+def linearized(molecule, tolerance=LINE):
+    """A nearly linear molecule (CO₂, HCN, acetylene, …) with its atoms put on the line exactly. The tidying left
+    them up to 0.001 Å off it (O=C=O at 179.9°), and ORCA took such a molecule for a bent one: it removed six modes
+    instead of five, and one of the two bending modes was lost — from the frequencies, the zero-point energy and the
+    thermochemistry (the owner's check of the 30 molecules of the course against experiment, 2026-11-28). Other
+    molecules are returned as they are."""
+    import numpy as np
+
+    atoms = molecule.atoms
+    if len(atoms) < 3:
+        return molecule
+    x = np.array([a.position for a in atoms], dtype=float)
+    centre = x.mean(axis=0)
+    _, _, vt = np.linalg.svd(x - centre)
+    axis = vt[0]
+    along = (x - centre) @ axis
+    off = np.linalg.norm((x - centre) - np.outer(along, axis), axis=1)
+    if off.max() > tolerance or off.max() == 0.0:
+        return molecule
+    from dataclasses import replace
+
+    placed = centre + np.outer(along, axis)
+    return replace(molecule, atoms=tuple(Atom(a.symbol, *map(float, p)) for a, p in zip(atoms, placed)))
 
 
 SKEW = {'O': 112.0, 'S': 85.0, 'Se': 87.0}  # ° X–O–O–Y (H2O2 gas 111.8), X–S–S–Y (dimethyl disulfide 84.7)

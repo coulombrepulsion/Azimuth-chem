@@ -175,13 +175,36 @@ def bonds(entry, molecule):
     rows = []
     for a, b in dict.fromkeys(tuple(sorted((x, y))) for x, y, *_ in entry['bonds']):
         values = [r for x, y, r, *_ in entry['bonds'] if tuple(sorted((x, y))) == (a, b)]
-        taken = {k: [] for k in range(len(values))}
-        for length in lengths.get((a, b), []):
-            taken[min(range(len(values)), key=lambda k: abs(values[k] - length))].append(length)
+        groups = _groups(sorted(lengths.get((a, b), [])), len(values))
+        by_value = dict(zip(sorted(range(len(values)), key=lambda k: values[k]), groups))
         for k, value in enumerate(values):
-            got = taken[k]
+            got = by_value.get(k, [])
             rows.append(BondRow(f'{a}–{b}', value, sum(got) / len(got) if got else None, len(got)))
     return rows
+
+
+def _groups(lengths, count):
+    """The sorted computed lengths split into count runs (the shortest run for the shortest measured value),
+    each non-empty, with the least spread inside the runs — the computed bonds of each kind together, whatever
+    the systematic error of the method (the nearest measured value put every C–H of dimethyl ether, 0.01 Å longer
+    computed, to the longer kind and left the shorter one empty). Fewer bonds than values: one per run."""
+    if count <= 1 or len(lengths) <= count:
+        return [[x] for x in lengths] if count > 1 else [lengths]
+    n = len(lengths)
+
+    def spread(i, j):
+        part = lengths[i:j]
+        mean = sum(part) / len(part)
+        return sum((x - mean) ** 2 for x in part)
+
+    best = {(0, 0): (0.0, [])}
+    for g in range(1, count + 1):
+        for j in range(g, n - (count - g) + 1):
+            options = [(best[(i, g - 1)][0] + spread(i, j), best[(i, g - 1)][1] + [lengths[i:j]])
+                       for i in range(g - 1, j) if (i, g - 1) in best]
+            if options:
+                best[(j, g)] = min(options, key=lambda o: o[0])
+    return best[(n, count)][1]
 
 
 @dataclass(frozen=True)
@@ -210,3 +233,46 @@ def compare(entry, output):
         notes.append(entry['note'])
     return Comparison(entry, vib, tuple(bonds(entry, geometry)) if geometry is not None else (), harmonic,
                       None if measured is None else (computed_dipole, measured), tuple(notes))
+
+
+ELEMENTS = ('H', 'N', 'O', 'F', 'Cl')  # gases whose standard state is the diatomic molecule: ΔfH° = 0
+KJ_PER_HARTREE = 2625.4996394799
+
+
+@dataclass(frozen=True)
+class ReactionEnthalpy:
+    value: float | None  # ΔrH°(298 K) of experiment, kJ/mol — the products minus the reactants
+    known: tuple = ()  # (label, ΔfH° kJ/mol, source)
+    missing: tuple = ()  # the labels of the species without a measured ΔfH°
+
+
+def enthalpy_of_formation(molecule, cached=None):
+    """(ΔfH°(298 K) kJ/mol, source) of the gas, or None: a molecule of the course, one found before in CCCBDB
+    (cached — cccbdb.cached, no network), or an element in its standard state (H₂, N₂, O₂, F₂, Cl₂ — 0)."""
+    atoms = getattr(molecule, 'atoms', None) or ()
+    if len(atoms) == 2 and atoms[0].symbol == atoms[1].symbol and atoms[0].symbol in ELEMENTS:
+        return 0.0, tr('простое вещество')
+    entry = identify(molecule)
+    if entry is None and cached is not None:
+        try:
+            entry = cached(molecule)
+        except Exception:  # noqa: BLE001 — a kept file of another version: not used
+            entry = None
+    if entry is None or entry.get('hf298_kj') is None:
+        return None
+    return float(entry['hf298_kj']), entry.get('hf_source') or 'CCCBDB'
+
+
+def reaction_enthalpy(first, last, cached=None):
+    """ΔrH°(298 K) of experiment between two stages of a reaction (modules/spectrum/analysis/reaction.Stage):
+    Σ ΔfH°(last) − Σ ΔfH°(first); None as the value when a species has none."""
+    known, missing, total = [], [], 0.0
+    for sign, stage in ((-1, first), (1, last)):
+        for species in stage.species:
+            found = enthalpy_of_formation(getattr(species, 'geometry', None), cached)
+            if found is None:
+                missing.append(species.label)
+                continue
+            known.append((species.label, found[0], found[1]))
+            total += sign * found[0]
+    return ReactionEnthalpy(None if missing else total, tuple(known), tuple(missing))

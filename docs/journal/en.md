@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.28 — 28 November 2026
+
+- ### 0.249.28 — The enthalpy of a reaction from experiment
+
+The reaction diagram shows ΔH° of the reaction from the measured enthalpies of formation next to the computed one, when all the reactants and products have them. The 30 molecules of the course were computed and compared with experiment; on the way CO₂, HCN and acetylene built from SMILES were found slightly bent (a frequency was lost) — fixed.
+
 ## 0.249.27 — 28 November 2026
 
 - ### 0.249.27 — Experiment for any molecule

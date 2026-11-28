@@ -60,6 +60,11 @@ def test_the_result_of_an_optimization_with_frequencies():
     assert thermo['H'] == pytest.approx(-76.29628871, abs=2e-8)
     assert thermo['G'] == pytest.approx(-76.31773280, abs=2e-6)  # ORCA: the same entropy terms, its own rounding
     assert 'problems' not in found
+    # water is a molecule of the course: «Опыт» of Spectrum without the window (CCCBDB)
+    experiment = found['experiment']
+    assert experiment['molecule'] == 'water' and experiment['measured']['dipole_debye'] == 1.857
+    assert [p[1] for p in experiment['frequencies']['pairs_in_order']] == [1595, 3657, 3756]
+    assert experiment['dipole_computed_debye'] == pytest.approx(2.004, abs=1e-3) and experiment['bonds'][0]['count'] == 2
 
 
 def test_the_states_of_tddft_and_no_optimization():

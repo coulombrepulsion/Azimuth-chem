@@ -6608,5 +6608,8 @@
   "{} — опыт из CCCBDB": "{} — experiment from CCCBDB",
   "В CCCBDB опытных данных этой молекулы нет (или PubChem не знает её номер CAS).": "CCCBDB has no measured data of this molecule (or PubChem does not know its CAS number).",
   "С гармоническими частотами опыта средняя разница {:.0f} см⁻¹ — это ошибка самого метода, без ангармоничности.": "Against the harmonic frequencies of experiment the mean difference is {:.0f} cm⁻¹ — the error of the method itself, without the anharmonicity.",
-  "Найдено в сети и сохранено на этом компьютере.": "Found on the network and kept on this computer."
+  "Найдено в сети и сохранено на этом компьютере.": "Found on the network and kept on this computer.",
+  "простое вещество": "an element",
+  "ΔH° реакции из опыта (298 К, газ, по ΔfH° CCCBDB): {} {}": "ΔH° of the reaction from experiment (298 K, gas, by ΔfH° of CCCBDB): {} {}",
+  "; расчёт отличается на {} {}": "; the calculation differs by {} {}"
 }
