@@ -16,8 +16,8 @@
 | `azimuth_preview_input` | входной файл для молекулы и настроек — ничего не запускает |
 | `azimuth_run` | запустить расчёт на этом компьютере → номер задания |
 | `azimuth_crystal_options` | задачи и настройки расчёта кристалла в Quantum ESPRESSO (`qe`) или CP2K (`cp2k`) с их значениями по умолчанию |
-| `azimuth_crystal_preview` | входные файлы для кристалла (CIF текстом или файлом) и настроек — ничего не запускает |
-| `azimuth_crystal_run` | запустить расчёт кристалла на этом компьютере → номер задания; ход и остановка — `azimuth_status`, `azimuth_stop`, результат — `azimuth_result` по папке расчёта |
+| `azimuth_crystal_preview` | входные файлы для кристалла (CIF текстом или файлом, либо кристалл проекта «Компаса · Кристалла»: `{"project": папка или project.qcc, "crystal": номер или название}`) и настроек — ничего не запускает |
+| `azimuth_crystal_run` | запустить расчёт кристалла на этом компьютере → номер задания; ход и остановка — `azimuth_status`, `azimuth_stop`, результат — `azimuth_result` по папке расчёта. Рядом с входными файлами пишутся те же файлы, что у панели (`path.json`, `elastic.json`, `eos.json`); по папке ряда `azimuth_result` даёт щель по пути зон, V₀, B₀, B₀′ и a₀ уравнения состояния, таблицу ряда сходимости с тем, с какого значения он сошёлся, и упругие постоянные (0.249.22) |
 | `azimuth_structure_molecule` | построить молекулу (SMILES, название — PubChem, библиотека Компаса, XYZ, файл) и править её по шагам: `element`, `substitute`, `delete`, `add_hydrogens`, `set` (длина, угол, торсион), `optimize` (UFF), `conformers` → файл XYZ или MOL и атомы с номерами и связями (`azimuth/headless_structure.py`, 0.249.0) |
 | `azimuth_structure_crystal` | кристалл (CIF, файл, номер COD) и шаги `primitive`, `supercell`, `surface`, `monolayer`, `vacuum`, `substitute`, `vacancy` → CIF и атомы ячейки с номерами |
 | `azimuth_structure_catalogue` | фрагменты для `substitute`, молекулы библиотеки, список шагов |

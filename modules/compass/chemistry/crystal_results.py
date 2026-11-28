@@ -13,7 +13,11 @@ tables of Multiwfn) and for the panel of the calculation.
     scf of the steps). steps(run) — the raw steps (cp2k.steps / qe.steps): energy, cell, atoms. steps_table — a row per
     step: energy (hartree), a, b, c (Å), the volume (Å³). bands(run), dos(run) — what the panel of Quantum ESPRESSO
     plots (path.json of the run and pw.out; azimuth.dos), E0 the top of the valence band or the Fermi level.
-    multiwfn_file(run) — the file for Multiwfn of a CP2K run (cp2k.for_multiwfn). The charges of a supercell on the
+    multiwfn_file(run) — the file for Multiwfn of a CP2K run (cp2k.for_multiwfn). The series of one job of Quantum
+    ESPRESSO, read from its folder (the panel and azimuth/headless_crystal.py the same, 0.249.22): series(folder) — a
+    series of convergence (cut1.in, kpt1.in or vac1.in beside pw.out; a point per run that ended, its value read from
+    its input); eos(folder) — the volumes of eos1.in … fitted by Birch — Murnaghan; elastic_series(folder) — the strains
+    of elastic.json fitted by elastic.fit; band_gap_of(folder) — the gap of the bands along the path of path.json. The charges of a supercell on the
     model (model_charges): the atoms of the file for Multiwfn as fractions of its cell times the supercell (the edges
     over those of the cell of the file) modulo 1, the atoms of the model as fractions of the cell of the file modulo 1;
     an atom of the model takes the mean charge of the atoms of its element nearer than MATCH (Å, by the metric of the
@@ -21,7 +25,9 @@ tables of Multiwfn) and for the panel of the calculation.
 §4 SPECIFICATION
     Run(folder, program, task, time); runs(manifest) -> [Run]; last(manifest, program=None, having=None) -> Run | None;
     result(run); steps(run) -> raw; steps_table(raw) -> [dict]; bands(run) -> (Bands, path, E0) | None; dos(run) ->
-    (Dos, E0) | None; multiwfn_file(run) -> Path | None; write_charges / read_charges, write_aim / read_aim (the CSV of
+    (Dos, E0) | None; multiwfn_file(run) -> Path | None; series(folder) -> (kind, [convergence.Row] | None, error) |
+    None; eos(folder) -> (Fit | None, [(V Å³, E eV)], error) | None; elastic_series(folder) -> (Elastic | None,
+    {kind: [(e, E eV)]}, error) | None; band_gap_of(folder) -> (band_gap.Gap | None, path) | None; write_charges / read_charges, write_aim / read_aim (the CSV of
     the folder); model_charges(molden_text, charges, file_cell, points) -> [value | None per point].
 §7 TESTS
     tests/compass/test_crystal_results.py — the real CELL_OPT of CsCl (CP2K 2026.2) and its charges (Multiwfn).
@@ -287,3 +293,120 @@ def model_charges(molden_text, values, file_cell, points):
         near = [values[k] for k in range(len(atoms)) if atoms[k][0] == symbol and lengths[k] < MATCH]
         shown.append(float(np.mean(near)) if near else None)
     return shown
+
+
+# -- the series of one job of Quantum ESPRESSO (the panel: qe_results; without the window: headless_crystal) ------------
+RY_EV = 13.605693122994
+SERIES_KINDS = ('cut', 'kpt', 'vac')
+
+
+def _runs(folder):
+    from modules.spectrum.readers import qe
+
+    return qe.runs(_text(Path(folder) / 'pw.out'))
+
+
+def series(folder):
+    """(kind 'cut' | 'kpt' | 'vac', [convergence.Row], '') of a finished series of convergence, (kind, None, the
+    reason) when it gave too few points, None when the folder holds no such series."""
+    import re
+
+    from modules.compass.chemistry import convergence
+    from modules.spectrum.readers import qe
+
+    folder = Path(folder)
+    kind = next((k for k in SERIES_KINDS if (folder / f'{k}1.in').is_file()), None)
+    if kind is None or not (folder / 'pw.out').is_file():
+        return None
+    points = []
+    for n, run in enumerate(_runs(folder), 1):
+        source = folder / f'{kind}{n}.in'
+        if not source.is_file():
+            break
+        text = source.read_text(encoding='utf-8', errors='replace')
+        r = qe.read(run)
+        if r.energy is None or not r.done:
+            continue
+        if kind == 'cut':
+            label = re.search(r'ecutwfc\s*=\s*([\d.]+)', text).group(1) + ' Ry'
+        elif kind == 'vac':
+            from modules.compass.chemistry import layer
+
+            size = layer.vacuum_of_input(text)
+            label = '?' if size is None else f'{size:g} Å'
+        else:
+            label = ' × '.join(text.split('K_POINTS automatic')[1].split()[:3])
+        gap = r.lowest - r.highest if r.highest is not None and r.lowest is not None else None
+        # the pressure of a cell with vacuum says nothing of the layer: left out of the series of vacuum
+        points.append(convergence.Point(label, r.energy * RY_EV, r.nat or 1,
+                                        r.pressures[-1] if r.pressures and kind != 'vac' else None, gap,
+                                        r.fermi if r.fermi is not None else r.highest))
+    try:
+        return kind, convergence.rows(points), ''
+    except ValueError as exc:
+        return kind, None, str(exc)
+
+
+def eos(folder):
+    """(Fit, [(V Å³, E eV)], '') of a finished series of volumes, (None, points, the reason) when the points give no
+    fit, None when the folder holds no such series."""
+    from modules.compass.chemistry import equation_of_state
+    from modules.spectrum.readers import qe
+
+    folder = Path(folder)
+    if not (folder / 'eos1.in').is_file() or not (folder / 'pw.out').is_file():
+        return None
+    points = equation_of_state.points_of_runs([qe.read(run) for run in _runs(folder)])
+    try:
+        return equation_of_state.fit([v for v, _ in points], [e for _, e in points]), points, ''
+    except ValueError as exc:
+        return None, points, str(exc)
+
+
+def elastic_series(folder):
+    """(elastic.Elastic, {kind: [(e, E eV)]}, '') of a finished series of strains by the plan of elastic.json, (None,
+    points, the reason) when the fit fails, None when the folder holds no such series."""
+    from modules.compass.chemistry import elastic
+    from modules.spectrum.readers import qe
+
+    folder = Path(folder)
+    if not (folder / 'elastic.json').is_file() or not (folder / 'pw.out').is_file():
+        return None
+    try:
+        note = json.loads((folder / 'elastic.json').read_text(encoding='utf-8'))
+        plan, volume = [(name, float(e)) for name, e in note['plan']], float(note['volume'])
+    except (ValueError, KeyError, TypeError):
+        return None
+    points = {kind: [] for kind in elastic.KINDS}
+    for (name, e), run in zip(plan, _runs(folder)):
+        r = qe.read(run)
+        if r.energy is None or not r.done:
+            continue
+        energy = r.energy * RY_EV
+        for kind in (elastic.KINDS if name is None else (name,)):  # the unstrained cell is a point of each curve
+            points[kind].append((e, energy))
+    try:
+        return elastic.fit(points, volume), points, ''
+    except ValueError as exc:
+        return None, points, str(exc)
+
+
+def band_gap_of(folder):
+    """(the gap of the bands along the path — band_gap.Gap, None when it cannot be told —, the path of path.json) of a
+    finished job of the bands; None when the folder holds no bands with their path."""
+    from modules.compass.chemistry import band_gap
+    from modules.spectrum.readers import qe
+
+    folder = Path(folder)
+    if not (folder / 'path.json').is_file() or not (folder / 'pw.out').is_file():
+        return None
+    text = _text(folder / 'pw.out')
+    found = qe.bands(text)
+    try:
+        path = json.loads((folder / 'path.json').read_text(encoding='utf-8'))
+    except ValueError:
+        return None
+    if not found.energies or len(found.energies) != len(path.get('x') or ()):
+        return None
+    ticks = [tuple(t) for t in path.get('ticks') or ()]
+    return band_gap.gap(found.energies, band_gap.occupied_bands(text), path['x'], ticks), path

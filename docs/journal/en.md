@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.22 — 28 November 2026
+
+- ### 0.249.22 — A language model reads the series of a crystal
+
+Through Azimuth a language model can now compute a crystal straight from a project and read the outcome of a series as the panel shows it: the gap along the band path, a₀ and the bulk modulus of the equation of state, the value a series converged from, and the elastic constants.
+
 ## 0.249.21 — 28 November 2026
 
 - ### 0.249.21 — Even corners and a smooth theme

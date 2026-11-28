@@ -56,8 +56,11 @@ PROGRAM = {'type': 'string', 'enum': ['orca', 'gaussian', 'psi4', 'xtb', 'crest'
 CRYSTAL_PROGRAM = {'type': 'string', 'enum': ['qe', 'cp2k'], 'description': 'qe — Quantum ESPRESSO, cp2k — CP2K.'}
 CRYSTAL = {
     'type': 'object',
-    'description': 'One of: {"cif": "<text of a CIF file>"}, {"path": "<a .cif file>"}; optional "title".',
-    'properties': {'cif': {'type': 'string'}, 'path': {'type': 'string'}, 'title': {'type': 'string'}},
+    'description': 'One of: {"cif": "<text of a CIF file>"}, {"path": "<a .cif file>"}, {"project": "<a project of '
+                   'a crystal: its folder or project.qcc>", "crystal": "<the id or the title of one of its crystals; '
+                   'the one shown by default>"}; optional "title".',
+    'properties': {'cif': {'type': 'string'}, 'path': {'type': 'string'}, 'project': {'type': 'string'},
+                   'crystal': {'type': 'string'}, 'title': {'type': 'string'}},
 }
 CRYSTAL_SETTINGS = {
     'type': 'object',
@@ -132,7 +135,10 @@ TOOLS = [
     {'name': 'azimuth_result', 'description': 'Read an output (or the folder of a calculation): energy, convergence, '
                                               'frequencies, thermochemistry, excitations, problems and the remedies '
                                               'of the doctor of Sextant; of a crystal (pw.out, cp2k.out) — energy, '
-                                              'cell, pressure, the levels at the gap, the runs of a series.',
+                                              'cell, pressure, the levels at the gap, the runs of a series; of the '
+                                              'folder of a series — the gap along the path of the bands, V₀, B₀ and '
+                                              'a₀ of the equation of state, from which value a series of '
+                                              'convergence converged, the elastic constants.',
      'inputSchema': {'type': 'object', 'properties': {'path': {'type': 'string'}}, 'required': ['path']}},
     {'name': 'azimuth_server', 'description': 'What the SLURM server of a profile of Sextant says now (login by the '
                                               'SSH key only): free cores and memory, the most one calculation may '

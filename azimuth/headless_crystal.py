@@ -7,7 +7,9 @@
     (primitive, supercell), qe_inputs.steps / cp2k_inputs.cp2k_input, the pseudopotentials of «Установить программы»,
     modules/sextant/qe_local.py for the command, runner.Job, the readers of modules/spectrum/readers. No Qt here.
 §2 RULES
-    1. The crystal: {'cif': text} or {'path': a .cif file}; an optional 'title'.
+    1. The crystal: {'cif': text} or {'path': a .cif file}, or {'project': a project of a crystal (its folder or
+       project.qcc)} with an optional 'crystal' — the id or the title of one of its crystals (the one shown in the
+       project by default); an optional 'title'.
     2. The settings are those of the panel by the names of qe_inputs.Options / cp2k_inputs.Options (ecutwfc, cutoff,
        functional, vdw, spin, charge …) and: task, primitive (True: the primitive cell when the lattice is centred),
        supercell [n1, n2, n3], spacing (Å⁻¹, Quantum ESPRESSO), processes, hubbard ('Ni 6'), order ('afm' — the
@@ -15,6 +17,12 @@
     3. What the panel chooses is chosen here too: CP2K computes at the Γ point, so without a supercell asked the cell
        is repeated until its edges reach GAMMA_LENGTH; its CUTOFF is cp2k_inputs.cutoff_for of the elements.
     4. Nothing is downloaded here: pseudopotentials not installed are refused with what to do.
+    5. The files the panel writes beside the inputs are written here too (Prepared.extras): path.json of the bands and
+       of the phonon branches (the path of the plot, the places of the gap), elastic.json of the elastic constants,
+       eos.json of the equation of state (the volume of the cell computed and the cell of the file — a₀ at V₀).
+    6. result(folder) reads what the panel shows of a series (modules/compass/chemistry/crystal_results.py): the gap
+       along the path, the equation of state (V₀, B₀, B₀′, the cell at V₀), the convergence of a series (the table and
+       from which value it converged), the elastic constants.
 §3 INTERFACE
     PROGRAMS; crystal(spec) -> (Crystal, title); options(program) -> dict; prepare(program, spec, settings=None,
     root=None) -> Prepared(program, task, steps, computed, processes, title, library, atoms);
@@ -45,6 +53,7 @@ class Prepared:
     title: str
     library: object = None
     atoms: int = 0  # in the cell computed
+    extras: tuple = ()  # (name, text) — the files the panel writes beside the inputs (§2.5)
 
 
 def _known(program):
@@ -56,10 +65,13 @@ def crystal(spec):
     """(Crystal, its title) of {'cif': …} or {'path': …}."""
     from modules.compass.chemistry import crystal as cr
 
-    if not isinstance(spec, dict) or not any(spec.get(k) for k in ('cif', 'path')):
-        raise ValueError('a crystal is {"cif": "<text of a CIF file>"} or {"path": "<a .cif file>"}')
+    if not isinstance(spec, dict) or not any(spec.get(k) for k in ('cif', 'path', 'project')):
+        raise ValueError('a crystal is {"cif": "<text of a CIF file>"}, {"path": "<a .cif file>"} or {"project": '
+                         '"<a project of a crystal>", "crystal": "<its id or title>"}')
     title = str(spec.get('title') or '')
-    if spec.get('cif'):
+    if spec.get('project') and not spec.get('cif') and not spec.get('path'):
+        text, title = _of_project(spec['project'], spec.get('crystal'), title)
+    elif spec.get('cif'):
         text = str(spec['cif'])
     else:
         path = Path(str(spec['path'])).expanduser()
@@ -74,6 +86,28 @@ def crystal(spec):
     except (ValueError, KeyError, IndexError) as exc:
         raise ValueError(f'the CIF is not read: {exc}') from exc
     return made, title or 'crystal'
+
+
+def _of_project(where, which=None, title=''):
+    """(the CIF text, the title) of a crystal of a project: which — its id or its title, else the one shown."""
+    from azimuth import crystal_projects
+
+    path = Path(str(where)).expanduser()
+    if not crystal_projects.is_crystal(path):
+        raise ValueError(f'not a project of a crystal: {path} (a folder of «Компас · Кристалл» or its project.qcc)')
+    known = crystal_projects.crystals(path)
+    ident = None
+    if which:
+        ident = next((c['id'] for c in known if c['id'] == str(which)), None) or next(
+            (c['id'] for c in known if str(c.get('title') or '') == str(which)), None)
+        if ident is None:
+            names = ', '.join(f"{c['id']} ({c.get('title') or c.get('formula') or ''})" for c in known)
+            raise ValueError(f'no crystal {which!r} in the project; there are: {names}')
+    try:
+        text = crystal_projects.cif_text(path, ident)
+    except OSError as exc:
+        raise ValueError(f'the CIF of the crystal is not read: {exc}') from None
+    return text, title or crystal_projects.title(path, ident)
 
 
 def tasks(program):
@@ -209,7 +243,32 @@ def prepare(program, spec, settings=None, root=None):
     spacing = _typed('spacing', settings.get('spacing', qe_inputs.SPACING), qe_inputs.SPACING)
     steps = qe_inputs.steps(computed, task, qe_pseudo.table(root, library), str(qe_pseudo.folder(root, library)), 'azimuth',
                             spacing, basis, base, made)
-    return Prepared(program, task, tuple(steps), computed, processes, title, library, len(cr.unit_cell(computed)))
+    return Prepared(program, task, tuple(steps), computed, processes, title, library, len(cr.unit_cell(computed)),
+                    _extras(task, base, basis, computed))
+
+
+def _extras(task, base, basis, computed):
+    """The files of the panel beside the inputs of Quantum ESPRESSO (§2.5; qe_run._write_path, elastic.json)."""
+    import json
+
+    from modules.sextant import qe_inputs
+
+    files = []
+    if task in (qe_inputs.BANDS_TASK, qe_inputs.DISPERSION_TASK):
+        from modules.sextant import qe_paths
+
+        p = qe_paths.path(base, basis)
+        files.append(('path.json', json.dumps({'kind': p.kind, 'general': p.general, 'x': p.x, 'ticks': p.ticks,
+                                               'breaks': p.breaks}, ensure_ascii=False)))
+    if task == qe_inputs.ELASTIC_TASK:
+        from modules.compass.chemistry import elastic
+
+        files.append(('elastic.json', json.dumps({'plan': [[name, e] for name, e in elastic.plan()],
+                                                  'volume': computed.cell.volume()})))
+    if task == qe_inputs.EOS_TASK:
+        cell = base.cell
+        files.append(('eos.json', json.dumps({'volume': computed.cell.volume(), 'file_cell': [cell.a, cell.b, cell.c]})))
+    return tuple(files)
 
 
 def preview(program, spec, settings=None, root=None):
@@ -241,6 +300,8 @@ def job(prepared, jobs_root=None, tools_root=None, now=None):
     if beside:
         steps = [(n, t, qe_local.beside(x)) for n, t, x in steps]
     for name, _, text in steps:
+        (folder / name).write_text(text, encoding='utf-8', newline='\n')
+    for name, text in prepared.extras:
         (folder / name).write_text(text, encoding='utf-8', newline='\n')
     if cp2k:
         install_tools.cp2k_statm(folder)
@@ -291,6 +352,8 @@ def server_folder(prepared, jobs_root=None, tools_root=None, now=None):
                                  '«Установить псевдопотенциалы»')
             shutil.copy2(source / file, pseudo / file)
     for name, _, text in steps:
+        (folder / name).write_text(text, encoding='utf-8', newline='\n')
+    for name, text in prepared.extras:  # the server's folder comes back with them (the result is read here)
         (folder / name).write_text(text, encoding='utf-8', newline='\n')
     return folder, steps
 
@@ -364,4 +427,79 @@ def result(path):
     if every:  # a series, or the steps of the bands: the energy of every run of pw.x
         out['runs'] = [{'calculation': one.calculation, 'energy_ry': one.energy, 'done': bool(one.done),
                         'pressure_kbar': one.pressures[-1] if one.pressures else None} for one in every]
+    if path.name == 'pw.out':  # the files of the job beside it: the series it was (§2.6)
+        out.update(_series(folder))
+    return out
+
+
+def _gap(found, path):
+    if found is None:
+        return {'kind': 'unknown', 'note': 'the gap is not told: a spin-polarized run, an odd number of electrons, or '
+                                           'fewer bands than the occupied ones and one more'}
+    out = {'kind': found.kind, 'gap_ev': round(found.gap, 4), 'direct_gap_ev': round(found.direct, 4),
+           'occupied_bands': found.occupied,
+           'valence_top': {'energy_ev': found.vbm.energy, 'point': found.vbm.index + 1, 'where': found.vbm.where},
+           'conduction_bottom': {'energy_ev': found.cbm.energy, 'point': found.cbm.index + 1, 'where': found.cbm.where},
+           'direct_at': {'point': found.direct_index + 1, 'where': found.direct_where},
+           'points_of_the_path': len(path.get('x') or ()),
+           'note': 'found over the points of the path only; a GGA functional gives too small a gap'}
+    return out
+
+
+def _series(folder):
+    """What the panel shows of the series of a job (§2.6): {'band_gap', 'equation_of_state', 'convergence',
+    'elastic'} — those the folder has."""
+    import json
+
+    from modules.compass.chemistry import convergence, crystal_results
+
+    out = {}
+    bands = crystal_results.band_gap_of(folder)
+    if bands is not None:
+        out['band_gap'] = _gap(*bands)
+    found = crystal_results.eos(folder)
+    if found is not None:
+        fit, points, why = found
+        eos = {'points': [{'volume_A3': round(v, 4), 'energy_ev': e} for v, e in points]}
+        if fit is None:
+            eos['error'] = why
+        else:
+            eos.update({'v0_A3': round(fit.v0, 4), 'b0_gpa': round(fit.b0, 2), 'b0_prime': round(fit.b0_prime, 3),
+                        'e0_ev': fit.e0, 'rms_mev': round(1000 * fit.rms, 3)})
+            try:
+                note = json.loads((Path(folder) / 'eos.json').read_text(encoding='utf-8'))
+                scale = (fit.v0 / float(note['volume'])) ** (1.0 / 3.0)
+                a, b, c = (float(x) * scale for x in note['file_cell'])
+                eos['cell_of_the_file_at_v0'] = {'a': round(a, 4), 'b': round(b, 4), 'c': round(c, 4)}
+            except (OSError, ValueError, KeyError, TypeError, ZeroDivisionError):
+                pass  # a series of the panel (no eos.json): the cell computed is in 'cell' of each run's volume
+        out['equation_of_state'] = eos
+    found = crystal_results.series(folder)
+    if found is not None:
+        kind, table, why = found
+        series = {'kind': {'cut': 'ecutwfc', 'kpt': 'k grid', 'vac': 'vacuum'}[kind]}
+        if table is None:
+            series['error'] = why
+        else:
+            series['rows'] = [{'value': r.label, 'energy_per_atom_ev': r.energy_per_atom, 'delta_mev_per_atom':
+                               round(r.delta, 4), 'pressure_kbar': r.pressure, 'gap_ev': r.gap} for r in table]
+            energy = convergence.converged(table, 'delta', convergence.TOLERANCE_MEV)
+            pressure = convergence.converged(table, 'pressure', convergence.TOLERANCE_KBAR)
+            series['energy_converged_from'] = None if energy is None else table[energy].label
+            series['pressure_converged_from'] = None if pressure is None else table[pressure].label
+            series['tolerances'] = {'energy_mev_per_atom': convergence.TOLERANCE_MEV,
+                                    'pressure_kbar': convergence.TOLERANCE_KBAR}
+            series['summary'] = convergence.summary(table)
+        out['convergence'] = series
+    found = crystal_results.elastic_series(folder)
+    if found is not None:
+        fit, _points, why = found
+        if fit is None:
+            out['elastic'] = {'error': why}
+        else:
+            from modules.compass.chemistry import elastic
+
+            out['elastic'] = {'c11_gpa': round(fit.c11, 2), 'c12_gpa': round(fit.c12, 2), 'c44_gpa': round(fit.c44, 2),
+                              'bulk_gpa': round(fit.bulk, 2), 'anisotropy': None if fit.anisotropy is None else
+                              round(fit.anisotropy, 3), 'stable': elastic.stable(fit)}
     return out

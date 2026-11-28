@@ -116,48 +116,16 @@ def states_table(self, found):
 
 
 def series_data(self):
-    """(kind 'cut' | 'kpt', [convergence.Row]) of a finished convergence series — the runs of pw.out with the values
-    of their input files —, (kind, None) when the series gave too few points (the reason in self.series_error), or
-    None when the job is not such a series."""
-    import re
+    """(kind 'cut' | 'kpt' | 'vac', [convergence.Row]) of a finished convergence series — the runs of pw.out with the
+    values of their input files —, (kind, None) when the series gave too few points (the reason in self.series_error),
+    or None when the job is not such a series (crystal_results.series, without the window too)."""
+    from modules.compass.chemistry import crystal_results
 
-    from modules.compass.chemistry import convergence
-    from modules.spectrum.readers import qe
-
-    kind = next((k for k in ('cut', 'kpt', 'vac') if self.folder is not None and (self.folder / f'{k}1.in').is_file()),
-                None)
-    if kind is None or not (self.folder / 'pw.out').is_file():
+    found = crystal_results.series(self.folder) if self.folder is not None else None
+    if found is None:
         return None
-    runs = qe.runs((self.folder / 'pw.out').read_text(encoding='utf-8', errors='replace'))
-    points = []
-    for n, run in enumerate(runs, 1):
-        source = self.folder / f'{kind}{n}.in'
-        if not source.is_file():
-            break
-        text = source.read_text(encoding='utf-8', errors='replace')
-        r = qe.read(run)
-        if r.energy is None or not r.done:
-            continue
-        if kind == 'cut':
-            label = re.search(r'ecutwfc\s*=\s*([\d.]+)', text).group(1) + ' Ry'
-        elif kind == 'vac':
-            from modules.compass.chemistry import layer
-
-            size = layer.vacuum_of_input(text)
-            label = '?' if size is None else f'{size:g} Å'
-        else:
-            label = ' × '.join(text.split('K_POINTS automatic')[1].split()[:3])
-        gap = r.lowest - r.highest if r.highest is not None and r.lowest is not None else None
-        # the pressure of a cell with vacuum says nothing of the layer: left out of the series of vacuum
-        points.append(convergence.Point(label, r.energy * 13.605693122994, r.nat or 1,
-                                        r.pressures[-1] if r.pressures and kind != 'vac' else None, gap,
-                                        r.fermi if r.fermi is not None else r.highest))
-    self.series_error = ''
-    try:
-        return kind, convergence.rows(points)
-    except ValueError as exc:
-        self.series_error = str(exc)
-        return kind, None
+    kind, table, self.series_error = found
+    return kind, table
 
 
 def series_lines(self, found):
@@ -274,20 +242,15 @@ def show_cone(self, found, path, e0, cone, model):
 
 def eos_data(self):
     """(Fit, [(V Å³, E eV)]) of a finished series of volumes («Уравнение состояния»), (None, points) when the points
-    do not give a fit (with the reason in self.eos_error), or None when the job is not such a series."""
-    from modules.compass.chemistry import equation_of_state
-    from modules.spectrum.readers import qe
+    do not give a fit (with the reason in self.eos_error), or None when the job is not such a series
+    (crystal_results.eos)."""
+    from modules.compass.chemistry import crystal_results
 
-    if self.folder is None or not (self.folder / 'eos1.in').is_file() or not (self.folder / 'pw.out').is_file():
+    found = crystal_results.eos(self.folder) if self.folder is not None else None
+    if found is None:
         return None
-    text = (self.folder / 'pw.out').read_text(encoding='utf-8', errors='replace')
-    points = equation_of_state.points_of_runs([qe.read(run) for run in qe.runs(text)])
-    self.eos_error = ''
-    try:
-        return equation_of_state.fit([v for v, _ in points], [e for _, e in points]), points
-    except ValueError as exc:
-        self.eos_error = str(exc)
-        return None, points
+    fit, points, self.eos_error = found
+    return fit, points
 
 
 def eos_lines(self, found):
@@ -335,34 +298,14 @@ def show_eos(self, found):
 def elastic_data(self):
     """(elastic.Elastic | None, {kind: [(e, E eV)]}) of a finished series of strains («Упругие постоянные»): the runs
     of pw.out by the plan of elastic.json; None when the job is not such a series. The reason of a failed fit — in
-    self.elastic_error."""
-    import json
+    self.elastic_error (crystal_results.elastic_series)."""
+    from modules.compass.chemistry import crystal_results
 
-    from modules.compass.chemistry import elastic
-    from modules.spectrum.readers import qe
-
-    if self.folder is None or not (self.folder / 'elastic.json').is_file() or not (self.folder / 'pw.out').is_file():
+    found = crystal_results.elastic_series(self.folder) if self.folder is not None else None
+    if found is None:
         return None
-    try:
-        note = json.loads((self.folder / 'elastic.json').read_text(encoding='utf-8'))
-        plan, volume = [(name, float(e)) for name, e in note['plan']], float(note['volume'])
-    except (ValueError, KeyError, TypeError):
-        return None
-    runs = qe.runs((self.folder / 'pw.out').read_text(encoding='utf-8', errors='replace'))
-    points = {kind: [] for kind in elastic.KINDS}
-    for (name, e), run in zip(plan, runs):
-        r = qe.read(run)
-        if r.energy is None or not r.done:
-            continue
-        energy = r.energy * 13.605693122994
-        for kind in (elastic.KINDS if name is None else (name,)):  # the unstrained cell is a point of each curve
-            points[kind].append((e, energy))
-    self.elastic_error = ''
-    try:
-        return elastic.fit(points, volume), points
-    except ValueError as exc:
-        self.elastic_error = str(exc)
-        return None, points
+    fit, points, self.elastic_error = found
+    return fit, points
 
 
 def elastic_lines(self, found):
