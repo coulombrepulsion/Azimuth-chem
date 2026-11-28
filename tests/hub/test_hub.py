@@ -1643,28 +1643,40 @@ def test_the_buttons_of_the_menus_stay_on_the_panels_in_every_language(hub, app)
     # those buttons were not found. Their glyphs were of the text shown — «Сохранить…» had one in Russian only
     from modules.compass.actions.custom_bar import RAIL
 
+    hub.resize(1300, 800)
+    hub.show()
     hub.show_section('compass', animate=False)
+    QTest.qWait(300)
     st = hub.studio
     bar = st.custom_bar
     key = 'Расчёт/Быстрый расчёт xtb/Оптимизация + частоты (xtb)'
     try:
         hub.set_language('ru')
-        first = {id(a): (k, a.text()) for k, a, _sub in bar.items()}
-        assert key in {k for k, _t in first.values()}
+        from PySide6.QtGui import QAction
+
+        # the items of the menus of the window (those of the header of the hub are made anew with each section)
+        stable = st.menuBar().findChildren(QAction)
+        first = {id(a): (k, a.text()) for k, a, _sub in bar.items() if any(a is b for b in stable)}
+        assert key in {k for k, _a, _sub in bar.items()}
         bar.add(key, RAIL)
         glyph = bar.buttons[key].property('quail_icon')
         assert glyph and bar.buttons[key].text() == ''
         size = bar.buttons[key].size()
+        sizes = set()
         for lang in ('en', 'zh', 'en', 'ru'):
             hub.set_language(lang)
             bar.rebuild()
+            QTest.qWait(200)
             keys = {id(a): k for k, a, _sub in bar.items()}
             wrong = {first[i][0]: keys[i] for i in first if i in keys and keys[i] != first[i][0]}
             assert not wrong, (lang, list(wrong.items())[:5])
             button = bar.buttons.get(key)
             assert button is not None, lang
             assert button.property('quail_icon') == glyph and button.text() == '' and button.size() == size
-            assert st.trajectory_button.iconSize().width() == 19  # ☰ by «Молекула | Координаты»: one size
+            # ☰ by «Молекула | Координаты» and the tabs: one size in every language, nothing jumps
+            assert st.trajectory_button.iconSize().width() == 19
+            sizes.add((st.trajectory_button.size().toTuple(), st.view_tabs.height()))
+        assert len(sizes) == 1, sizes
         # back in Russian, every item reads as at first («Правка», not «Править»)
         texts = {id(a): a.text() for _k, a, _sub in bar.items()}
         assert all(texts[i] == first[i][1] for i in first if i in texts)

@@ -10,18 +10,42 @@ from PySide6.QtWidgets import QAbstractItemView, QLabel
 
 
 class _MatchHeight(QObject):
-    """The button ☰ as tall as the tabs «Молекула | Координаты» next to it (square), whatever the style sheet; its
-    glyph of one size in every language — it followed the height of the tabs, and the Chinese font made them 3 px
-    taller and the glyph larger (the owner, 2026-11-28: «иконка панели … в разных языках разного размера»)."""
+    """The button ☰ as tall as the tabs «Молекула | Координаты» next to it (square), whatever the style sheet; the
+    tabs and the button of one height in every language — the height of the tabs with Russian titles, pinned. They
+    followed the font: the Chinese one made the tabs 3 px taller, and the button and its glyph grew and jumped when the
+    language changed (the owner, 2026-11-28: «иконка панели … в разных языках разного размера», «при переключении на
+    китайский эта иконка скачет все равно»)."""
 
     ICON = 19  # px: the glyph by the tabs of 29 px in Russian and English
+    PROBE = ('Молекула', 'Координаты')
 
     def __init__(self, source, target):
         super().__init__(source)
         self.target = target
+        self.height = 0
         source.installEventFilter(self)
 
+    def pinned(self, tabs):
+        """The height of tabs with the Russian titles (a bar of the same style, not shown)."""
+        from PySide6.QtWidgets import QTabBar
+
+        probe = QTabBar(tabs.parentWidget())
+        probe.setObjectName(tabs.objectName())
+        probe.setDrawBase(False)
+        probe.setExpanding(False)
+        probe.setFont(tabs.font())
+        for title in self.PROBE:
+            probe.addTab(title)
+        probe.ensurePolished()
+        height = probe.sizeHint().height()
+        probe.deleteLater()
+        return height
+
     def eventFilter(self, watched, event):
+        if event.type() in (QEvent.Type.Resize, QEvent.Type.Show) and not self.height:
+            self.height = self.pinned(watched)
+            if self.height > 0:
+                watched.setFixedHeight(self.height)
         if event.type() == QEvent.Type.Resize:
             side = max(20, watched.height() - 2)
             if self.target.height() != side:

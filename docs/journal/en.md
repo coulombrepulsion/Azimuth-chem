@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.12 — 28 November 2026
+
+- ### 0.249.12 — ☰ no longer jumps
+
+When the language changes, the ☰ button and the «Molecule | Coordinates» tabs no longer change height or jump.
+
 ## 0.249.11 — 28 November 2026
 
 - ### 0.249.11 — The ☰ icon of one size
