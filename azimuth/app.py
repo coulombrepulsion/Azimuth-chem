@@ -330,6 +330,19 @@ class Studio(ProjectActions, CompassWorkspace, SextantWorkspace, SpectrumWorkspa
     def set_language(self, code):
         """Language of Compass, Sextant and Spectrum (ru, en, zh): static texts are re-translated,
         texts made later come from tr() in the new language (azimuth/i18n.py, locale/*.json)."""
+        # a change of the language changes nothing of the work: the lists translated anew (the method, the
+        # solvent…) told «the settings changed», and the project asked to be saved (the owner, 2026-11-28: «я ничего
+        # не меняю в проекте, но он предлагает его сохранить после просто переключений языка»)
+        was_dirty = getattr(self, 'dirty', False)
+        documents = [(d, d.dirty) for d in self.all_documents()] if hasattr(self, 'all_documents') else []
+        try:
+            self._set_language(code)
+        finally:
+            self.dirty = was_dirty
+            for document, dirty in documents:
+                document.dirty = dirty
+
+    def _set_language(self, code):
         from azimuth import i18n, qt_language
 
         i18n.set_language(code)

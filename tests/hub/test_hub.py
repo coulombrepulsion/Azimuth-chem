@@ -1683,3 +1683,26 @@ def test_the_buttons_of_the_menus_stay_on_the_panels_in_every_language(hub, app)
     finally:
         hub.set_language('ru')
         bar.remove(key)
+
+
+def test_a_change_of_the_language_changes_nothing_to_save(hub, app):
+    # 0.249.13, the owner: «я ничего не меняю в проекте, но он предлагает его сохранить после просто переключений
+    # языка» — the lists of Sextant translated anew told «the settings changed»
+    st = hub.studio
+    hub.resize(1300, 800)
+    hub.show()
+    hub.show_section('compass', animate=False)
+    st.opening_tool.load_smiles('O')
+    QTest.qWait(200)
+    st.dirty = False
+    for document in st.all_documents():
+        document.dirty = False
+    try:
+        for section in ('compass', 'sextant'):
+            hub.show_section(section, animate=False)
+            for lang in ('en', 'zh', 'ru'):
+                hub.set_language(lang)
+                QTest.qWait(100)
+                assert not st.dirty and not st.any_dirty(), (section, lang)
+    finally:
+        hub.set_language('ru')

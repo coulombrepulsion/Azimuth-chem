@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.13 — 28 November 2026
+
+- ### 0.249.13 — The language asks for no saving
+
+After a change of the language the program no longer offers to save a project in which nothing was changed.
+
 ## 0.249.12 — 28 November 2026
 
 - ### 0.249.12 — ☰ no longer jumps
