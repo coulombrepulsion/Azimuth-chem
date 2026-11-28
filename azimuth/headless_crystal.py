@@ -19,7 +19,8 @@
     PROGRAMS; crystal(spec) -> (Crystal, title); options(program) -> dict; prepare(program, spec, settings=None,
     root=None) -> Prepared(program, task, steps, computed, processes, title, library, atoms);
     preview(program, spec, settings=None) -> {file: text}; job(prepared, jobs_root=None, tools_root=None) ->
-    runner.JobSpec (the folder is made, the files are written); result(path) -> dict.
+    runner.JobSpec (the folder is made, the files are written); server_folder(prepared, jobs_root=None,
+    tools_root=None) -> (folder, steps) — for azimuth/headless_server.send_crystal; result(path) -> dict.
 §7 TESTS tests/core/test_headless_crystal.py.
 """
 
@@ -260,6 +261,37 @@ def job(prepared, jobs_root=None, tools_root=None, now=None):
     for name, body in scripts.items():
         (folder / name).write_bytes(body)
     return runner.JobSpec('qe', folder, tuple(command), folder / 'pw.out', {**os.environ, **changes})
+
+
+def server_folder(prepared, jobs_root=None, tools_root=None, now=None):
+    """The folder of a job for the server (headless_server.send_crystal): the inputs, Quantum ESPRESSO's naming its
+    pseudopotentials by «./pseudo» and those files copied into pseudo/ — they go with the folder, as the panel does
+    for a server (qe_run.copy_pseudo). Returns (folder, steps). Nothing of the program is looked for here: the server
+    has its own."""
+    import re
+    import shutil
+
+    from modules.sextant import install_tools, qe_local, qe_pseudo, runner
+
+    tools_root = Path(tools_root) if tools_root else install_tools.default_root()
+    stamp = (now or datetime.now()).strftime('%Y%m%d-%H%M%S')
+    safe = ''.join(ch if ch.isalnum() or ch in '-_' else '_' for ch in prepared.title)[:40] or 'crystal'
+    folder = (Path(jobs_root) if jobs_root else runner.default_jobs_root()) / f'{prepared.program}-{safe}-{stamp}'
+    folder.mkdir(parents=True, exist_ok=True)
+    steps = list(prepared.steps)
+    if prepared.program == 'qe':
+        steps = [(n, t, re.sub(r"pseudo_dir\s*=\s*'[^']*'", "pseudo_dir = './pseudo'", x)) for n, t, x in steps]
+        pseudo = folder / 'pseudo'
+        pseudo.mkdir(exist_ok=True)
+        source = qe_pseudo.folder(tools_root, prepared.library)
+        for file in qe_local.pseudo_files(steps):
+            if not (source / file).is_file():
+                raise ValueError(f'no pseudopotential {file} in {source}: in Azimuth — the panel of Quantum ESPRESSO, '
+                                 '«Установить псевдопотенциалы»')
+            shutil.copy2(source / file, pseudo / file)
+    for name, _, text in steps:
+        (folder / name).write_text(text, encoding='utf-8', newline='\n')
+    return folder, steps
 
 
 def _cell(rows):

@@ -1017,10 +1017,12 @@ def test_sextant_launch_card_and_two_places(window, app, tmp_path, monkeypatch):
         assert not window.server_spinner.running() and window.server_spinner.isHidden()
         # is the program there — the fake ORCA is in PATH of the server, Gaussian is not
         assert not window.program_found.isHidden() and 'на сервере serv3' in window.program_found.toolTip()
+        # Gaussian is not run by a server at all (0.249.15): «Сервер» is off, the calculation goes to this computer
         window.program.setCurrentIndex(window.program.findData('gaussian'))
-        assert window.program_found.isHidden() and 'нет на сервере serv3' in window.program_path.text()
+        assert window.where == 'local' and not window.where_buttons['server'].isEnabled()
         window.program.setCurrentIndex(window.program.findData('orca'))
-        assert not window.program_found.isHidden()
+        window.run_tool.set_where('server')
+        assert window.run_tool.check_server() and not window.program_found.isHidden()
         window.server_spinner.start()
         window.server_spinner.grab()  # it paints
         window.server_spinner.stop()
@@ -2983,3 +2985,30 @@ def test_the_vpn_is_waited_for_without_holding_the_window(window, app, tmp_path,
         dialog.timer.stop()
         dialog.close()
         dialog.deleteLater()
+
+
+def test_the_server_is_offered_only_for_the_programs_it_runs(window):
+    # ROADMAP, Sextant 1 («честно показывать в интерфейсе, что где считается»): a server runs ORCA and MOPAC; for
+    # the others «Сервер» is off and says so — the error came only after «Запустить расчёт»
+    from modules.sextant import remote
+
+    saved = {key: window.preferences.value(key) for key in (remote.WHERE_KEY, 'sextant_program')}
+    try:
+        window.navigate(1)
+        window.program.setCurrentIndex(window.program.findData('orca'))
+        window.run_tool.set_where('server')
+        server = window.where_buttons['server']
+        assert window.where == 'server' and server.isEnabled()
+        window.program.setCurrentIndex(window.program.findData('gaussian'))
+        assert window.where == 'local' and not server.isEnabled() and 'Gaussian' in server.toolTip()
+        assert 'Сервер' not in window.program_missing_text.text()
+        window.program.setCurrentIndex(window.program.findData('mopac'))
+        assert server.isEnabled() and 'Сервер…' in server.toolTip()
+    finally:
+        window.program.setCurrentIndex(window.program.findData('orca'))
+        window.run_tool.set_where('local')
+        for key, value in saved.items():
+            if value is None:
+                window.preferences.remove(key)
+            else:
+                window.preferences.setValue(key, value)

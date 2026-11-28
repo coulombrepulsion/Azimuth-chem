@@ -355,3 +355,42 @@ def test_a_sending_that_never_reached_the_server_takes_no_place(tmp_path):
 
     assert headless_server._alive(os.getpid()) is True and headless_server._alive('x') is None
     assert headless_server._alive(2 ** 22 + 12345) in (False, None)
+
+
+def test_a_crystal_sent_to_the_server_watched_and_read(server, tmp_path, monkeypatch):
+    # ROADMAP 25 («отправка на сервер кафедры»): a crystal of Quantum ESPRESSO sent with the rules of a molecule — the
+    # key only, the cores of the call, a time limit, the journal; pw.x is the server's own (found by the probe), the
+    # pseudopotentials go with the folder; the fake pw.x prints the real output of pw.x 7.6 for silicon
+    import stat
+    import sys
+
+    from modules.sextant import qe_inputs, qe_pseudo
+
+    data = Path(__file__).resolve().parents[1] / 'data' / 'qe' / 'si_scf_pw76.out'
+    pseudo = tmp_path / 'pseudo'
+    pseudo.mkdir()
+    (pseudo / 'Si.upf').write_text('upf', encoding='utf-8')
+    monkeypatch.setattr(qe_pseudo, 'installed', lambda *a, **k: True)
+    monkeypatch.setattr(qe_pseudo, 'table', lambda *a, **k: {'Si': ('Si.upf', 30.0, 240.0)})
+    monkeypatch.setattr(qe_pseudo, 'folder', lambda *a, **k: pseudo)
+    monkeypatch.setattr(qe_inputs, 'valence', lambda *a, **k: 4.0)
+    tool = server / 'bin' / 'pw.x'
+    tool.write_text(f'#!{sys.executable}\nimport sys\n'
+                    "assert open('pseudo/Si.upf').read() == 'upf'\n"
+                    "assert \"pseudo_dir = './pseudo'\" in open(sys.argv[sys.argv.index('-in') + 1]).read()\n"
+                    f'sys.stdout.write(open({str(data)!r}).read())\n', encoding='utf-8')
+    tool.chmod(tool.stat().st_mode | stat.S_IXUSR)
+    silicon = (Path(__file__).resolve().parents[2] / 'examples' / '10-crystals' / 'Si_diamond.cif').read_text(encoding='utf-8')
+    jobs = headless.Jobs()
+    sent = jobs.start_crystal_server('qe', {'cif': silicon, 'title': 'Si'}, None, store(), cores=2,
+                                     root=tmp_path / 'calc', opener=opener(tmp_path), interval=0.1,
+                                     tools_root=tmp_path / 'tools')
+    assert sent['server'] == 'serv3' and sent['cores'] == 2 and sent['files'] == ['pw.in']
+    done = wait(jobs, sent['job'])
+    assert done['state'] == 'finished' and done['exit_code'] == 0, done
+    assert done['result']['energy_ev'] < 0, done['result']
+    there = server / 'home' / 'azimuth' / 'calculations' / os.path.basename(sent['folder'])
+    script = (there / 'job.sh').read_text()
+    assert '#SBATCH -n 2' in script and '#SBATCH -t 04:00:00' in script and (there / 'pseudo' / 'Si.upf').is_file()
+    rows = [json.loads(line) for line in (tmp_path / 'calc' / headless_server.JOURNAL).read_text().splitlines()]
+    assert [r['event'] for r in rows] == ['sent', 'ended'] and rows[0]['program'] == 'qe' and rows[0]['title'] == 'Si'

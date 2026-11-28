@@ -354,3 +354,50 @@ def test_an_xtb_result_is_taken_with_its_geometry_beside_the_output(tmp_path):
     entry['current'] = None
     again = project.record(entry['id'], 'a1', WATER, Calculation(), 'xtb', 'done', folder, output)
     assert again['usable'] and again['geometry'] and project.current(entry)['id'] == 'a1'
+
+
+class _Watcher:
+    """The part of the window that takes up the calculations of a project on a server (ProjectActions), with a run
+    tool that only records what it is asked."""
+
+    def __init__(self, queue=False):
+        from azimuth.project_actions import ProjectActions
+
+        self.watch = ProjectActions.watch_server_attempts.__get__(self)
+        self._server_watched = ProjectActions._server_watched.__get__(self)
+        self.said, self.taken, self.queue = [], [], queue
+        owner = self
+
+        class Run:
+            def job_running(self, place=None):
+                return owner.queue or bool(owner.taken)
+
+            def can_park_server_job(self):
+                return not owner.queue
+
+            def resume_history(self, rec, quiet=False):
+                assert quiet
+                owner.taken.append(rec['folder'])
+                return object()
+
+        self.run_tool = Run()
+
+    def running_jobs(self):
+        return []
+
+    def notify(self, text, ms=0):
+        self.said.append(text)
+
+
+def test_every_calculation_of_a_project_on_a_server_is_taken_up():
+    # ROADMAP, Sextant 7: only the newest was taken up when the project was opened; the calculations on a server go
+    # on side by side now — all of them are watched again, the newest last (it stays in the card of Sextant)
+    found = [{'folder': f'/p/run{k}', 'title': f'M{k}', 'place': 'hpc'} for k in (3, 2, 1)]  # newest first
+    window = _Watcher()
+    jobs = window.watch(found)
+    assert len(jobs) == 3 and window.taken == ['/p/run1', '/p/run2', '/p/run3']
+    assert '3' in window.said[-1]
+    assert window.watch(found) == []  # taken up once in a session
+    # a queue going on on the server: none is taken up, they wait in the history
+    queued = _Watcher(queue=True)
+    assert queued.watch(found) == [] and queued.taken == [] and '3' in queued.said[-1]

@@ -35,6 +35,7 @@ class ProgramTool:
         'server_mark',
         'server_watch_tool',
         'where',
+        'where_buttons',
     )
 
     def __init__(self, window):
@@ -45,8 +46,32 @@ class ProgramTool:
     def configured_program(self, kind):
         return self.w.preferences.value(f'programs/{kind}', '') or None
 
+    SERVER_TIP = 'Считать на сервере (кластере) — профиль: «Сервер…»'
+
+    def follow_server_place(self, kind):
+        """«Сервер» only for the programs a server runs (remote_job.REMOTE_KINDS: ORCA, MOPAC): for the others it is
+        off and tells so, and a choice of «Сервер» goes back to this computer — the error came only after «Запустить
+        расчёт» (ROADMAP, Sextant 1: «честно показывать в интерфейсе, что где считается»). True when the place
+        changed."""
+        from modules.sextant.remote_job import REMOTE_KINDS
+
+        buttons = getattr(self.w, 'where_buttons', None) if self.w.has('where_buttons') else None
+        if not buttons or 'server' not in buttons:
+            return False
+        able = kind in REMOTE_KINDS
+        item = buttons['server']
+        item.setEnabled(able)
+        item.setToolTip(tr(self.SERVER_TIP) if able else tr('{} считается только на этом компьютере; на сервере — ORCA '
+                                                            'и MOPAC').format(NAMES[kind]))
+        if not able and getattr(self.w, 'where', 'local') == 'server':
+            self.w.run_tool.set_where('local')
+            return True
+        return False
+
     def refresh_program_path(self):
         kind = self.w.program_kind()
+        if self.follow_server_place(kind):  # set_where('local') has shown the program of this computer
+            return self.w.found_program
         found = runner.find_program(kind, self.w.run_tool.configured_program(kind))
         self.w.found_program = found
         # the mark, the name and a tick — the path is in the tooltip only
@@ -84,10 +109,14 @@ class ProgramTool:
             self.w.program_missing.setVisible(not server and found is None)
             # 0.91.5; xtb and MOPAC on Windows too (conda-forge win-64), CREST not
             installable = kind in (('xtb', 'mopac') if os.name == 'nt' else ('xtb', 'crest', 'mopac'))
-            self.w.program_missing_text.setText(tr(
-                f'{NAMES[kind]} на этом компьютере не нашлась. Укажите файл программы кнопкой «Указать…» '
-                '— или выберите «Сервер», если считаете на кластере.')
-                + (' ' + tr('Её можно и установить в папку программы (conda-forge).') if installable else ''))
+            from modules.sextant.remote_job import REMOTE_KINDS
+
+            # «Сервер» only where a server runs it
+            missing = (tr(f'{NAMES[kind]} на этом компьютере не нашлась. Укажите файл программы кнопкой «Указать…» '
+                          '— или выберите «Сервер», если считаете на кластере.') if kind in REMOTE_KINDS
+                       else tr(f'{NAMES[kind]} не найдена — укажите файл программы кнопкой «Указать…».'))
+            self.w.program_missing_text.setText(
+                missing + (' ' + tr('Её можно и установить в папку программы (conda-forge).') if installable else ''))
             self.w.install_missing_button.setVisible(installable)
         for item in (self.w.program_badge, self.w.program_path, self.w.program_found):
             item.setToolTip(tip)

@@ -90,6 +90,18 @@ TOOLS = [
                                                    'and azimuth_stop; azimuth_result reads its folder.',
      'inputSchema': {'type': 'object', 'properties': {'program': CRYSTAL_PROGRAM, 'crystal': CRYSTAL,
                                                       'settings': CRYSTAL_SETTINGS}, 'required': ['program', 'crystal']}},
+    {'name': 'azimuth_crystal_run_server', 'description': 'Send a calculation of a crystal (Quantum ESPRESSO or CP2K, '
+                                                          'the tasks of azimuth_crystal_run) to the server of a '
+                                                          'profile of Sextant and watch it, with the rules of '
+                                                          'azimuth_run_server: the SSH key only, the cores asked for '
+                                                          '(default 8, at most 80 % of the node), a time limit, the '
+                                                          'journal; the program is the server\'s own (azimuth_server '
+                                                          'shows what is found there); the pseudopotentials go with '
+                                                          'the folder. A job id for azimuth_status and azimuth_stop.',
+     'inputSchema': {'type': 'object', 'properties': {
+         'program': CRYSTAL_PROGRAM, 'crystal': CRYSTAL, 'settings': CRYSTAL_SETTINGS, 'server': {'type': 'string'},
+         'cores': {'type': 'integer'}, 'memory_mb': {'type': 'integer'}, 'hours': {'type': 'integer'}},
+         'required': ['program', 'crystal']}},
     {'name': 'azimuth_status', 'description': 'The state of a job (calculation or tests): running or finished, its '
                                               'progress, the end of its output; for a finished calculation — its result.',
      'inputSchema': {'type': 'object', 'properties': {'job': {'type': 'string'}, 'lines': {'type': 'integer'}},
@@ -224,6 +236,10 @@ class Server:
             return headless_crystal.preview(args['program'], args['crystal'], args.get('settings'))
         if name == 'azimuth_crystal_run':
             return self.jobs.start_crystal(args['program'], args['crystal'], args.get('settings'))
+        if name == 'azimuth_crystal_run_server':
+            return self.jobs.start_crystal_server(args['program'], args['crystal'], args.get('settings'), settings_store(),
+                                                  args.get('server'), args.get('cores'), args.get('memory_mb'),
+                                                  args.get('hours'))
         if name == 'azimuth_status':
             return self.jobs.status(args['job'], int(args.get('lines', 40)))
         if name == 'azimuth_stop':

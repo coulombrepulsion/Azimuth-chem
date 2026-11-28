@@ -225,22 +225,34 @@ class ProjectActions(ProjectNavigation):
         return tried | going
 
     def watch_server_attempts(self, found):
+        """Every calculation of the project on a server whose end was not seen is watched again, the newest in the card
+        of Sextant, the others in their own windows aside (run_actions.park_server_job) — the calculations on a server
+        go on side by side; only the newest was taken up, the others waited in «История расчётов» (ROADMAP, Sextant
+        7). A queue going on on the server is waited for: then they stay there. Returns the jobs taken up."""
         found = [rec for rec in found if rec['folder'] not in self._server_watched()]
         if not found:
-            return None
-        rec = found[0]  # the newest: one calculation on a server is watched at a time
-        self._server_tried.add(rec['folder'])
-        if self.run_tool.job_running('server') and not self.run_tool.can_park_server_job():
-            self.notify(tr('Расчёт проекта на сервере ещё не закончен — за ним можно следить из «Расчёт → История '
-                           'расчётов…», когда кончится текущий расчёт на сервере.'), 12000)
-            return None
-        self.notify(tr('Расчёт «{}» проекта шёл на сервере {} — подключаюсь, чтобы посмотреть, как он идёт.')
-                    .format(rec['title'], rec['place']), 10000)
-        job = self.run_tool.resume_history(rec, quiet=True)
-        if job is not None and len(found) > 1:
-            self.notify(tr('Ещё расчётов проекта на сервере: {} — они в «Расчёт → История расчётов…».')
-                        .format(len(found) - 1), 12000)
-        return job
+            return []
+        jobs = []
+        # the oldest first: each next one moves the one before aside, the newest stays in the card
+        for rec in reversed(found):
+            self._server_tried.add(rec['folder'])
+            if self.run_tool.job_running('server') and not self.run_tool.can_park_server_job():
+                left = len(found) - len(jobs)
+                self.notify(tr('Расчётов проекта на сервере, которые ещё не закончены: {} — за ними можно следить из '
+                               '«Расчёт → История расчётов…», когда кончится очередь на сервере.').format(left), 12000)
+                break
+            job = self.run_tool.resume_history(rec, quiet=True)
+            if job is not None:
+                jobs.append(job)
+                taken = rec
+        if len(jobs) == 1:
+            self.notify(tr('Расчёт «{}» проекта шёл на сервере {} — подключаюсь, чтобы посмотреть, как он идёт.')
+                        .format(taken['title'], taken['place']), 10000)
+        elif jobs:
+            self.notify(tr('Расчётов проекта на сервере: {} — подключаюсь ко всем, чтобы посмотреть, как они идут; '
+                           'новый — в окне Секстанта, остальные — в своих окнах (песочные часы вверху).').format(len(jobs)),
+                        12000)
+        return jobs
 
     def show_research_project(self):
         """«История и файлы проекта…» (the button of the pane, «Файл → Молекулы и расчёты проекта…»). Only on

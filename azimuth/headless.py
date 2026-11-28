@@ -381,6 +381,19 @@ class Jobs:
                                                   interval)
         return self._watch_server(job, kind, settings, root, profile.title(), plan)
 
+    def start_crystal_server(self, kind, spec, settings=None, store=None, server=None, cores=None, memory_mb=None,
+                             hours=None, root=None, opener=None, interval=10.0, tools_root=None):
+        """A calculation of a crystal in Quantum ESPRESSO or CP2K sent to the server of a profile of Sextant
+        (headless_server.send_crystal); the cores and the memory are those of the call, not those of settings."""
+        from azimuth import headless_crystal, headless_server
+
+        prepared = headless_crystal.prepare(kind, spec, settings, tools_root)
+        job, plan, profile = headless_server.send_crystal(prepared, store, server, cores, memory_mb, hours, root, opener,
+                                                          interval, tools_root)
+        out = self._watch_server(job, kind, settings, root, profile.title(), plan)
+        out.update(task=prepared.task, atoms=prepared.atoms, files=[name for name, _, _ in prepared.steps])
+        return out
+
     def resume_server(self, folder, store=None, root=None, opener=None, interval=10.0):
         """A calculation sent from here before this process was restarted, watched again (nothing is sent again)."""
         from azimuth import headless_server

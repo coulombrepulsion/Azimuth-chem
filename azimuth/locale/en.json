@@ -6558,5 +6558,8 @@
  "Сохранить карту как рисунок…": "Save the map as a picture…",
  "Сохранить профиль как рисунок…": "Save the profile as a picture…",
  "Сохранить рисунок 3D-окна": "Save the picture of the 3D window",
- "Экспорт диаграммы реакции": "Export the reaction diagram"
+ "Экспорт диаграммы реакции": "Export the reaction diagram",
+  "Расчётов проекта на сервере, которые ещё не закончены: {} — за ними можно следить из «Расчёт → История расчётов…», когда кончится очередь на сервере.": "Calculations of the project on a server not finished yet: {} — they can be watched from «Calculation → Calculation history…» when the queue on the server is over.",
+  "Расчётов проекта на сервере: {} — подключаюсь ко всем, чтобы посмотреть, как они идут; новый — в окне Секстанта, остальные — в своих окнах (песочные часы вверху).": "Calculations of the project on a server: {} — connecting to all of them to see how they go; the newest in the Sextant window, the others in their own windows (the hourglass at the top).",
+  "{} считается только на этом компьютере; на сервере — ORCA и MOPAC": "{} runs on this computer only; on a server — ORCA and MOPAC"
 }

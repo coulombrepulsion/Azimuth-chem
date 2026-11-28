@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.15 — 28 November 2026
+
+- ### 0.249.15 — All the calculations of a project on a server
+
+When a project opens, Sextant takes up all its calculations on a server, not only the newest. The «Server» button is available only for the programs a server runs (ORCA and MOPAC). A crystal can be computed without the window on the department server too.
+
 ## 0.249.14 — 28 November 2026
 
 - ### 0.249.14 — Explanations behind «?»

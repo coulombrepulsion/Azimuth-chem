@@ -41,7 +41,8 @@
     choose(resources, cores=None, memory_mb=None) -> cluster.Plan; time_directive(profile, hours=None) -> [str];
     state(store, name=None, root=None, opener=None) -> dict; journal(root) -> [dict]; active(root, now=None, server=None) -> [folders]; close_unsent(root, now=None) -> [folders];
     send(kind, made, calc, store, name=None, cores=None, memory_mb=None, hours=None, root=None, opener=None,
-    interval=10.0) -> (RemoteJob, chosen, profile); resume(folder, store, root=None, opener=None, interval=10.0) ->
+    interval=10.0) -> (RemoteJob, chosen, profile); send_crystal(prepared, store, …) -> the same for a crystal
+    (headless_crystal.prepare); resume(folder, store, root=None, opener=None, interval=10.0) ->
     RemoteJob; ended(root, folder, state, code). store — anything with .value(key, default): the settings of Azimuth.
 §7 TESTS tests/core/test_headless_server.py (the fake server of tests/fake_server.py).
 """
@@ -466,6 +467,40 @@ def send(kind, made, calc, store, name=None, cores=None, memory_mb=None, hours=N
 
     _note(root, event='sent', folder=str(spec.folder), pid=os.getpid(), server=chosen.title(), program=kind, title=made.title,
           formula=made.formula, task=calc.task, cores=plan.processes, memory_mb=plan.maxcore,
+          time_limit=chosen.time_limit or limit[0].split()[-1])
+    return job.start(), plan, chosen
+
+
+def send_crystal(prepared, store, name=None, cores=None, memory_mb=None, hours=None, root=None, opener=None,
+                 interval=10.0, tools_root=None):
+    """A calculation of a crystal (headless_crystal.prepare: Quantum ESPRESSO or CP2K) sent to the server with the
+    rules of send — the key only, the cores and the memory within the ceilings, a time limit, the journal; the program
+    is the server's own, found by the probe (cluster.server_setup), as for the panel of the crystal (qe_run.start_server;
+    ROADMAP 25: «отправка на сервер кафедры»). Watched by the RemoteJob returned (started)."""
+    from azimuth import headless_crystal
+    from modules.sextant import cluster, remote_job
+
+    kind = prepared.program
+    close_unsent(root)
+    chosen, connection, resources = _open(store, name, opener)
+    if not resources.slurm:
+        open_now = active(root, server=chosen.title())
+        if len(open_now) >= ACTIVE:
+            raise ValueError(f'{len(open_now)} calculations sent from here to {chosen.title()} are not known to have ended '
+                             f'(at most {ACTIVE} at once on a server without SLURM): look at them (status or resume) or '
+                             'wait — ' + '; '.join(open_now))
+    limit = time_directive(chosen, hours)
+    setup = cluster.server_setup(chosen, resources, kind, limit)  # pw.x / cp2k found there, or refused
+    reserved = 0 if resources.slurm else just_sent(root, chosen.title())
+    plan = choose(resources, cores, memory_mb, reserved)
+    folder, steps = headless_crystal.server_folder(prepared, jobs_root(root), tools_root)
+    safe = folder.name.split('-', 1)[1].rsplit('-', 2)[0] or 'crystal'
+    spec = remote_job.prepare_qe(folder, [s[:2] for s in steps], plan, setup, safe, kind)
+    job = remote_job.RemoteJob(spec, chosen, connection, interval)
+    import os
+
+    _note(root, event='sent', folder=str(spec.folder), pid=os.getpid(), server=chosen.title(), program=kind,
+          title=prepared.title, formula='', task=prepared.task, cores=plan.processes, memory_mb=plan.maxcore,
           time_limit=chosen.time_limit or limit[0].split()[-1])
     return job.start(), plan, chosen
 
