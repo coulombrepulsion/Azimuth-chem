@@ -172,8 +172,8 @@ def test_a_server_behind_a_vpn_gets_the_vpn_of_its_profile(server, tmp_path):
 
 def test_what_a_server_is_not_asked(server, tmp_path):
     jobs = headless.Jobs()
-    with pytest.raises(ValueError, match='a server runs orca, mopac, not xtb'):
-        jobs.start_server('xtb', {'smiles': 'O'}, None, store(), root=tmp_path / 'calc', opener=opener(tmp_path))
+    with pytest.raises(ValueError, match='a server runs orca, mopac, xtb, not gaussian'):  # xtb is sent (0.249.29)
+        jobs.start_server('gaussian', {'smiles': 'O'}, None, store(), root=tmp_path / 'calc', opener=opener(tmp_path))
     with pytest.raises(ValueError, match='no server profile'):
         headless_server.profile(Store())
     with pytest.raises(ValueError, match="no server profile 'other'"):

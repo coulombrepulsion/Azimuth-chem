@@ -964,7 +964,7 @@ All calculation folders of a queue lie in one folder «…_batch_<program>». At
 
 ### Calculations on a server
 
-Sextant sends calculations to a computing server over SSH: with a SLURM queue or without one. ORCA and MOPAC are run on a server, and for crystals Quantum ESPRESSO and CP2K.
+Sextant sends calculations to a computing server over SSH: with a SLURM queue or without one. ORCA, MOPAC and xtb (0.249.29) are run on a server, and for crystals Quantum ESPRESSO and CP2K.
 
 #### The server profile
 
@@ -978,7 +978,7 @@ The password does not go into the settings of the program: it is kept until the 
 
 > **Tip.** The most reliable way is to log in without a password. «Login without a password» creates a key of the program and writes it to the server once, with the password – after that no password is needed and it is not stored anywhere. On Windows a login by key is required: without a key the password would be asked for every command.
 
-**Environment lines** – commands run before the program on the server, for example `module load orca-6.1.1`. Empty – ORCA is found on the server by itself. The «Environment lines for» list sets lines for all programs or for one only (ORCA, MOPAC, Quantum ESPRESSO, CP2K): so the lines of one program do not get into the jobs of another. `#SBATCH` lines (`--gres`, `--constraint`) can also be written here – they go to the beginning of the job script.
+**Environment lines** – commands run before the program on the server, for example `module load orca-6.1.1`. Empty – ORCA is found on the server by itself. The «Environment lines for» list sets lines for all programs or for one only (ORCA, MOPAC, xtb, Quantum ESPRESSO, CP2K): so the lines of one program do not get into the jobs of another. `#SBATCH` lines (`--gres`, `--constraint`) can also be written here – they go to the beginning of the job script.
 
 **SLURM: partition and time.** The values go into every job as `#SBATCH -p / -t / -A / --qos`; empty – the defaults of the cluster. On big clusters a job without a time limit gets little time or is not accepted.
 

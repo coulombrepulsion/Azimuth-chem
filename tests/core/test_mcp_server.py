@@ -41,13 +41,13 @@ def test_the_protocol_through_a_pipe():
     names = {t['name'] for t in by_id[2]['result']['tools']}
     assert {'azimuth_run', 'azimuth_status', 'azimuth_result', 'azimuth_tests', 'azimuth_preview_input'} <= names
     assert all('inputSchema' in t for t in by_id[2]['result']['tools'])
-    # the server of SLURM (azimuth/headless_server.py): its three tools, and only ORCA and MOPAC are offered there
+    # the server of SLURM (azimuth/headless_server.py): its three tools, and only ORCA, MOPAC and xtb are offered there
     assert {'azimuth_server', 'azimuth_run_server', 'azimuth_server_resume', 'azimuth_crystal_run_server'} <= names
     # the open window (azimuth/window_control.py): what it can be asked, nothing more
     assert {n for n in names if n.startswith('azimuth_window_')} == {'azimuth_window_state', 'azimuth_window_show',
                                                                     'azimuth_window_select', 'azimuth_window_snapshot'}
     remote = next(t for t in by_id[2]['result']['tools'] if t['name'] == 'azimuth_run_server')
-    assert remote['inputSchema']['properties']['program']['enum'] == ['orca', 'mopac']
+    assert remote['inputSchema']['properties']['program']['enum'] == ['orca', 'mopac', 'xtb']
     assert not any('password' in t['inputSchema'].get('properties', {}) for t in by_id[2]['result']['tools'])  # the key only
     preview = by_id[3]['result']
     assert not preview['isError'] and '! B3LYP D3BJ def2-SVP' in preview['content'][0]['text']  # the D3(BJ) of a new window

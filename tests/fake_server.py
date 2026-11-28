@@ -9,7 +9,7 @@ session and records it in <tmp>/home/.queue; squeue answers RUNNING while the pr
 that output): offline (ssh and scp answer «Connection timed out», code 255), password (the password the server wants;
 ssh checks what SSH_ASKPASS prints), sbatch_fail, sbatch_dependency_fail, orca_fail, mopac_fail
 (FAKE_MOPAC_OUTPUT=<file>: the .out MOPAC writes, its .aux next to it; mopac.log — its first line of keywords and
-OMP_NUM_THREADS). Sbatch takes --parsable (prints only the number) and -J <name> (kept in .queue/<id>.name); squeue -n
+OMP_NUM_THREADS; xtb — FAKE_XTB_DIR=<a folder of tests/data/xtb>, xtb_fail, xtb.log). Sbatch takes --parsable (prints only the number) and -J <name> (kept in .queue/<id>.name); squeue -n
 <name> lists the live jobs of that name; sacct --name <name> lists every job ever given that name (the file no_sacct:
 sacct is not configured, exit 1); the file drop_answer: the next command with az-submit runs and its answer is lost
 («Connection timed out», code 255) — the server accepted the job, the client never heard it (T07); drop_answer with the
@@ -291,6 +291,26 @@ if recorded and os.path.exists(recorded[:-4] + '.aux'):
 print('MOPAC done', flush=True)
 '''
 
+XTB = r'''
+import os, shutil, sys
+root = os.environ['FAKE_ROOT']
+# xtb.log — its arguments and the OpenMP environment; FAKE_XTB_DIR=<a folder of tests/data/xtb>: its output printed and the
+# files xtb writes beside it (xtbopt.xyz, xtbopt.log, g98.out, charges, wbo, vibspectrum) put in the folder of the job
+open(os.path.join(root, 'xtb.log'), 'a').write(' '.join(sys.argv[1:]) + ' | OMP_NUM_THREADS=' + os.environ.get(
+    'OMP_NUM_THREADS', '') + ' OMP_STACKSIZE=' + os.environ.get('OMP_STACKSIZE', '') + '\n')
+recorded = os.environ.get('FAKE_XTB_DIR')
+if os.path.exists(os.path.join(root, 'xtb_fail')):
+    print('[ERROR] Program stopped due to fatal error', flush=True); sys.exit(1)
+if recorded:
+    for name in os.listdir(recorded):
+        if name.endswith('.out') and not name.startswith('g98'):
+            sys.stdout.write(open(os.path.join(recorded, name)).read())
+        elif not name.endswith('.xyz') or name == 'xtbopt.xyz':
+            shutil.copy(os.path.join(recorded, name), name)
+else:
+    print('   * finished run on 2026/11/28\n normal termination of xtb', flush=True)
+'''
+
 MKL = r'''
 import sys
 open(sys.argv[1] + '.molden.input', 'w').write('[Molden Format]\n')
@@ -315,7 +335,7 @@ def make(root, slurm=True):
                        # mpirun of the «server»: one copy of the program, as srun here (a real mpirun of the computer of the
                        # tests would start N copies of the fake pw.x)
                        ('mpirun', SRUN),
-                       ('orca', ORCA), ('orca_2mkl', MKL), ('mopac', MOPAC)):
+                       ('orca', ORCA), ('orca_2mkl', MKL), ('mopac', MOPAC), ('xtb', XTB)):
         if slurm or name not in SLURM:  # slurm=False — a server without SLURM (serv1): the jobs go by nohup
             executable(bin_dir / name, f'#!{PY}\n' + code)  # one checked copy for all the tests (fake_programs)
     if os.name != 'nt':

@@ -431,6 +431,8 @@ NOT_FOUND = {
     'orca': 'На сервере {} не нашлась ORCA. Впишите строки окружения в «Сервер…» (например, module load orca-6.1.1).',
     'mopac': 'На сервере {} не нашёлся MOPAC (mopac в PATH или модуль). Впишите строки окружения в «Сервер…» '
              '(например, module load mopac).',
+    'xtb': 'На сервере {} не нашёлся xtb (xtb в PATH или модуль). Впишите строки окружения в «Сервер…» '
+           '(например, module load xtb).',
     'cp2k': 'На сервере {} не нашёлся CP2K ни в PATH, ни среди модулей. Впишите строки окружения в «Сервер…» '
             '(например, module load cp2k).',
     'qe': 'На сервере {} не нашёлся pw.x (Quantum ESPRESSO) ни в PATH, ни среди модулей. Впишите строки окружения в '
@@ -485,7 +487,7 @@ def suggested_setup(resources, kind='orca'):
     """Lines that put ORCA (and Open MPI) into PATH in the job: the newest ORCA module of the server, else the newest
     /opt/orca* folder with the Open MPI module. '' when nothing was found (the user writes them). MOPAC — the
     newest MOPAC module, '' when mopac is in PATH or not found."""
-    if kind in ('mopac', 'qe', 'cp2k'):  # Quantum ESPRESSO — its module (it brings its MPI); CP2K
+    if kind in ('mopac', 'xtb', 'qe', 'cp2k'):  # Quantum ESPRESSO — its module (it brings its MPI); CP2K
         words = PROGRAM_MODULES[kind]
         modules = [m for m in resources.program_modules if any(w in m.lower() for w in words)]
         if modules:
@@ -658,7 +660,7 @@ def job_script(chosen, setup='', name='azimuth', base='input', program='orca', s
         f'#SBATCH -J {safe}',
         '#SBATCH -N 1',
     ]
-    if program == 'mopac':
+    if program in ('mopac', 'xtb'):  # OpenMP: one task with its threads
         lines += ['#SBATCH -n 1', f'#SBATCH -c {chosen.processes}']
     elif program in ('qe', 'cp2k'):  # MPI tasks of pw.x, one thread each; of CP2K
         lines += [f'#SBATCH -n {chosen.processes}', '#SBATCH -c 1']
@@ -672,6 +674,18 @@ def job_script(chosen, setup='', name='azimuth', base='input', program='orca', s
         return '\n'.join(lines + qe_lines(chosen.processes, steps or (('pw.in', 'pw.x'),)) + [''])
     if program == 'cp2k':
         return '\n'.join(lines + cp2k_lines(chosen.processes) + [''])
+    if program == 'xtb':  # the environment of runner.environment for xtb; the arguments of <base>.args
+        lines += [
+            'cd "$SLURM_SUBMIT_DIR"',
+            f'export OMP_NUM_THREADS={chosen.processes} OMP_STACKSIZE=1G OMP_MAX_ACTIVE_LEVELS=1',
+            'ulimit -s unlimited 2> /dev/null || true',
+            'XTB="$(command -v xtb)"',
+            'if [ -z "$XTB" ]; then echo "Azimuth: xtb not found in PATH (setup lines of the server profile)" >&2; exit 2; fi',
+            f'eval "\"\$XTB\" $(cat {shlex.quote(base + ".args")})" > {shlex.quote(base + ".out")} 2>&1',
+            'exit $?',
+            '',
+        ]
+        return '\n'.join(lines)
     if program == 'mopac':
         lines += [
             'cd "$SLURM_SUBMIT_DIR"',
@@ -713,7 +727,7 @@ def batch_script(chosen, setup, name, jobs, program='orca'):
     leaves half a marker)."""
     safe = re.sub(r'[^A-Za-z0-9._-]', '_', name)[:40] or 'azimuth'
     lines = ['#!/bin/bash -l', f'#SBATCH -J {safe}', '#SBATCH -N 1']
-    if program == 'mopac':
+    if program in ('mopac', 'xtb'):
         lines += ['#SBATCH -n 1', f'#SBATCH -c {chosen.processes}']
     else:
         lines.append(f'#SBATCH -n {chosen.processes}')
@@ -727,6 +741,14 @@ def batch_script(chosen, setup, name, jobs, program='orca'):
                   'PROGRAM="$(command -v mopac || command -v MOPAC2016.exe)"',
                   'if [ -z "$PROGRAM" ]; then echo "Azimuth: mopac not found in PATH" >&2; exit 2; fi']
         run = '"$PROGRAM" "$2.mop" > "$2.stdout" 2>&1'
+        after = ''
+    elif program == 'xtb':
+        lines += [f'export OMP_NUM_THREADS={chosen.processes} OMP_STACKSIZE=1G OMP_MAX_ACTIVE_LEVELS=1',
+                  'ulimit -s unlimited 2> /dev/null || true',
+                  'PROGRAM="$(command -v xtb)"',
+                  'if [ -z "$PROGRAM" ]; then echo "Azimuth: xtb not found in PATH" >&2; exit 2; fi']
+        # in a shell of its own (setsid takes a program, not eval): the arguments of <base>.args of the job
+        run = 'bash -c \'eval "\\"$0\\" $(cat "$1.args")"\' "$PROGRAM" "$2" > "$2.out" 2>&1'
         after = ''
     else:
         lines += ['PROGRAM="$(command -v orca)"',

@@ -6611,5 +6611,13 @@
   "Найдено в сети и сохранено на этом компьютере.": "Found on the network and kept on this computer.",
   "простое вещество": "an element",
   "ΔH° реакции из опыта (298 К, газ, по ΔfH° CCCBDB): {} {}": "ΔH° of the reaction from experiment (298 K, gas, by ΔfH° of CCCBDB): {} {}",
-  "; расчёт отличается на {} {}": "; the calculation differs by {} {}"
+  "; расчёт отличается на {} {}": "; the calculation differs by {} {}",
+  "Дипольный момент далёк от опыта ({:.2f} против {:.2f} Д) — сильнее, чем ошибается метод (около 0,1 Д). Скорее всего, посчитан другой конформер: «Правка → Поиск конформеров…» в Компасе, затем расчёт самого низкого.": "The dipole moment is far from experiment ({:.2f} against {:.2f} D) — farther than the method errs (about 0.1 D). Most likely another conformer was computed: «Edit → Conformer search…» in Compass, then a calculation of the lowest one.",
+  "Частоты в среднем на {:.0f} см⁻¹ дальше от опыта, чем обычно для B3LYP: проверьте конформер и то, что оптимизация сошлась.": "The frequencies are {:.0f} cm⁻¹ off experiment on average, more than usual for B3LYP: check the conformer and that the optimization converged.",
+  "На сервере считаются ORCA, MOPAC и xtb.": "A server runs ORCA, MOPAC and xtb.",
+  "Правка входного файла xtb для сервера не поддерживается: уберите правку или считайте на этом компьютере.": "An edited input of xtb is not sent to a server: undo the edit or compute on this computer.",
+  "На сервере {} не нашёлся xtb (xtb в PATH или модуль). Впишите строки окружения в «Сервер…» (например, module load xtb).": "xtb was not found on the server {} (xtb in PATH or a module). Write the setup lines in «Server…» (e.g. module load xtb).",
+  "{} считается только на этом компьютере; на сервере — ORCA, MOPAC и xtb": "{} runs on this computer only; on a server — ORCA, MOPAC and xtb",
+  "На сервере пока считаются только ORCA, MOPAC и xtb — {} считается на этом компьютере.": "A server runs only ORCA, MOPAC and xtb for now — {} runs on this computer.",
+  "На сервере считаются ORCA, MOPAC и xtb — выберите одну из них.": "A server runs ORCA, MOPAC and xtb — choose one of them."
 }

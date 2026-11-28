@@ -57,8 +57,9 @@ from azimuth.i18n import tr
 from azimuth.ui import button, card, icon_button, label
 
 WAIT_S = 60
-SETUP_TITLES = {'orca': 'ORCA', 'mopac': 'MOPAC', 'qe': 'Quantum ESPRESSO', 'cp2k': 'CP2K'}
+SETUP_TITLES = {'orca': 'ORCA', 'mopac': 'MOPAC', 'xtb': 'xtb', 'qe': 'Quantum ESPRESSO', 'cp2k': 'CP2K'}
 SETUP_EXAMPLES = {'orca': 'module load orca-6.1.1', 'mopac': 'export PATH=/opt/mopac/bin:$PATH',
+                  'xtb': 'export PATH=/opt/anaconda3/envs/xtb/bin:$PATH',
                   'qe': 'module load qe', 'cp2k': 'module load cp2k'}
 CHECK_MS = 2000
 

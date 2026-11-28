@@ -2789,8 +2789,9 @@ def test_the_server_dialog_keeps_the_lines_of_each_program(window, app):
     dialog = ServerDialog(profile, window)
     try:
         box = dialog.setup_program
-        assert [box.itemData(k) for k in range(box.count())] == ['', 'orca', 'mopac', 'qe', 'cp2k']
-        assert [box.itemText(k) for k in range(box.count())] == ['Все программы ·', 'ORCA', 'MOPAC', 'Quantum ESPRESSO', 'CP2K ·']
+        assert [box.itemData(k) for k in range(box.count())] == ['', 'orca', 'mopac', 'xtb', 'qe', 'cp2k']
+        assert [box.itemText(k) for k in range(box.count())] == ['Все программы ·', 'ORCA', 'MOPAC', 'xtb', 'Quantum ESPRESSO',
+                                                                 'CP2K ·']
         assert dialog.setup.toPlainText() == profile.setup and dialog.profile() == profile
         box.setCurrentIndex(box.findData('cp2k'))
         assert dialog.setup.toPlainText() == cp2k and 'Перед CP2K в задаче' in dialog.preview.text()
@@ -2922,7 +2923,8 @@ def test_the_resources_fill_the_lines_of_a_program_found_outside_path(window, ap
     try:
         assert dialog.probe() is resources and asked['search'] is True
         kept = dialog.profile()
-        assert kept.setups == {'mopac': 'export PATH=/opt/anaconda3/envs/mopac/bin:$PATH', 'cp2k': 'module load cp2k'}
+        assert kept.setups == {'mopac': 'export PATH=/opt/anaconda3/envs/mopac/bin:$PATH', 'cp2k': 'module load cp2k',
+                               'xtb': 'export PATH=/home/user/xtb/bin:$PATH'}  # xtb runs on a server too (0.249.29)
         status = dialog.status.text()
         assert 'свободно 13 из 20 ядер' in status and 'nohup' in status  # 16 may be busy, 3 are
         assert 'Строки окружения вписаны: MOPAC' in status and 'xtb — /home/user/xtb/bin/xtb' in status
@@ -3005,7 +3007,7 @@ def test_the_server_is_offered_only_for_the_programs_it_runs(window):
         assert 'Сервер' not in window.program_missing_text.text()
         server.click()  # pressed: stays here, and the status line tells why
         assert window.where == 'local' and window.where_buttons['local'].isChecked()
-        assert 'ORCA и MOPAC' in window.run_status.text() and 'Gaussian' in window.run_status.text()
+        assert 'ORCA, MOPAC и xtb' in window.run_status.text() and 'Gaussian' in window.run_status.text()
         window.program.setCurrentIndex(window.program.findData('mopac'))
         assert server.isEnabled() and 'Сервер…' in server.toolTip()
     finally:

@@ -2,7 +2,8 @@
 and watches it).
 
 §1 PURPOSE
-    The inputs of a molecule (ORCA, MOPAC) or of a crystal (Quantum ESPRESSO, CP2K) with the processes and the memory
+    The inputs of a molecule (ORCA, MOPAC, xtb — its coordinates, xcontrol and <base>.args, the arguments of its
+    command line as on this computer) or of a crystal (Quantum ESPRESSO, CP2K) with the processes and the memory
     of the plan of the server, job.sh of cluster.job_script, the helper of the token and the intent of sending
     (azimuth/runtime/runs.py) written before anything reaches the server, an empty output that the watching fills.
 §4 SPECIFICATION
@@ -28,7 +29,10 @@ def prepare_remote(molecule, calculation, constraints, root, chosen, setup='', n
     from modules.sextant.remote_job import REMOTE_KINDS
 
     if kind not in REMOTE_KINDS:
-        raise ValueError(tr('На сервере считаются ORCA и MOPAC.'))
+        raise ValueError(tr('На сервере считаются ORCA, MOPAC и xtb.'))
+    if kind == 'xtb' and text is not None:  # its «input» of Sextant is the command line and the coordinates shown
+        raise ValueError(tr('Правка входного файла xtb для сервера не поддерживается: уберите правку или считайте на '
+                            'этом компьютере.'))
     calc = replace(calculation, cores=chosen.processes, memory_mb=chosen.maxcore)
     files = input_files(kind, molecule, calc, constraints, neb)  # validates
     main = next(iter(files))  # <base>.inp, named after the calculation (<base>.mop of MOPAC)
@@ -39,6 +43,13 @@ def prepare_remote(molecule, calculation, constraints, root, chosen, setup='', n
                        else text.rstrip('\n') + '\n')
     if kind == 'mopac':
         files[main] = mopac_threads(files[main], chosen.processes)
+    if kind == 'xtb':  # the arguments of the command line as on this computer (-P N of the plan), in <base>.args
+        import shlex
+
+        from modules.sextant.inputs import _constraints, xtb_arguments
+
+        fixed = _constraints(molecule, calc, constraints)
+        files[main.rsplit('.', 1)[0] + '.args'] = ' '.join(shlex.quote(a) for a in xtb_arguments(calc, fixed, main)) + '\n'
     guess = runner.start_orbitals(kind, calc)  # uploaded with the folder
     folder = runner.job_folder(root, molecule, kind, now or datetime.now())
     for name, content in files.items():

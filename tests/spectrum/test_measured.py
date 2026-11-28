@@ -139,3 +139,18 @@ def test_a_linear_molecule_from_smiles_is_exactly_linear():
         assert off.max() < 1e-9, smiles
     water = from_smiles('O', quick=True)
     assert linearized(water) is water
+
+
+def test_far_from_experiment_another_conformer_is_suggested():
+    # glycine of SMILES in ORCA (B3LYP/def2-SVP, EXPERIMENT_CHECK.md): 5.58 D against 1.095 D of conformer I
+    glycine = next(m for m in measured.molecules() if m['key'] == 'glycine')
+    far = measured.Comparison(glycine, None, (), None, (5.58, 1.095))
+    (hint,) = measured.conformer_hint(far)
+    assert 'конформер' in hint and '5.58' in hint and '1.09' in hint
+    water = next(m for m in measured.molecules() if m['key'] == 'water')
+    near = measured.Comparison(water, None, (), None, (2.004, 1.857))  # the error of the method: no hint
+    assert measured.conformer_hint(near) == ()
+    output = _output(DATA / 'orca601' / 'h2o_optfreq.out')  # water: 100 cm⁻¹ — within what B3LYP does
+    assert measured.compare(water, output).hints == ()
+    off = measured.Comparison(water, measured.Vibrations(((1.0, 2.0, 'A'),), '', 150.0, 1.0, 1.0, 10.0))
+    assert 'конформер' in measured.conformer_hint(off)[0]

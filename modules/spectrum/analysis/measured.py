@@ -215,6 +215,30 @@ class Comparison:
     harmonic: Vibrations | None = None  # against the harmonic frequencies of experiment (CCCBDB has some)
     dipole: tuple | None = None  # (computed | None, measured) D
     notes: tuple = field(default_factory=tuple)
+    hints: tuple = ()  # what to do when the result is far from experiment (conformer_hint)
+
+
+DIPOLE_OFF = 0.5  # D, and a quarter of the measured value: beyond both, another conformer is the likely cause
+FREQUENCIES_OFF = 120.0  # cm⁻¹ of the mean difference (the course: 37–100 with B3LYP/def2-SVP, EXPERIMENT_CHECK.md)
+
+
+def conformer_hint(found):
+    """A hint when the result is far from experiment in a way the method does not explain: a dipole off by more than
+    DIPOLE_OFF D and a quarter (glycine of SMILES: 5.58 D against 1.10 D of its measured conformer I — another
+    conformer, docs/plans/EXPERIMENT_CHECK.md), or frequencies off on average by more than FREQUENCIES_OFF cm⁻¹.
+    The error of B3LYP is far smaller (0.11 D, 56 cm⁻¹ on the 30 molecules)."""
+    hints = []
+    if found.dipole is not None and found.dipole[0] is not None and found.dipole[1]:
+        computed, measured_value = found.dipole
+        if abs(computed - measured_value) > max(DIPOLE_OFF, 0.25 * measured_value):
+            hints.append(tr('Дипольный момент далёк от опыта ({:.2f} против {:.2f} Д) — сильнее, чем ошибается метод '
+                            '(около 0,1 Д). Скорее всего, посчитан другой конформер: «Правка → Поиск конформеров…» в '
+                            'Компасе, затем расчёт самого низкого.').format(computed, measured_value))
+    vib = found.vibrations
+    if vib is not None and vib.pairs and vib.mean_abs > FREQUENCIES_OFF:
+        hints.append(tr('Частоты в среднем на {:.0f} см⁻¹ дальше от опыта, чем обычно для B3LYP: проверьте конформер и '
+                        'то, что оптимизация сошлась.').format(vib.mean_abs))
+    return tuple(hints)
 
 
 def compare(entry, output):
@@ -231,8 +255,11 @@ def compare(entry, output):
     notes = []
     if entry.get('note'):
         notes.append(entry['note'])
-    return Comparison(entry, vib, tuple(bonds(entry, geometry)) if geometry is not None else (), harmonic,
-                      None if measured is None else (computed_dipole, measured), tuple(notes))
+    found = Comparison(entry, vib, tuple(bonds(entry, geometry)) if geometry is not None else (), harmonic,
+                       None if measured is None else (computed_dipole, measured), tuple(notes))
+    from dataclasses import replace
+
+    return replace(found, hints=conformer_hint(found))
 
 
 ELEMENTS = ('H', 'N', 'O', 'F', 'Cl')  # gases whose standard state is the diatomic molecule: ΔfH° = 0

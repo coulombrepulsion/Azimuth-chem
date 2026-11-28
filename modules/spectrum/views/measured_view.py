@@ -214,6 +214,9 @@ class MeasuredPanel(QWidget):
         if entry.get('hf298_kj') is not None:
             rows.append((tr('ΔfH°(298 К), газ, кДж/моль'), '—', f"{entry['hf298_kj']:.1f}", '—'))
         _fill(self.properties, rows)
+        if found.hints:  # far from experiment: another conformer, most likely
+            self.state.setText('⚠ ' + ' '.join(found.hints))
+            self.state.show()
         notes = ' '.join(tr(n) for n in found.notes)
         self.source.setText(
             (notes + ' ' if notes else '')

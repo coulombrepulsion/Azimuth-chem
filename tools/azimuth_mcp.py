@@ -143,7 +143,7 @@ TOOLS = [
     {'name': 'azimuth_server', 'description': 'What the SLURM server of a profile of Sextant says now (login by the '
                                               'SSH key only): free cores and memory, the most one calculation may '
                                               'ask (with SLURM a job asking more than is free waits in the queue), '
-                                              'ORCA and MOPAC found there, the calculations sent from here and '
+                                              'ORCA, MOPAC and xtb found there, the calculations sent from here and '
                                               'still open. Call it before azimuth_run_server.',
      'inputSchema': {'type': 'object', 'properties': {'server': {'type': 'string', 'description': 'The title of a '
                      'profile; without it — the one chosen in Azimuth.'}}}},
@@ -158,7 +158,7 @@ TOOLS = [
                                                   'limit when the profile has none (default 4, at most 24). The cores '
                                                   'and memory of settings are replaced by these.',
      'inputSchema': {'type': 'object', 'properties': {
-         'program': {'type': 'string', 'enum': ['orca', 'mopac']}, 'molecule': MOLECULE, 'settings': SETTINGS,
+         'program': {'type': 'string', 'enum': ['orca', 'mopac', 'xtb']}, 'molecule': MOLECULE, 'settings': SETTINGS,
          'server': {'type': 'string'}, 'cores': {'type': 'integer'}, 'memory_mb': {'type': 'integer'},
          'hours': {'type': 'integer'}}, 'required': ['program', 'molecule']}},
     {'name': 'azimuth_server_resume', 'description': 'Watch again a calculation sent to a server from here before this '

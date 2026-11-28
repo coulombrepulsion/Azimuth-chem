@@ -116,7 +116,7 @@ class RunTool:
         return self.w.program_tool.refresh_program_path()  # in ProgramTool
 
     # where the calculation runs -------------------------------------------------------------------
-    SERVER_ONLY = 'На сервере пока считаются только ORCA и MOPAC — {} считается на этом компьютере.'
+    SERVER_ONLY = 'На сервере пока считаются только ORCA, MOPAC и xtb — {} считается на этом компьютере.'
 
     def set_where(self, where):
         where = 'server' if where == 'server' else 'local'
@@ -190,8 +190,8 @@ class RunTool:
             self.edit_server()
             return None
         kind = self.w.program_kind()
-        if kind not in remote_job.REMOTE_KINDS:  # ORCA and MOPAC
-            self.w.error(tr('На сервере считаются ORCA и MOPAC — выберите одну из них.'))
+        if kind not in remote_job.REMOTE_KINDS:  # ORCA, MOPAC, xtb
+            self.w.error(tr('На сервере считаются ORCA, MOPAC и xtb — выберите одну из них.'))
             return None
         try:
             calc = self.w.calculation()

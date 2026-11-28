@@ -65,7 +65,7 @@ HEADER
     (_settle). submit() uses the same path. A lost connection while sending or downloading the results is tried again
     (_again: 10, 20, 30 s …); a job whose output, copied while it ran, ended normally is finished even when some files
     stayed on the server (said). Submit() — sent and queued without the watching (the rest of a queue at the exit,
-    «--dependency=afterany»). A server runs ORCA and MOPAC (REMOTE_KINDS) and, for crystals, Quantum ESPRESSO and CP2K
+    «--dependency=afterany»). A server runs ORCA, MOPAC and xtb (REMOTE_KINDS) and, for crystals, Quantum ESPRESSO and CP2K
     (prepare_qe); Gaussian, Psi4 and xtb on a server are stage 4 of docs/features/REMOTE_CALCULATIONS.md. Coming back to
     a job after the program was closed (job.json): RemoteJob.resume (history.py). The output of ORCA is ASCII; bytes are
     appended as they come, so a character split between two fetches is still whole in the file.
@@ -114,8 +114,11 @@ _SKIP = re.compile(r'\.tmp|\.densities|\.prop$|^core(\.\d+)?$', re.I)
 _KEEP = re.compile(r'^.*\.(out|gbw|molden\.input|molden|hess|engrad|xyz|txt|opt|loc|nbo|cis|cube|log|aux|arc|stdout|dos|cell|pdos|mol|mold|freq|phdos)$', re.I)
 # .mold, .freq, .phdos — the phonons of Quantum ESPRESSO (qe_inputs.PHONON_FILE, FREQ_FILE, PHDOS_FILE): they stayed on the
 # server, and a run there showed no modes, no dispersion and no phonon DOS (serv3, 2026-11-23)
-REMOTE_KINDS = ('orca', 'mopac')  # the programs a server runs (MOPAC: .aux and .arc come back too)
-PROGRAM_TITLES = {'orca': 'ORCA', 'mopac': 'MOPAC', 'qe': 'Quantum ESPRESSO', 'cp2k': 'CP2K'}
+REMOTE_KINDS = ('orca', 'mopac', 'xtb')  # the programs a server runs (MOPAC: .aux and .arc come back too; xtb: its files)
+PROGRAM_TITLES = {'orca': 'ORCA', 'mopac': 'MOPAC', 'xtb': 'xtb', 'qe': 'Quantum ESPRESSO', 'cp2k': 'CP2K'}
+# the files xtb writes beside its output without an extension the pattern keeps: the charges, the Wiberg orders, the
+# spectrum (modules/spectrum/readers/xtb.py reads them; g98.out, xtbopt.xyz, xtbopt.log, xtbscan.log are kept by _KEEP)
+XTB_FILES = ('charges', 'wbo', 'vibspectrum')
 
 
 def _by_number(job_id):
@@ -145,7 +148,7 @@ def _ssh_detail(exc):
 
 def wanted(names):
     """The files of a finished job worth bringing back: outputs, orbitals, geometries, Hessian (§2.4)."""
-    return [n for n in names if n and not _SKIP.search(n) and _KEEP.match(n)]
+    return [n for n in names if n and not _SKIP.search(n) and (_KEEP.match(n) or n in XTB_FILES)]
 
 
 def submit(spec, profile, connection, after=None):

@@ -165,6 +165,11 @@ def test_queued_state(server, tmp_path, monkeypatch):
     wait(j)
 
 
+def test_what_is_downloaded_of_xtb():
+    names = ['dvb.out', 'xtbopt.xyz', 'xtbopt.log', 'g98.out', 'charges', 'wbo', 'vibspectrum', 'xtbrestart', 'xtbtopo.mol']
+    assert set(wanted(names)) == set(names) - {'xtbrestart'}  # the restart file of xtb is binary and of no use here
+
+
 def test_what_is_downloaded():
     names = ['H2O_B3LYP_def2-SVP.out', 'input.gbw', 'input.tmp', 'input.tmp.0', 'input_trj.xyz', 'input.hess', 'slurm-101.out',
              'job.sh', 'H2O_B3LYP_def2-SVP.inp', 'input.densities', 'core.1234', 'input.molden.input', 'input.engrad']
@@ -231,6 +236,46 @@ def test_a_mopac_calculation_on_the_server(server, tmp_path, monkeypatch):
     assert j.state == 'failed' and 'MOPAC' in j.message
     with pytest.raises(ValueError):
         prepare_remote(WATER, calc, (), tmp_path / 'local3', PLAN, kind='gaussian')
+
+
+def test_an_xtb_calculation_on_the_server(server, tmp_path, monkeypatch):
+    """ROADMAP, Sextant 1 («добавить хотя бы xtb»): job.sh of xtb — one task with its threads (-n 1 -c N; OMP_NUM_THREADS,
+    OMP_STACKSIZE as runner.environment), the arguments of this computer in <base>.args (-P N of the plan); success is
+    «normal termination of xtb» of the output (a recorded xtb 6.7.1 optimization of divinylbenzene), and its files come
+    back: xtbopt.xyz, xtbopt.log, charges, wbo — what Spectrum reads beside the output."""
+    from pathlib import Path
+
+    from modules.spectrum.readers.outputs import read_any
+
+    data = Path(__file__).parents[1] / 'data' / 'xtb' / 'dvb_opt'
+    monkeypatch.setenv('FAKE_XTB_DIR', str(data))
+    (tmp_path / 'ctl').mkdir(exist_ok=True)
+    calc = Calculation(task='Оптимизация', cores=2)
+    spec = prepare_remote(WATER, calc, (), tmp_path / 'local', PLAN, kind='xtb')
+    main = next(spec.folder.glob('*.xyz'))
+    args = (spec.folder / (main.stem + '.args')).read_text().split()
+    assert args[0] == main.name and '--opt' in args and args[-2:] == ['-P', '6'] and spec.kind == 'xtb'
+    script = (spec.folder / 'job.sh').read_text()
+    assert '#SBATCH -n 1' in script and '#SBATCH -c 6' in script and 'OMP_NUM_THREADS=6 OMP_STACKSIZE=1G' in script
+    assert f'$(cat {main.stem}.args)' in script and f'> {main.stem}.out' in script and 'orca' not in script.lower()
+    profile = ServerProfile('serv3', '192.0.2.103', 22, 'user', '~/azimuth/calculations')
+    j = RemoteJob(spec, profile, Connection(profile, control_dir=tmp_path / 'ctl'), interval=0.1).start()
+    assert wait(j) == 0, j.message
+    assert j.state == 'finished' and runner.finished_normally('xtb', j.text(), 0)
+    for name in ('xtbopt.xyz', 'xtbopt.log', 'charges', 'wbo'):
+        assert (spec.folder / name).is_file(), name
+    log = (server / 'xtb.log').read_text()
+    assert log.startswith(main.name) and '-P 6' in log and 'OMP_NUM_THREADS=6 OMP_STACKSIZE=1G' in log
+    output = read_any(j.text(), spec.output)  # the optimized geometry and the steps from the files that came back
+    assert output.program.startswith('xtb') and output.steps and output.geometry is not None
+    assert json.loads((spec.folder / 'job.json').read_text())['program'] == 'xtb'
+    (server / 'xtb_fail').write_text('')
+    failed = prepare_remote(WATER, calc, (), tmp_path / 'local2', PLAN, kind='xtb')
+    j = RemoteJob(failed, profile, Connection(profile, control_dir=tmp_path / 'ctl'), interval=0.1).start()
+    wait(j)
+    assert j.state == 'failed' and 'xtb' in j.message
+    with pytest.raises(ValueError, match='Правка входного файла xtb'):
+        prepare_remote(WATER, calc, (), tmp_path / 'local3', PLAN, text='edited', kind='xtb')
 
 
 def test_a_failed_local_note_does_not_stop_the_watching(server, tmp_path, monkeypatch):
@@ -427,6 +472,32 @@ def test_a_queue_sent_at_once_runs_in_one_job(server, tmp_path, monkeypatch):
     there = server / 'home' / 'azimuth' / 'calculations'
     assert (there / specs[1].folder.name / '.az-finished').exists()
     assert not list(there.glob('*/*.tmp.0'))  # the scratch files removed after each
+
+
+def test_a_queue_of_xtb_sent_at_once(server, tmp_path, monkeypatch):
+    """A queue of xtb in one SLURM job: each calculation runs with the arguments of its own <base>.args (in a shell of
+    its own — setsid takes a program), its output and files in its folder."""
+    from modules.sextant.remote_job import send_batch
+
+    monkeypatch.setenv('AZ_POLL', '0.1')
+    monkeypatch.setenv('FAKE_XTB_DIR', str(Path(__file__).parents[1] / 'data' / 'xtb' / 'dvb_opt'))
+    (tmp_path / 'ctl').mkdir(exist_ok=True)
+    ammonia = read_xyz('4\nammonia\nN 0 0 0.1\nH 0.94 0 -0.27\nH -0.47 0.81 -0.27\nH -0.47 -0.81 -0.27')
+    root = tmp_path / 'local' / 'queue'
+    specs = [prepare_remote(m, Calculation(task='Оптимизация', cores=2), (), root, PLAN, kind='xtb') for m in (WATER, ammonia)]
+    profile = ServerProfile('serv3', '192.0.2.103', 22, 'user', '~/azimuth/calculations')
+    connection = Connection(profile, control_dir=tmp_path / 'ctl')
+    job_id = send_batch(specs, profile, connection, PLAN, '', 'az-queue', kind='xtb')
+    script = (root / 'queue-batch' / 'batch.sh').read_text()
+    assert '#SBATCH -c 6' in script and 'OMP_STACKSIZE=1G' in script and script.count('run_one ') == 2
+    jobs = [RemoteJob.resume(s.folder, s.output, profile, connection, json.loads((s.folder / 'job.json').read_text()),
+                             interval=0.1) for s in specs]
+    for j, spec in zip(jobs, specs):
+        j.start()
+        assert wait(j, 40) == 0 and j.state == 'finished', j.message
+        assert runner.finished_normally('xtb', j.text(), 0) and (spec.folder / 'xtbopt.xyz').is_file()
+    assert job_id and [line.split()[0] for line in (server / 'xtb.log').read_text().splitlines()] == [
+        next(s.folder.glob('*.args')).read_text().split()[0] for s in specs]  # each with its own coordinates
 
 
 def test_a_queue_ended_before_its_calculation(server, tmp_path, monkeypatch):

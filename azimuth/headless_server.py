@@ -13,7 +13,7 @@
        (the owner, 2026-11-22; switch_vpn_on — what the window does itself), its window kept off the screen, and the
        server is asked once more; no profile chosen — said so, nothing is switched on. The VPN is never switched off
        from here.
-    2. Only the programs a server runs (remote_job.REMOTE_KINDS: ORCA, MOPAC), found there by the probe.
+    2. Only the programs a server runs (remote_job.REMOTE_KINDS: ORCA, MOPAC, xtb), found there by the probe.
     3. Cores. A server with SLURM has a queue (the owner, 2026-11-27: «Пусть сам пользователь задает количество ядер —
        если оно больше свободных — встает в очередь»): the cores are those asked for (DEFAULT_CORES without a wish),
        at most cluster.BUSY_SHARE (80 %) of the node for one calculation (queue_ceiling: a larger job would never

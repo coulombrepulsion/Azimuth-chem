@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.29 — 28 November 2026
+
+- ### 0.249.29 — xtb on the server
+
+xtb runs on a server now too — one calculation, a queue, or without the window. When a result is far from experiment, «Experiment» suggests looking for another conformer.
+
 ## 0.249.28 — 28 November 2026
 
 - ### 0.249.28 — The enthalpy of a reaction from experiment

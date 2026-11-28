@@ -451,7 +451,7 @@ class BatchTool:
         from modules.sextant.remote_job import REMOTE_KINDS
 
         if place == 'server' and kind not in REMOTE_KINDS:  # MOPAC too
-            self.w.error(tr('На сервере считаются ORCA и MOPAC — выберите одну из них.'))
+            self.w.error(tr('На сервере считаются ORCA, MOPAC и xtb — выберите одну из них.'))
             return None
         try:
             calc = self.w.calculation()
