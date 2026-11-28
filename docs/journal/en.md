@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.16 — 28 November 2026
+
+- ### 0.249.16 — The model shows what it builds
+
+A language model of this computer can open the structure it built in Compass, mark atoms and take a picture of the window. The window answers this computer only, and only with its key.
+
 ## 0.249.15 — 28 November 2026
 
 - ### 0.249.15 — All the calculations of a project on a server

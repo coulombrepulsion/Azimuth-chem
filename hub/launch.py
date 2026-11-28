@@ -85,6 +85,12 @@ def main(default=None):
         app.setStyleSheet(theme_style_sheet())  # both themes, before the windows
         window = HubWindow(initial=args.module)
         app.link_listener = link_channel.Listener(app, window.open_link, file_handler=window.open_file)
+        # a language model of this computer shows in the open window what it built (azimuth/window_control.py)
+        from azimuth.window_control import Control
+
+        app.window_control = Control(window)
+        if app.window_control.start():
+            app.aboutToQuit.connect(app.window_control.stop)
         register_links()
         if args.link:
             from PySide6.QtCore import QTimer as _Timer

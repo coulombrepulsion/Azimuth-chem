@@ -75,6 +75,8 @@
 - `azimuth/ui.py` — Shared Qt widget helpers, retaining the existing interface.
 - `azimuth/ui_windows.py` — The small windows and the placing of windows in Azimuth: «?» with its popup of help, the echo of a status, the ornaments frozen while a window moves, a dialog kept in the centre of its owner, a pill fitted to its text, «Скопировано».
 - `azimuth/updates.py` — Is there a newer version of Azimuth: the latest release of GitHub against the running one.
+- `azimuth/window_client.py` — The side of a language model of the channel to the open window of Azimuth (azimuth/window_control.py): no Qt.
+- `azimuth/window_control.py` — The open window of Azimuth answers a language model on this computer: a structure shown, atoms chosen, a picture.
 - `azimuth/window_port.py` — The declared part of the window a tool may use: Studio holds the tools and links them through a small explicit interface of commands and events, not through free access to the window.
 
 ## azimuth/runtime

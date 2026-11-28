@@ -17,7 +17,10 @@ calculations, reads their results and runs the checks of the program, by the com
        and — the owner, 2026-11-22 — one calculation of ORCA or MOPAC sent to the SLURM server of a profile of
        Sextant (azimuth/headless_server.py: the login by the key only, never a password; the cores and the memory
        of a queue of SLURM — those asked for, of a server without it — within what is free; a time limit; a journal; stop is
-       scancel of its own job). Nothing is deleted, nothing is pushed, no command of the model is run on the server.
+       scancel of its own job); a crystal of Quantum ESPRESSO or CP2K sent there too (0.249.15). The open window of
+       Azimuth, when the user has it running, shows a structure, chooses atoms and gives a picture of itself
+       (azimuth/window_control.py: this computer and this user only, a token of the window). Nothing is deleted,
+       nothing is pushed, no command of the model is run on the server.
     4. The paths of the programs chosen in «Настройки → Программы» are read from the settings of Azimuth when
        PySide6 is there (QtCore only, no window); without it the programs are searched as Sextant searches them.
 §7 TESTS tests/core/test_mcp_server.py (the protocol through a pipe, the tools on the test data).
@@ -102,6 +105,22 @@ TOOLS = [
          'program': CRYSTAL_PROGRAM, 'crystal': CRYSTAL, 'settings': CRYSTAL_SETTINGS, 'server': {'type': 'string'},
          'cores': {'type': 'integer'}, 'memory_mb': {'type': 'integer'}, 'hours': {'type': 'integer'}},
          'required': ['program', 'crystal']}},
+    {'name': 'azimuth_window_state', 'description': 'What the open window of Azimuth shows now (the section, the '
+                                                    'formula and the atoms of the structure in Compass, the atoms '
+                                                    'chosen). The window answers this computer and this user only.',
+     'inputSchema': {'type': 'object', 'properties': {}}},
+    {'name': 'azimuth_window_show', 'description': 'Open a structure, a crystal or a project of this computer in '
+                                                   'Compass of the open window, as «File → Open…» (for example the '
+                                                   'file azimuth_structure_molecule or _crystal wrote), so the user '
+                                                   'sees what is built.',
+     'inputSchema': {'type': 'object', 'properties': {'path': {'type': 'string'}}, 'required': ['path']}},
+    {'name': 'azimuth_window_select', 'description': 'Choose atoms on the model of Compass in the open window '
+                                                     '(numbers from 1; an empty list — none).',
+     'inputSchema': {'type': 'object', 'properties': {'atoms': {'type': 'array', 'items': {'type': 'integer'}}},
+                     'required': ['atoms']}},
+    {'name': 'azimuth_window_snapshot', 'description': 'A picture (PNG) of the open window of Azimuth; its path is '
+                                                       'answered.',
+     'inputSchema': {'type': 'object', 'properties': {}}},
     {'name': 'azimuth_status', 'description': 'The state of a job (calculation or tests): running or finished, its '
                                               'progress, the end of its output; for a finished calculation — its result.',
      'inputSchema': {'type': 'object', 'properties': {'job': {'type': 'string'}, 'lines': {'type': 'integer'}},
@@ -240,6 +259,12 @@ class Server:
             return self.jobs.start_crystal_server(args['program'], args['crystal'], args.get('settings'), settings_store(),
                                                   args.get('server'), args.get('cores'), args.get('memory_mb'),
                                                   args.get('hours'))
+        if name.startswith('azimuth_window_'):
+            from azimuth import window_client
+
+            op = name[len('azimuth_window_'):]
+            fields = {'path': args['path']} if op == 'show' else {'atoms': args['atoms']} if op == 'select' else {}
+            return window_client.ask(op, **fields)
         if name == 'azimuth_status':
             return self.jobs.status(args['job'], int(args.get('lines', 40)))
         if name == 'azimuth_stop':
