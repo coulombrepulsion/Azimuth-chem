@@ -282,12 +282,26 @@ class NMRPanel(QWidget):
         element = self.element.currentText()
         if not element or not self.rows:
             return None
-        dialog = NMRCompareDialog(self, self.rows, element, self.measured.get(element, ''))
+        dialog = NMRCompareDialog(self, self.rows, element, self.measured.get(element, ''), self.known_shifts(element))
         dialog.text.textChanged.connect(lambda: self.measured.__setitem__(element, dialog.text.toPlainText()))
         self.compare_dialog = dialog
         if show:
             dialog.show()
         return dialog
+
+    def known_shifts(self, element):
+        """(solvents, text_of(solvent)) of the measured shifts of the molecule loaded (analysis/measured_nmr.py),
+        or None when it is not one of the course."""
+        from modules.spectrum.analysis import measured_nmr
+
+        geometry = self.geometry
+        try:
+            solvents = measured_nmr.solvents(geometry, element) if geometry is not None else []
+        except (ValueError, KeyError, IndexError, AttributeError):
+            solvents = []
+        if not solvents:
+            return None
+        return solvents, lambda solvent: measured_nmr.text(geometry, element, solvent)
 
     # -- the stored references: «nmr_reference_C@B3LYP DEF2-SVP» per level, «nmr_reference_C» without one --------
     @staticmethod

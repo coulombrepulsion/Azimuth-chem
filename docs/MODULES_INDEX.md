@@ -450,6 +450,7 @@
 - `modules/spectrum/analysis/ir_spectrum.py` — Gaussian IR broadening (the lines and the broadened curve). Contract: docs/features/IR_SPECTRUM.md.
 - `modules/spectrum/analysis/isotopes.py` — The isotope pattern of a molecular ion: M, M+1, M+2… with their exact masses.
 - `modules/spectrum/analysis/measured.py` — The measured values of the molecules of the course next to a result: frequencies, bonds, dipole moment, ionization energy, enthalpy of formation.
+- `modules/spectrum/analysis/measured_nmr.py` — The measured ¹H and ¹³C shifts of the molecules of the course — filled into «Сравнить с экспериментом…» of the NMR tab when the structure of the result is one of them (analysis/measured.py tells the molecule).
 - `modules/spectrum/analysis/methods_text.py` — «Методика расчёта»: the paragraph of the computational details of a result, and the archive of its input files.
 - `modules/spectrum/analysis/nci_domains.py` — Weak interactions told apart by NCI: the regions of low RDG split into domains, each named and measured.
 - `modules/spectrum/analysis/nmr_compare.py` — Computed chemical shifts against the measured ones: the errors, the linear correction, the assignment.

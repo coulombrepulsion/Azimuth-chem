@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.30 — 28 November 2026
+
+- ### 0.249.30 — Measured NMR shifts
+
+For 14 molecules of the course «Compare with experiment…» of the NMR tab opens with the measured ¹H and ¹³C shifts already on the right atoms; the solvent is chosen in a list.
+
 ## 0.249.29 — 28 November 2026
 
 - ### 0.249.29 — xtb on the server

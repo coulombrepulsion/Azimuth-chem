@@ -6619,5 +6619,7 @@
   "На сервере {} не нашёлся xtb (xtb в PATH или модуль). Впишите строки окружения в «Сервер…» (например, module load xtb).": "xtb was not found on the server {} (xtb in PATH or a module). Write the setup lines in «Server…» (e.g. module load xtb).",
   "{} считается только на этом компьютере; на сервере — ORCA, MOPAC и xtb": "{} runs on this computer only; on a server — ORCA, MOPAC and xtb",
   "На сервере пока считаются только ORCA, MOPAC и xtb — {} считается на этом компьютере.": "A server runs only ORCA, MOPAC and xtb for now — {} runs on this computer.",
-  "На сервере считаются ORCA, MOPAC и xtb — выберите одну из них.": "A server runs ORCA, MOPAC and xtb — choose one of them."
+  "На сервере считаются ORCA, MOPAC и xtb — выберите одну из них.": "A server runs ORCA, MOPAC and xtb — choose one of them.",
+  "Опыт из таблицы ({}), растворитель:": "Measured, from the table ({}), solvent:",
+  "Сдвиги этой молекулы из таблиц Fulmer et al. (2010) в выбранном растворителе, уже на атомах расчёта. Расчёт — в газе или в модели растворителя: ¹H расходятся с раствором на 0.1–0.3 м.д., ¹³C — на 1–2 м.д. уже от этого; C6D6 и толуол-d8 сдвигают протоны сильнее. OH и NH не даны: их сдвиг зависит от концентрации.": "The shifts of this molecule from the tables of Fulmer et al. (2010) in the solvent chosen, already on the atoms of the calculation. The calculation is in the gas or a continuum model: from that alone ¹H differ from the solution by 0.1–0.3 ppm and ¹³C by 1–2 ppm; C6D6 and toluene-d8 shift the protons more. OH and NH are not given: their shift depends on the concentration."
 }

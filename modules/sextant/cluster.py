@@ -681,7 +681,7 @@ def job_script(chosen, setup='', name='azimuth', base='input', program='orca', s
             'ulimit -s unlimited 2> /dev/null || true',
             'XTB="$(command -v xtb)"',
             'if [ -z "$XTB" ]; then echo "Azimuth: xtb not found in PATH (setup lines of the server profile)" >&2; exit 2; fi',
-            f'eval "\"\$XTB\" $(cat {shlex.quote(base + ".args")})" > {shlex.quote(base + ".out")} 2>&1',
+            f'eval "\\"\\$XTB\\" $(cat {shlex.quote(base + ".args")})" > {shlex.quote(base + ".out")} 2>&1',
             'exit $?',
             '',
         ]

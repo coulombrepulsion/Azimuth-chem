@@ -1233,6 +1233,7 @@ def test_nmr_compare_dialog(window, app, tmp_path):
     panel.element.addItem('C')
     panel.rows = rows  # after the element: choosing it fills the rows from the shieldings loaded (none here)
     opened = panel.compare(show=False)
+    assert not opened.solvent.isVisibleTo(opened)  # no structure: no table to offer
     opened.text.setPlainText('1\n2\n3\n4')
     assert panel.measured == {'C': '1\n2\n3\n4'} and panel.compare(show=False).text.toPlainText() == '1\n2\n3\n4'
 
@@ -1266,6 +1267,17 @@ def test_nmr_conformers_dialog(window, app, tmp_path):
     panel.element.setCurrentText('C')
     sigma = sorted(float(panel.table.item(r, 2).text()) for r in range(panel.table.rowCount()))
     assert len(sigma) == 2 and abs(sigma[1] - 175.96) < 0.02 and abs(sigma[0] - 135.67) < 0.02
+    # ethanol is a molecule of the course: «Сравнить с экспериментом…» opens with the shifts of Fulmer et al. (2010)
+    # already on its atoms (tests/spectrum/test_measured_nmr.py has the atoms), CDCl3 first, another solvent on choice
+    compare = panel.compare(show=False)
+    assert compare.solvent.isVisibleTo(compare) and compare.solvent.currentText() == 'CDCl3'
+    assert compare.text.toPlainText().startswith('# Fulmer') and len(compare.found[0]) == 2
+    assert sorted(p.exp for p in compare.found[0]) == [18.41, 58.28]
+    compare.solvent.setCurrentText('D2O')
+    compare.take_table()
+    assert sorted(p.exp for p in compare.found[0]) == [17.47, 58.05] and 'D2O' in panel.measured['C']
+    compare.text.setPlainText('C1 60.0')  # typed over: kept, and the next window opens with it, not with the table
+    assert panel.compare(show=False).text.toPlainText() == 'C1 60.0'
 
 
 def test_methods_dialog(window, app, tmp_path):

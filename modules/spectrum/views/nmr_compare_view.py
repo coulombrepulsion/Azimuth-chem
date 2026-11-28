@@ -6,8 +6,10 @@
     absolute error, the largest deviation, the straight line σ = a + b·δ_exp and the errors after its correction, and
     names the signals too close to be told apart; the plot — δ computed against δ measured with the line y = x.
 §4 SPECIFICATION
-    NMRCompareDialog(owner, rows, element, text='') — rows of orca_spectra.shifts for the element; .text
-    (QPlainTextEdit), .table, .note, .plot (ShiftPlot: points [(exp, calc)], corrected [(exp, δ)]); compute() ->
+    NMRCompareDialog(owner, rows, element, text='', known=None) — rows of orca_spectra.shifts for the element; known —
+    (solvents, text_of(solvent)) of analysis/measured_nmr.py when the molecule is one of the course: .solvent
+    (QComboBox, hidden without it) puts the shifts of the table into the text (the first solvent at the opening when
+    text is empty); .text (QPlainTextEdit), .table, .note, .plot (ShiftPlot: points [(exp, calc)], corrected [(exp, δ)]); compute() ->
     (pairs, stats | None, fit | None) or None with the reason in the note; copy(); save_csv(path=None) -> path.
     TOLERANCE {element: ppm} — computed signals nearer than this are called doubtful (H 0.1, C 2, others 5).
 §7 TESTS
@@ -16,7 +18,8 @@
 
 from PySide6.QtCore import QPointF, QRectF, Qt
 from PySide6.QtGui import QColor, QFont, QPainter, QPen
-from PySide6.QtWidgets import QApplication, QDialog, QHBoxLayout, QPlainTextEdit, QVBoxLayout, QWidget
+from PySide6.QtWidgets import (QApplication, QComboBox, QDialog, QHBoxLayout, QPlainTextEdit, QVBoxLayout,
+                               QWidget)
 
 from azimuth.i18n import tr
 from azimuth.ui import button, label
@@ -108,7 +111,7 @@ class ShiftPlot(QWidget):
 
 
 class NMRCompareDialog(QDialog):
-    def __init__(self, owner, rows, element, text=''):
+    def __init__(self, owner, rows, element, text='', known=None):
         super().__init__(owner)
         self.setWindowTitle(tr('Сравнение с экспериментом') + f' · {element}')
         self.rows, self.element = list(rows), element
@@ -119,6 +122,19 @@ class NMRCompareDialog(QDialog):
                         '«H3 H4 H5 2.15») — по вашему отнесению; тогда можно ввести и часть спектра.'), 'subtitle')
         hint.setWordWrap(True)
         lay.addWidget(hint)
+        self.known = known
+        table_row = QHBoxLayout()
+        self.solvent_label = label(tr('Опыт из таблицы ({}), растворитель:').format(
+            'Fulmer et al., Organometallics 2010'), 'subtitle')
+        table_row.addWidget(self.solvent_label)
+        self.solvent = QComboBox()
+        self.solvent.setToolTip(tr('Сдвиги этой молекулы из таблиц Fulmer et al. (2010) в выбранном растворителе, уже '
+                                   'на атомах расчёта. Расчёт — в газе или в модели растворителя: ¹H расходятся с '
+                                   'раствором на 0.1–0.3 м.д., ¹³C — на 1–2 м.д. уже от этого; C6D6 и толуол-d8 '
+                                   'сдвигают протоны сильнее. OH и NH не даны: их сдвиг зависит от концентрации.'))
+        table_row.addWidget(self.solvent)
+        table_row.addStretch(1)
+        lay.addLayout(table_row)
         top = QHBoxLayout()
         self.text = QPlainTextEdit()
         self.text.setPlaceholderText('171.2\n128.9\n61.5\n21.0')
@@ -142,7 +158,22 @@ class NMRCompareDialog(QDialog):
         bottom.addWidget(button(tr('Закрыть'), self.accept))
         lay.addLayout(bottom)
         self.resize(820, 700)
+        solvents = list(known[0]) if known else []
+        for widget in (self.solvent_label, self.solvent):
+            widget.setVisible(bool(solvents))
+        self.solvent.addItems(solvents)
+        self.solvent.activated.connect(lambda _index: self.take_table())
+        if solvents and not text.strip():
+            self.take_table()
         self.compute()
+
+    def take_table(self):
+        """The shifts of the table in the solvent chosen, in place of the text."""
+        if not self.known or not self.solvent.currentText():
+            return ''
+        made = self.known[1](self.solvent.currentText())
+        self.text.setPlainText(made)
+        return made
 
     def names(self, atoms):
         return ', '.join(f'{self.element}{a + 1}' for a in atoms)
