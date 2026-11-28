@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.9 — 28 November 2026
+
+- ### 0.249.9 — Cards without jumps
+
+While the list of structures slides, the molecule and input file cards in Sextant no longer jump: the height changes once and smoothly, after the list has stopped.
+
 ## 0.249.8 — 28 November 2026
 
 - ### 0.249.8 — More room for the input file

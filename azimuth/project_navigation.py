@@ -342,6 +342,10 @@ class ProjectNavigation(ProjectCrystals, ProjectRows, ProjectMoves, ProjectSavin
         from azimuth.ui import freeze_ornaments
 
         freeze_ornaments(self)  # the scales of the window a picture while the panel slides
+        glide = getattr(self, 'calc_card_glide', None)  # the card of the molecule of Sextant keeps its height
+        if glide is not None:
+            glide.hold()
+            glide.foresee(box, target)
         profiled = slide_profile_begin()
 
         def done():
@@ -349,6 +353,11 @@ class ProjectNavigation(ProjectCrystals, ProjectRows, ProjectMoves, ProjectSavin
             freeze_ornaments(self, False)
             box.setFixedWidth(target)
             box.setVisible(bool(target))
+            if glide is not None:
+                holder = box.parentWidget()
+                if holder is not None and holder.layout() is not None:
+                    holder.layout().activate()  # the columns at their last widths before the card is measured
+                glide.settle()
             if self.project_motion is motion:
                 self.project_motion = None
                 if viewer is not None and hasattr(viewer, 'end_glide'):

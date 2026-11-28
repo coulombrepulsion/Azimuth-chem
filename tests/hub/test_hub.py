@@ -1601,3 +1601,36 @@ def test_the_card_of_the_molecule_keeps_its_lines_whole_beside_the_panel_of_stru
     finally:
         st.project_menu_button.setChecked(False)
         st.slide_project_pane(False, animate=False)
+
+
+def test_the_card_of_the_molecule_does_not_jump_while_the_panel_of_structures_slides(hub, app):
+    # 0.249.9, the owner: «теперь эти окна где молекула и где входной файл при сворачивании прыгают» — the card keeps
+    # its height while the panel slides, then goes to its new one in one smooth motion, never back and forth
+    from modules.compass.panels.trajectory_drawer import SLIDE_MS
+    from modules.sextant.calculation_page import PictureFold
+
+    st = hub.studio
+    st.opening_tool.load_smiles('O')
+    hub.resize(1132, 700)
+    hub.show()
+    hub.show_section('sextant', animate=False)
+    QTest.qWait(400)
+    try:
+        for opened in (True, False):
+            st.project_menu_button.setChecked(opened)
+            before = st.calc_card.height()
+            st.toggle_project_molecules()
+            heights = []
+            end = time.monotonic() + (SLIDE_MS + PictureFold.MS + 400) / 1000
+            while time.monotonic() < end:
+                QTest.qWait(10)
+                heights.append(st.calc_card.height())
+            sliding = heights[:5]
+            assert set(sliding) == {before}, (opened, str(heights), st.calc_card_glide.held)  # held while the panel slides
+            # afterwards one way only — up or down, no jump back
+            steps = [b - a for a, b in zip(heights, heights[1:]) if b != a]
+            assert all(x > 0 for x in steps) or all(x < 0 for x in steps), (opened, str(heights))
+            assert st.preview_card.geometry().top() > st.calc_card.geometry().bottom()
+    finally:
+        st.project_menu_button.setChecked(False)
+        st.slide_project_pane(False, animate=False)

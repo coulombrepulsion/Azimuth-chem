@@ -436,6 +436,9 @@ def calculation_page(self):
         def eventFilter(self, watched, event):
             from PySide6.QtCore import QEvent
 
+            glide = owner.calc_card_glide
+            if glide.held or glide.gliding:  # the panel of structures sliding or just stopped: CardGlide sets the height
+                return False
             if event.type() in (QEvent.Type.Resize, QEvent.Type.LayoutRequest, QEvent.Type.Show):
                 fold = getattr(owner, 'calc_picture_fold', None)
                 if fold is not None and event.type() != QEvent.Type.LayoutRequest:
@@ -456,7 +459,87 @@ def calculation_page(self):
                 holder.layout().invalidate()
                 holder.layout().activate()
 
+    class CardGlide:
+        """While the panel of structures slides, the card of the molecule keeps its height and its picture; when it
+        has stopped, the picture folds away or comes back (PictureFold.MS) and the card follows the height its lines
+        need, a part of the way at each frame — the card and the input file under it jumped at each frame, as the lines
+        were wrapped anew and the picture went in the middle of the slide (the owner, 2026-11-28: «теперь эти окна где
+        молекула и где входной файл при сворачивании прыгают»)."""
+
+        FRAME = 16  # ms
+        SHARE = 0.3  # of the way left, at each frame
+
+        def __init__(self, card):
+            self.card = card
+            self.held = False
+            self.gliding = False
+            self.timer = QTimer(card)
+            self.timer.setInterval(self.FRAME)
+            self.timer.timeout.connect(self.step)
+            self.until = 0.0
+
+        def hold(self):
+            if self.card.isVisible():
+                self.timer.stop()
+                self.gliding = False
+                self.held = True
+                self.card.setFixedHeight(self.card.height())
+
+        def foresee(self, box, width):
+            """At the start of a slide: the width the card will have when the panel (box) is at width — the picture
+            folds away or comes back during the slide, not after it (the height went up and back down)."""
+            holder = box.parentWidget()
+            if not self.card.isVisible() or holder is None or holder.layout() is None:
+                return
+            was = box.width()
+            box.setFixedWidth(width)
+            holder.layout().activate()
+            wide = self.card.width() >= COMPACT_CARD
+            box.setFixedWidth(was)
+            holder.layout().activate()
+            owner.calc_picture_fold.set(wide)
+
+        def need(self):
+            height = self.card.layout().heightForWidth(self.card.width())
+            return max(height, self.card.minimumSizeHint().height()) if height > 0 else self.card.height()
+
+        def settle(self):
+            if not self.held:
+                return
+            import time
+
+            self.held = False
+            owner.calc_picture_fold.set(self.card.width() >= COMPACT_CARD)
+            if not self.card.isVisible():
+                self.release()
+                return
+            self.gliding = True
+            self.until = time.monotonic() + (PictureFold.MS + 120) / 1000
+            self.timer.start()
+
+        def step(self):
+            import time
+
+            need, now = self.need(), self.card.height()
+            if now != need:
+                way = need - now
+                move = round(way * self.SHARE) or (1 if way > 0 else -1)
+                self.card.setFixedHeight(now + move)
+            elif time.monotonic() >= self.until:
+                self.release()
+
+        def release(self):
+            from PySide6.QtCore import QEvent
+            from PySide6.QtWidgets import QApplication
+
+            self.timer.stop()
+            self.held = self.gliding = False
+            self.card.setMinimumHeight(0)
+            self.card.setMaximumHeight(16777215)
+            QApplication.sendEvent(self.card, QEvent(QEvent.Type.LayoutRequest))  # FitHeight measures it again
+
     owner = self
+    self.calc_card_glide = CardGlide(self.calc_card)
     self._calc_card_fit = FitHeight(self.calc_card)
     self.calc_card.installEventFilter(self._calc_card_fit)
     preview, preview_layout = card(tr('Входной файл ORCA'))
