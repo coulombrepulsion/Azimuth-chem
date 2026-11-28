@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.21 — 28 November 2026
+
+- ### 0.249.21 — Even corners and a smooth theme
+
+Menus and drop-down lists on Windows have even rounded corners, with no square corners and no double rounding. The ticks of «Progress» are drawn sharp, and the theme changes smoothly, without jerks.
+
 ## 0.249.20 — 28 November 2026
 
 - ### 0.249.20 — CP2K on Windows

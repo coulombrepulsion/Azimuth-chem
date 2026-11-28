@@ -498,6 +498,11 @@ class HubWindow(HubMenus, QMainWindow):
         wipe.raise_()
         wipe.repaint()  # the old picture is on screen before the restyling starts
         self.studio.theme.setCurrentIndex(target)
+        # the new look a picture too (hub/theme_wipe.py set_after): grabbed once with the overlay hidden — no frame
+        # reaches the screen in between, the paint events wait for the event loop
+        wipe.hide()
+        wipe.set_after(self.grab())
+        wipe.show()
         wipe.raise_()
         self._theme_wipe = wipe
         # the background of the page a picture while the ink moves (0.248.10: each frame painted it anew — 12–15 ms —

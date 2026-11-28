@@ -49,6 +49,8 @@
 """
 
 
+from pathlib import Path
+
 from PySide6.QtCore import QEvent, QObject, QRectF, Qt, QTimer
 from PySide6.QtGui import QColor, QFont, QPainter, QPixmap
 from PySide6.QtWidgets import (
@@ -100,6 +102,36 @@ def program_badge(kind, size=22, ratio=1.0):
     p.end()
     return pixmap
 
+
+MARKS_FOLDER = None  # the folder of the drawn marks (mark_image), made once
+
+
+def mark_image(name, colour, size=13):
+    """A glyph of azimuth/icons.py drawn as a picture for the rich text of a label — the ✓ of the font was drawn
+    pixelated in «Ход расчёта» on Windows (the owner, 2026-11-28: «Галочки очень пиксельные»). Two files, of 1× and
+    2× (name@2x.png — Qt takes it on a screen of a larger scale), in a folder of the temporary files; the HTML of the
+    picture, or the glyph of the font if the files cannot be written."""
+    import tempfile
+
+    from PySide6.QtCore import QSize
+
+    from azimuth.icons import icon
+
+    global MARKS_FOLDER
+    if MARKS_FOLDER is None:
+        MARKS_FOLDER = Path(tempfile.gettempdir()) / 'azimuth-marks'
+    stem = f'{name}-{colour.lstrip("#")}-{size}'
+    path = MARKS_FOLDER / f'{stem}.png'
+    if not path.is_file():
+        try:
+            MARKS_FOLDER.mkdir(parents=True, exist_ok=True)
+            glyph = icon(name, colour)
+            for scale, target in ((1, path), (2, MARKS_FOLDER / f'{stem}@2x.png')):
+                if not glyph.pixmap(QSize(size * scale, size * scale), 1.0).save(str(target)):
+                    raise OSError(target)
+        except OSError:
+            return f'<span style="color: {colour};">{"✓" if name == "check" else "·"}</span>'
+    return f'<img src="{path.as_posix()}" width="{size}" height="{size}" style="vertical-align: middle;">'
 
 class _Follower(QObject):
     """Event filter on the main window: the job window follows its minimizing and closing."""
@@ -348,7 +380,7 @@ class JobWindow(QWidget):
             # «27 秒», «2 мин 05 с» (runner.duration): the numbers kept, the units translated anew
             when = ' '.join(word if word[:1].isdigit() else tr(to_source(word)) for word in when.split())
             tail = f' <span style="color: #8a94a3;">· {when}</span>' if when else ''
-            lines.append(f'<span style="color: #3a9a5b;">✓</span>&nbsp; {text}{tail}')
+            lines.append(f'{mark_image("check", "#3a9a5b")}&nbsp; {text}{tail}')
         return lines
 
     def changeEvent(self, event):

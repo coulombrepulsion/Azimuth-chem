@@ -154,6 +154,7 @@ class _PopupFade:
             class Fade(QObject):
                 def eventFilter(self, watched, event):
                     if event.type() == QEvent.Type.Show and watched.isWindow():
+                        system_corners_off(watched)
                         group = QParallelAnimationGroup(watched)
                         anim = QPropertyAnimation(watched, b'windowOpacity', group)
                         anim.setDuration(cls.OPEN_MS)
@@ -235,6 +236,68 @@ def open_window(box):
     return box
 
 
+DWMWA_WINDOW_CORNER_PREFERENCE, DWMWCP_DONOTROUND = 33, 1  # dwmapi.h (Windows 11)
+
+
+def system_corners_off(popup):
+    """Windows 11 rounds a popup window itself (DWM, its own radius of about 8 px) over the corners the style sheet
+    draws (9 px) — the corners of menus and lists came out uneven or cut (the owner's Windows, 2026-11-28: «Края
+    обрезаны неровно или вообще не обрезаны»). A popup drawn translucent with its own corners (rounded,
+    app_theme.style_combo — the property quail_round) asks DWM not to round it. Elsewhere, on Windows 10 (the
+    attribute is unknown there) and for other windows — nothing. True when asked."""
+    import sys
+
+    if sys.platform != 'win32' or popup is None or not popup.property('quail_round'):
+        return False
+    try:
+        import ctypes
+
+        value = ctypes.c_int(DWMWCP_DONOTROUND)
+        result = ctypes.windll.dwmapi.DwmSetWindowAttribute(ctypes.c_void_p(int(popup.winId())),
+                                                            DWMWA_WINDOW_CORNER_PREFERENCE, ctypes.byref(value),
+                                                            ctypes.sizeof(value))
+    except (OSError, AttributeError, ValueError, TypeError):
+        return False
+    return result == 0
+
+
+class _MenuRounding:
+    """Every menu of the application drawn with the rounded corners of the style sheet — the menus of the menu bar of
+    Windows and Linux, the context menus of text fields (createStandardContextMenu) and the submenus too, not only
+    those passed to rounded(): they were square windows behind a border of 9 px, and their corners showed the
+    background (the owner's Windows, 2026-11-28). A menu is made translucent when it is polished — QMenu.popup polishes
+    it before its window is created, the only moment its flags can change without a new window."""
+
+    filter = None
+
+    @classmethod
+    def install(cls, app):
+        from PySide6.QtCore import QEvent, QObject, Qt
+        from PySide6.QtWidgets import QMenu
+
+        import sys
+
+        if app is None or cls.filter is not None or sys.platform == 'darwin':  # the menu bar of a Mac is native
+            return False
+
+        class Rounding(QObject):
+            def eventFilter(self, watched, event):
+                if (event.type() == QEvent.Type.Polish and isinstance(watched, QMenu)
+                        and not watched.property('quail_round')
+                        and not watched.testAttribute(Qt.WidgetAttribute.WA_WState_Created)):
+                    rounded(watched)
+                return False
+
+        cls.filter = Rounding(app)
+        app.installEventFilter(cls.filter)
+        return True
+
+
+def round_menus(app):
+    """All the menus of the application rounded (_MenuRounding); once — True when installed now."""
+    return _MenuRounding.install(app)
+
+
 def rounded(menu):
     """A menu drawn with the rounded corners of the style sheet — no square window behind them (of
     modules/sextant/job_window.py; also for menus made in code, not only those of the menu bar); it fades in as the
@@ -242,10 +305,10 @@ def rounded(menu):
     from PySide6.QtCore import Qt
 
     if menu is not None and not menu.property('quail_round'):
+        menu.setProperty('quail_round', True)  # first: the flags below are set once (_MenuRounding asks while polishing)
         menu.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         menu.setWindowFlags(menu.windowFlags() | Qt.WindowType.FramelessWindowHint
                             | Qt.WindowType.NoDropShadowWindowHint)
-        menu.setProperty('quail_round', True)
     return smooth(menu)
 
 

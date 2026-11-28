@@ -1047,6 +1047,14 @@ def test_theme_wipe_circle(app):
     grow.progress = 0.5
     image = grow.grab().toImage()
     assert image.pixelColor(390, 10) == QColor('#f5f6f8')  # far from the button: still the old picture
+    # the new look a picture too: the overlay is opaque and paints it inside the ink (0.249.21 — the window under it
+    # was painted anew at every frame, jerks on Windows)
+    after = QPixmap(400, 300)
+    after.fill(QColor('#191f28'))
+    grow.set_after(after)
+    assert grow.testAttribute(theme_wipe.Qt.WidgetAttribute.WA_OpaquePaintEvent)
+    image = grow.grab().toImage()
+    assert image.pixelColor(20, 280) == QColor('#191f28') and image.pixelColor(390, 10) == QColor('#f5f6f8')
     assert theme_wipe.wipe_enabled() is False  # the tests run offscreen: the theme changes at once
     # a little slower, with an ease out (the ink moves from the first frame)
     assert theme_wipe.WIPE_MS == 950

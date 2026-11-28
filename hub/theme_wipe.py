@@ -15,12 +15,17 @@ HEADER
     with the waves k = 3, 5, 8, 13 (amplitudes 0.07 … 0.012, each drifting at its own speed); R = (distance to the
     farthest corner) / (1 − Σ aₖ), so that the shape covers the window at the end.
     The centre is the icon of the theme button (left in the button), not the middle of the wide button.
+    0.249.21: the new look is a still picture too (set_after — the window grabbed once after the restyling, the
+    overlay hidden for it): the overlay is then opaque and paints the two pictures, and nothing under it is painted
+    while the ink moves. Before, the part already in the new theme was the window itself, painted anew at every frame
+    under the clip — on Windows the change of theme went in jerks (the owner, 2026-11-28: «тема очень дерганно
+    переключилась»).
     WIPE_MS is 950 ms with an ease out: the ink moves from the first frame, so the answer to the click looks quicker.
     To the dark theme an ease in (InCubic), the reverse of the way back: the darkness grows out of the button point
     instead of jumping out at once. The restyling stays under the still picture: done before the wipe or under ink
     covering the window, its pause would be seen.
 §4 SPECIFICATION
-    ThemeWipe(parent, still: QPixmap, centre: QPointF, spreading: bool); start(done=None);
+    ThemeWipe(parent, still: QPixmap, centre: QPointF, spreading: bool); set_after(picture: QPixmap); start(done=None);
     radius() -> float (mean); edge() -> QPainterPath; edge_radius(theta) -> float. centre is in the coordinates of
     parent.
     wipe_enabled() -> bool: not on the offscreen and minimal platforms (tests) and not with WIPE_MS = 0.
@@ -51,6 +56,7 @@ class ThemeWipe(QWidget):
         self.centre = QPointF(centre)
         self.spreading = bool(spreading)  # True: to the dark theme, the circle grows
         self.progress = 0.0
+        self.after = None  # the window in the new theme (set_after); None — the window itself shows through
         self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
         self.setAttribute(Qt.WidgetAttribute.WA_OpaquePaintEvent, False)
         self.setGeometry(parent.rect())
@@ -88,6 +94,13 @@ class ThemeWipe(QWidget):
         r = self.far()
         return r * self.progress if self.spreading else r * (1.0 - self.progress)
 
+    def set_after(self, picture):
+        """The window in the new theme as a still picture: the overlay becomes opaque, the window under it is not
+        painted while the ink moves."""
+        self.after = picture if picture is not None and not picture.isNull() else None
+        self.setAttribute(Qt.WidgetAttribute.WA_OpaquePaintEvent, self.after is not None)
+        self.update()
+
     def start(self, done=None):
         def finished():
             if done is not None:
@@ -109,6 +122,8 @@ class ThemeWipe(QWidget):
         blot = self.edge() if r > 0.5 else QPainterPath()
         whole = QPainterPath()
         whole.addRect(QRectF(self.rect()))
+        if self.after is not None:
+            p.drawPixmap(self.rect(), self.after)
         p.setClipPath(whole.subtracted(blot) if self.spreading else blot)
         p.drawPixmap(self.rect(), self.still)
         p.setClipping(False)

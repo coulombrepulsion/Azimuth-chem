@@ -57,6 +57,9 @@ def use_fusion(app):
     # carried by the program (azimuth/fonts.py) was drawn too sharp on Windows (the owner, 2026-11-27) and is not set
     app.setStyle(_quiet_wheel_style())
     app.setProperty('azimuth_fusion', True)
+    from azimuth.ui import round_menus
+
+    round_menus(app)  # every menu with the rounded corners of the style sheet, not only those passed to rounded()
     return True
 
 
