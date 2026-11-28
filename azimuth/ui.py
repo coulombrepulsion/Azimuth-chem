@@ -265,7 +265,7 @@ class _MenuRounding:
     """Every menu of the application drawn with the rounded corners of the style sheet — the menus of the menu bar of
     Windows and Linux, the context menus of text fields (createStandardContextMenu) and the submenus too, not only
     those passed to rounded(): they were square windows behind a border of 9 px, and their corners showed the
-    background (the owner's Windows, 2026-11-28). A menu is made translucent when it is polished — QMenu.popup polishes
+    background (the owner's Windows, 2026-11-28; the same on the Mac). A menu is made translucent when it is polished — QMenu.popup polishes
     it before its window is created, the only moment its flags can change without a new window."""
 
     filter = None
@@ -275,9 +275,9 @@ class _MenuRounding:
         from PySide6.QtCore import QEvent, QObject, Qt
         from PySide6.QtWidgets import QMenu
 
-        import sys
-
-        if app is None or cls.filter is not None or sys.platform == 'darwin':  # the menu bar of a Mac is native
+        # the Mac too (0.249.32): the menus of the program are drawn by Qt there as well (the menu bar of the window is
+        # not native: setNativeMenuBar(False)), and the square window showed behind the corners of «Поля…»
+        if app is None or cls.filter is not None:
             return False
 
         class Rounding(QObject):

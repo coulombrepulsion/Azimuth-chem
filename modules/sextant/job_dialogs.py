@@ -6,7 +6,7 @@ Split off modules/sextant/job_window.py (0.222.30); job_window still names them.
 
 import os
 import time
-from PySide6.QtCore import QEvent, QPoint, Qt, QTimer, QUrl
+from PySide6.QtCore import QEvent, QPoint, QRectF, Qt, QTimer, QUrl
 from PySide6.QtGui import QDesktopServices, QFont, QIcon, QTextCursor
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -321,6 +321,51 @@ def rounded(menu):
     return menu
 
 
+class FamilyMenu(QMenu):
+    """The menu of the families of FamilyPicker: the family of the current choice (marked, its menu action) is written
+    in the blue of the program in a thin gold frame (the gold of the star of advice) — no «●» before its name (the
+    owner, 2026-11-28: «вместо черной точки … синим с золотой тонкой обводкой»)."""
+
+    BLUE = {False: '#2a62b8', True: '#6ea2f0'}
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.marked = None
+
+    def dark(self):
+        return self.palette().window().color().lightness() < 128
+
+    def initStyleOption(self, option, action):
+        super().initStyleOption(option, action)
+        if action is not None and action is self.marked:
+            from PySide6.QtGui import QColor, QPalette
+
+            blue = QColor(self.BLUE[self.dark()])
+            for role in (QPalette.ColorRole.Text, QPalette.ColorRole.WindowText, QPalette.ColorRole.ButtonText,
+                         QPalette.ColorRole.HighlightedText):
+                option.palette.setColor(role, blue)
+
+    def paintEvent(self, event):
+        super().paintEvent(event)
+        if self.marked is None or self.marked not in self.actions():
+            return
+        from PySide6.QtGui import QColor, QPainter, QPen
+
+        from hub.branding import STAR_GOLD
+
+        box = self.actionGeometry(self.marked)
+        if box.isEmpty():
+            return
+        painter = QPainter(self)
+        try:
+            painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+            painter.setPen(QPen(QColor(STAR_GOLD['dark' if self.dark() else 'light']), 1.0))
+            painter.setBrush(Qt.BrushStyle.NoBrush)
+            painter.drawRoundedRect(QRectF(box).adjusted(2.5, 1.5, -2.5, -1.5), 6, 6)
+        finally:
+            painter.end()
+
+
 class FamilyPicker(QPushButton):
     """The method or the basis set chosen through families — a short menu of families (Хартри — Фок,
     DFT: гибридные …, Попла, def2 …), each opening the list of its items. The data stay in the combo box it shows
@@ -349,7 +394,7 @@ class FamilyPicker(QPushButton):
         return False
 
     def build_menu(self):
-        menu = smooth(QMenu(self))
+        menu = smooth(FamilyMenu(self))
         rounded(menu)  # rounded corners, as the other menus (the square ones of the window showed)
         current = self.combo.currentIndex()
         if self.recommended is not None:
@@ -369,7 +414,7 @@ class FamilyPicker(QPushButton):
             action.setCheckable(True)
             action.setChecked(i == current)
             if i == current and target is not menu:
-                target.menuAction().setText('● ' + target.title())
+                menu.marked = target.menuAction()  # blue in a gold frame (FamilyMenu)
             action.triggered.connect(lambda checked=False, i=i: self.combo.setCurrentIndex(i))
         return menu
 

@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.32 — 28 November 2026
+
+- ### 0.249.32 — Smooth corners
+
+The corners of the cards and menus are rounded cleanly now, with no cut and no second edge, on the Mac and on Windows. In the menus of the method and the basis set the family of the current choice is written in blue in a thin gold frame.
+
 ## 0.249.31 — 28 November 2026
 
 - ### 0.249.31 — The menus of Sextant

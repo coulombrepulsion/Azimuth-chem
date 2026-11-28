@@ -15,7 +15,7 @@ def test_every_menu_is_rounded_when_it_is_polished(app, monkeypatch):
     from azimuth import ui
 
     monkeypatch.setattr(ui._MenuRounding, 'filter', None)
-    monkeypatch.setattr(sys, 'platform', 'linux')  # a Mac keeps its native menu bar: not there
+    monkeypatch.setattr(sys, 'platform', 'darwin')  # the Mac too (0.249.32)
     assert ui.round_menus(app) and not ui.round_menus(app)  # once
     try:
         menu = QMenu()  # as a context menu of a text field: not passed to rounded()

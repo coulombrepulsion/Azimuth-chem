@@ -235,6 +235,7 @@ class Ornament(QWidget):
         """The visible surfaces under the ornament, in its own coordinates."""
         region = QRegion()
         panels = self.panels = []
+        shapes = self.shapes = []  # (the whole widget, the radius of its corners, the part seen): surface_mask
         host = self.parentWidget()
         if host is None:
             return region
@@ -262,8 +263,10 @@ class Ornament(QWidget):
                 if radius:  # the rounded corners are not of the surface (they showed as square corners, 0.245.0)
                     whole = QRect(self.mapFrom(host, QWidget.mapTo(widget, host, QPoint(0, 0))), QWidget.size(widget))
                     region = region.united(self._rounded(whole, radius).intersected(QRegion(seen)))
+                    shapes.append((QRectF(whole), radius, QRect(seen)))
                 else:
                     region = region.united(seen)
+                    shapes.append((QRectF(seen), 0, QRect(seen)))
                 if seen.width() >= self.PANEL[0] and seen.height() >= self.PANEL[1] and self.is_panel(widget):
                     panels.append(seen)
         self.panels = [p for p in panels if not any(q is not p and q.contains(p) and q != p for q in panels)]
@@ -482,21 +485,78 @@ class Ornament(QWidget):
             self._azimuth(painter, glass=True)
             painter.restore()
 
+    def _blank(self):
+        ratio = self.devicePixelRatioF() or 1.0
+        picture = QPixmap(max(1, round(self.width() * ratio)), max(1, round(self.height() * ratio)))
+        picture.setDevicePixelRatio(ratio)
+        picture.fill(Qt.GlobalColor.transparent)
+        return picture
+
+    def surface_mask(self):
+        """The surfaces (surface_region, its shapes) drawn opaque with smoothed edges: the rounded corners exactly as
+        the style sheet draws those of a card. A QRegion of them is of whole pixels — its corner went past the smoothed
+        one of the card, the shadow of the page lay on the card and the glass on the page: the corners looked cut, with
+        a second edge (the owner, 2026-11-28, on Windows and on the Mac: «плохо скругленные углы»)."""
+        mask = self._blank()
+        painter = QPainter(mask)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(QColor(0, 0, 0))
+        try:
+            for whole, radius, seen in getattr(self, 'shapes', ()):
+                if radius:
+                    painter.setClipRect(seen)
+                    painter.drawRoundedRect(whole, radius, radius)
+                else:
+                    painter.setClipping(False)
+                    painter.fillRect(seen, QColor(0, 0, 0))
+        finally:
+            painter.end()
+        return mask
+
     def still_picture(self, surfaces, opaque):
-        """The light, the shadows and the background without the gyroscope, kept as one picture (0.248.10)."""
+        """The light, the shadows and the background without the gyroscope, kept as one picture (0.248.10). The page
+        and what lies under the surfaces are drawn apart and cut by surface_mask (0.249.32): smoothed corners."""
         ratio = self.devicePixelRatioF() or 1.0
         key = (self.width(), self.height(), ratio, self.ink.rgba(), self.dark, self.section, self.intro,
                tuple(r.getRect() for r in surfaces), tuple(r.getRect() for r in opaque))
         cached = getattr(self, '_still', (None, None))
         if cached[0] != key:
-            picture = QPixmap(max(1, round(self.width() * ratio)), max(1, round(self.height() * ratio)))
-            picture.setDevicePixelRatio(ratio)
-            picture.fill(Qt.GlobalColor.transparent)
+            from hub import backdrop
+
+            base = QRegion(self.rect()) if opaque is None or opaque.isEmpty() else QRegion(self.rect()).subtracted(opaque)
+            mask = self.surface_mask()
+            # the page straight into the picture (a copy through a second picture lost the colour of its faint pixels:
+            # 8 bits premultiplied), what lies under the surfaces apart, then put where the page was cut away
+            picture, under = self._blank(), self._blank()
             painter = QPainter(picture)
             painter.setRenderHint(QPainter.RenderHint.Antialiasing)
             try:
-                self.paint_depth(painter, surfaces)
-                self.paint_layers(painter, surfaces, opaque, gyro=False)
+                backdrop.shade(painter, QRectF(self.rect()), self.dark)
+                backdrop.edge_shadow(painter, self.height(), self.dark)
+                backdrop.shadows(painter, self.panels, self.dark)
+                painter.setClipRegion(base)
+                self._art(painter)
+                painter.setClipping(False)
+                painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_DestinationOut)
+                painter.drawPixmap(0, 0, mask)
+            finally:
+                painter.end()
+            painter = QPainter(under)
+            painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+            try:
+                painter.setClipRegion(base)
+                painter.setOpacity(self.THROUGH)
+                self.paint_glass(painter)
+                painter.setOpacity(1.0)
+                painter.setClipping(False)
+                painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_DestinationIn)
+                painter.drawPixmap(0, 0, mask)
+            finally:
+                painter.end()
+            painter = QPainter(picture)
+            try:
+                painter.drawPixmap(0, 0, under)
             finally:
                 painter.end()
             cached = self._still = (key, picture)

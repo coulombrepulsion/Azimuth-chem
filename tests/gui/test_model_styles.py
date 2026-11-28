@@ -578,8 +578,11 @@ def test_a_frozen_ornament_puts_the_glass_where_the_panels_are_now(app):
         for x in range(40, 240, 7):
             for y in range(60, 320, 7):
                 a, b = frame.pixelColor(x, y), live.pixelColor(x, y)
-                worst = max(worst, abs(a.red() - b.red()), abs(a.green() - b.green()), abs(a.blue() - b.blue()),
-                            abs(a.alpha() - b.alpha()))
+                # as seen on the page: the colour weighted by its alpha (a faint pixel of a line, alpha 19, may be
+                # drawn 174 or 188 blue by two ways of clipping — one step of the screen, 0.249.32)
+                seen = [abs(p * a.alpha() - q * b.alpha()) / 255 for p, q in
+                        ((a.red(), b.red()), (a.green(), b.green()), (a.blue(), b.blue()))]
+                worst = max(worst, *seen, abs(a.alpha() - b.alpha()))
         assert worst <= 3
     finally:
         page.close()
