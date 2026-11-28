@@ -34,6 +34,7 @@ class ProgramTool:
         'server_files_button',
         'server_mark',
         'server_watch_tool',
+        'set_run_status',
         'where',
         'where_buttons',
     )
@@ -49,10 +50,11 @@ class ProgramTool:
     SERVER_TIP = 'Считать на сервере (кластере) — профиль: «Сервер…»'
 
     def follow_server_place(self, kind):
-        """«Сервер» only for the programs a server runs (remote_job.REMOTE_KINDS: ORCA, MOPAC): for the others it is
-        off and tells so, and a choice of «Сервер» goes back to this computer — the error came only after «Запустить
-        расчёт» (ROADMAP, Sextant 1: «честно показывать в интерфейсе, что где считается»). True when the place
-        changed."""
+        """«Сервер» only for the programs a server runs (remote_job.REMOTE_KINDS: ORCA, MOPAC): for the others its tip
+        tells so and a press of it says so in the status line (run_actions.set_where; a button switched off said
+        nothing — the owner's Windows, 2026-11-28), and a choice of «Сервер» goes back to this computer — the error
+        came only after «Запустить расчёт» (ROADMAP, Sextant 1: «честно показывать в интерфейсе, что где
+        считается»). True when the place changed."""
         from modules.sextant.remote_job import REMOTE_KINDS
 
         buttons = getattr(self.w, 'where_buttons', None) if self.w.has('where_buttons') else None
@@ -60,11 +62,12 @@ class ProgramTool:
             return False
         able = kind in REMOTE_KINDS
         item = buttons['server']
-        item.setEnabled(able)
+        item.setEnabled(True)
         item.setToolTip(tr(self.SERVER_TIP) if able else tr('{} считается только на этом компьютере; на сервере — ORCA '
                                                             'и MOPAC').format(NAMES[kind]))
         if not able and getattr(self.w, 'where', 'local') == 'server':
             self.w.run_tool.set_where('local')
+            self.w.set_run_status(tr(self.w.run_tool.SERVER_ONLY).format(NAMES[kind]))
             return True
         return False
 

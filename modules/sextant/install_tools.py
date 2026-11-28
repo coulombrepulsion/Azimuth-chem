@@ -239,9 +239,9 @@ def places(root, packages):
 
 def cp2k_installable(system=None):
     """conda-forge has CP2K for Linux (x86-64, aarch64) only; a Mac takes it from Homebrew («brew install
-    cp2k» run by the installer, cp2k_by_brew), Windows — a server (the build of MSYS2, qe_windows.install_cp2k, is
-    written and reached by «install_tools cp2k» of the command line; not offered until it has run on Windows)."""
-    return (system or platform.system()) in ('Linux', 'Darwin')
+    cp2k» run by the installer, cp2k_by_brew), Windows — the build of MSYS2 (qe_windows.install_cp2k; checked on
+    the owner's laptop 2026-11-28: Si of 54 atoms, E = −212.57644 Eh, with the file of cp2k_statm)."""
+    return (system or platform.system()) in ('Linux', 'Darwin', 'Windows')
 
 
 def cp2k_by_brew(system=None):
@@ -294,6 +294,30 @@ def cp2k_environment(program, processes=1, environ=None):
     if program.suffix.lower() == '.exe' and (data / 'BASIS_MOLOPT').is_file():
         env['CP2K_DATA_DIR'] = str(data)
     return env
+
+
+STATM = '100000 50000 0 0 0 0 0\n'  # pages: size, resident, shared, text, lib, data, dirty
+
+
+def cp2k_statm(folder, system=None):
+    """CP2K of MSYS2 (Windows) reads /proc/self/statm at its start (DBCSR 2.10, the memory it reports) — on Windows
+    the path is that of the drive of the folder of the calculation (C:\\proc\\self\\statm); without the file CP2K
+    stops before the first step. The file is written once, before a run, and left (a later run reads it too).
+    Returns its path (None — not Windows); ValueError with what to do when it cannot be written."""
+    if (system or platform.system()) != 'Windows':
+        return None
+    anchor = Path(folder).anchor or Path.cwd().anchor
+    path = Path(anchor) / 'proc' / 'self' / 'statm'
+    if path.is_file():
+        return path
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(STATM, encoding='ascii', newline='\n')
+    except OSError as exc:
+        raise ValueError(f'CP2K needs the file {path} (its build for Windows reads it at the start) and it was not '
+                         f'written ({exc}); create it once by hand in PowerShell: New-Item -ItemType Directory -Force '
+                         f'{path.parent}; Set-Content {path} "{STATM.strip()}"') from None
+    return path
 
 
 def _executable(path):

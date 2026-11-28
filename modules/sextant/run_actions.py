@@ -117,8 +117,20 @@ class RunTool:
         return self.w.program_tool.refresh_program_path()  # in ProgramTool
 
     # where the calculation runs -------------------------------------------------------------------
+    SERVER_ONLY = 'На сервере пока считаются только ORCA и MOPAC — {} считается на этом компьютере.'
+
     def set_where(self, where):
         where = 'server' if where == 'server' else 'local'
+        if where == 'server' and self.w.has('program_kind'):
+            # «Сервер» pressed for a program a server does not run yet (remote_job.REMOTE_KINDS): the place stays this
+            # computer and the status line says why — nothing happened before (the owner's Windows, 2026-11-28: «пусть
+            # хотя бы в строке состояния пишет, что эти программы не запускаются пока на сервере»)
+            from modules.sextant.remote_job import REMOTE_KINDS
+
+            kind = self.w.program_kind()
+            if kind not in REMOTE_KINDS:
+                self.w.set_run_status(tr(self.SERVER_ONLY).format(NAMES.get(kind, kind)))
+                where = 'local'
         before = getattr(self.w, 'where', where)
         if before != where and self.w.has('job_slot'):
             # the calculation of the place left goes on; its panel leaves the place of the input file

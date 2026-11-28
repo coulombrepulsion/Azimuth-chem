@@ -22,6 +22,8 @@ def size_note(package):
     CP2K (Homebrew on a Mac) was not measured."""
     if package == 'qe' and os.name == 'nt':  # the build of MSYS2 (qe_windows): the mirror, 2026-11-26 — 15 packages
         return tr('≈ 90 МБ загрузки, ≈ 140 МБ на диске')
+    if package == 'cp2k' and os.name == 'nt':  # the build of MSYS2: the owner's laptop, 2026-11-28 (du: 279 МБ)
+        return tr('≈ 390 МБ загрузки, ≈ 280 МБ на диске')
     return {
         'qe': tr('≈ 280 МБ загрузки, ≈ 900 МБ на диске'),
         'nwchem': tr('≈ 140 МБ загрузки, ≈ 650 МБ на диске'),
@@ -75,9 +77,9 @@ class InstallTool:
             found['nwchem'] = runner.find_program('nwchem', self.w.run_tool.configured_program('nwchem'))
             packages += ('psi4',)  # its own prefix and Python
             found['psi4'] = runner.find_program('psi4', self.w.run_tool.configured_program('psi4'))
-            if install_tools.cp2k_installable():  # Linux (conda-forge); and a Mac (Homebrew)
-                packages += ('cp2k',)
-                found['cp2k'] = install_tools.cp2k_program()
+        if install_tools.cp2k_installable():  # Linux (conda-forge), a Mac (Homebrew), Windows (MSYS2)
+            packages += ('cp2k',)
+            found['cp2k'] = install_tools.cp2k_program()
         return [(p, names[p], found.get(p)) for p in packages]
 
     def choose_packages(self, chosen=None):
@@ -109,7 +111,7 @@ class InstallTool:
                          'настройки терминала не меняются.') + (' ' + tr('Quantum ESPRESSO, NWChem и Psi4 — в '
                                                                         'отдельные папки .tools/qe, .tools/nwchem и .tools/psi4.') if os.name != 'nt' else ' ' + tr(
                              'Quantum ESPRESSO для Windows берётся из репозитория MSYS2 (сборка без MPI: процессы '
-                             'становятся потоками OpenMP) и ставится в .tools/qe.'))
+                             'становятся потоками OpenMP) и ставится в .tools/qe; CP2K — оттуда же, в .tools/cp2k.'))
                      + (' ' + tr('CP2K на Mac ставится через Homebrew (brew install cp2k); если Homebrew нет — '
                                  'сначала установите его с brew.sh.') if sys.platform == 'darwin' else ''))
         note.setWordWrap(True)

@@ -101,10 +101,7 @@ def refresh(self):
 
         program = install_tools.cp2k_program(self.root())
         if program is None:  # where CP2K comes from on this system
-            if os.name == 'nt':  # qe_windows.install_cp2k is written, not offered until it has run on Windows
-                self.status.setText(tr('Для Windows нет сборки CP2K: считайте на сервере.'))
-            else:  # on a Mac too — through Homebrew
-                self.status.setText(tr('CP2K не найден: «Расчёт → Установить программы для расчёта…» → CP2K.'))
+            self.status.setText(tr('CP2K не найден: «Расчёт → Установить программы для расчёта…» → CP2K.'))
             ready = False
         else:
             self.status.setText(tr('CP2K найден — готово к запуску'))
@@ -302,6 +299,7 @@ def _start_cp2k(self, program):
     command = [*parallel, str(program), '-i', 'azimuth.inp']
     spec = runner.JobSpec('cp2k', self.folder, tuple(command), self.folder / 'cp2k.out', env)
     try:
+        install_tools.cp2k_statm(self.folder)
         self.job = runner.Job(spec).start()
     except ValueError as exc:
         self.status.setText(str(exc))

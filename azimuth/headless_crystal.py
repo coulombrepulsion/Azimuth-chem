@@ -243,6 +243,7 @@ def job(prepared, jobs_root=None, tools_root=None, now=None):
     for name, _, text in steps:
         (folder / name).write_text(text, encoding='utf-8', newline='\n')
     if cp2k:
+        install_tools.cp2k_statm(folder)
         env = install_tools.cp2k_environment(program, prepared.processes)
         mpirun = Path(program).with_name('mpirun')
         mpi = prepared.processes > 1 and mpirun.is_file() and 'psmp' in Path(program).name

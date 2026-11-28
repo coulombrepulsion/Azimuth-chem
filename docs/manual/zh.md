@@ -61,7 +61,7 @@
 | Gaussian | 输入文件、运行、解读 | 输入文件未经运行验证 |
 | GAMESS (US) | 输入文件、运行、解读 | 输入文件未经运行验证 |
 | Quantum ESPRESSO | 晶体计算 | 运行已验证（macOS、Linux、服务器）；晶格参数、带隙和磁矩已在六种晶体（Si、MgO、SrTiO₃、TiO₂、石墨烯、NiO）上与文献对照 |
-| CP2K | 晶体计算 | 运行已验证（macOS、Linux、服务器）；数值尚未与文献对照——标记为“未验证” |
+| CP2K | 晶体计算 | 运行已验证（macOS、Linux、Windows、服务器）；数值尚未与文献对照——标记为“未验证” |
 | CRYSTAL | 输入文件和解读结果（不运行） | 未验证 |
 | Q-Chem、Firefly | 仅解读结果 | — |
 | Multiwfn | 波函数分析（电荷、表面、QTAIM） | 已验证（版本 2026.7.15） |
@@ -136,7 +136,7 @@
 | ORCA | 从开发者网站手动安装（见下文） |
 | MS-MPI（Windows） | Microsoft 网站上的安装程序 `msmpisetup.exe`；“安装 MS-MPI…”按钮会打开该页面 |
 | Multiwfn | macOS：`brew install multiwfn`；Windows 和 Linux——从 sobereva.com/multiwfn 下载 noGUI 版本 |
-| CP2K | Linux——“安装计算程序…”；macOS——`brew install cp2k`；服务器上——cp2k 模块 |
+| CP2K | Linux 和 Windows——“安装计算程序…”（Windows 上为 MSYS2 构建，下载约 390 MB）；macOS——`brew install cp2k`；服务器上——cp2k 模块 |
 | Gaussian、GAMESS (US) | 商业或单独分发的程序；按其作者的说明安装 |
 
 如果找不到 xtb、CREST 或 MOPAC，六分仪运行卡片中该程序旁会有“安装到程序文件夹…”按钮。“安装计算程序…”窗口会自动勾选尚未安装的 xtb 和 MOPAC，对已找到的程序则显示“已安装”。对于大型程序（Quantum ESPRESSO、NWChem、Psi4），会标明下载大小和磁盘占用。程序从 conda-forge 安装：若计算机上已有 conda 则用它，否则用一个小型安装器 micromamba——无需管理员权限，也不修改终端设置。程序安装在程序文件夹内的隐藏文件夹 `.tools` 中（打包好的应用则安装在 Mac 的 `~/Library/Application Support/Azimuth` 和 Windows 的 `%LOCALAPPDATA%\Azimuth`）。

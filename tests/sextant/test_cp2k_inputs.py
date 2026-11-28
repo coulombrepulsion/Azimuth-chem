@@ -52,7 +52,7 @@ def test_the_job_on_a_server_and_the_installation():
     found = cluster.parse_probe('@progmodule cp2k/2025.1\n')
     assert cluster.find_on_server(found, 'cp2k') is not None and cluster.suggested_setup(found, 'cp2k') == 'module load cp2k/2025.1'
     assert install_tools.cp2k_installable('Linux') and install_tools.cp2k_installable('Darwin')
-    assert not install_tools.cp2k_installable('Windows')
+    assert install_tools.cp2k_installable('Windows')  # the build of MSYS2 (qe_windows.install_cp2k)
     assert install_tools.cp2k_by_brew('Darwin') and not install_tools.cp2k_by_brew('Linux')
     assert install_tools.command('mamba', '/r', ['cp2k'])[-1] == 'cp2k'
 
@@ -220,3 +220,22 @@ def test_the_grid_proposed_for_the_elements():
     assert ci.cutoff_for(['Gd']) == 400  # no basis set here: xTB, which has no grid of this kind
     assert set(ci.SHARPEST) == set(ci.ELEMENTS)
     assert max(ci.cutoff_for([e]) for e in ci.SHARPEST) <= 2000  # the box of the panel holds it
+
+
+def test_the_file_cp2k_of_msys2_reads_on_windows(tmp_path, monkeypatch):
+    # CP2K of MSYS2 (DBCSR 2.10) stops without /proc/self/statm — on Windows that of the drive of the calculation
+    # (the owner's laptop, 2026-11-28: with C:\\proc\\self\\statm Si of 54 atoms ran); not Windows — nothing written
+    assert install_tools.cp2k_statm(tmp_path, system='Linux') is None
+    monkeypatch.setattr(install_tools.Path, 'anchor', property(lambda self: str(tmp_path / 'drive')))
+    made = install_tools.cp2k_statm(tmp_path / 'job', system='Windows')
+    assert made == tmp_path / 'drive' / 'proc' / 'self' / 'statm'
+    assert made.read_text(encoding='ascii').split()[0] == '100000'
+    assert install_tools.cp2k_statm(tmp_path / 'job', system='Windows') == made  # left and read again
+    (tmp_path / 'locked').write_text('', encoding='utf-8')  # a file where its folder should be
+    monkeypatch.setattr(install_tools.Path, 'anchor', property(lambda self: str(tmp_path / 'locked')))
+    try:
+        install_tools.cp2k_statm(tmp_path / 'job', system='Windows')
+    except ValueError as exc:
+        assert 'statm' in str(exc) and 'Set-Content' in str(exc)
+    else:
+        raise AssertionError('no error for a file that could not be written')

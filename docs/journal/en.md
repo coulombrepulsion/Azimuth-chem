@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.20 — 28 November 2026
+
+- ### 0.249.20 — CP2K on Windows
+
+CP2K is now installed on Windows from «Install calculation programs…», and the program writes the service file it needs by itself. Pressing «Server» for a program a server does not run yet tells in the status line that the calculation goes on this computer.
+
 ## 0.249.19 — 28 November 2026
 
 - ### 0.249.19 — The molecule stays in place

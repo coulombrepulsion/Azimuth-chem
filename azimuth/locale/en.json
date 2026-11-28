@@ -6561,5 +6561,8 @@
  "Экспорт диаграммы реакции": "Export the reaction diagram",
   "Расчётов проекта на сервере, которые ещё не закончены: {} — за ними можно следить из «Расчёт → История расчётов…», когда кончится очередь на сервере.": "Calculations of the project on a server not finished yet: {} — they can be watched from «Calculation → Calculation history…» when the queue on the server is over.",
   "Расчётов проекта на сервере: {} — подключаюсь ко всем, чтобы посмотреть, как они идут; новый — в окне Секстанта, остальные — в своих окнах (песочные часы вверху).": "Calculations of the project on a server: {} — connecting to all of them to see how they go; the newest in the Sextant window, the others in their own windows (the hourglass at the top).",
-  "{} считается только на этом компьютере; на сервере — ORCA и MOPAC": "{} runs on this computer only; on a server — ORCA and MOPAC"
+  "{} считается только на этом компьютере; на сервере — ORCA и MOPAC": "{} runs on this computer only; on a server — ORCA and MOPAC",
+  "≈ 390 МБ загрузки, ≈ 280 МБ на диске": "≈ 390 MB to download, ≈ 280 MB on disk",
+  "Quantum ESPRESSO для Windows берётся из репозитория MSYS2 (сборка без MPI: процессы становятся потоками OpenMP) и ставится в .tools/qe; CP2K — оттуда же, в .tools/cp2k.": "Quantum ESPRESSO for Windows is taken from the MSYS2 repository (a build without MPI: the processes become OpenMP threads) and goes into .tools/qe; CP2K comes from there too, into .tools/cp2k.",
+  "На сервере пока считаются только ORCA и MOPAC — {} считается на этом компьютере.": "A server runs only ORCA and MOPAC for now — {} runs on this computer."
 }

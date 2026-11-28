@@ -1017,9 +1017,9 @@ def test_sextant_launch_card_and_two_places(window, app, tmp_path, monkeypatch):
         assert not window.server_spinner.running() and window.server_spinner.isHidden()
         # is the program there — the fake ORCA is in PATH of the server, Gaussian is not
         assert not window.program_found.isHidden() and 'на сервере serv3' in window.program_found.toolTip()
-        # Gaussian is not run by a server at all (0.249.15): «Сервер» is off, the calculation goes to this computer
+        # Gaussian is not run by a server at all (0.249.15): the calculation goes to this computer, «Сервер» says why
         window.program.setCurrentIndex(window.program.findData('gaussian'))
-        assert window.where == 'local' and not window.where_buttons['server'].isEnabled()
+        assert window.where == 'local' and 'Gaussian' in window.where_buttons['server'].toolTip()
         window.program.setCurrentIndex(window.program.findData('orca'))
         window.run_tool.set_where('server')
         assert window.run_tool.check_server() and not window.program_found.isHidden()
@@ -2989,7 +2989,8 @@ def test_the_vpn_is_waited_for_without_holding_the_window(window, app, tmp_path,
 
 def test_the_server_is_offered_only_for_the_programs_it_runs(window):
     # ROADMAP, Sextant 1 («честно показывать в интерфейсе, что где считается»): a server runs ORCA and MOPAC; for
-    # the others «Сервер» is off and says so — the error came only after «Запустить расчёт»
+    # the others «Сервер» says so (its tip; pressed — the status line, the place stays this computer) — the error
+    # came only after «Запустить расчёт», and a button switched off said nothing (the owner's Windows, 2026-11-28)
     from modules.sextant import remote
 
     saved = {key: window.preferences.value(key) for key in (remote.WHERE_KEY, 'sextant_program')}
@@ -3000,8 +3001,11 @@ def test_the_server_is_offered_only_for_the_programs_it_runs(window):
         server = window.where_buttons['server']
         assert window.where == 'server' and server.isEnabled()
         window.program.setCurrentIndex(window.program.findData('gaussian'))
-        assert window.where == 'local' and not server.isEnabled() and 'Gaussian' in server.toolTip()
+        assert window.where == 'local' and server.isEnabled() and 'Gaussian' in server.toolTip()
         assert 'Сервер' not in window.program_missing_text.text()
+        server.click()  # pressed: stays here, and the status line tells why
+        assert window.where == 'local' and window.where_buttons['local'].isChecked()
+        assert 'ORCA и MOPAC' in window.run_status.text() and 'Gaussian' in window.run_status.text()
         window.program.setCurrentIndex(window.program.findData('mopac'))
         assert server.isEnabled() and 'Сервер…' in server.toolTip()
     finally:

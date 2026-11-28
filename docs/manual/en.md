@@ -61,7 +61,7 @@ Table: Calculation programs
 | Gaussian | Input file, run, reading | Input files not checked by a run |
 | GAMESS (US) | Input file, run, reading | Input files not checked by a run |
 | Quantum ESPRESSO | Crystal calculations | Runs checked (macOS, Linux, a server); lattice parameters, gaps and magnetic moments compared with the literature on six crystals (Si, MgO, SrTiO₃, TiO₂, graphene, NiO) |
-| CP2K | Crystal calculations | Runs checked (macOS, Linux, a server); the numbers are not compared with the literature – marked «not checked» |
+| CP2K | Crystal calculations | Runs checked (macOS, Linux, Windows, a server); the numbers are not compared with the literature – marked «not checked» |
 | CRYSTAL | Input file and reading the result (no run) | Not checked |
 | Q-Chem, Firefly | Reading the result only | – |
 | Multiwfn | Wavefunction analysis (charges, surfaces, QTAIM) | Checked (version 2026.7.15) |
@@ -136,7 +136,7 @@ Table: How the calculation programs are installed
 | ORCA | By hand from the developers' site (see below) |
 | MS-MPI (Windows) | The installer `msmpisetup.exe` from the Microsoft site; the «Install MS-MPI…» button opens the page |
 | Multiwfn | macOS: `brew install multiwfn`; Windows and Linux – the noGUI build from sobereva.com/multiwfn |
-| CP2K | Linux – «Install calculation programs…»; macOS – `brew install cp2k`; on a server – the cp2k module |
+| CP2K | Linux and Windows – «Install calculation programs…» (on Windows – the MSYS2 build, ≈ 390 MB to download); macOS – `brew install cp2k`; on a server – the cp2k module |
 | Gaussian, GAMESS (US) | Commercial or separately distributed programs; installed by their authors' instructions |
 
 If xtb, CREST or MOPAC is not found, the run card of Sextant has an «Install into the program folder…» button next to the program. The «Install calculation programs…» window checks xtb and MOPAC at once if they are not there yet and says «already here» for programs it found. For big programs (Quantum ESPRESSO, NWChem, Psi4) the download size and the disk space are given. The programs are installed from conda-forge through the conda of the computer if there is one, otherwise through a small micromamba installer – without administrator rights and without changing the terminal settings. They go into the program folder, into the hidden folder `.tools` (for a built application – into `~/Library/Application Support/Azimuth` on a Mac and `%LOCALAPPDATA%\Azimuth` on Windows).
