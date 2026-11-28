@@ -523,18 +523,19 @@ def crystal_menus(self, studio, menu, own, help_menu, picture_menu, compare_menu
 
 def sextant_menus(self, studio, menu, own, help_menu, picture_menu, compare_menu, quit_, print3d_window):
     """The menus of sextant (self is the hub window)."""
+    # the project, then the input files (one «Сохранить входной файл…» — of the program chosen, ORCA included), then
+    # the program itself
     files = menu(
         'Файл', 'Новый проект с расчётами…', 'Создать проект из расчётов…', 'Открыть проект…',
-        'Молекулы и расчёты проекта…', 'Сохранить', 'Сохранить как…', 'Восстановить аварийные копии…', None, 'Сохранить входной файл ORCA…', None, 'Настройки…',
-        'Отчёт об ошибке…', quit_
+        'Молекулы и расчёты проекта…', 'Сохранить', 'Сохранить как…', 'Восстановить аварийные копии…', None,
     )
-    after = files.actions()[[to_source(a.text()) for a in files.actions()].index('Сохранить входной файл ORCA…') + 1]
-    files.insertAction(  # Gaussian, Psi4, xtb — right under the ORCA one
-        after, own('Сохранить входной файл выбранной программы…', studio.input_tool.export_program_input)
-    )
-    files.insertAction(files.actions()[0], own('Открыть входной файл…', lambda: studio.input_tool.open_input_file()))
-    files.insertAction(files.actions()[1], own('Входные файлы для набора структур…',
-                                               lambda: studio.input_tool.export_set_inputs()))
+    files.addAction(own('Открыть входной файл…', lambda: studio.input_tool.open_input_file()))
+    files.addAction(own('Сохранить входной файл…', studio.input_tool.export_program_input))
+    files.addAction(own('Входные файлы для набора структур…', lambda: studio.input_tool.export_set_inputs()))
+    files.addSeparator()
+    for title in ('Настройки…', 'Отчёт об ошибке…'):
+        files.addAction(self.studio_action(title))
+    files.addAction(quit_)
     # the input editor (azimuth/text_editor.py): find, replace, lines; ready blocks of the program; the check
     pane = studio.preview_pane
 
@@ -582,7 +583,8 @@ def sextant_menus(self, studio, menu, own, help_menu, picture_menu, compare_menu
                                                      studio, tr('входной файл')))),
         keyed('Горячие клавиши редактора…', pane.actions['keys'], 'F1'),
     )
-    # running ORCA or xtb (modules/sextant/runner.py)
+    # «Расчёт»: running and stopping; several calculations (a chain, the queues); the settings and the programs; the
+    # records of the calculations. «Окно расчёта» is in «Вид», the calculations on the server in «Сервер».
     calc = menu('Расчёт')
     run = own('Запустить расчёт', studio.run_tool.run_calculation)
     stop = own('Остановить расчёт', studio.run_tool.stop_calculation)
@@ -591,7 +593,7 @@ def sextant_menus(self, studio, menu, own, help_menu, picture_menu, compare_menu
         item.setShortcutContext(Qt.ShortcutContext.WidgetShortcut)
     for item in (run, stop):
         calc.addAction(item)
-    calc.addAction(own('Окно расчёта', studio.show_job_window))
+    calc.addSeparator()
     # the calculations on the server moved aside for the next one (park_server_job), each its window
     others = menu('Другие расчёты на сервере')
 
@@ -606,8 +608,6 @@ def sextant_menus(self, studio, menu, own, help_menu, picture_menu, compare_menu
             none.setEnabled(False)
 
     others.aboutToShow.connect(list_others)
-    calc.addMenu(others)
-    calc.addAction(own('Дополнительные настройки…', studio.show_options))
     # several calculations one after another, each on the geometry of the one before
     from modules.sextant import chain
 
@@ -626,20 +626,26 @@ def sextant_menus(self, studio, menu, own, help_menu, picture_menu, compare_menu
 
     chains.aboutToShow.connect(grey_chains)
     calc.addMenu(chains)
+    queues = menu(
+        'Очередь расчётов',
+        own('Пакеты расчётов…', lambda: studio.batch_tool.show_saved_batches()),
+        own('QTAIM для очереди…', lambda: studio.batch_tool.batch_qtaim(choose=True)),
+        own('Дескрипторы и logK очереди…', lambda: studio.batch_tool.batch_descriptors(choose=True)),
+    )
+    calc.addMenu(queues)
     calc.addSeparator()
+    calc.addAction(own('Дополнительные настройки…', studio.show_options))
     calc.addAction(own('Указать программу…', studio.run_tool.choose_program))
     calc.addAction(own('Установить программы для расчёта…', lambda: studio.run_tool.install_tools_dialog()))
+    calc.addSeparator()
     calc.addAction(own('Папка расчёта', studio.run_tool.open_job_folder))
     calc.addAction(own('История расчётов…', studio.run_tool.show_history))
     calc.addAction(own('Методика расчёта…', lambda: studio.spectrum_tools.methods_dialog()))
-    calc.addAction(own('Пакеты расчётов…', lambda: studio.batch_tool.show_saved_batches()))
-    calc.addAction(own('QTAIM для очереди…', lambda: studio.batch_tool.batch_qtaim(choose=True)))
-    calc.addAction(own('Дескрипторы и logK очереди…', lambda: studio.batch_tool.batch_descriptors(choose=True)))
     calc.aboutToShow.connect(
         lambda: (run.setEnabled(studio.run_button.isEnabled()), stop.setEnabled(studio.run_tool.job_running()))
     )
     view = self._sextant_view_menu(menu, own)
-    server = self._server_menu(menu, own)
+    server = self._server_menu(menu, own, others)
     helps = help_menu()
     return [(m.title(), m) for m in (files, edit, view, calc, server, helps)]
 

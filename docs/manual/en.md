@@ -929,7 +929,7 @@ The text of the input file is shown to the right of the settings and changes wit
 3. «Program output» opens the output file itself and follows it while the program writes (search, «Follow the end», «Open in an editor»).
 4. «Stop» (`Ctrl+.`) interrupts the program together with all its processes.
 
-In other sections the progress of a calculation is opened by the icon on the left panel (the background work indicator) or «Calculation → Calculation window».
+In other sections the progress of a calculation is opened by the icon on the left panel (the background work indicator); in Sextant also by «View → Calculation window».
 
 When the calculation ends, the calculation window shows «Go to Compass» (optimization steps, frequencies, orbitals) and «Go to Spectrum» (frequencies, spectra, thermochemistry). If the calculation broke off with an error or was stopped, but there already were optimization steps, they still go to the tab: the last geometry becomes its structure (`Ctrl+Z` brings back the previous one).
 
@@ -992,7 +992,7 @@ The password does not go into the settings of the program: it is kept until the 
 2. Click «Run calculation». The input files are uploaded to the server, the job is put into the SLURM queue; the program follows it and downloads the result.
 3. A calculation on the server goes on after the program is closed. At the next start «Calculation → Calculation history…» → «Check on the server» follows it again and downloads the result without sending anything anew.
 
-While a calculation runs on the server, the next one can be started: the running one goes into a window of its own, and the Sextant card takes the new one. «Calculation → Other calculations on the server» – the list of such windows (▶ running, ✓ finished). A calculation on this computer and calculations on the server run at the same time.
+While a calculation runs on the server, the next one can be started: the running one goes into a window of its own, and the Sextant card takes the new one. «Server → Other calculations on the server» – the list of such windows (▶ running, ✓ finished). A calculation on this computer and calculations on the server run at the same time.
 
 **A queue on a server** is sent as one job: one archive, one SSH command, one SLURM job (`batch.sh`) that computes the calculations in order. «Skip» ends the current calculation, «Stop» cancels the queue job.
 

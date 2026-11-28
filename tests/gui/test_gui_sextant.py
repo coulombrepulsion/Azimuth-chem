@@ -912,7 +912,7 @@ def test_the_server_dialog_keeps_the_partition_and_the_time_limit(window, app):
 @pytest.mark.skipif(os.name == 'nt', reason='the fake server is a set of POSIX scripts')
 def test_two_calculations_on_a_server_at_the_same_time(window, app, tmp_path, monkeypatch):
     # a single calculation on the server is moved aside into its own window, the card takes the next one; both are
-    # followed to their ends, each in its own window; «Расчёт → Другие расчёты на сервере» lists the one moved aside
+    # followed to their ends, each in its own window; «Сервер → Другие расчёты на сервере» lists the one moved aside
     import time
 
     from azimuth.runtime.places import Slotted

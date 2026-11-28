@@ -1,3 +1,3 @@
 """Azimuth: an independent teaching workbench."""
 
-__version__ = '0.249.30'
+__version__ = '0.249.31'

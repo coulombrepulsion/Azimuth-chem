@@ -1,5 +1,11 @@
 # What’s new — Quail’s notes
 
+## 0.249.31 — 28 November 2026
+
+- ### 0.249.31 — The menus of Sextant
+
+The menus of Sextant are grouped by meaning: «Calculation» has running, chains and queues, the programs and the history; the calculations on the server are in «Server»; one «Save the input file…» for any program.
+
 ## 0.249.30 — 28 November 2026
 
 - ### 0.249.30 — Measured NMR shifts

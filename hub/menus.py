@@ -263,9 +263,10 @@ class HubMenus:
         box.aboutToShow.connect(shown)
         return box
 
-    def _server_menu(self, menu, own):
+    def _server_menu(self, menu, own, others=None):
         """«Сервер» of Sextant: where to calculate and the server — the buttons of the row of the program, shown only
-        while «Сервер» is chosen, are found here always."""
+        while «Сервер» is chosen, are found here always; others — the submenu of the calculations on the server moved
+        aside for the next one (made by sextant_menus)."""
         studio = self.studio
         here = own('Считать на этом компьютере', lambda: studio.where_buttons['local'].click(), checkable=True)
         there = own('Считать на сервере', lambda: studio.where_buttons['server'].click(), checkable=True)
@@ -279,6 +280,8 @@ class HubMenus:
             None,
             own('Профиль сервера…', studio.run_tool.edit_server),
             own('Проверить подключение к серверу', studio.run_tool.check_server),
+            None,
+            *((others,) if others is not None else ()),
             own('Файлы на сервере', studio.run_tool.open_server_files),
             own('Очередь кластера…', lambda: studio.server_watch_tool.open_cluster_queue()),  # squeue, scancel
         )
